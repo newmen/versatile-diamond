@@ -23,6 +23,21 @@ module VersatileDiamond
               let(:node_specie) { entry_nodes.first.uniq_specie }
             end
 
+            shared_context :bridge_context do
+              include_context :specie_unit_context
+              let(:base_specs) { [dept_uniq_specie] }
+              let(:typical_reactions) { [dept_dimer_formation] }
+
+              let(:dept_uniq_specie) { dept_bridge_base }
+            end
+
+            shared_context :alt_bridge_context do
+              include_context :bridge_context
+              let(:unit_nodes) do # override
+                ordered_graph.first.last.first.first
+              end
+            end
+
             shared_context :rab_context do
               include_context :specie_unit_context
               let(:base_specs) { [dept_bridge_base] }

@@ -5,6 +5,8 @@ module VersatileDiamond
 
         # Represents atom variable statement
         class AtomVariable < Core::Variable
+          include LatticePositionReference
+
           # @param [Instances::SpecieInstance] specie
           # @return [Core::OpCall]
           def role_in(specie)
@@ -81,6 +83,28 @@ module VersatileDiamond
           def iterate_crystal_nbrs(defined_vars, nbr_var, body)
             iter_lambda = Core::Lambda[defined_vars, nbr_var, body]
             call('eachCrystalNeighbour', iter_lambda)
+          end
+
+          # @param [Array] defined_vars
+          # @param [AtomVariable] nbr_var
+          # @param [Core::ObjectType] lattice
+          # @param [Hash] rel_params
+          # @return [Core::FunctionCall]
+          def iterate_over_lattice(defined_vars, nbr_var, lattice, rel_params, body)
+            ref = ref_rel(lattice, rel_params)
+            iter_lambda = Core::Lambda[defined_vars, nbr_var, body]
+            Core::FunctionCall['eachNeighbour', self, ref, iter_lambda]
+          end
+
+          # @param [Array] defined_vars
+          # @param [AtomsArray] nbrs_arr
+          # @param [Core::ObjectType] lattice
+          # @param [Hash] rel_params
+          # @return [Core::FunctionCall]
+          def all_crystal_nbrs(defined_vars, nbrs_arr, lattice, rel_params, body)
+            ref = ref_rel(lattice, rel_params)
+            iter_lambda = Core::Lambda[defined_vars, nbrs_arr, body]
+            Core::FunctionCall['allNeighbours', self, ref, iter_lambda]
           end
 
         private

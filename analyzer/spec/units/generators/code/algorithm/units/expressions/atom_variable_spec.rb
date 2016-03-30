@@ -9,6 +9,10 @@ module VersatileDiamond
           let(:dict) { VarsDictionary.new }
           let(:var) { dict.make_atom_s(atom, name: 'atom') }
 
+          let(:lattice) do
+            Core::ObjectType[unit_nodes.first.lattice_class.class_name]
+          end
+
           let(:actual_role) { subject.actual_role(atom) }
           let(:source_role) { subject.source_role(atom) }
 
@@ -187,6 +191,44 @@ amorph1->eachCrystalNeighbour([](Atom *atom1) {
               CODE
             end
             let(:expr) { atom_var.iterate_crystal_nbrs([], nbr_var, body) }
+            it { expect(expr.code).to eq(code.rstrip) }
+          end
+
+          describe '#iterate_over_lattice' do
+            include_context :alt_intermed_context
+            let(:atom_var) { dict.make_atom_s(cbr) }
+            let(:nbr_var) { dict.make_atom_s(cdr) }
+            let(:rel_params) { param_100_front }
+            let(:body) { Core::Return[nbr_var] }
+            let(:code) do
+              <<-CODE
+eachNeighbour(atom1, &Diamond::front_100, [](Atom *atom2) {
+    return atom2;
+})
+              CODE
+            end
+            let(:expr) do
+              atom_var.iterate_over_lattice([], nbr_var, lattice, rel_params, body)
+            end
+            it { expect(expr.code).to eq(code.rstrip) }
+          end
+
+          describe '#all_crystal_nbrs' do
+            include_context :bridge_context
+            let(:atom_var) { dict.make_atom_s(ct) }
+            let(:nbrs_arr) { dict.make_atom_s([cl, cr]) }
+            let(:rel_params) { param_110_cross }
+            let(:body) { Core::Return[nbrs_arr] }
+            let(:code) do
+              <<-CODE
+allNeighbours(atom1, &Diamond::cross_110, [](Atom **atoms1) {
+    return atoms1;
+})
+              CODE
+            end
+            let(:expr) do
+              atom_var.all_crystal_nbrs([], nbrs_arr, lattice, rel_params, body)
+            end
             it { expect(expr.code).to eq(code.rstrip) }
           end
         end
