@@ -93,6 +93,10 @@ module VersatileDiamond
             it { expect(node_ab.sub_properties).to eq(props_ab) }
           end
 
+          describe '#lattice_class' do
+            it { expect(node_aib.lattice_class).to eq(node_ab.lattice_class) }
+          end
+
           describe '#spec_atom' do
             let(:atom_aib) { concept_aib.atom(:ct) }
             it { expect(node_aib.spec_atom).to eq([concept_aib, atom_aib]) }

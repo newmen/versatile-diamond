@@ -149,6 +149,11 @@ module VersatileDiamond
             end
           end
 
+          describe '#lattice_class' do
+            it { expect(node_cm.lattice_class).to be_nil }
+            it { expect(node_cb.lattice_class).to be_a(Code::Lattice) }
+          end
+
           describe '#limited?' do
             it { expect(node_cm.limited?).to be_falsey }
             it { expect(node_cb.limited?).to be_falsey }

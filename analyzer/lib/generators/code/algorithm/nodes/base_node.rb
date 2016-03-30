@@ -72,6 +72,12 @@ module VersatileDiamond
             @_symmetric_atoms ||= uniq_specie.symmetric_atoms(atom)
           end
 
+          # Gets the lattice code generator class
+          # @return [Code::Lattice] or nil
+          def lattice_class
+            lattice && generator.lattice_class(lattice)
+          end
+
           def inspect
             "(#{uniq_specie.inspect} | #{properties})"
           end
