@@ -80,7 +80,8 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_amorph_bonds_if_have(nbr, &block)
-            if (atoms + nbr.atoms).all?(&:lattice)
+            latttices = (atoms + nbr.atoms).map(&:lattice)
+            if latttices.all? && latttices.uniq.one?
               redefine_self_and_nbr_atoms_if_need(nbr, &block)
             elsif atoms.one? && nbr.atoms.one?
               iterate_amorph_bonds(nbr, &block)
@@ -217,13 +218,13 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_amorph_bonds(nbr, &block)
-            defined_vars = dict.defined_vars
+            predefn_vars = dict.defined_vars # get before make inner nbr atoms var
             atom_var = dict.var_of(atoms)
             nbr_var = dict.make_atom_s(nbr.atoms)
             if nbr.atoms.any?(&:lattice)
-              atom_var.iterate_crystal_nbrs(defined_vars, nbr_var, block.call)
+              atom_var.iterate_crystal_nbrs(predefn_vars, nbr_var, block.call)
             else
-              atom_var.iterate_amorph_nbrs(defined_vars, nbr_var, block.call)
+              atom_var.iterate_amorph_nbrs(predefn_vars, nbr_var, block.call)
             end
           end
 

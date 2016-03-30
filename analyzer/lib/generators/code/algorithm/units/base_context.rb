@@ -38,6 +38,7 @@ module VersatileDiamond
 
           # @param [Array] species
           # @return [Array]
+          # @deprecated
           def reached_nodes_with(species)
             fileter_nodes_with(:select, species)
           end

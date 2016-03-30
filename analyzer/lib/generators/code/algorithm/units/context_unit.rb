@@ -44,7 +44,12 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_relations_with(nbr, &block)
-            if @unit.neighbour?(nbr)
+            if unit.neighbour?(nbr)
+              check_neighbour_relations(nbr) do
+                nbr.check_avail_species do
+                  nbr.check_private_relations(&block)
+                end
+              end
             else
               block.call
             end
@@ -52,7 +57,7 @@ module VersatileDiamond
 
         protected
 
-          def_delegators :@unit, :nodes
+          attr_reader :unit
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
@@ -63,17 +68,22 @@ module VersatileDiamond
             elsif atom_many_usages_like_in_context?
               check_similar_undefined_species(&block)
             else
-              @unit.define_undefined_species(&block)
+              unit.define_undefined_species(&block)
             end
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_private_relations(&block)
           end
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_symmetries(&block)
             if species.one? || atoms.one?
-              @unit.iterate_specie_symmetries(&block)
+              unit.iterate_specie_symmetries(&block)
             elsif asymmetric_related_atoms?
-              @unit.iterate_for_loop_symmetries(&block)
+              unit.iterate_for_loop_symmetries(&block)
             else
               raise 'Incorrect unit configuration'
             end
@@ -89,7 +99,7 @@ module VersatileDiamond
 
         private
 
-          def_delegators :@unit, :species, :atoms, :symmetric_atoms
+          def_delegators :unit, :species, :atoms, :symmetric_atoms
 
           # @return [ContextUnit]
           def context_unit(inner_unit)
@@ -98,7 +108,7 @@ module VersatileDiamond
 
           # @return [Array]
           def units
-            @unit.units.map(&method(:context_unit))
+            unit.units.map(&method(:context_unit))
           end
 
           # @return [Array]
@@ -117,7 +127,7 @@ module VersatileDiamond
                 check_close_atoms(&block)
               end
             else
-              @unit.check_atoms_roles(atoms, &block)
+              unit.check_atoms_roles(atoms, &block)
             end
           end
 
@@ -125,7 +135,7 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           # TODO: just specie
           def check_that_context_specie_not_found(&block)
-            checks = @unit.atom_with_specie_calls(:not_found, atoms)
+            checks = unit.atom_with_specie_calls(:not_found, atoms)
             Expressions::OrCondition[checks, block.call]
           end
 
@@ -143,7 +153,7 @@ module VersatileDiamond
 
           # @return [Array]
           def avail_species_check_procs
-            @unit.filled_inner_units.map do |inner_unit|
+            unit.filled_inner_units.map do |inner_unit|
               -> &block { check_undefined_species_of(inner_unit, &block) }
             end
           end
@@ -166,7 +176,7 @@ module VersatileDiamond
             if over_used_atom? || atom_many_usages_like_in_context?
               iterate_undefined_species(&block)
             else
-              @unit.define_undefined_species do
+              unit.define_undefined_species do
                 check_symmetries(&block)
               end
             end
@@ -174,10 +184,10 @@ module VersatileDiamond
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def iterate_portioned_species
+          def iterate_portioned_species(&block)
             checking_nodes = context_nodes_with_undefined_atoms
             if seems_different?(checking_nodes)
-              @unit.iterate_species_by_loop(&block)
+              unit.iterate_species_by_loop(&block)
             else
               block.call
             end
@@ -191,12 +201,12 @@ module VersatileDiamond
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          # TODO: just specie (do not move it to #@unit.define_undefined_species)
+          # TODO: just specie (do not move it to #unit.define_undefined_species)
           def check_similar_undefined_species(&block)
             if select_undefined(species).one?
               check_many_undefined_species(&block)
             else
-              @unit.iterate_portions_of_similar_species do
+              unit.iterate_portions_of_similar_species do
                 iterate_portioned_species do
                   check_each_asymmetric_inner_unit(&block)
                 end
@@ -220,7 +230,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_undefined_species(&block)
-            @unit.iterate_species_by_role do
+            unit.iterate_species_by_role do
               check_similar_defined_species do
                 check_defined_context_parts do
                   check_symmetries(&block)
@@ -245,6 +255,7 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           def check_new_atoms(&block)
             check_close_atoms do
+              # all atoms of unit species already defined there
               reached_nodes = @context.reached_nodes_with(species)
               if !reached_nodes.empty? && atoms_comparison_required?(reached_nodes)
                 check_not_existed_previos_atoms(reached_nodes) do
@@ -269,6 +280,69 @@ module VersatileDiamond
               pure_unit.define_undefined_atoms do
                 pure_unit.check_different_atoms_roles(&block)
               end
+            end
+          end
+
+          # @param [ContextUnit] nbr
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_neighbour_relations(nbr, &block)
+            if all_defined?(nbr.atoms) && relations_between(self, nbr).all?(&:bond?)
+              check_bonds_to_defined_neighbour(nbr, &block)
+            else
+              check_each_relation(nbr, &block)
+            end
+          end
+
+          # @param [ContextUnit] nbr
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_bonds_to_defined_neighbour(nbr, &block)
+            vps = zip_nodes_of(self, nbr).map { |pair| vars_for(pair.map(&:atom)) }
+            exprs = vps.map { |a, b| a.has_bond_with(b) }
+            Expressions::AndCondition[exprs, block.call]
+          end
+
+          # @param [ContextUnit] nbr
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_each_relation(nbr, &block)
+            iterate_relations(nbr) do
+            end
+          end
+
+          # @param [ContextUnit] nbr
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def iterate_relations(nbr, &block)
+            unit.check_amorph_bonds_if_have(nbr.unit) do
+              iterate_crystal_relations(nbr, &block)
+            end
+          end
+
+          # @param [ContextUnit] nbr
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def iterate_crystal_relations(nbr, &block)
+            predefn_vars = dict.defined_vars
+            self_var = dict.vars_of(atoms)
+            nbr_var = dict.make_atom_s(nbr.atoms)
+            lattice =
+              Expressions::Core::ObjectType[unit.nodes.first.lattice_class.class_name]
+            relations = relations_between(self, nbr)
+            are_same_relations = relations.uniq(&:exist?).one?
+
+            args = [predefn_vars, nbr_var, lattice, relations.first.params, block.call]
+
+            sns, nns = [self, nbr].map(&:unit).map(&:nodes).map(&:size)
+            if sns < nns && are_same_relations
+              self_var.all_crystal_nbrs(*args)
+            elsif sns > nns && are_same_relations
+              self_var.nbr_from(*args)
+            elsif sns == nns
+              self_var.iterate_over_lattice(*args)
+            else
+              raise ArgumentError, 'Incorrect relations configuration between nodes'
             end
           end
 
@@ -405,15 +479,20 @@ module VersatileDiamond
           # @param [ContextUnit] b
           # @return [Array]
           def relations_between(a, b)
-            method = @context.public_method(:relation_between)
-            ans, bns = a.nodes, b.nodes
+            zip_nodes_of(a, b).map(&@context.public_method(:relation_between))
+          end
+
+          # @param [Array] units
+          # @return [Array]
+          def zip_nodes_of(*units)
+            ans, bns = units.map(&:unit).map(&:nodes)
             asz, bsz = ans.size, bns.size
             if asz == bsz
-              ans.zip(bns).map(&method)
+              ans.zip(bns)
             elsif asz < bsz && ans.one?
-              bns.zip([ans].cycle).map(&:rotate).map(&method)
+              bns.zip([ans].cycle).map(&:rotate)
             elsif asz > bsz && bns.one?
-              ans.zip([bns].cycle).map(&method)
+              ans.zip([bns].cycle)
             else
               raise ArgumentError, 'Incorrect number of internal nodes'
             end
@@ -466,13 +545,13 @@ module VersatileDiamond
 
           # @return [Boolean]
           def symmetric?
-            @unit.fully_symmetric? || partially_symmetric? || asymmetric_related_atoms?
+            unit.fully_symmetric? || partially_symmetric? || asymmetric_related_atoms?
           end
 
           # @return [Boolean]
           def partially_symmetric?
-            @_is_partially_symmetric ||= @unit.partially_symmetric? &&
-              @context.symmetric_relations?(@unit.nodes_with_atoms(symmetric_atoms))
+            @_is_partially_symmetric ||= unit.partially_symmetric? &&
+              @context.symmetric_relations?(unit.nodes_with_atoms(symmetric_atoms))
           end
 
           # @param [Array] ca_nodes
