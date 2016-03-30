@@ -321,18 +321,19 @@ module VersatileDiamond
     eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
         {
-            Atom *neighbour1 = neighbourFrom(neighbours1, &Diamond::front_110_at);
-            if (neighbour1 && neighbour1->is(#{other_role_ct}) && neighbours1[0]->hasBondWith(neighbour1) && neighbours1[1]->hasBondWith(neighbour1))
-            {
-                BridgeCTs *specie1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
-                specie1->eachSymmetry([&](SpecificSpec *specie2) {
-                    if (specie2->atom(2) == neighbours1[0] && specie2->atom(1) == neighbours1[1])
-                    {
-                        SpecificSpec *targets[2] = { target, specie2 };
-                        create<ForwardIntermedMigrDfFormation>(targets);
-                    }
-                });
-            }
+            neighbourFrom(neighbours1, &Diamond::front_110_at, [&](Atom *neighbour1) {
+                if (neighbour1->is(#{other_role_ct}) && neighbours1[0]->hasBondWith(neighbour1) && neighbours1[1]->hasBondWith(neighbour1))
+                {
+                    BridgeCTs *specie1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
+                    specie1->eachSymmetry([&](SpecificSpec *specie2) {
+                        if (specie2->atom(2) == neighbours1[0] && specie2->atom(1) == neighbours1[1])
+                        {
+                            SpecificSpec *targets[2] = { target, specie2 };
+                            create<ForwardIntermedMigrDfFormation>(targets);
+                        }
+                    });
+                }
+            });
         }
     });
                 CODE
@@ -372,23 +373,24 @@ module VersatileDiamond
     eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
         {
-            Atom *neighbour1 = neighbourFrom(neighbours1, &Diamond::front_110_at);
-            if (neighbour1 && neighbour1->is(#{other_role_cb}) && neighbours1[0]->hasBondWith(neighbour1) && neighbours1[1]->hasBondWith(neighbour1))
-            {
-                neighbour1->eachAmorphNeighbour([&](Atom *amorph1) {
-                    if (amorph1->is(#{other_role_cm}))
-                    {
-                        MethylOnBridgeCMs *specie1 = amorph1->specByRole<MethylOnBridgeCMs>(#{other_role_cm});
-                        specie1->eachSymmetry([](SpecificSpec *specie2) {
-                            if (specie2->atom(2) == neighbours1[1] && specie2->atom(3) == neighbours1[0])
-                            {
-                                SpecificSpec *targets[2] = { target, specie2 };
-                                create<ForwardMethylIncorporation>(targets);
-                            }
-                        });
-                    }
-                });
-            }
+            neighbourFrom(neighbours1, &Diamond::front_110_at, [&](Atom *neighbour1) {
+                if (neighbour1->is(#{other_role_cb}) && neighbours1[0]->hasBondWith(neighbour1) && neighbours1[1]->hasBondWith(neighbour1))
+                {
+                    neighbour1->eachAmorphNeighbour([&](Atom *amorph1) {
+                        if (amorph1->is(#{other_role_cm}))
+                        {
+                            MethylOnBridgeCMs *specie1 = amorph1->specByRole<MethylOnBridgeCMs>(#{other_role_cm});
+                            specie1->eachSymmetry([](SpecificSpec *specie2) {
+                                if (specie2->atom(2) == neighbours1[1] && specie2->atom(3) == neighbours1[0])
+                                {
+                                    SpecificSpec *targets[2] = { target, specie2 };
+                                    create<ForwardMethylIncorporation>(targets);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
         }
     });
                 CODE
@@ -440,18 +442,19 @@ module VersatileDiamond
                 eachNeighbours<2>(anchors1, &Diamond::cross_100, [&](Atom **neighbours1) {
                     if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
                     {
-                        Atom *neighbour2 = neighbourFrom(neighbours1, &Diamond::front_110_at);
-                        if (neighbour2 && neighbour2->is(#{other_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
-                        {
-                            neighbour2->eachAmorphNeighbour([&](Atom *amorph1) {
-                                if (amorph1->is(#{other_role_cm}))
-                                {
-                                    MethylOnBridgeCMss *specie2 = amorph1->specByRole<MethylOnBridgeCMss>(#{other_role_cm});
-                                    SpecificSpec *targets[3] = { specie2, specie1, target };
-                                    create<ForwardMethylToGap>(targets);
-                                }
-                            });
-                        }
+                        neighbourFrom(neighbours1, &Diamond::front_110_at, [&](Atom *neighbour2) {
+                            if (neighbour2->is(#{other_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
+                            {
+                                neighbour2->eachAmorphNeighbour([&](Atom *amorph1) {
+                                    if (amorph1->is(#{other_role_cm}))
+                                    {
+                                        MethylOnBridgeCMss *specie2 = amorph1->specByRole<MethylOnBridgeCMss>(#{other_role_cm});
+                                        SpecificSpec *targets[3] = { specie2, specie1, target };
+                                        create<ForwardMethylToGap>(targets);
+                                    }
+                                });
+                            }
+                        });
                     }
                 });
             }
@@ -486,22 +489,23 @@ module VersatileDiamond
             eachNeighbours<2>(anchors1, &Diamond::cross_100, [&](Atom **neighbours1) {
                 if (neighbours1[0]->is(#{thrid_role_cr}) && neighbours1[1]->is(#{thrid_role_cr}))
                 {
-                    Atom *neighbour2 = neighbourFrom(neighbours1, &Diamond::front_110_at);
-                    if (neighbour2 && neighbour2->is(#{thrid_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
-                    {
-                        neighbour2->eachAmorphNeighbour([&](Atom *amorph1) {
-                            if (amorph1->is(#{thrid_role_cm}))
-                            {
-                                MethylOnBridgeCMss *specie2 = amorph1->specByRole<MethylOnBridgeCMss>(#{thrid_role_cm});
-                                specie2->eachSymmetry([](SpecificSpec *specie3) {
-                                if (specie3->atom(2) == neighbours1[1] && specie3->atom(3) == neighbours1[0])
+                    neighbourFrom(neighbours1, &Diamond::front_110_at, [&](Atom *neighbour2) {
+                        if (neighbour2->is(#{thrid_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
+                        {
+                            neighbour2->eachAmorphNeighbour([&](Atom *amorph1) {
+                                if (amorph1->is(#{thrid_role_cm}))
                                 {
-                                    SpecificSpec *targets[3] = { specie1, specie3, target };
-                                    create<ForwardTwoDimersForm>(targets);
+                                    MethylOnBridgeCMss *specie2 = amorph1->specByRole<MethylOnBridgeCMss>(#{thrid_role_cm});
+                                    specie2->eachSymmetry([](SpecificSpec *specie3) {
+                                    if (specie3->atom(2) == neighbours1[1] && specie3->atom(3) == neighbours1[0])
+                                    {
+                                        SpecificSpec *targets[3] = { specie1, specie3, target };
+                                        create<ForwardTwoDimersForm>(targets);
+                                    }
                                 }
-                            }
-                        });
-                    }
+                            });
+                        }
+                    });
                 }
             });
         }
@@ -525,22 +529,23 @@ module VersatileDiamond
             eachNeighbours<2>(anchors1, &Diamond::cross_100, [&](Atom **neighbours1) {
                 if (neighbours1[0]->is(#{thrid_role_cr}) && neighbours1[1]->is(#{thrid_role_cr}))
                 {
-                    Atom *neighbour2 = neighbourFrom(neighbours1, Diamond::front_110_at);
-                    if (neighbour2 && neighbour2->is(#{thrid_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
-                    {
-                        neighbour2->eachAmorphNeighbour([&](Atom *amorph1) {
-                            if (amorph1->is(#{thrid_role_cm}))
-                            {
-                                MethylOnBridgeCMss *specie2 = amorph1->specByRole<MethylOnBridgeCMss>(#{thrid_role_cm});
-                                specie2->eachSymmetry([](SpecificSpec *specie3) {
-                                if (specie3->atom(2) == neighbours1[1] && specie3->atom(3) == neighbours1[0])
+                    neighbourFrom(neighbours1, Diamond::front_110_at, [&](Atom *neighbour2) {
+                        if (neighbour2->is(#{thrid_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
+                        {
+                            neighbour2->eachAmorphNeighbour([&](Atom *amorph1) {
+                                if (amorph1->is(#{thrid_role_cm}))
                                 {
-                                    SpecificSpec *targets[3] = { target, specie3, specie1 };
-                                    create<ForwardTwoDimersForm>(targets);
+                                    MethylOnBridgeCMss *specie2 = amorph1->specByRole<MethylOnBridgeCMss>(#{thrid_role_cm});
+                                    specie2->eachSymmetry([](SpecificSpec *specie3) {
+                                    if (specie3->atom(2) == neighbours1[1] && specie3->atom(3) == neighbours1[0])
+                                    {
+                                        SpecificSpec *targets[3] = { target, specie3, specie1 };
+                                        create<ForwardTwoDimersForm>(targets);
+                                    }
                                 }
-                            }
-                        });
-                    }
+                            });
+                        }
+                    });
                 }
             });
         }

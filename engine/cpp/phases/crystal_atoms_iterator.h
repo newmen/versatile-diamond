@@ -22,6 +22,9 @@ protected:
     static Atom *neighbourFrom(Atom **anchors, const RL &atRelationMethod);
 
     template <class RL, class AL>
+    static void neighbourFrom(Atom **anchors, const RL &atRelationMethod, const AL &actionLambda);
+
+    template <class RL, class AL>
     static void eachNeighbour(Atom *anchor, const RL &relationsMethod, const AL &actionLambda);
 
     template <ushort ATOMS_NUM, class RL, class AL>
@@ -53,6 +56,17 @@ Atom *CrystalAtomsIterator<C>::neighbourFrom(Atom **anchors, const RL &atRelatio
 
     int3 coords = (*atRelationMethod)(anchors);
     return crystal->atom(coords);
+}
+
+template <class C>
+template <class RL, class AL>
+void CrystalAtomsIterator<C>::neighbourFrom(Atom **anchors, const RL &atRelationMethod, const AL &actionLambda)
+{
+    Atom *atom = neighbourFrom(anchors, atRelationMethod);
+    if (atom)
+    {
+        actionLambda(atom);
+    }
 }
 
 template <class C>
