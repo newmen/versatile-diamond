@@ -8,6 +8,8 @@ module VersatileDiamond
         class BaseBackbone
           extend Forwardable
 
+          def_delegator :grouped_nodes_graph, :big_graph
+
           # Initializes backbone by grouped nodes graph
           # @param [Hash] group
           def initialize(grouped_nodes_graph)

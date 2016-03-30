@@ -9,9 +9,11 @@ module VersatileDiamond
           include Modules::ListsComparer
 
           # @param [Units::Expressions::VarsDictionary] dict
+          # @param [Hash] nodes_graph
           # @param [Array] ordered_backbone
-          def initialize(dict, ordered_backbone)
+          def initialize(dict, nodes_graph, ordered_backbone)
             @dict = dict
+            @nodes_graph = nodes_graph
             @backbone_graph = Hash[ordered_backbone]
 
             @_key_nodes_lists, @_side_nodes_lists = nil
@@ -65,7 +67,7 @@ module VersatileDiamond
           # @param [Nodes::BaseNode] b
           # @return [Concepts::Bond]
           def relation_between(a, b)
-            to_b = relations_of([a]).first.find { |nodes, _| nodes.include?(b) }
+            to_b = bone_relations_of([a]).first.find { |node, _| node == b }
             to_b && to_b.last
           end
 
@@ -81,7 +83,7 @@ module VersatileDiamond
             if nodes.empty?
               raise ArgumentError, 'Empty nodes list passed'
             elsif !nodes.one?
-              rels_lists = relations_of(nodes)
+              rels_lists = bone_relations_of(nodes)
               !rels_lists.any?(&:empty?) && same_relations?(rels_lists) &&
                 same_side_props?(rels_lists) && same_side_species?(rels_lists)
             else
@@ -103,7 +105,7 @@ module VersatileDiamond
 
         private
 
-          attr_reader :backbone_graph
+          attr_reader :nodes_graph, :backbone_graph
 
           # @return [Array]
           def uniq_nodes
@@ -119,6 +121,14 @@ module VersatileDiamond
           def side_nodes_lists
             @_side_nodes_lists ||=
               backbone_graph.values.flat_map { |rels| rels.map(&:first) }
+          end
+
+          # @param [Array] nodes
+          # @return [Array]
+          def bone_relations_of(nodes)
+            nodes.map do |node|
+              nodes_graph[node].select { |n, _| major_relation?(node, n) }
+            end
           end
 
           # @param [Symbol] method_name
@@ -146,12 +156,10 @@ module VersatileDiamond
           # @param [Array] nodes
           # @yield [Nodes::BaseNode, Concepts::Bond] iterates each relation of nodes
           def each_defined_relation(nodes, &block)
-            rels = relations_of(nodes).reduce(:+)
+            rels = bone_relations_of(nodes).reduce(:+)
             backbone_graph[nodes].each do |ns, _|
-              rels.each do |ans_set, r|
-                if @dict.var_of(ans_set.first.atom) && ans_set <= ns.to_set
-                  ans_set.each { |n| block[n, r] }
-                end
+              rels.each do |n, r|
+                block[n, r] if @dict.var_of(n.atom) && ns.include?(n)
               end
             end
           end
@@ -200,16 +208,14 @@ module VersatileDiamond
           # @return [Array] rels_lists
           # @return [Boolean]
           def same_side_props?(rels_lists)
-            same_rels_when?(rels_lists) do |rels|
-              rels.map(&:first).map(&:first).map(&:properties)
-            end
+            same_rels_when?(rels_lists) { |rels| rels.map(&:first).map(&:properties) }
           end
 
           # @return [Array] rels_lists
           # @return [Boolean]
           def same_side_species?(rels_lists)
             same_rels_when?(rels_lists) do |rels|
-              rels.map(&:first).map(&:first).map(&:uniq_specie).map(&:original)
+              rels.map(&:first).map(&:uniq_specie).map(&:original)
             end
           end
 
@@ -230,6 +236,15 @@ module VersatileDiamond
               ab_relation == ba_relation
             else
               false
+            end
+          end
+
+          # @param [Nodes::BaseNode] a
+          # @param [Nodes::BaseNode] b
+          # @return [Boolean]
+          def major_relation?(a, b)
+            backbone_graph.any? do |nodes, rels|
+              nodes.include?(a) && rels.any? { |ns, _| ns.include?(b) }
             end
           end
         end

@@ -13,6 +13,7 @@ module VersatileDiamond
             end
 
             shared_examples_for :check_finite_graph do
+              it { expect(backbone.big_graph).to be_a(Hash) }
               it 'translate to atomic graph and check' do
                 atomic_graph = translate_to_atomic_graph(backbone.final_graph)
                 expect(atomic_graph).to match_graph(final_graph)

@@ -6,7 +6,7 @@ module VersatileDiamond
       module Algorithm::Units
 
         describe SpecieContext, type: :algorithm do
-          subject { described_class.new(dict, original_specie, ordered_graph) }
+          subject { described_class.new(dict, backbone.big_graph, ordered_graph) }
 
           shared_examples_for :empty_existed_relations do
             describe 'key nodes are not related' do
@@ -184,8 +184,8 @@ module VersatileDiamond
             end
 
             describe 'bond' do
-              include_context :intermed_context
-              let(:nbr_node) { (backbone.entry_nodes - entry_nodes).first.first }
+              include_context :alt_intermed_context
+              let(:nbr_node) { (backbone.entry_nodes - [entry_nodes]).first.first }
               it { expect(relation).to eq(free_bond) }
             end
 
@@ -223,11 +223,11 @@ module VersatileDiamond
               it { expect(subject.symmetric_relations?(entry_nodes)).to be_falsey }
             end
 
-            describe 'two nodes to one amorph' do
+            describe 'two nodes to one amorph (not symmetric by backbone)' do
               include_context :two_mobs_context
               before { dict.make_atom_s(cm) }
               let(:nodes) { subject.reachable_nodes_with(uniq_parents) }
-              it { expect(subject.symmetric_relations?(nodes)).to be_truthy }
+              it { expect(subject.symmetric_relations?(nodes)).to be_falsey }
             end
           end
 

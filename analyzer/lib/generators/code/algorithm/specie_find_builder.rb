@@ -10,7 +10,6 @@ module VersatileDiamond
           # @param [EngineCode] generator the major engine code generator
           # @param [Specie] specie the target specie code generator
           def initialize(generator, specie)
-            @specie = specie
             @backbone = SpecieBackbone.new(generator, specie)
             @dict = Units::Expressions::VarsDictionary.new
 
@@ -29,7 +28,7 @@ module VersatileDiamond
           # @param [Array] ordered_graph
           # @return [Units::SpecieContext]
           def specie_context(ordered_graph)
-            Units::SpecieContext.new(@dict, @specie, ordered_graph)
+            Units::SpecieContext.new(@dict, backbone.big_graph, ordered_graph)
           end
 
           # @param [Array] ordered_graph

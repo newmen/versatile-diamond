@@ -8,22 +8,41 @@ module VersatileDiamond
           include Modules::GraphDupper
 
           # @param [Units::Expressions::VarsDictionary] dict
-          # @param [Specie] specie
+          # @param [Hash] nodes_graph
           # @param [Array] ordered_backbone
-          def initialize(dict, specie, ordered_backbone)
-            super(dict, ordered_backbone)
-            @specie = specie
-
+          def initialize(dict, nodes_graph, ordered_backbone)
+            super
+            @_converted_nodes_graph = nil
             @_converted_backbone_graph = nil
-            @_atoms_to_nodes = nil
           end
 
         private
 
           # @return [Hash]
           # @override
+          def nodes_graph
+            @_converted_nodes_graph ||=
+              super.each_with_object({}) do |(node, rels), acc|
+                changed_rels = replace_rels(rels)
+                replace_scopes([node]).each do |n|
+                  acc[n] ||= []
+                  acc[n] += changed_rels
+                end
+              end
+          end
+
+          # @return [Hash]
+          # @override
           def backbone_graph
             @_converted_backbone_graph ||= dup_graph(super, &method(:replace_scopes))
+          end
+
+          # @param [Array] rels
+          # @return [Array]
+          def replace_rels(rels)
+            rels.each_with_object([]) do |(node, rel), acc|
+              replace_scopes([node]).each { |n| acc << [n, rel] }
+            end
           end
 
           # @param [Array] nodes
@@ -32,46 +51,6 @@ module VersatileDiamond
             nodes.reduce([]) do |acc, node|
               node.scope? ? (acc + node.split) : (acc << node)
             end
-          end
-
-          # @param [Array] nodes
-          # @return [Array]
-          def relations_of(nodes)
-            relations_in_specie_of(nodes).map(&method(:major_relations))
-          end
-
-          # @param [Array] nodes
-          # @return [Array]
-          def relations_in_specie_of(nodes)
-            spec_graph = @specie.spec.clean_links
-            nodes.map { |node| spec_graph[node.atom] }
-          end
-
-          # @param [Array] rels
-          # @return [Array]
-          def major_relations(rels)
-            rels.each_with_object([]) do |(a, r), acc|
-              nodes = atoms_to_nodes[a]
-              acc << [nodes, r] if nodes
-            end
-          end
-
-          # @return [Hash]
-          def atoms_to_nodes
-            @_atoms_to_nodes ||=
-              backbone_graph.each_with_object({}) do |(nodes, rels), acc|
-                ans = ans_from(nodes) + rels.flat_map { |ns, _| ans_from(ns) }
-                ans.each do |atom, node|
-                  acc[atom] ||= Set.new
-                  acc[atom].add(node)
-                end
-              end
-          end
-
-          # @param [Array] nodes
-          # @return [Array]
-          def ans_from(nodes)
-            nodes.map { |node| [node.atom, node] }
           end
         end
 
