@@ -27,6 +27,19 @@ module VersatileDiamond
             end
           end
 
+          describe '#bone_nodes' do
+            describe 'just one node' do
+              include_context :rab_context
+              it { expect(subject.bone_nodes).to eq(unit_nodes) }
+            end
+
+            describe 'three nodes' do
+              include_context :alt_two_mobs_context
+              let(:all_nodes) { entry_nodes.first.split + unit_nodes }
+              it { expect(subject.bone_nodes).to match_array(all_nodes) }
+            end
+          end
+
           describe '#atoms_nodes' do
             describe 'without scope species' do
               include_context :rab_context

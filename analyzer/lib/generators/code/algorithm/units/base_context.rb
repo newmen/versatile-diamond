@@ -22,6 +22,11 @@ module VersatileDiamond
             @_uniq_nodes = nil
           end
 
+          # @return [Array]
+          def bone_nodes
+            @_uniq_nodes ||= (backbone_graph.keys + side_nodes_lists).flatten.uniq
+          end
+
           # @param [Array] atoms
           # @return [Array]
           def atoms_nodes(atoms)
@@ -134,11 +139,6 @@ module VersatileDiamond
           # @return [Boolean]
           def defined?(node)
             @dict.var_of(node.atom) || @dict.var_of(node.uniq_specie)
-          end
-
-          # @return [Array]
-          def bone_nodes
-            @_uniq_nodes ||= (backbone_graph.keys + side_nodes_lists).flatten.uniq
           end
 
           # @return [Array]
