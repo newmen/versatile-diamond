@@ -19,7 +19,7 @@ module VersatileDiamond
                 # Gets the atom which was passed
                 # @param [Atom] atom which will be returned
                 # @return [Atom] the passed atom
-                define_method(method_name) { |atom| atom }
+                define_method(method_name, &:itself)
               end
             end
           end

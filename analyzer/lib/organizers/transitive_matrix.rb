@@ -70,7 +70,7 @@ module VersatileDiamond
         return @_source_props if @_source_props
         columns_idx_enum = @matrix.column_vectors.map(&:to_a).map.with_index
         @_source_props = columns_idx_enum.each_with_object(Set.new) do |(col, i), acc|
-          children_num = col.select { |t| t }.size
+          children_num = col.select(&:itself).size
           prop = @prop_vector[i]
           if children_num == 1 && (prop.incoherent? || prop.dangling_hydrogens_num > 0)
             acc << prop

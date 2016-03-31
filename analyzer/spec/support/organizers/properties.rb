@@ -54,7 +54,7 @@ module VersatileDiamond
         # @param [String] str which will be parsed
         # @return [Hash] the hash of atom properties
         def convert_str_prop(str)
-          chars = str.scan(/./).group_by { |c| c }.map { |c, cs| [c, cs.size] }
+          chars = str.scan(/./).group_by(&:itself).map { |c, cs| [c, cs.size] }
           chars.each_with_object({}) do |(c, num), acc|
             key, value = convert_char_prop(c)
             acc[key] ||= []
