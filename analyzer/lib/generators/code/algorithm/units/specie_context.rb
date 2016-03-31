@@ -26,7 +26,7 @@ module VersatileDiamond
                 changed_rels = replace_rels(rels)
                 replace_scopes([node]).each do |n|
                   acc[n] ||= []
-                  acc[n] += changed_rels
+                  acc[n] = (acc[n] + changed_rels).uniq
                 end
               end
           end

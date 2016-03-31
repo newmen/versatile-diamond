@@ -160,6 +160,7 @@ module VersatileDiamond
             end
           end
 
+          # Gets all existed relations over full big graph of context
           # @param [Array] nodes
           # @return [Array]
           def existed_relations_with(nodes)

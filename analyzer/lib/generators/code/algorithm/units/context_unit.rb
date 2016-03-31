@@ -73,7 +73,7 @@ module VersatileDiamond
           end
 
           # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
+          # @return [Expressions::NotEqualsCondition]
           def check_private_relations(&block)
             Expressions::NotEqualsCondition[zip_private_related_exprs, block.call]
           end
@@ -133,7 +133,7 @@ module VersatileDiamond
           end
 
           # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
+          # @return [Expressions::OrCondition]
           # TODO: just specie
           def check_that_context_specie_not_found(&block)
             checks = unit.atom_with_specie_calls(:not_found, atoms)
@@ -291,25 +291,24 @@ module VersatileDiamond
             if all_defined?(nbr.atoms) && relations_between(self, nbr).all?(&:bond?)
               check_bonds_to_defined_neighbour(nbr, &block)
             else
-              check_each_relation(nbr, &block)
+              iterate_relations(nbr, &block)
             end
           end
 
           # @param [ContextUnit] nbr
           # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
+          # @return [Expressions::AndCondition]
           def check_bonds_to_defined_neighbour(nbr, &block)
-            vps = zip_nodes_of(self, nbr).map { |pair| vars_for(pair.map(&:atom)) }
-            exprs = vps.map { |a, b| a.has_bond_with(b) }
-            Expressions::AndCondition[exprs, block.call]
+            pairs = zip_nodes_of(self, nbr).map { |pair| pair.map(&:atom) }
+            check_bonds_condition(pairs, &block)
           end
 
-          # @param [ContextUnit] nbr
+          # @param [Array] pairs
           # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          def check_each_relation(nbr, &block)
-            iterate_relations(nbr) do
-            end
+          # @return [Expressions::AndCondition]
+          def check_bonds_condition(pairs, &block)
+            exprs = pairs.map(&method(:vars_for)).map { |a, b| a.has_bond_with(b) }
+            Expressions::AndCondition[exprs, block.call]
           end
 
           # @param [ContextUnit] nbr
@@ -317,7 +316,11 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           def iterate_relations(nbr, &block)
             unit.check_amorph_bonds_if_have(nbr.unit) do
-              iterate_crystal_relations(nbr, &block)
+              iterate_crystal_relations(nbr) do
+                check_private_relations do
+                  check_existed_relations(nbr, &block)
+                end
+              end
             end
           end
 
@@ -344,6 +347,33 @@ module VersatileDiamond
               self_var.iterate_over_lattice(*args)
             else
               raise ArgumentError, 'Incorrect relations configuration between nodes'
+            end
+          end
+
+          # @param [ContextUnit] nbr
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_existed_relations(nbr, &block)
+            pairs = nodes_with_existed_relations(nbr)
+            if pairs.empty?
+              block.call
+            else
+              nbr.check_atoms_roles(pairs.map(&:last).map(&:atom)) do
+                check_bond_between(pairs + neighbour_nodes_pairs(nbr), &block)
+              end
+            end
+          end
+
+          # @param [Array] pairs
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_bond_between(pairs, &block)
+            checkable_pairs = pairs.select { |pair| checkable_bond_between?(*pair) }
+            if checkable_pairs.empty?
+              block.call
+            else
+              atoms_pairs = checkable_pairs.map { |pair| pair.map(&:atom) }
+              check_bonds_condition(atoms_pairs)
             end
           end
 
@@ -483,6 +513,25 @@ module VersatileDiamond
             end
           end
 
+          # @param [ContextUnit] nbr
+          # @return [Array]
+          def neighbour_nodes_pairs(nbr)
+            nbr.unit.nodes.combination(2).select do |a, b|
+              relation = @context.relation_between(a, b)
+              relation && relation.exist?
+            end
+          end
+
+          # Gets all existed relations over backbone graph of context
+          # The first element of each item is pair of [from, to] nodes
+          #
+          # @param [ContextUnit] nbr
+          # @return [Array]
+          def nodes_with_existed_relations(nbr)
+            ns_with_rs = zip_nodes_of(self, nbr).zip(relations_between(self, nbr))
+            ns_with_rs.select { |_, r| r.exist? }.map(&:first)
+          end
+
           # @param [ContextUnit] a
           # @param [ContextUnit] b
           # @return [Array]
@@ -576,6 +625,15 @@ module VersatileDiamond
           # @return [Boolean]
           def atoms_comparison_required?(checking_nodes)
             symmetric? || @context.related_from_other_defined(checking_nodes)
+          end
+
+          # @param [Nodes::BaseNode] a
+          # @param [Nodes::BaseNode] b
+          # @return [Boolean]
+          def checkable_bond_between(a, b)
+            relation = @context.relation_between(a, b)
+            relation.bond? && (relation != Concepts::Bond.amorph ||
+              ![a, b].map(&:uniq_specie).uniq.one?)
           end
         end
 
