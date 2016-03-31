@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm::Units
@@ -23,13 +25,13 @@ module VersatileDiamond
           # @param [Array] atoms
           # @return [Array]
           def atoms_nodes(atoms)
-            uniq_nodes.select { |node| atoms.include?(node.atom) }
+            bone_nodes.select { |node| atoms.include?(node.atom) }
           end
 
           # @param [Array] species
           # @return [Array]
           def species_nodes(species)
-            uniq_nodes.select { |node| species.include?(node.uniq_specie) }
+            bone_nodes.select { |node| species.include?(node.uniq_specie) }
           end
 
           # @param [Array] species
@@ -61,6 +63,21 @@ module VersatileDiamond
           # @return [Array]
           def not_existed_relations_to(nodes)
             filter_relations_to(nodes) { |rel| !rel.exist? }
+          end
+
+          # @param [Array] nodes
+          # @return [Array]
+          def private_relations_with(nodes)
+            unified_nodes = unify_by_atom(nodes)
+            existed_relations_with(unified_nodes).flat_map do |node, rels|
+              sames = rels.groups { |_, r| r.params }.map { |g| g.map(&:first) }
+              manies = sames.map(&method(:unify_by_atom)).reject(&:one?)
+              majors = manies.select { |ns| any_major_with?(node, ns) }
+              defined = majors.select { |ns| ns.all?(&method(:defined?)) }
+              sides = defined.select { |ns| ns.any?(&method(:bone?)) }
+              likes = sides.select(&method(:similar_properties?))
+              likes.flat_map { |ns| ns.combination(2).to_a }
+            end
           end
 
           # @param [Nodes::BaseNode] a
@@ -107,8 +124,20 @@ module VersatileDiamond
 
           attr_reader :nodes_graph, :backbone_graph
 
+          # @param [Nodes::BaseNode] node
+          # @return [Boolean]
+          def bone?(node)
+            bone_nodes.include?(node)
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @return [Boolean]
+          def defined?(node)
+            @dict.var_of(node.atom) || @dict.var_of(node.uniq_specie)
+          end
+
           # @return [Array]
-          def uniq_nodes
+          def bone_nodes
             @_uniq_nodes ||= (backbone_graph.keys + side_nodes_lists).flatten.uniq
           end
 
@@ -129,6 +158,29 @@ module VersatileDiamond
             nodes.map do |node|
               nodes_graph[node].select { |n, _| major_relation?(node, n) }
             end
+          end
+
+          # @param [Array] nodes
+          # @return [Array]
+          def existed_relations_with(nodes)
+            nodes.map do |node|
+              [node, nodes_graph[node].select { |_, r| r.exist? }]
+            end
+          end
+
+          # Gets nodes unified by atom, but if there are nodes with similar atom then
+          # the node with defined uniq specie will be selected from
+          #
+          # @param [Array] nodes
+          # @return [Array]
+          def unify_by_atom(nodes)
+            groups = nodes.groups(&:atom)
+            singulars = groups.select(&:one?)
+            (singulars.empty? ? [] : singulars.reduce(:+)) +
+              groups.reject(&:one?).map do |ns|
+                defined = ns.select { |node| @dict.var_of(node.uniq_specie) }
+                defined.empty? ? ns.first : defined.first
+              end
           end
 
           # @param [Symbol] method_name
@@ -232,6 +284,21 @@ module VersatileDiamond
           def major_relation?(a, b)
             backbone_graph.any? do |nodes, rels|
               nodes.include?(a) && rels.any? { |ns, _| ns.include?(b) }
+            end
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @return [Array] nodes
+          # @return [Boolean]
+          def any_major_with?(node, nodes)
+            nodes.any? { |n| major_relation?(node, n) }
+          end
+
+          # @return [Array] nodes
+          # @return [Boolean]
+          def similar_properties?(nodes)
+            nodes.each_cons(2).all? do |a, b|
+              a.atom != b.atom && a.properties.like?(b.properties)
             end
           end
         end

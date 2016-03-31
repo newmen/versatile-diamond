@@ -75,6 +75,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_private_relations(&block)
+            Expressions::NotEqualsCondition[zip_private_related_exprs, block.call]
           end
 
           # @yield incorporating statement
@@ -380,6 +381,13 @@ module VersatileDiamond
           def zip_vars_with_previos(atoms)
             atoms.select(&dict.public_method(:prev_var_of)).map do |atom|
               [dict.var_of(atom), dict.prev_var_of(atom)]
+            end
+          end
+
+          # @return [Array]
+          def zip_private_related_exprs
+            @context.private_relations_with(unit.nodes).map do |pair|
+              pair.map(&method(:atom_var_or_specie_call))
             end
           end
 

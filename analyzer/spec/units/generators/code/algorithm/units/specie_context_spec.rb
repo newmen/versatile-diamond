@@ -170,6 +170,34 @@ module VersatileDiamond
             end
           end
 
+          describe '#private_relations_with' do
+            before do
+              specie_type = Expressions::ParentSpecieType[]
+              dict.make_specie_s(unit_nodes.map(&:uniq_specie), type: specie_type)
+            end
+            let(:pairs) { subject.private_relations_with(unit_nodes) }
+
+            describe 'no major relation (just context positions)' do
+              include_context :tree_bridges_context
+              it { expect(pairs).to be_empty }
+            end
+
+            describe 'no major relation (has context bond)' do
+              include_context :bwd_context
+              it { expect(pairs).to be_empty }
+            end
+
+            describe 'there is major relation' do
+              include_context :bridged_bwd_context
+              before { dict.make_specie_s(node_cl.uniq_specie) }
+              let(:node_cl) do
+                ordered_graph.find { |_, rels| !rels.empty? }.last.first.first.first
+              end
+              let(:atoms) { pairs.flat_map { |ns| ns.map(&:atom) } }
+              it { expect(atoms).to match_array([ct, cl]) }
+            end
+          end
+
           describe '#relation_between' do
             let(:relation) { subject.relation_between(unit_nodes.first, nbr_node) }
 

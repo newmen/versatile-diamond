@@ -314,6 +314,17 @@ module VersatileDiamond
               end
             end
 
+            it_behaves_like :check_ordered_graph do
+              subject { dept_bridge_with_dimer_base }
+              let(:base_specs) { [dept_bridge_base, subject] }
+              let(:ordered_graph) do
+                [
+                  [[cr], [[[cl], param_100_front]]],
+                  [[ct], []]
+                ]
+              end
+            end
+
             describe 'under up migration through 111 face' do
               subject { dept_lower_methyl_on_half_extended_bridge_base }
 

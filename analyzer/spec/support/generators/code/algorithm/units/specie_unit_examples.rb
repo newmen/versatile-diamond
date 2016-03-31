@@ -91,7 +91,7 @@ module VersatileDiamond
               end
               let(:typical_reactions) { [dept_intermed_migr_dc_drop] }
 
-              let(:entry_nodes) do
+              let(:entry_nodes) do # override
                 backbone.entry_nodes.reject { |ns| ns.first.atom.lattice }.first
               end
               let(:dept_uniq_specie) { dept_intermed_migr_down_common_base }
@@ -116,6 +116,27 @@ module VersatileDiamond
               let(:typical_reactions) { [dept_intermed_migr_dh_drop] }
               let(:unit_nodes) { ordered_graph.last.last.first.first }
               let(:dept_uniq_specie) { dept_intermed_migr_down_half_base }
+            end
+
+            shared_context :tree_bridges_context do
+              include_context :specie_unit_context
+              let(:base_specs) { [dept_bridge_base, dept_uniq_specie] }
+              let(:dept_uniq_specie) { dept_three_bridges_base }
+              let(:unit_nodes) { backbone.entry_nodes.first.first.split } # override
+            end
+
+            shared_context :bridged_bwd_context do
+              include_context :specie_unit_context
+              let(:base_specs) { [dept_bridge_base, dept_uniq_specie] }
+              let(:dept_uniq_specie) { dept_bridge_with_dimer_base }
+              let(:unit_nodes) { backbone.entry_nodes.first.first.split } # override
+            end
+
+            shared_context :bwd_context do
+              include_context :bridged_bwd_context
+              let(:base_specs) do
+                [dept_bridge_base, dept_dimer_base, dept_uniq_specie]
+              end
             end
           end
 
