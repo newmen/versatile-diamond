@@ -229,19 +229,6 @@ module VersatileDiamond
           # @param [Nodes::BaseNode] a
           # @param [Nodes::BaseNode] b
           # @return [Boolean]
-          def symmetric_relation_between?(a, b)
-            ab_relation = relation_between(a, b)
-            if ab_relation
-              ba_relation = b.lattice.opposite_relation(a.lattice, ab_relation)
-              ab_relation == ba_relation
-            else
-              false
-            end
-          end
-
-          # @param [Nodes::BaseNode] a
-          # @param [Nodes::BaseNode] b
-          # @return [Boolean]
           def major_relation?(a, b)
             backbone_graph.any? do |nodes, rels|
               nodes.include?(a) && rels.any? { |ns, _| ns.include?(b) }
