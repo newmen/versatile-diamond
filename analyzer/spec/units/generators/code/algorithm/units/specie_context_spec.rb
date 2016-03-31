@@ -199,10 +199,16 @@ module VersatileDiamond
           describe '#symmetric_close_nodes' do
             let(:nodes) { subject.symmetric_close_nodes([node_specie]).flatten }
 
-            describe 'just one node' do
+            describe 'just one node with undefined atom' do
               include_context :rab_context
               it { expect(nodes.map(&:uniq_specie)).to eq([node_specie]) }
               it { expect(nodes.map(&:atom)).to eq([cr]) }
+            end
+
+            describe 'just one node with defined atom' do
+              include_context :rab_context
+              before { dict.make_atom_s(cr) }
+              it { expect(nodes).to be_empty }
             end
 
             describe 'just self nodes' do

@@ -196,7 +196,7 @@ module VersatileDiamond
           def undefined_symmetric_atoms?(nodes)
             atoms_lists = nodes.map(&:symmetric_atoms)
             !atoms_lists.any?(&:empty?) &&
-              atoms_lists.all? { |atoms| !atoms.any?(&@dict.public_method(:var_of)) }
+              !atoms_lists.any? { |atoms| atoms.any?(&@dict.public_method(:var_of)) }
           end
 
           # @param [Array] rels_lists
