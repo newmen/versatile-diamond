@@ -72,6 +72,22 @@ module VersatileDiamond
             it { expect(node_ab.relations_limits).to eq(node_aib.relations_limits) }
           end
 
+          describe 'equality' do
+            let(:same_ab) do
+              described_class.new(generator, node_ab.uniq_specie, node_ab.atom)
+            end
+
+            describe '#==' do
+              it { expect(node_ab == same_ab).to be_truthy }
+              it { expect(node_ab == node_aib).to be_falsey }
+            end
+
+            describe '#hash' do
+              it { expect(node_ab.hash).to eq(same_ab.hash) }
+              it { expect(node_ab.hash).not_to eq(node_aib.hash) }
+            end
+          end
+
           describe '#<=>' do
             it { expect(node_aib <=> node_ab).to eq(-1) }
             it { expect(node_ab <=> node_aib).to eq(1) }

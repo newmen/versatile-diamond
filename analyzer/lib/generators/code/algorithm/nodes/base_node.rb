@@ -28,6 +28,20 @@ module VersatileDiamond
             @_atom_properties, @_sub_properties, @_symmetric_atoms = nil
           end
 
+          # Calculates the hash of node
+          # @return [Integer]
+          def hash
+            (uniq_specie.hash << 16) ^ atom.hash
+          end
+
+          # Compares current node with another node
+          # @param [BaseNode] other comparing node
+          # @return [Boolean] are equal or not
+          def ==(other)
+            uniq_specie == other.uniq_specie && atom == other.atom
+          end
+          alias :eql? :==
+
           # Compares current node with another node
           # @param [BaseNode] other comparing node
           # @return [Integer] the comparing result

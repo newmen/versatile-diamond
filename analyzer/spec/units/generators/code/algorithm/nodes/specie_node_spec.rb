@@ -98,6 +98,22 @@ module VersatileDiamond
             it { expect(node_cc.relations_limits).not_to eq(node_cm.relations_limits) }
           end
 
+          describe 'equality' do
+            let(:same_cb) do
+              described_class.new(generator, code_mob, node_cb.uniq_specie, cb)
+            end
+
+            describe '#==' do
+              it { expect(node_cb == same_cb).to be_truthy }
+              it { expect(node_cb == node_cm).to be_falsey }
+            end
+
+            describe '#hash' do
+              it { expect(node_cb.hash).to eq(same_cb.hash) }
+              it { expect(node_cb.hash).not_to eq(node_cm.hash) }
+            end
+          end
+
           describe '#<=>' do
             it { expect(node_cm <=> node_cb).to eq(1) }
             it { expect(node_cb <=> node_cm).to eq(-1) }
