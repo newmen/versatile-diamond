@@ -27,6 +27,12 @@ module VersatileDiamond
             end
           end
 
+          # @param [ScalarType] other
+          # @return [Boolean]
+          def ==(other)
+            code == other.code
+          end
+
           # Checks that current statement is expression
           # @return [Boolean] false
           # @override

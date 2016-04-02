@@ -16,6 +16,7 @@ module VersatileDiamond
           # TODO: copy paste atom definition from ManyUnits
           def define!
             parent = species.first
+            # TODO: it is possible that need to use unifier by atom
             if parent.none? || parent.actual.spec.complex?
               anchor = atoms.first
               kwargs = { name: Code::Specie::ANCHOR_ATOM_NAME, next_name: false }

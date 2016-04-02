@@ -46,7 +46,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def redefine_parent_species_as_array(&block)
-            if same_arr?(@parent_species)
+            if same_arr?(@parent_species, type: abst_specie_type)
               block.call
             else
               remake_parent_species_as_array.define_var + block.call
@@ -93,12 +93,11 @@ module VersatileDiamond
 
           # @return [Expressions::Core::Collection]
           def remake_parent_species_as_array
-            type = Expressions::ParentSpecieType[]
             values = vars_for(@parent_species)
             kwargs = {
               name: Code::Specie::ANCHOR_SPECIE_NAME,
               next_name: false,
-              type: type,
+              type: abst_specie_type,
               value: values
             }
             dict.make_specie_s(@parent_species, **kwargs)
@@ -111,14 +110,26 @@ module VersatileDiamond
           end
 
           # @param [Array] instances
+          # @option [Expressions::Core::ScalarType] :type
           # @return [Boolean]
-          def same_arr?(instances)
+          def same_arr?(instances, type: nil)
             if instances.one?
               true
             else
               arr = dict.var_of(instances)
-              arr && arr.items.map(&:instance) == instances # same order
+              if arr && type && arr.type != type.ptr
+                false
+              else
+                arr && arr.items.map(&:instance) == instances # same order
+              end
             end
+          end
+
+          # @return [Expressions::Core::ObjectType]
+          # TODO: specie specific
+          # TODO: copypasted from base unit
+          def abst_specie_type
+            Expressions::ParentSpecieType[].freeze
           end
         end
 

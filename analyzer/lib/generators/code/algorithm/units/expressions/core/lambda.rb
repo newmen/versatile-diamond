@@ -65,7 +65,7 @@ module VersatileDiamond
             elsif lists_are_identical?(vars, @defined_vars, &:==)
               OpRef[]
             else
-              OpSequence[*vars.map(&OpRef.public_method(:[]))]
+              OpSequence[*vars.sort_by(&:code).map(&OpRef.public_method(:[]))]
             end
           end
         end

@@ -148,10 +148,10 @@ module VersatileDiamond
     {
         if (!atom1->hasRole(VINYL_ON_BRIDGE, #{role_cb}))
         {
-            atom1->eachAmorphNeighbour([&](Atom *amorph1) {
+            atom1->eachAmorphNeighbour([&parent](Atom *amorph1) {
                 if (amorph1->is(#{role_c1}))
                 {
-                    amorph1->eachAmorphNeighbour([&](Atom *amorph2) {
+                    amorph1->eachAmorphNeighbour([&amorph1, &parent](Atom *amorph2) {
                         if (amorph2->is(#{role_c2}))
                         {
                             Atom *additionalAtoms[2] = { amorph1, amorph2 };
@@ -253,7 +253,7 @@ module VersatileDiamond
             atoms1[0]->eachAmorphNeighbour([&](Atom *amorph1) {
                 if (amorph1->is(#{role_c1}))
                 {
-                    atoms1[1]->eachAmorphNeighbour([&](Atom *amorph2) {
+                    atoms1[1]->eachAmorphNeighbour([&amorph1, &parent](Atom *amorph2) {
                         if (amorph2->is(#{role_c2}))
                         {
                             Atom *additionalAtoms[2] = { amorph1, amorph2 };
@@ -312,10 +312,10 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(CROSS_BRIDGE_ON_BRIDGES, #{role_cm}))
         {
-            anchor->eachSpecsPortionByRole<MethylOnBridge>(#{mob_cm}, 2, [&](MethylOnBridge **species1) {
-                Atom *atoms[2] = { species1[0]->atom(1), species1[1]->atom(1) };
-                eachNeighbour(atoms[0], &Diamond::cross_100, [&](Atom *neighbour1) {
-                    if (atoms[1] == neighbour1)
+            anchor->eachSpecsPortionByRole<MethylOnBridge>(#{mob_cm}, 2, [](MethylOnBridge **species1) {
+                Atom *atoms1[2] = { species1[0]->atom(1), species1[1]->atom(1) };
+                eachNeighbour(atoms1[0], &Diamond::cross_100, [&atoms1, &species1](Atom *neighbour1) {
+                    if (neighbour1 == atoms1[1])
                     {
                         ParentSpec *parents[2] = { species1[0], species1[1] };
                         create<CrossBridgeOnBridges>(parents);

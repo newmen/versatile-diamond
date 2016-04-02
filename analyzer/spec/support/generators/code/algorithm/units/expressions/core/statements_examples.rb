@@ -33,7 +33,9 @@ module VersatileDiamond
               let(:var) { Variable[:var, type.ptr, 'obj'] }
               let(:vvl) { Variable[Object.new, type.ptr, 'val', func0] }
 
-              let(:many_arr) { Collection[[var, vvl], type.ptr, 'many', [x, y]] }
+              let(:item1) { Variable[:one, scalar, 'item[0]'] }
+              let(:item2) { Variable[:two, scalar, 'item[1]'] }
+              let(:many_arr) { Collection[[item1, item2], type.ptr, 'many', [x, y]] }
 
               let(:lda) { Lambda[[], var, func0 + func1] }
               let(:for_loop) do

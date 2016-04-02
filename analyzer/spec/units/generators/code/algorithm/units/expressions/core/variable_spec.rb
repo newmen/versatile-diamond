@@ -35,6 +35,10 @@ module VersatileDiamond
             it { expect(subject.instance).to eq(:var) }
           end
 
+          describe '#type' do
+            it { expect(subject.type).to eq(type.ptr) }
+          end
+
           describe '#code' do
             it { expect(subject.code).to eq('obj') }
             it { expect { described_class[:v, type].code }.to raise_error }
@@ -53,6 +57,11 @@ module VersatileDiamond
           describe '#call' do
             it { expect(method.code).to eq('obj->foo(x, x)') }
             it { expect(vvl.call('bar').code).to eq('val->bar()') }
+          end
+
+          describe '#item?' do
+            it { expect(subject.item?).to be_falsey }
+            it { expect(many_arr.items.first.item?).to be_truthy }
           end
 
           describe '#obj?' do

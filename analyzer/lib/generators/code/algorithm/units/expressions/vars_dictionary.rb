@@ -69,7 +69,7 @@ module VersatileDiamond
 
           # @return [Array]
           def defined_vars
-            @vars.flat_map(&:last)
+            @vars.flat_map(&:last).reject(&:item?)
           end
 
         private

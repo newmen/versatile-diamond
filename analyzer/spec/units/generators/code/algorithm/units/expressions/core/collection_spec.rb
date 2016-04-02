@@ -25,9 +25,12 @@ module VersatileDiamond
 
           it_behaves_like :check_predicates
 
+          describe '#type' do
+            it { expect(subject.type).to eq(type.ptr) }
+          end
+
           describe '#items' do
-            it { expect(subject.items).to be_a(Array) }
-            it { expect(subject.items[0]).to eq(var) }
+            it { expect(subject.items).to eq([item1, item2]) }
           end
 
           describe '#code' do
@@ -44,6 +47,15 @@ module VersatileDiamond
 
           describe '#call' do
             it { expect { subject.call('some') }.to raise_error }
+          end
+
+          describe '#item?' do
+            it { expect(subject.item?).to be_falsey }
+          end
+
+          describe '#parent_arr?' do
+            it { expect(subject.parent_arr?(var)).to be_falsey }
+            it { expect(subject.parent_arr?(item1)).to be_truthy }
           end
         end
 

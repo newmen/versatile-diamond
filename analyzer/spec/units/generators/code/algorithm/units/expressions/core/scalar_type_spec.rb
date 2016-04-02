@@ -18,6 +18,10 @@ module VersatileDiamond
 
           it_behaves_like :check_predicates
 
+          describe '#==' do
+            it { expect(subject.ptr).to eq(subject.ptr) }
+          end
+
           describe '#ptr?' do
             it { expect(subject.ptr?).to be_falsey }
             it { expect(scalar.ptr.ptr?).to be_truthy }

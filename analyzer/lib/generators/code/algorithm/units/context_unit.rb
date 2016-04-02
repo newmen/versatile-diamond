@@ -359,10 +359,12 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           def check_existed_relations(nbr, &block)
             pairs = nodes_with_existed_relations(nbr)
-            if pairs.empty?
+            near_atoms = pairs.map(&:last).map(&:atom)
+            new_atoms = near_atoms.reject(&dict.public_method(:prev_var_of))
+            if new_atoms.empty?
               block.call
             else
-              nbr.unit.check_atoms_roles(pairs.map(&:last).map(&:atom)) do
+              nbr.unit.check_atoms_roles(new_atoms) do
                 check_bond_between(pairs + neighbour_nodes_pairs(nbr), &block)
               end
             end
@@ -469,9 +471,14 @@ module VersatileDiamond
           #
           # @return [Array]
           def different_defined_species_nodes
-            (all_nodes_with_atoms - nodes).select do |node|
-              other_specie = node.unit_specie
-              !species.include?(other_specie) && dict.var_of(other_specie)
+            other_nodes = all_nodes_with_atoms - unit.nodes
+            if other_nodes.empty?
+              []
+            else
+              other_nodes.reduce(:+).select do |node|
+                other_specie = node.unit_specie
+                !species.include?(other_specie) && dict.var_of(other_specie)
+              end
             end
           end
 
@@ -577,7 +584,9 @@ module VersatileDiamond
 
           # @return [Integer]
           def count_possible_atom_usages
-            all_popular_atoms_nodes.map(&:usages_num).reduce(:+)
+            sum = all_popular_atoms_nodes.map(&:usages_num).reduce(:+)
+            num = all_popular_atoms_nodes.size
+            sum % num == 0 ? (sum / num) : sum
           end
 
           # @return [Boolean]
@@ -622,7 +631,7 @@ module VersatileDiamond
             !(lists_are_identical?(atoms, other_atoms, &:==) ||
               (other_atoms.size == species.size &&
                 ca_nodes.map(&:sub_properties).uniq.one? &&
-                lists_are_identical?(species, ca_nodes.map(&:unit_specie).uniq, &:==)))
+                lists_are_identical?(species, ca_nodes.map(&:uniq_specie).uniq, &:==)))
           end
 
           # @param [Array] checking_nodes

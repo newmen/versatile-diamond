@@ -49,14 +49,6 @@ module VersatileDiamond
             define_method(method_name) { super() }
           end
 
-          # @param [Array] items
-          # @return [Array] list of using variables
-          # @override
-          def using(items)
-            current, next_vars = self_using(items)
-            (current + (value ? items.flat_map { |v| v.using(next_vars) } : [])).uniq
-          end
-
           # @param [String] method_name
           # @param [Array] args
           # @param [Hash] kwargs
@@ -65,6 +57,13 @@ module VersatileDiamond
           def call(method_name, *args, **kwargs)
             msg = "Method #{method_name.inspect} cannot be called for collection"
             raise NoMethodError, msg
+          end
+
+          # @param [Variable] var
+          # @return [Boolean]
+          # @override
+          def parent_arr?(var)
+            items.include?(var)
           end
 
         private

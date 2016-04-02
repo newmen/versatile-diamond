@@ -8,6 +8,8 @@ module VersatileDiamond
           extend InitValuesChecker
           include Expression
 
+          INDEX_RX = /\[.+?\]$/.freeze
+
           class << self
             # @param [Object] instance
             # @param [ScalarType] type
@@ -42,7 +44,7 @@ module VersatileDiamond
           end
 
           def_delegator :@name, :code
-          attr_reader :instance
+          attr_reader :instance, :type
 
           # @param [Object] instance
           # @param [ScalarType] type
@@ -57,9 +59,8 @@ module VersatileDiamond
 
           # @param [Expression] new_index
           def update_index!(new_index)
-            index_rx = /\[.+?\]$/
-            if code =~ index_rx
-              new_name = code.sub(index_rx, "[#{new_index.code}]")
+            if item?
+              new_name = code.sub(INDEX_RX, "[#{new_index.code}]")
               @name = Constant[new_name].freeze
             else
               raise 'Cannot update index of variable which not belongs to any array'
@@ -71,6 +72,11 @@ module VersatileDiamond
           # @override
           def var?
             true
+          end
+
+          # @return [Boolean]
+          def item?
+            !!(code =~ INDEX_RX)
           end
 
           # Checks that current statement is object
@@ -106,9 +112,17 @@ module VersatileDiamond
             OpCall[self, FunctionCall[method_name, *args, **kwargs]]
           end
 
+        protected
+
+          # @param [Variable] _
+          # @return [Boolean] false
+          def parent_arr?(_)
+            false
+          end
+
         private
 
-          attr_reader :type, :value
+          attr_reader :value
 
           # @return [Constant] the same name by default
           def full_name
@@ -123,7 +137,15 @@ module VersatileDiamond
           # @param [Array] vars
           # @return [Array]
           def self_using(vars)
-            vars.include?(self) ? [[self], vars - [self]] : [[], vars]
+            check_using = -> v { v.parent_arr?(self) }
+            if vars.include?(self)
+              [[self], vars - [self]]
+            elsif item? && vars.any?(&check_using)
+              arrs = vars.select(&check_using)
+              [arrs, vars - arrs]
+            else
+              [[], vars]
+            end
           end
         end
 
