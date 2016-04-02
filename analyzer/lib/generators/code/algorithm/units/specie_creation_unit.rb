@@ -95,7 +95,13 @@ module VersatileDiamond
           def remake_parent_species_as_array
             type = Expressions::ParentSpecieType[]
             values = vars_for(@parent_species)
-            dict.make_specie_s(@parent_species, type: type, value: values)
+            kwargs = {
+              name: Code::Specie::ANCHOR_SPECIE_NAME,
+              next_name: false,
+              type: type,
+              value: values
+            }
+            dict.make_specie_s(@parent_species, **kwargs)
           end
 
           # @return [Expressions::Core::FunctionCall]

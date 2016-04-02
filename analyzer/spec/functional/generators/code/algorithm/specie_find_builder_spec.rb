@@ -175,13 +175,16 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(DIMER, #{role_cr}))
         {
-            Bridge *specie1 = anchor->specByRole<Bridge>(#{b_ct});
+            Bridge *bridge1 = anchor->specByRole<Bridge>(#{b_ct});
             eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
-                if (neighbour1->is(#{role_cr}) && anchor->hasBondWith(neighbour1))
+                if (neighbour1->is(#{role_cr}))
                 {
-                    Bridge *specie2 = neighbour1->specByRole<Bridge>(#{b_ct});
-                    ParentSpec *parents[2] = { specie1, specie2 };
-                    create<Dimer>(parents);
+                    if (anchor->hasBondWith(neighbour1))
+                    {
+                        Bridge *bridge2 = neighbour1->specByRole<Bridge>(#{b_ct});
+                        ParentSpec *parents[2] = { bridge1, bridge2 };
+                        create<Dimer>(parents);
+                    }
                 }
             });
         }

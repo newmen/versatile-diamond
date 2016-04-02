@@ -16,7 +16,7 @@ module VersatileDiamond
           # TODO: copy paste atom definition from ManyUnits
           def define!
             parent = species.first
-            if parent.none?
+            if parent.none? || parent.actual.spec.complex?
               anchor = atoms.first
               kwargs = { name: Code::Specie::ANCHOR_ATOM_NAME, next_name: false }
               dict.make_atom_s(anchor, **kwargs)
