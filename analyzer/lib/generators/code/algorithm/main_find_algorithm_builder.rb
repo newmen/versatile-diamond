@@ -12,21 +12,21 @@ module VersatileDiamond
           # ordered graph from nodes
           #
           # @param [Array] nodes from which walking will occure
-          # @return [String] the cpp code find algorithm
+          # @return [Expressions::Core::Statement]
           def combine_algorithm(nodes)
-            call_procs(collect_procs(nodes)) { creation_lines }
+            ordered_graph = backbone.ordered_graph_from(nodes)
+            context = specie_context(ordered_graph)
+            factory = context_factory(context)
+            procs = collect_procs(factory, ordered_graph, init_procs(factory, nodes))
+            call_procs(procs) { creator(context).create }
           end
 
           # Accumulates relations procs from passed unit
-          # @param [BaseUnitsFactory] factory for neighbour units
           # @param [Units::BaseUnit] unit from which the relations will be collected
-          # @param [Array] rels the iterable relations
+          # @param [Array] nbrs the neighbour units
           # @return [Array] the array of collected relations procs
-          def accumulate_relations(factory, unit, rels)
-            rels.map do |nbr_nodes, rel_params|
-              nbrs_unit = factory.make_unit(nbr_nodes)
-              relations_proc(unit, nbrs_unit, rel_params)
-            end
+          def accumulate_relations(unit, nbrs)
+            nbrs.map { |nbr| relations_proc(unit, nbr) }
           end
         end
 

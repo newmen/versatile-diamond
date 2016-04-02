@@ -13,10 +13,17 @@ module VersatileDiamond
 
           # Anytime is a previous found specie
           # TODO: specie specific (rspec already have)
+          # TODO: copy paste atom definition from ManyUnits
           def define!
             parent = species.first
-            kwargs = { name: Code::Specie::ANCHOR_SPECIE_NAME, next_name: false }
-            dict.make_specie_s(parent, **kwargs)
+            if parent.none?
+              anchor = atoms.first
+              kwargs = { name: Code::Specie::ANCHOR_ATOM_NAME, next_name: false }
+              dict.make_atom_s(anchor, **kwargs)
+            else
+              kwargs = { name: Code::Specie::ANCHOR_SPECIE_NAME, next_name: false }
+              dict.make_specie_s(parent, **kwargs)
+            end
           end
 
           # @return [Array]

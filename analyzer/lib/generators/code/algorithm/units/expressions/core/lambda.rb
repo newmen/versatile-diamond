@@ -59,13 +59,13 @@ module VersatileDiamond
 
           # @return [Statement]
           def closure_vars
-            vars = using(@defined_vars).map(&OpRef.public_method(:[]))
+            vars = using(@defined_vars)
             if vars.empty?
               Constant['']
             elsif lists_are_identical?(vars, @defined_vars, &:==)
-              OpRef[Constant['']]
+              OpRef[]
             else
-              OpSequence[*vars.sort(&:code)]
+              OpSequence[*vars.map(&OpRef.public_method(:[])).map(&:code)]
             end
           end
         end

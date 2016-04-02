@@ -26,7 +26,7 @@ module VersatileDiamond
           # @param [Array] vars
           # @return [Array] list of using variables
           def using(vars)
-            inner_exprs.flat_map { |expr| expr.using(vars) }
+            inner_exprs.flat_map { |expr| expr.using(vars) }.uniq
           end
 
         private

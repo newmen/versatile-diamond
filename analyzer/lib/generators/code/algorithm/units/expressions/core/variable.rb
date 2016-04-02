@@ -85,7 +85,7 @@ module VersatileDiamond
           # @override
           def using(vars)
             current, next_vars = self_using(vars)
-            current + (value ? value.using(next_vars) : [])
+            (current + (value ? value.using(next_vars) : [])).uniq
           end
 
           # @return [Assign] the string with variable definition

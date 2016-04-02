@@ -24,7 +24,9 @@ module VersatileDiamond
             # @return [Boolean]
             def valid?(checking_expr, exprs)
               checking_expr.expr? &&
-                exprs.all? { |expr| expr.expr? || expr.assign? || expr.cond? }
+                exprs.all? do |expr|
+                  expr.expr? || expr.assign? || expr.cond? || expr.op?
+                end
             end
           end
 
@@ -54,7 +56,7 @@ module VersatileDiamond
           def using(vars)
             inner_exprs = [@checking_expr, @truth]
             inner_exprs << @otherwise if @otherwise
-            inner_exprs.flat_map { |expr| expr.using(vars) }
+            inner_exprs.flat_map { |expr| expr.using(vars) }.uniq
           end
 
         private

@@ -39,10 +39,13 @@ module VersatileDiamond
         if (!anchor->hasRole(BRIDGE, #{role_ct}))
         {
             allNeighbours(anchor, &Diamond::cross_110, [&](Atom **neighbours1) {
-                if (neighbours1[0]->is(#{role_cr}) && neighbours1[1]->is(#{role_cr}) && anchor->hasBondWith(neighbours1[0]) && anchor->hasBondWith(neighbours1[1]))
+                if (neighbours1[0]->is(#{role_cr}) && neighbours1[1]->is(#{role_cr}))
                 {
-                    Atom *atoms[3] = { anchor, neighbours1[0], neighbours1[1] };
-                    create<Bridge>(atoms);
+                    if (anchor->hasBondWith(neighbours1[0]) && anchor->hasBondWith(neighbours1[1]))
+                    {
+                        Atom *atoms1[3] = { anchor, neighbours1[0], neighbours1[1] };
+                        create<Bridge>(atoms1);
+                    }
                 }
             });
         }

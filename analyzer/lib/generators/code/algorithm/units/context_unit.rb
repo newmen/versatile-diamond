@@ -75,7 +75,12 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::NotEqualsCondition]
           def check_private_relations(&block)
-            Expressions::NotEqualsCondition[zip_private_related_exprs, block.call]
+            pairs = zip_private_related_exprs
+            if pairs.empty?
+              block.call
+            else
+              Expressions::NotEqualsCondition[pairs, block.call]
+            end
           end
 
           # @yield incorporating statement
@@ -329,8 +334,8 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           def iterate_crystal_relations(nbr, &block)
             predefn_vars = dict.defined_vars
-            self_var = dict.vars_of(atoms)
-            nbr_var = dict.make_atom_s(nbr.atoms)
+            self_var = dict.var_of(atoms)
+            nbr_var = dict.make_atom_s(nbr.atoms, name: 'neighbour')
             lattice =
               Expressions::Core::ObjectType[unit.nodes.first.lattice_class.class_name]
             relations = relations_between(self, nbr)
@@ -358,7 +363,7 @@ module VersatileDiamond
             if pairs.empty?
               block.call
             else
-              nbr.check_atoms_roles(pairs.map(&:last).map(&:atom)) do
+              nbr.unit.check_atoms_roles(pairs.map(&:last).map(&:atom)) do
                 check_bond_between(pairs + neighbour_nodes_pairs(nbr), &block)
               end
             end
@@ -373,7 +378,7 @@ module VersatileDiamond
               block.call
             else
               atoms_pairs = checkable_pairs.map { |pair| pair.map(&:atom) }
-              check_bonds_condition(atoms_pairs)
+              check_bonds_condition(atoms_pairs, &block)
             end
           end
 
@@ -536,7 +541,7 @@ module VersatileDiamond
           # @param [ContextUnit] b
           # @return [Array]
           def relations_between(a, b)
-            zip_nodes_of(a, b).map(&@context.public_method(:relation_between))
+            zip_nodes_of(a, b).map { |ns| @context.relation_between(*ns) }
           end
 
           # @param [Array] units
@@ -547,9 +552,9 @@ module VersatileDiamond
             if asz == bsz
               ans.zip(bns)
             elsif asz < bsz && ans.one?
-              bns.zip([ans].cycle).map(&:rotate)
+              bns.zip(ans.cycle).map(&:rotate)
             elsif asz > bsz && bns.one?
-              ans.zip([bns].cycle)
+              ans.zip(bns.cycle)
             else
               raise ArgumentError, 'Incorrect number of internal nodes'
             end
@@ -624,13 +629,13 @@ module VersatileDiamond
           # @param [Array] checking_nodes
           # @return [Boolean]
           def atoms_comparison_required?(checking_nodes)
-            symmetric? || @context.related_from_other_defined(checking_nodes)
+            symmetric? || @context.related_from_other_defined?(checking_nodes)
           end
 
           # @param [Nodes::BaseNode] a
           # @param [Nodes::BaseNode] b
           # @return [Boolean]
-          def checkable_bond_between(a, b)
+          def checkable_bond_between?(a, b)
             relation = @context.relation_between(a, b)
             relation.bond? && (relation != Concepts::Bond.amorph ||
               ![a, b].map(&:uniq_specie).uniq.one?)

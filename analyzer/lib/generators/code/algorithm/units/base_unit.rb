@@ -174,7 +174,8 @@ module VersatileDiamond
           # @return [Boolean]
           # TODO: specie specific rspec already exist
           def neighbour?(unit)
-            relayable? && !unit.species.all? { |specie| species.include?(specie) }
+            (relayable? && !unit.species.all? { |specie| species.include?(specie) }) ||
+              (species + unit.species).uniq.one?
           end
 
           # @return [Boolean]

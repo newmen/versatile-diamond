@@ -49,7 +49,7 @@ module VersatileDiamond
           def multilines
             inner_exprs.map do |expr|
               inner_code = expr.code
-              expr.terminating? ? "#{inner_code};" : inner_code
+              expr.terminating? ? terminate(inner_code) : inner_code
             end
           end
         end

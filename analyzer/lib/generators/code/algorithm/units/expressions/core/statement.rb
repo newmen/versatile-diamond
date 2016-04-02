@@ -43,6 +43,11 @@ module VersatileDiamond
             define_method(name) { false }
           end
 
+          # @return [String]
+          def shifted_code
+            shift(code)
+          end
+
           def to_s
             "\n#{code}\n"
           end
@@ -72,7 +77,7 @@ module VersatileDiamond
           # @param [String] str to which the semicolon will be added
           # @return [String]
           def wrap(str)
-            map_lines(str, &method(:terminated_offset))
+            shift(terminate(str))
           end
 
           # @param [String] str
@@ -90,8 +95,8 @@ module VersatileDiamond
 
           # @param [String] str
           # @return [String]
-          def terminated_offset(str)
-            "#{prepend_offset(str)};"
+          def terminate(str)
+            "#{str};"
           end
         end
 

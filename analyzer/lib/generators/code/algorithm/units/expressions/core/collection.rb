@@ -54,7 +54,7 @@ module VersatileDiamond
           # @override
           def using(items)
             current, next_vars = self_using(items)
-            current + (value ? items.flat_map { |v| v.using(next_vars) } : [])
+            (current + (value ? items.flat_map { |v| v.using(next_vars) } : [])).uniq
           end
 
           # @param [String] method_name

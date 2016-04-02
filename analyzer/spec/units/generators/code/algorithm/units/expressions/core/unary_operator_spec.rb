@@ -46,6 +46,7 @@ module VersatileDiamond
 
               describe '#code' do
                 it { expect(subject.code).to eq('&obj') }
+                it { expect(OpRef[].code).to eq('&') }
               end
             end
 

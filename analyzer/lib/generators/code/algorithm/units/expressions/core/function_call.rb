@@ -50,7 +50,7 @@ module VersatileDiamond
           # @return [Array] constant does not use any variable
           # @override
           def using(vars)
-            @args.flat_map { |arg| arg.using(vars) }
+            @args.flat_map { |arg| arg.using(vars) }.uniq
           end
 
         private

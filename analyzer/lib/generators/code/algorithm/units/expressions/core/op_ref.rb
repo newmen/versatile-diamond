@@ -10,8 +10,10 @@ module VersatileDiamond
           class << self
             # @param [Expression] expr
             # @return [OpRef]
-            def [](expr)
-              if valid?(expr)
+            def [](expr = nil)
+              if !expr
+                super()
+              elsif valid?(expr)
                 super
               else
                 arg_err!("Cannot get reference of #{expr.inspect}")
@@ -30,7 +32,11 @@ module VersatileDiamond
 
           # @param [Array] exprs to which the operation will be applied
           def initialize(*exprs)
-            super(:&, *exprs)
+            if exprs.empty?
+              super(:&, Constant[''])
+            else
+              super(:&, *exprs)
+            end
           end
         end
 

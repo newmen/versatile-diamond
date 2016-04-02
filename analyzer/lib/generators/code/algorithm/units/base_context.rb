@@ -77,7 +77,7 @@ module VersatileDiamond
             existed_relations_with(unified_nodes).flat_map do |node, rels|
               sames = rels.groups { |_, r| r.params }.map { |g| g.map(&:first) }
               manies = sames.map(&method(:unify_by_atom)).reject(&:one?)
-              majors = manies.select { |ns| any_major_with?(node, ns) }
+              majors = manies.select { |ns| major_with?(node, ns) }
               defined = majors.select { |ns| ns.all?(&method(:defined?)) }
               sides = defined.select { |ns| ns.any?(&method(:bone?)) }
               likes = sides.select(&method(:similar_properties?))
@@ -291,8 +291,18 @@ module VersatileDiamond
           # @param [Nodes::BaseNode] node
           # @return [Array] nodes
           # @return [Boolean]
-          def any_major_with?(node, nodes)
-            nodes.any? { |n| major_relation?(node, n) }
+          def major_with?(node, nodes)
+            nodes.any? { |n| major_relation?(node, n) } &&
+              !two_units_relation?(node, nodes)
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @return [Array] nodes
+          # @return [Boolean]
+          def two_units_relation?(node, nodes)
+            backbone_graph[[node]].any? do |ns, _|
+              lists_are_identical?(nodes, ns, &:==)
+            end
           end
 
           # @return [Array] nodes

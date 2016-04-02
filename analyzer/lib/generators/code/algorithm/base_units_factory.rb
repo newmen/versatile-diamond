@@ -32,7 +32,7 @@ module VersatileDiamond
 
           # Creates many units by list of nodes
           # @param [Array] nodes by which the many units will be created
-          # @return [Units::PureManyUnits]
+          # @return [Units::ManyUnits]
           def many_units(nodes)
             make_many_units(dict, nodes.map(&method(:mono_unit)))
           end

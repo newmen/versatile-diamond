@@ -10,7 +10,8 @@ module VersatileDiamond
           # @param [EngineCode] generator the major engine code generator
           # @param [Specie] specie the target specie code generator
           def initialize(generator, specie)
-            @backbone = SpecieBackbone.new(generator, specie)
+            @specie = specie
+            @backbone = SpecieBackbone.new(generator, @specie)
             @dict = Units::Expressions::VarsDictionary.new
 
             @pure_factory = SpeciePureUnitsFactory.new(@dict)
@@ -20,10 +21,12 @@ module VersatileDiamond
           # @return [String] the string with cpp code of find specie algorithm
           def build
             @dict.checkpoint!
-            @backbone.entry_nodes.map(&method(:body_for)).join
+            backbone.entry_nodes.map(&method(:body_for)).map(&:shifted_code).join
           end
 
         private
+
+          attr_reader :backbone
 
           # @param [Array] ordered_graph
           # @return [Units::SpecieContext]
@@ -31,10 +34,10 @@ module VersatileDiamond
             Units::SpecieContext.new(@dict, backbone.big_graph, ordered_graph)
           end
 
-          # @param [Array] ordered_graph
+          # @param [Units::SpecieContext] context
           # @return [SpecieUnitsFactoryWithContext]
-          def context_factory(ordered_graph)
-            SpecieUnitsFactoryWithContext.new(@dict, specie_context(ordered_graph))
+          def context_factory(context)
+            SpecieUnitsFactoryWithContext.new(@dict, context)
           end
 
           # Generates the body of code from passed nodes
@@ -46,19 +49,31 @@ module VersatileDiamond
             combine_algorithm(nodes)
           end
 
-          # Collects procs of conditions for body of find algorithm
-          # @param [Array] nodes by which procs will be collected
-          # @return [Array] the array of procs which will combined later
-          def collect_procs(nodes)
-            graph = @backbone.ordered_graph_from(nodes)
-            factory = context_factory(graph)
+          # @oaram [SpecieUnitsFactoryWithContext] factory
+          # @param [Array] nodes
+          # @return [Array]
+          def init_procs(factory, nodes)
+            [check_atoms_proc(factory.unit(nodes))]
+          end
 
-            init = [check_atoms_proc(factory.unit(nodes))]
-            graph.reduce(init) do |acc, (ns, rels)|
+          # Collects procs of conditions for body of find algorithm
+          # @param [SpecieUnitsFactoryWithContext] factory
+          # @param [Array] ordered_graph
+          # @param [Array] init_procs
+          # @return [Array] the array of procs which will combined later
+          def collect_procs(factory, ordered_graph, init_procs)
+            ordered_graph.reduce(init_procs) do |acc, (ns, rels)|
               unit = factory.unit(ns)
-              acc + [check_species_proc(unit)] +
-                accumulate_relations(factory, unit, rels)
+              nbrs = nbrs_units(factory, rels)
+              acc + [check_species_proc(unit)] + accumulate_relations(unit, nbrs)
             end
+          end
+
+          # @oaram [SpecieUnitsFactoryWithContext] factory
+          # @param [Array] rels
+          # @return [Array]
+          def nbrs_units(factory, rels)
+            rels.map(&:first).map(&factory.public_method(:unit))
           end
 
           # @param [Units::BaseUnit] unit the roles of which atoms will be checked
@@ -71,6 +86,12 @@ module VersatileDiamond
           # @return [Proc] lazy calling for check species unit method
           def check_species_proc(unit)
             -> &block { unit.check_avail_species(&block) }
+          end
+
+          # @param [Units::SpecieContext] context
+          # @return [Expressions::Core::Statement]
+          def creator(context)
+            Units::SpecieCreationUnit.new(@dict, context, @specie)
           end
         end
 

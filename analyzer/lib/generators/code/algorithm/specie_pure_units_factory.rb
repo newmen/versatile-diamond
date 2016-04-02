@@ -14,9 +14,9 @@ module VersatileDiamond
           end
 
           # @param [Arra] args
-          # @return [Units::ManyUnit]
-          def make_mono_unit(*args)
-            Units::ManyUnit.new(*args)
+          # @return [Units::ManyUnits]
+          def make_many_units(*args)
+            Units::ManyUnits.new(*args)
           end
         end
 
