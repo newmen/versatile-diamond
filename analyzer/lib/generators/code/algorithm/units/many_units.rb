@@ -16,8 +16,12 @@ module VersatileDiamond
 
           # All different anchor atoms should have names
           # TODO: specie specific (rspec already have)
+          # TODO: copy paste atom definition from MonoUnit
           def define!
-            if atoms.one?
+            if species.one?
+              kwargs = { name: Code::Specie::ANCHOR_SPECIE_NAME, next_name: false }
+              dict.make_specie_s(species.first, **kwargs)
+            elsif atoms.one?
               anchor = atoms.first
               kwargs = { name: Code::Specie::ANCHOR_ATOM_NAME, next_name: false }
               dict.make_atom_s(anchor, **kwargs)

@@ -32,13 +32,14 @@ module VersatileDiamond
         private
 
           # @param [Array] atoms
+          # @param [Hash] kwargs
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def redefine_atoms_as_array(atoms, &block)
+          def redefine_atoms_as_array(atoms, **kwargs, &block)
             if same_arr?(atoms)
               block.call
             else
-              remake_atoms_as_array(atoms).define_var + block.call
+              remake_atoms_as_array(atoms, **kwargs).define_var + block.call
             end
           end
 
@@ -77,15 +78,17 @@ module VersatileDiamond
 
           # @return [Expressions::Core::Statement]
           def create_with_additional_atoms
-            redefine_atoms_as_array(@addition_atoms) do
+            kwargs = { name: 'additionalAtom', next_name: false }
+            redefine_atoms_as_array(@addition_atoms, **kwargs) do
               call_create(dict.var_of(@addition_atoms), dict.var_of(@parent_species))
             end
           end
 
           # @param [Array] atoms
+          # @param [Hash] kwargs
           # @return [Expressions::Core::Collection]
-          def remake_atoms_as_array(atoms)
-            dict.make_atom_s(atoms, value: vars_for(atoms))
+          def remake_atoms_as_array(atoms, **kwargs)
+            dict.make_atom_s(atoms, **kwargs, value: vars_for(atoms))
           end
 
           # @return [Expressions::Core::Collection]

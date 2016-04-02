@@ -631,14 +631,21 @@ module VersatileDiamond
             symmetric? || @context.related_from_other_defined?(checking_nodes)
           end
 
+          # @param [Array] pair
+          # @return [Boolean]
+          def checkable_bond_between?(*pair)
+            relation = @context.relation_between(*pair)
+            relation.bond? && (relation != Concepts::Bond.amorph ||
+              checkable_neighbour_species?(*pair))
+          end
+
           # @param [Nodes::BaseNode] a
           # @param [Nodes::BaseNode] b
           # @return [Boolean]
           # TODO: specie specific
-          def checkable_bond_between?(a, b)
-            relation = @context.relation_between(a, b)
-            relation.bond? && (relation != Concepts::Bond.amorph ||
-              ![a, b].map(&:uniq_specie).reject(&:none?).uniq.one?)
+          def checkable_neighbour_species?(a, b)
+            checking_species = [a, b].map(&:uniq_specie).reject(&:none?).uniq
+            !(checking_species.empty? || checking_species.one?)
           end
         end
 

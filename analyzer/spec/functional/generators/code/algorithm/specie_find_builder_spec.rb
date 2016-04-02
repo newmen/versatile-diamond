@@ -104,10 +104,10 @@ module VersatileDiamond
               let(:specific_specs) { [subject] }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchors[2] = { parent->atom(1), parent->atom(0) };
-    if (anchors[0]->is(#{role_cb}) && anchors[1]->is(#{role_cm}))
+    Atom *atoms1[2] = { parent->atom(0), parent->atom(1) };
+    if (atoms1[0]->is(#{role_cm}) && atoms1[1]->is(#{role_cb}))
     {
-        if (!anchors[0]->hasRole(METHYL_ON_BRIDGE_CBi_CMs, #{role_cb}) || !anchors[1]->hasRole(METHYL_ON_BRIDGE_CBi_CMs, #{role_cm}))
+        if (!atoms1[1]->hasRole(METHYL_ON_BRIDGE_CBi_CMs, #{role_cb}) || !atoms1[0]->hasRole(METHYL_ON_BRIDGE_CBi_CMs, #{role_cm}))
         {
             create<MethylOnBridgeCBiCMs>(parent);
         }
@@ -121,12 +121,12 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchor = parent->atom(0);
-    if (anchor->is(#{role_cb}))
+    Atom *atom1 = parent->atom(0);
+    if (atom1->is(#{role_cb}))
     {
-        if (!anchor->hasRole(HIGH_BRIDGE, #{role_cb}))
+        if (!atom1->hasRole(HIGH_BRIDGE, #{role_cb}))
         {
-            anchor->eachAmorphNeighbour([&](Atom *amorph1) {
+            atom1->eachAmorphNeighbour([&parent](Atom *amorph1) {
                 if (amorph1->is(#{role_cm}))
                 {
                     create<HighBridge>(amorph1, parent);
@@ -143,12 +143,12 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchor = parent->atom(0);
-    if (anchor->is(#{role_cb}))
+    Atom *atom1 = parent->atom(0);
+    if (atom1->is(#{role_cb}))
     {
-        if (!anchor->hasRole(VINYL_ON_BRIDGE, #{role_cb}))
+        if (!atom1->hasRole(VINYL_ON_BRIDGE, #{role_cb}))
         {
-            anchor->eachAmorphNeighbour([&](Atom *amorph1) {
+            atom1->eachAmorphNeighbour([&](Atom *amorph1) {
                 if (amorph1->is(#{role_c1}))
                 {
                     amorph1->eachAmorphNeighbour([&](Atom *amorph2) {
