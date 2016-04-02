@@ -204,13 +204,16 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(METHYL_ON_DIMER, #{role_cr}))
         {
-            MethylOnBridge *specie1 = anchor->specByRole<MethylOnBridge>(#{mob_cb});
+            MethylOnBridge *methylOnBridge1 = anchor->specByRole<MethylOnBridge>(#{mob_cb});
             eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
-                if (neighbour1->is(#{role_cl}) && anchor->hasBondWith(neighbour1))
+                if (neighbour1->is(#{role_cl}))
                 {
-                    Bridge *specie2 = neighbour1->specByRole<Bridge>(#{b_ct});
-                    ParentSpec *parents[2] = { specie1, specie2 };
-                    create<MethylOnDimer>(parents);
+                    if (anchor->hasBondWith(neighbour1))
+                    {
+                        Bridge *bridge1 = neighbour1->specByRole<Bridge>(#{b_ct});
+                        ParentSpec *parents[2] = { methylOnBridge1, bridge1 };
+                        create<MethylOnDimer>(parents);
+                    }
                 }
             });
         }
@@ -219,13 +222,16 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(METHYL_ON_DIMER, #{role_cl}))
         {
-            Bridge *specie1 = anchor->specByRole<Bridge>(#{b_ct});
+            Bridge *bridge1 = anchor->specByRole<Bridge>(#{b_ct});
             eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
-                if (neighbour1->is(#{role_cr}) && anchor->hasBondWith(neighbour1))
+                if (neighbour1->is(#{role_cr}))
                 {
-                    MethylOnBridge *specie2 = neighbour1->specByRole<MethylOnBridge>(#{mob_cb});
-                    ParentSpec *parents[2] = { specie2, specie1 };
-                    create<MethylOnDimer>(parents);
+                    if (anchor->hasBondWith(neighbour1))
+                    {
+                        MethylOnBridge *methylOnBridge1 = neighbour1->specByRole<MethylOnBridge>(#{mob_cb});
+                        ParentSpec *parents[2] = { methylOnBridge1, bridge1 };
+                        create<MethylOnDimer>(parents);
+                    }
                 }
             });
         }
