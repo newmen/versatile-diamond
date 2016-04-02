@@ -245,15 +245,15 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchors[2] = { parent->atom(0), parent->atom(3) };
-    if (anchors[0]->is(#{role_cr}) && anchors[1]->is(#{role_cl}))
+    Atom *atoms1[2] = { parent->atom(0), parent->atom(3) };
+    if (atoms1[0]->is(#{role_cr}) && atoms1[1]->is(#{role_cl}))
     {
-        if (!anchors[0]->hasRole(TWO_METHYLS_ON_DIMER, #{role_cr}) || !anchors[1]->hasRole(TWO_METHYLS_ON_DIMER, #{role_cl}))
+        if (!atoms1[0]->hasRole(TWO_METHYLS_ON_DIMER, #{role_cr}) || !atoms1[1]->hasRole(TWO_METHYLS_ON_DIMER, #{role_cl}))
         {
-            anchors[0]->eachAmorphNeighbour([&](Atom *amorph1) {
+            atoms1[0]->eachAmorphNeighbour([&](Atom *amorph1) {
                 if (amorph1->is(#{role_c1}))
                 {
-                    anchors[1]->eachAmorphNeighbour([&](Atom *amorph2) {
+                    atoms1[1]->eachAmorphNeighbour([&](Atom *amorph2) {
                         if (amorph2->is(#{role_c2}))
                         {
                             Atom *additionalAtoms[2] = { amorph1, amorph2 };
@@ -277,23 +277,23 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(CROSS_BRIDGE_ON_BRIDGES, #{role_ctr}))
         {
-            Bridge *specie1 = anchor->specByRole<Bridge>(#{b_ct});
+            Bridge *bridge1 = anchor->specByRole<Bridge>(#{b_ct});
             anchor->eachAmorphNeighbour([&](Atom *amorph1) {
                 if (amorph1->is(#{role_cm}))
                 {
                     eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour1) {
                         if (neighbour1->is(#{role_ctr}))
                         {
-                            Bridge *specie2 = neighbour1->specByRole<Bridge>(#{b_ct});
+                            Bridge *bridge2 = neighbour1->specByRole<Bridge>(#{b_ct});
                             if (neighbour1->hasBondWith(amorph1))
                             {
-                                ParentSpec *parents[2] = { specie1, specie2 };
+                                ParentSpec *parents[2] = { bridge1, bridge2 };
                                 create<CrossBridgeOnBridges>(amorph1, parents);
                             }
                         }
                     });
                 }
-            }
+            });
         }
     }
                 CODE
