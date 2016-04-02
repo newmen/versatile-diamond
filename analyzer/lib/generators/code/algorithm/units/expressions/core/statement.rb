@@ -45,7 +45,8 @@ module VersatileDiamond
 
           # @return [String]
           def shifted_code
-            shift(code)
+            str = terminating? ? shift(terminate(code)) : shift(code)
+            "#{str}\n"
           end
 
           def to_s

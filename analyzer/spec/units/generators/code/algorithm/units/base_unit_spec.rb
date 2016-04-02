@@ -114,7 +114,10 @@ if (atoms1[0]->is(#{role_ctr}) && atoms1[1]->is(#{role_ctr}))
 
           describe '#check_amorph_bonds_if_have' do
             shared_examples_for :check_amorph_bonds_block do
-              let(:expr) { subject.check_amorph_bonds_if_have(nbr, &return0) }
+              let(:empty_proc) { -> &block { block.call } }
+              let(:expr) do
+                subject.check_amorph_bonds_if_have(nbr, empty_proc, &return0)
+              end
               it { expect(expr.code).to eq(code.rstrip) }
             end
 

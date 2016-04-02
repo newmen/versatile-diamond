@@ -77,12 +77,15 @@ module VersatileDiamond
           end
 
           # @param [BaseUnit] nbr
+          # @param [Proc] crystal_rels_proc
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def check_amorph_bonds_if_have(nbr, &block)
-            latttices = (atoms + nbr.atoms).map(&:lattice)
-            if latttices.all? && latttices.uniq.one?
-              redefine_self_and_nbr_atoms_if_need(nbr, &block)
+          def check_amorph_bonds_if_have(nbr, crystal_rels_proc, &block)
+            lattices = (atoms + nbr.atoms).map(&:lattice)
+            if lattices.all? && lattices.uniq.one?
+              redefine_self_and_nbr_atoms_if_need(nbr) do
+                crystal_rels_proc[&block]
+              end
             elsif atoms.one? && nbr.atoms.one?
               iterate_amorph_bonds(nbr, &block)
             else

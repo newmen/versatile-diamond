@@ -58,15 +58,16 @@ module VersatileDiamond
               subject { dept_right_hydrogenated_bridge }
               let(:base_specs) { [dept_bridge_base] }
               let(:specific_specs) { [subject] }
+              let(:typical_reactions) { [dept_hydrogen_abs_from_gap] }
               let(:find_algorithm) do
                 <<-CODE
-    parent->eachSymmetry([](ParentSpec *specie1) {
-        Atom *anchor = specie1->atom(2);
-        if (anchor->is(#{role_cr}))
+    parent->eachSymmetry([](ParentSpec *bridge1) {
+        Atom *atom1 = bridge1->atom(2);
+        if (atom1->is(#{role_cr}))
         {
-            if (!anchor->hasRole(BRIDGE_CRH, #{role_cr}))
+            if (!atom1->hasRole(BRIDGE_CRH, #{role_cr}))
             {
-                create<BridgeCRH>(specie1);
+                create<BridgeCRH>(bridge1);
             }
         }
     });
@@ -80,12 +81,12 @@ module VersatileDiamond
               let(:typical_reactions) { [dept_methyl_deactivation] }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchor = parent->atom(0);
-    if (anchor->is(#{role_cb}))
+    Atom *atom1 = parent->atom(0);
+    if (atom1->is(#{role_cb}))
     {
-        if (!anchor->checkAndFind(METHYL_ON_BRIDGE, #{role_cb}))
+        if (!atom1->checkAndFind(METHYL_ON_BRIDGE, #{role_cb}))
         {
-            anchor->eachAmorphNeighbour([&](Atom *amorph1) {
+            atom1->eachAmorphNeighbour([&parent](Atom *amorph1) {
                 if (amorph1->is(#{role_cm}))
                 {
                     create<MethylOnBridge>(amorph1, parent);

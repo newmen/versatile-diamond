@@ -320,11 +320,10 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_relations(nbr, &block)
-            unit.check_amorph_bonds_if_have(nbr.unit) do
-              iterate_crystal_relations(nbr) do
-                check_private_relations do
-                  check_existed_relations(nbr, &block)
-                end
+            crystal_rels_proc = -> &prc { iterate_crystal_relations(nbr, &prc) }
+            unit.check_amorph_bonds_if_have(nbr.unit, crystal_rels_proc) do
+              check_private_relations do
+                check_existed_relations(nbr, &block)
               end
             end
           end
@@ -635,10 +634,11 @@ module VersatileDiamond
           # @param [Nodes::BaseNode] a
           # @param [Nodes::BaseNode] b
           # @return [Boolean]
+          # TODO: specie specific
           def checkable_bond_between?(a, b)
             relation = @context.relation_between(a, b)
             relation.bond? && (relation != Concepts::Bond.amorph ||
-              ![a, b].map(&:uniq_specie).uniq.one?)
+              ![a, b].map(&:uniq_specie).reject(&:none?).uniq.one?)
           end
         end
 
