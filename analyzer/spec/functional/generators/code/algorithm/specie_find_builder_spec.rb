@@ -341,19 +341,23 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(CROSS_BRIDGE_ON_DIMERS, #{role_ctl}))
         {
-            Dimer *specie1 = anchor->specByRole<Dimer>(#{d_cr});
-            Atom *anchors[2] = { anchor, specie1->atom(0) };
-            anchors[0]->eachAmorphNeighbour([&](Atom *amorph1) {
+            Dimer *dimer1 = anchor->specByRole<Dimer>(#{d_cr});
+            Atom *atom1 = dimer1->atom(3);
+            anchor->eachAmorphNeighbour([&](Atom *amorph1) {
                 if (amorph1->is(#{role_cm}))
                 {
-                    eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
-                        if (neighbours1[0]->is(#{role_ctr}) && neighbours1[1]->is(#{role_csr}) && neighbours1[0]->hasBondWith(neighbours1[1]))
+                    Atom *atoms1[2] = { anchor, atom1 };
+                    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&amorph1, &anchor, &dimer1](Atom **neighbours1) {
+                        if (neighbours1[0]->is(#{role_ctr}) && neighbours1[1]->is(#{role_csr}))
                         {
-                            Dimer *specie2 = neighbours1[1]->specByRole<Dimer>(#{d_cr});
-                            if (neighbours1[0]->hasBondWith(amorph1))
+                            if (neighbours1[0]->hasBondWith(neighbours1[1]))
                             {
-                                ParentSpec *parents[2] = { specie1, specie2 };
-                                create<CrossBridgeOnDimers>(amorph1, parents);
+                                Dimer *dimer2 = neighbours1[0]->specByRole<Dimer>(#{d_cr});
+                                if (neighbours1[0]->hasBondWith(amorph1))
+                                {
+                                    ParentSpec *parents[2] = { dimer1, dimer2 };
+                                    create<CrossBridgeOnDimers>(amorph1, parents);
+                                }
                             }
                         }
                     });

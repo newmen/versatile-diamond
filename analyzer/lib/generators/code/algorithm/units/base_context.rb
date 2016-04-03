@@ -77,7 +77,7 @@ module VersatileDiamond
             existed_relations_with(unified_nodes).flat_map do |node, rels|
               sames = rels.groups { |_, r| r.params }.map { |g| g.map(&:first) }
               manies = sames.map(&method(:unify_by_atom)).reject(&:one?)
-              majors = manies.select { |ns| major_with?(node, ns) }
+              majors = manies.select { |ns| bone_with?(node, ns) }
               defined = majors.select { |ns| ns.all?(&method(:defined?)) }
               sides = defined.select { |ns| ns.any?(&method(:bone?)) }
               likes = sides.select(&method(:similar_properties?))
@@ -89,7 +89,7 @@ module VersatileDiamond
           # @param [Nodes::BaseNode] b
           # @return [Concepts::Bond]
           def relation_between(a, b)
-            to_b = bone_relations_of([a]).first.find { |node, _| node == b }
+            to_b = relations_of([a]).first.find { |node, _| node == b }
             to_b && to_b.last
           end
 
@@ -105,7 +105,7 @@ module VersatileDiamond
             if nodes.empty?
               raise ArgumentError, 'Empty nodes list passed'
             elsif !nodes.one?
-              rels_lists = bone_relations_of(nodes)
+              rels_lists = relations_of(nodes)
               !rels_lists.any?(&:empty?) && same_relations?(rels_lists) &&
                 same_side_props?(rels_lists) && same_side_species?(rels_lists)
             else
@@ -154,10 +154,8 @@ module VersatileDiamond
 
           # @param [Array] nodes
           # @return [Array]
-          def bone_relations_of(nodes)
-            nodes.map do |node|
-              nodes_graph[node].select { |n, _| major_relation?(node, n) }
-            end
+          def relations_of(nodes)
+            nodes.map(&nodes_graph.public_method(:[]))
           end
 
           # Gets all existed relations over full big graph of context
@@ -209,7 +207,7 @@ module VersatileDiamond
           # @param [Array] nodes
           # @yield [Nodes::BaseNode, Concepts::Bond] iterates each relation of nodes
           def each_defined_relation(nodes, &block)
-            rels = bone_relations_of(nodes).reduce(:+)
+            rels = relations_of(nodes).reduce(:+)
             backbone_graph[nodes].each do |ns, _|
               rels.each do |n, r|
                 block[n, r] if @dict.var_of(n.atom) && ns.include?(n)
@@ -282,7 +280,7 @@ module VersatileDiamond
           # @param [Nodes::BaseNode] a
           # @param [Nodes::BaseNode] b
           # @return [Boolean]
-          def major_relation?(a, b)
+          def bone_relation?(a, b)
             backbone_graph.any? do |nodes, rels|
               nodes.include?(a) && rels.any? { |ns, _| ns.include?(b) }
             end
@@ -291,8 +289,8 @@ module VersatileDiamond
           # @param [Nodes::BaseNode] node
           # @return [Array] nodes
           # @return [Boolean]
-          def major_with?(node, nodes)
-            nodes.any? { |n| major_relation?(node, n) } &&
+          def bone_with?(node, nodes)
+            nodes.any? { |n| bone_relation?(node, n) } &&
               !two_units_relation?(node, nodes)
           end
 
