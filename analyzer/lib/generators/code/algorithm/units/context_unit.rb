@@ -283,7 +283,6 @@ module VersatileDiamond
             if checking_nodes.empty?
               block.call
             else
-              # TODO: cache the factory
               pure_unit = SpeciePureUnitsFactory.new(dict).unit(checking_nodes)
               pure_unit.define_undefined_atoms do
                 pure_unit.check_different_atoms_roles(&block)
@@ -432,10 +431,10 @@ module VersatileDiamond
           # @param [Array] checking_nodes
           # @return [Array]
           def similar_species_with(checking_nodes)
-            similar_species = similar_nodes.map(&:uniq_specie)
+            similar_species = similar_nodes_pairs.map(&:uniq_specie)
             species_pairs = species.flat_map do |specie|
               scmps = similar_species.select { |s| s.original == specie.original }
-              scmp.zip([specie].cycle)
+              scmps.zip([specie].cycle)
             end
           end
 
@@ -464,7 +463,7 @@ module VersatileDiamond
           def filter_original_different_defined_species_nodes(method_name)
             originals = species.map(&:original).uniq
             different_defined_species_nodes.public_send(method_name) do |node|
-              origianls.include?(node.uniq_specie.original)
+              originals.include?(node.uniq_specie.original)
             end
           end
 
@@ -477,8 +476,8 @@ module VersatileDiamond
             if other_nodes.empty?
               []
             else
-              other_nodes.reduce(:+).select do |node|
-                other_specie = node.unit_specie
+              other_nodes.select do |node|
+                other_specie = node.uniq_specie
                 !species.include?(other_specie) && dict.var_of(other_specie)
               end
             end
@@ -593,7 +592,8 @@ module VersatileDiamond
 
           # @return [Boolean]
           def atom_used_many_times?
-            atoms.one? && !all_popular_atoms_nodes.empty?
+            atoms.one? &&
+              unit.nodes.all?(&all_popular_atoms_nodes.public_method(:include?))
           end
 
           # @return [Boolean]
@@ -633,8 +633,9 @@ module VersatileDiamond
             return false if lists_are_identical?(atoms, other_atoms, &:==)
 
             oa_num = other_atoms.size
+            return false if oa_num >= species.size || oa_num % species.size == 0
+
             sub_props = ca_nodes.map(&:sub_properties).uniq
-            return false unless oa_num % species.size == 0
             return false unless oa_num % sub_props.size == 0
 
             groups = ca_nodes.groups(&:uniq_specie)

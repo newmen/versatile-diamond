@@ -409,12 +409,12 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(THREE_BRIDGES, #{role_cc}))
         {
-            anchor->eachSpecsPortionByRole<Bridge>(#{b_cr}, 2, [&](Bridge **species1) {
-                for (uint se = 0; se < 2; ++se)
+            anchor->eachSpecsPortionByRole<Bridge>(#{b_cr}, 2, [](Bridge **species1) {
+                for (uint s = 0; s < 2; ++s)
                 {
-                    Atom *atom1 = species1[se]->atom(2);
-                    ParentSpec *specie1 = atom1->specByRole<Bridge>(#{b_ct});
-                    ParentSpec *parents[3] = { species1[se], species1[1-se], specie1 };
+                    Atom *atom1 = species1[s]->atom(2);
+                    Bridge *bridge1 = atom1->specByRole<Bridge>(#{b_ct});
+                    ParentSpec *parents[3] = { species1[s], species1[1 - s], bridge1 };
                     create<ThreeBridges>(parents);
                 }
             });
