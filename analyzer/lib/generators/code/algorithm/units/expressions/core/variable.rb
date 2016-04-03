@@ -54,7 +54,7 @@ module VersatileDiamond
             @instance = instance
             @type = type.freeze
             @name = Constant[name].freeze
-            @value = value && value.freeze
+            @value = value
           end
 
           # @param [Expression] new_index

@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm::Units
@@ -628,10 +630,19 @@ module VersatileDiamond
           # @return [Boolean]
           def seems_different?(ca_nodes)
             other_atoms = ca_nodes.map(&:atom).uniq
-            !(lists_are_identical?(atoms, other_atoms, &:==) ||
-              (other_atoms.size == species.size &&
-                ca_nodes.map(&:sub_properties).uniq.one? &&
-                lists_are_identical?(species, ca_nodes.map(&:uniq_specie).uniq, &:==)))
+            return false if lists_are_identical?(atoms, other_atoms, &:==)
+
+            oa_num = other_atoms.size
+            sub_props = ca_nodes.map(&:sub_properties).uniq
+            return false unless oa_num % species.size == 0
+            return false unless oa_num % sub_props.size == 0
+
+            groups = ca_nodes.groups(&:uniq_specie)
+            return false unless groups.map(&:size).uniq.one?
+
+            group_subs = groups.first.map(&:sub_properties).uniq
+            !(lists_are_identical?(sub_props, group_subs, &:==) &&
+              lists_are_identical?(species, ca_nodes.map(&:uniq_specie).uniq, &:==))
           end
 
           # @param [Array] checking_nodes
@@ -653,8 +664,7 @@ module VersatileDiamond
           # @return [Boolean]
           # TODO: specie specific
           def checkable_neighbour_species?(a, b)
-            checking_species = [a, b].map(&:uniq_specie).reject(&:none?).uniq
-            !(checking_species.empty? || checking_species.one?)
+            [a, b].map(&:uniq_specie).reject(&:none?).size > 1
           end
         end
 

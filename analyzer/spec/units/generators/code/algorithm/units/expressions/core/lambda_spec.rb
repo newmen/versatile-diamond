@@ -20,11 +20,6 @@ module VersatileDiamond
               it { expect { described_class[[], type, func1] }.to raise_error }
               it { expect { described_class[[], x, func2] }.to raise_error }
             end
-
-            describe 'wrong body' do
-              it { expect { described_class[[], type] }.to raise_error }
-              it { expect { described_class[[], var, wrong_seq] }.to raise_error }
-            end
           end
 
           it_behaves_like :check_predicates

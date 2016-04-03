@@ -382,17 +382,18 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(CROSS_BRIDGE_ON_DIMERS, #{role_cm}))
         {
-            anchor->eachSpecsPortionByRole<MethylOnBridge>(#{mod_cm}, 2, [&](MethylOnDimer **species1) {
-                Atom *atoms[4] = { species1[0]->atom(4), species1[0]->atom(1), species1[1]->atom(4), species1[1]->atom(1) };
-                Atom *anchors[2] = { atoms[3], atoms[2] };
-                eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
-                    if (atoms[1] == neighbours1[0] && atoms[0] == neighbours1[1] && neighbours1[0]->hasBondWith(neighbours1[1]))
+            anchor->eachSpecsPortionByRole<MethylOnDimer>(#{mod_cm}, 2, [](MethylOnDimer **species1) {
+                Atom *atoms1[4] = { species1[0]->atom(1), species1[0]->atom(4), species1[1]->atom(1), species1[1]->atom(4) };
+                Atom *atoms2[2] = { atoms1[0], atoms1[1] };
+                Atom *atoms3[2] = { atoms1[2], atoms1[3] };
+                eachNeighbours<2>(atoms2, &Diamond::cross_100, [&atoms1, &atoms3, &species1](Atom **neighbours1) {
+                    if (neighbours1[0] == atoms3[0] && neighbours1[1] == atoms3[1])
                     {
                         ParentSpec *parents[2] = { species1[0], species1[1] };
                         create<CrossBridgeOnDimers>(parents);
                     }
                 });
-            }
+            });
         }
     }
                 CODE
