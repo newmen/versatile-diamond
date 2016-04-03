@@ -433,24 +433,11 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(BRIDGE_WITH_DIMER, #{role_cr}))
         {
-            anchor->eachSpecByRole<Dimer>(#{d_cr}, [&](Dimer *target1) {
-                target1->eachSymmetry([&](ParentSpec *specie1) {
-                    if (specie1->atom(0) == anchor)
-                    {
-                        anchor->eachSpecByRole<Bridge>(#{b_cr}, [&](Bridge *target2) {
-                            target2->eachSymmetry([&](ParentSpec *specie2) {
-                                if (specie2->atom(1) == anchor)
-                                {
-                                    Atom *atom1 = specie2->atom(2);
-                                    ParentSpec *specie3 = atom1->specByRole<Bridge>(#{b_ct});
-                                    ParentSpec *parents[3] = { specie1, specie2, specie3 };
-                                    create<BridgeWithDimer>(parents);
-                                }
-                            });
-                        });
-                    }
-                });
-            });
+            ParentSpec *species1[2] = { anchor->specByRole<Dimer>(#{d_cr}), anchor->specByRole<Bridge>(#{b_cr}) };
+            Atom *atom1 = species1[1]->atom(2);
+            Bridge *bridge1 = atom1->specByRole<Bridge>(#{b_ct});
+            ParentSpec *parents[3] = { species1[0], species1[1], bridge1 };
+            create<BridgeWithDimer>(parents);
         }
     }
                 CODE

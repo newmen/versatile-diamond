@@ -252,10 +252,12 @@ module VersatileDiamond
 
           # @return [Expressions::Core::Variable]
           def make_undefined_species_from_atoms
-            undefined_species = select_undefined(species)
+            undefined_species = select_undefined(species).sort
             vars = vars_for(nodes_with_species(undefined_species).map(&:atom))
             calls = vars.zip(undefined_species).map { |v, s| v.one_specie_by_role(s) }
-            dict.make_specie_s(undefined_species, value: calls)
+            kwargs = { value: calls }
+            kwargs[:type] = abst_specie_type unless undefined_species.one?
+            dict.make_specie_s(undefined_species, **kwargs)
           end
 
           # @param [BaseUnit] nbr
