@@ -45,7 +45,7 @@ module VersatileDiamond
 
           # @return [Boolean]
           def different_atom_role?
-            properties != sub_properties && sub_properties.include?(properties)
+            properties != sub_properties
           end
 
           # @return [Boolean]

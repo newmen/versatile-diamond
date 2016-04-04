@@ -70,7 +70,7 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           # TODO: just specie (rspec required)
           def check_different_atoms_roles(&block)
-            checking_nodes = nodes.select(&:different_atom_role?)
+            checking_nodes = incoming_nodes.dup
             if checking_nodes.empty?
               block.call
             else
@@ -296,6 +296,14 @@ module VersatileDiamond
           def pack_with_species(packing_atoms)
             packing_atoms.map do |atom|
               [atom, species.find { |specie| specie.anchor?(atom) }]
+            end
+          end
+
+          # @return [Array]
+          def incoming_nodes
+            nodes.select(&:different_atom_role?).select do |n|
+              dict.var_of(n.uniq_specie) &&
+                (dict.var_of(n.atom) || !n.properties.include?(n.sub_properties))
             end
           end
 
