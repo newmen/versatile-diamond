@@ -26,15 +26,16 @@ module VersatileDiamond
           # Creates checker unit from one node
           # @param [Nodes::BaseNode] node by which the checker unit will be created
           # @return [Units::BaseUnit]
-          def mono_unit(node)
-            node.scope? ? many_units(node.split) : make_mono_unit(dict, node)
+          def mono_unit(node, first_time: true)
+            ns = first_time ? node.split : [node]
+            ns.one? ? make_mono_unit(dict, node) : many_units(ns)
           end
 
           # Creates many units by list of nodes
           # @param [Array] nodes by which the many units will be created
           # @return [Units::ManyUnits]
           def many_units(nodes)
-            make_many_units(dict, nodes.map(&method(:mono_unit)))
+            make_many_units(dict, nodes.map { |n| mono_unit(n, first_time: false) })
           end
         end
 

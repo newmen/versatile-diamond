@@ -25,7 +25,8 @@ module VersatileDiamond
             elsif all_defined?(@major_atoms)
               create_from_major_atoms
             else
-              raise 'Not all required entities were defined'
+              # raise 'Not all required entities were defined'
+              Expressions::Core::Constant['NOT_ALL_DEFINED']
             end
           end
 

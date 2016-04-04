@@ -449,18 +449,18 @@ module VersatileDiamond
               let(:base_specs) do
                 [dept_bridge_base, dept_methyl_on_bridge_base, subject]
               end
-              let(:typical_reactions) { [dept_sierpinski_drop] }
+              let(:typical_reactions) { [dept_intermed_migr_dh_drop] }
               let(:find_algorithm) do
                 <<-CODE
     if (anchor->is(#{role_ct}))
     {
         if (!anchor->hasRole(TOP_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_ct}))
         {
-            MethylOnBridge *specie1 = anchor->specByRole<MethylOnBridge>(#{role_ct});
-            specie1->eachSymmetry([&](ParentSpec *specie2) {
-                Atom *atom1 = specie2->atom(3);
-                Bridge *specie3 = atom1->specByRole<Bridge>(#{b_ct});
-                ParentSpec *parents[2] = { specie2, specie3 };
+            MethylOnBridge *methylOnBridge1 = anchor->specByRole<MethylOnBridge>(#{role_ct});
+            methylOnBridge1->eachSymmetry([](ParentSpec *methylOnBridge2) {
+                Atom *atom1 = methylOnBridge2->atom(2);
+                Bridge *bridge1 = atom1->specByRole<Bridge>(#{b_ct});
+                ParentSpec *parents[2] = { methylOnBridge2, bridge1 };
                 create<TopMethylOnHalfExtendedBridge>(parents);
             });
         }
@@ -469,15 +469,21 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(TOP_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_cr}))
         {
-            Bridge *specie1 = anchor->specByRole<Bridge>(#{b_ct});
+            Bridge *bridge1 = anchor->specByRole<Bridge>(#{b_ct});
             eachNeighbour(anchor, &Diamond::front_110, [&](Atom *neighbour1) {
-                if (neighbour1->is(#{role_ct}) && anchor->hasBondWith(neighbour1))
+                if (neighbour1->is(#{role_ct}))
                 {
-                    MethylOnBridge *specie2 = neighbour1->specByRole<MethylOnBridge>(#{role_ct});
-                    specie2->eachSymmetry([&](ParentSpec *specie3) {
-                        ParentSpec *parents[2] = { specie3, specie1 };
-                        create<TopMethylOnHalfExtendedBridge>(parents);
-                    });
+                    if (anchor->hasBondWith(neighbour1))
+                    {
+                        MethylOnBridge *methylOnBridge1 = neighbour1->specByRole<MethylOnBridge>(#{role_ct});
+                        methylOnBridge1->eachSymmetry([&anchor, &bridge1](ParentSpec *methylOnBridge2) {
+                            if (anchor == methylOnBridge2->atom(2))
+                            {
+                                ParentSpec *parents[2] = { methylOnBridge2, bridge1 };
+                                create<TopMethylOnHalfExtendedBridge>(parents);
+                            }
+                        });
+                    }
                 }
             });
         }

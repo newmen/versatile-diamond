@@ -48,9 +48,7 @@ module VersatileDiamond
           # @param [Array] nodes
           # @return [Array]
           def replace_scopes(nodes)
-            nodes.reduce([]) do |acc, node|
-              node.scope? ? (acc + node.split) : (acc << node)
-            end
+            nodes.flat_map(&:split)
           end
         end
 

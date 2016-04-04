@@ -44,6 +44,12 @@ module VersatileDiamond
             it { expect(node_cc.scope?).to be_truthy }
           end
 
+          describe '#split' do
+            it { expect(node_cm.split).to eq([node_cm]) }
+            it { expect(node_cb.split).to eq([node_cb]) }
+            it { expect(node_cc.split.map(&:atom)).to eq([cc, cc]) }
+          end
+
           describe '#uniq_specie' do
             it { expect(node_cm.uniq_specie.original).to eq(code_mob) }
             it { expect(node_cm.uniq_specie).
@@ -100,7 +106,9 @@ module VersatileDiamond
 
           describe 'equality' do
             let(:same_cb) do
-              described_class.new(generator, code_mob, node_cb.uniq_specie, cb)
+              klass = Code::Algorithm::Instances::UniqueParent
+              scache = Code::Algorithm::UniqueSpeciesCacher.new(generator, klass)
+              described_class.new(generator, scache, code_mob, node_cb.uniq_specie, cb)
             end
 
             describe '#==' do

@@ -293,11 +293,16 @@ module VersatileDiamond
           # @param [ContextUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
+          # TODO: specie specific
           def check_neighbour_relations(nbr, &block)
-            if all_defined?(nbr.atoms) && relations_between(self, nbr).all?(&:bond?)
-              check_bonds_to_defined_neighbour(nbr, &block)
+            if [unit, nbr.unit].map(&:species).reduce(&:&).empty?
+              if all_defined?(nbr.atoms) && relations_between(self, nbr).all?(&:bond?)
+                check_bonds_to_defined_neighbour(nbr, &block)
+              else
+                iterate_relations(nbr, &block)
+              end
             else
-              iterate_relations(nbr, &block)
+              block.call
             end
           end
 
@@ -554,17 +559,8 @@ module VersatileDiamond
           # @param [Array] units
           # @return [Array]
           def zip_nodes_of(*units)
-            ans, bns = units.map(&:unit).map(&:nodes)
-            asz, bsz = ans.size, bns.size
-            if asz == bsz
-              ans.zip(bns)
-            elsif asz < bsz && ans.one?
-              bns.zip(ans.cycle).map(&:rotate)
-            elsif asz > bsz && bns.one?
-              ans.zip(bns.cycle)
-            else
-              raise ArgumentError, 'Incorrect number of internal nodes'
-            end
+            as, bs = units.map(&:unit).map(&:nodes)
+            as.smart_zip(bs)
           end
 
           # @return [Array]

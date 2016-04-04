@@ -26,8 +26,8 @@ module VersatileDiamond
 
         private
 
-          attr_reader :generator
-          def_delegator :@unique_species_cacher, :get_unique_specie
+          attr_reader :generator, :unique_species_cacher
+          def_delegator :unique_species_cacher, :get_unique_specie
 
         end
 

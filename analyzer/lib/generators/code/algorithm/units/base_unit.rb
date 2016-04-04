@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm::Units
@@ -15,7 +17,7 @@ module VersatileDiamond
             super(dict)
             @nodes = nodes
 
-            @_species, @_atoms, @_symmetric_atoms = nil
+            @_species, @_anchored_species, @_atoms, @_symmetric_atoms = nil
           end
 
           # @return [Array]
@@ -154,24 +156,24 @@ module VersatileDiamond
             if all_defined?(atoms)
               block.call
             else
-              make_undefined_atoms_from_species.define_var + block.call
+              make_undefined_atoms_from_defined_species.define_var + block.call
             end
           end
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def define_undefined_species(&block)
-            if all_defined?(species)
+            if all_defined?(anchored_species)
               block.call
             else
-              make_undefined_species_from_atoms.define_var + block.call
+              make_undefined_species_from_anchors.define_var + block.call
             end
           end
 
           # @return [Boolean]
           # TODO: required specie specific rspec
           def checkable?
-            relayable? && !all_defined?(nodes.select(&:anchor?).map(&:uniq_specie))
+            relayable? && !all_defined?(anchored_species)
           end
 
           # @return [Boolean]
@@ -218,6 +220,11 @@ module VersatileDiamond
             nodes.map(&method_name).uniq
           end
 
+          # @return [Array]
+          def anchored_species
+            @_anchored_species ||= nodes.select(&:anchor?).map(&:uniq_specie).uniq
+          end
+
           # @param [BaseUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
@@ -243,16 +250,22 @@ module VersatileDiamond
           end
 
           # @return [Expressions::Core::Variable]
-          def make_undefined_atoms_from_species
+          def make_undefined_atoms_from_defined_species
             undefined_atoms = select_undefined(atoms)
             vars = vars_for(nodes_with_atoms(undefined_atoms).map(&:uniq_specie))
-            calls = vars.zip(undefined_atoms).map { |v, a| v.atom_value(a) }
-            dict.make_atom_s(undefined_atoms, value: calls)
+            pairs = vars.smart_zip(undefined_atoms).select(&:first)
+            calls = pairs.map { |v, a| v.atom_value(a) }
+            selected_atoms = pairs.map(&:last)
+            if selected_atoms.one? && calls.size > 1
+              dict.make_atom_s(selected_atoms.first, value: calls.first)
+            else
+              dict.make_atom_s(selected_atoms, value: calls)
+            end
           end
 
           # @return [Expressions::Core::Variable]
-          def make_undefined_species_from_atoms
-            undefined_species = select_undefined(species).sort
+          def make_undefined_species_from_anchors
+            undefined_species = select_undefined(anchored_species).sort
             vars = vars_for(nodes_with_species(undefined_species).map(&:atom))
             calls = vars.zip(undefined_species).map { |v, s| v.one_specie_by_role(s) }
             kwargs = { value: calls }

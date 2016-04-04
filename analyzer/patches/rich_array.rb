@@ -33,6 +33,21 @@ module VersatileDiamond
           (block_given? ? group_by(&block) : group_by(&:itself)).values
         end
 
+        # @param [Array] other
+        # @return [Array] pairs
+        def smart_zip(other)
+          oz = other.size
+          if size == oz
+            zip(other)
+          elsif size < oz && one?
+            other.zip(cycle).map(&:rotate)
+          elsif size > oz && other.one?
+            zip(other.cycle)
+          else
+            raise ArgumentError, 'Incorrect number of items'
+          end
+        end
+
         # Gets not unique items of array
         # @return [Array] the not unique items of original sequence
         def not_uniq

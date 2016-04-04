@@ -24,7 +24,7 @@ module VersatileDiamond
 
           # @return [Array]
           def bone_nodes
-            @_uniq_nodes ||= (backbone_graph.keys + side_nodes_lists).flatten.uniq
+            @_uniq_nodes ||= splitten_nodes.flatten.uniq
           end
 
           # @param [Array] atoms
@@ -96,7 +96,7 @@ module VersatileDiamond
           # @param [Array] species
           # @return [Array]
           def symmetric_close_nodes(species)
-            undefined_related_nodes(species).uniq(&:to_set)
+            undefined_symmetric_related_nodes(species).uniq(&:to_set)
           end
 
           # @param [Array] nodes
@@ -127,7 +127,7 @@ module VersatileDiamond
 
         private
 
-          attr_reader :nodes_graph, :backbone_graph
+          attr_reader :dict, :nodes_graph, :backbone_graph
 
           # @param [Nodes::BaseNode] node
           # @return [Boolean]
@@ -138,7 +138,12 @@ module VersatileDiamond
           # @param [Nodes::BaseNode] node
           # @return [Boolean]
           def defined?(node)
-            @dict.var_of(node.atom) || @dict.var_of(node.uniq_specie)
+            dict.var_of(node.atom) || dict.var_of(node.uniq_specie)
+          end
+
+          # @return [Array]
+          def splitten_nodes
+            key_nodes_lists + side_nodes_lists
           end
 
           # @return [Array]
@@ -185,7 +190,7 @@ module VersatileDiamond
             singulars = groups.select(&:one?)
             (singulars.empty? ? [] : singulars.reduce(:+)) +
               groups.reject(&:one?).map do |ns|
-                defined = ns.select { |node| @dict.var_of(node.uniq_specie) }
+                defined = ns.select { |node| dict.var_of(node.uniq_specie) }
                 defined.empty? ? ns.first : defined.first
               end
           end
@@ -194,7 +199,7 @@ module VersatileDiamond
           # @param [Array] uniq_species
           def fileter_nodes_with(method_name, uniq_species)
             species_nodes(uniq_species).send(method_name) do |node|
-              @dict.var_of(node.atom)
+              dict.var_of(node.atom)
             end
           end
 
@@ -222,8 +227,8 @@ module VersatileDiamond
 
           # @param [Array] uniq_species
           # @return [Array] lists of related nodes with undefined atoms
-          def undefined_related_nodes(uniq_species)
-            nodes_lists = undefined_atoms_nodes(key_nodes_lists, uniq_species)
+          def undefined_symmetric_related_nodes(uniq_species)
+            nodes_lists = undefined_atoms_nodes(splitten_nodes, uniq_species)
             nodes_lists.select(&method(:undefined_symmetric_atoms?))
           end
 
@@ -231,11 +236,18 @@ module VersatileDiamond
           # @param [Array] uniq_species
           # @return [Array]
           def undefined_atoms_nodes(nodes_lists, uniq_species)
-            nodes_lists.select do |nodes|
-              nodes.all? do |node|
-                !@dict.var_of(node.atom) && uniq_species.include?(node.uniq_specie)
-              end
+            nodes_lists.each_with_object([]) do |nodes, acc|
+              ns = nodes.select { |n| undefined_atom_in?(n, uniq_species) }
+              acc << ns unless ns.empty?
             end
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @param [Array] uniq_species
+          # @return [Boolean]
+          # TODO: overriden by specie context
+          def undefined_atom_in?(node, uniq_species)
+            !dict.var_of(node.atom) && uniq_species.include?(node.uniq_specie)
           end
 
           # @param [Array] nodes
@@ -243,7 +255,7 @@ module VersatileDiamond
           # @return [Boolean]
           def atom_defined_and_not_in?(nodes, uniq_species)
             nodes.any? do |node|
-              @dict.var_of(node.atom) && !uniq_species.include?(node.uniq_specie)
+              dict.var_of(node.atom) && !uniq_species.include?(node.uniq_specie)
             end
           end
 
@@ -252,7 +264,7 @@ module VersatileDiamond
           def undefined_symmetric_atoms?(nodes)
             atoms_lists = nodes.map(&:symmetric_atoms)
             !atoms_lists.any?(&:empty?) &&
-              !atoms_lists.any? { |atoms| atoms.any?(&@dict.public_method(:var_of)) }
+              !atoms_lists.any? { |atoms| atoms.any?(&dict.public_method(:var_of)) }
           end
 
           # @param [Array] rels_lists
