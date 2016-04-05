@@ -19,7 +19,7 @@ module VersatileDiamond
               let(:original_specie) { generator.specie_class(dept_uniq_specie.name) }
 
               # defaults
-              let(:unit_nodes) { entry_nodes }
+              let(:unit_nodes) { entry_nodes.flat_map(&:split) }
               let(:node_specie) { entry_nodes.first.uniq_specie }
             end
 
@@ -58,8 +58,6 @@ module VersatileDiamond
               include_context :specie_unit_context
               let(:base_specs) { [dept_bridge_base, dept_uniq_specie] }
               let(:typical_reactions) { [dept_sierpinski_drop] }
-
-              let(:unit_nodes) { entry_nodes.first.split } # override
 
               let(:dept_uniq_specie) { dept_cross_bridge_on_bridges_base }
               let(:cbs_relation) { ordered_graph.last }
@@ -122,14 +120,12 @@ module VersatileDiamond
               include_context :specie_unit_context
               let(:base_specs) { [dept_bridge_base, dept_uniq_specie] }
               let(:dept_uniq_specie) { dept_three_bridges_base }
-              let(:unit_nodes) { backbone.entry_nodes.first.first.split } # override
             end
 
             shared_context :bridged_bwd_context do
               include_context :specie_unit_context
               let(:base_specs) { [dept_bridge_base, dept_uniq_specie] }
               let(:dept_uniq_specie) { dept_bridge_with_dimer_base }
-              let(:unit_nodes) { backbone.entry_nodes.first.first.split } # override
             end
 
             shared_context :bwd_context do
@@ -137,6 +133,20 @@ module VersatileDiamond
               let(:base_specs) do
                 [dept_bridge_base, dept_dimer_base, dept_uniq_specie]
               end
+            end
+
+            shared_context :top_mob_context do
+              include_context :specie_unit_context
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, dept_uniq_specie]
+              end
+              let(:typical_reactions) { [dept_migration_over_111] }
+              let(:dept_uniq_specie) { dept_top_methyl_on_half_extended_bridge_base }
+            end
+
+            shared_context :alt_top_mob_context do
+              include_context :top_mob_context
+              let(:entry_nodes) { backbone.entry_nodes.last } # override
             end
           end
 

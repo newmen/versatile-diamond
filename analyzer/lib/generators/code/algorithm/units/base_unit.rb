@@ -26,6 +26,11 @@ module VersatileDiamond
           end
 
           # @return [Array]
+          def anchored_species
+            @_anchored_species ||= nodes.select(&:anchor?).map(&:uniq_specie).uniq
+          end
+
+          # @return [Array]
           def atoms
             @_atoms ||= uniq_from_nodes(:atom)
           end
@@ -179,8 +184,8 @@ module VersatileDiamond
           # @return [Boolean]
           # TODO: specie specific rspec already exist
           def neighbour?(unit)
-            (relayable? && !unit.species.all? { |specie| species.include?(specie) }) ||
-              (species + unit.species).uniq.one?
+            same_species = anchored_species.select { |s| unit.species.include?(s) }
+            same_species.empty? || same_species.all?(&:none?)
           end
 
           # @return [Boolean]
@@ -218,11 +223,6 @@ module VersatileDiamond
           # @return [Array]
           def uniq_from_nodes(method_name)
             nodes.map(&method_name).uniq
-          end
-
-          # @return [Array]
-          def anchored_species
-            @_anchored_species ||= nodes.select(&:anchor?).map(&:uniq_specie).uniq
           end
 
           # @param [BaseUnit] nbr

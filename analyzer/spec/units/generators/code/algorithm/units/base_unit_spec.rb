@@ -27,6 +27,38 @@ module VersatileDiamond
             it { expect(subject.species).to eq(uniq_parents) }
           end
 
+          describe '#anchored_species' do
+            let(:species) { subject.species }
+            let(:num) { 1 }
+
+            shared_examples_for :check_anchored_species do
+              it { expect(subject.anchored_species).to eq(species) }
+              it { expect(subject.anchored_species.size).to eq(num) }
+            end
+
+            it_behaves_like :check_anchored_species do
+              include_context :bridge_context
+            end
+
+            it_behaves_like :check_anchored_species do
+              include_context :rab_context
+            end
+
+            it_behaves_like :check_anchored_species do
+              include_context :two_mobs_context
+              let(:num) { 2 } # override
+            end
+
+            it_behaves_like :check_anchored_species do
+              include_context :top_mob_context
+            end
+
+            it_behaves_like :check_anchored_species do
+              include_context :alt_top_mob_context
+              let(:species) { [subject.species.max] } # -> [Bridge]
+            end
+          end
+
           describe '#atoms' do
             include_context :two_mobs_context
             it { expect(subject.atoms).to eq([cm]) }
