@@ -96,7 +96,7 @@ module VersatileDiamond
           # @param [Array] species
           # @return [Array]
           def symmetric_close_nodes(species)
-            undefined_symmetric_related_nodes(species).uniq(&:to_set)
+            symmetric_related_nodes(species).uniq(&:to_set)
           end
 
           # @param [Array] nodes
@@ -116,11 +116,11 @@ module VersatileDiamond
           # @param [Array] nodes
           # @return [Boolean]
           def related_from_other_defined?(nodes)
-            species = nodes.map(&:uniq_specie)
+            species = nodes.map(&:uniq_specie).uniq
             backbone_graph.any? do |key, rels|
-              atom_defined_and_not_in?(key, species) &&
-                rels.any? do |ns, _|
-                  ns.any? { |node| nodes.include?(node) }
+              atom_defined_and_in?(key, species) &&
+                rels.any? do |ns, rp|
+                  flatten_relations_of(ns).any? { |n, _| nodes.include?(n) }
                 end
             end
           end
@@ -227,44 +227,47 @@ module VersatileDiamond
 
           # @param [Array] uniq_species
           # @return [Array] lists of related nodes with undefined atoms
-          def undefined_symmetric_related_nodes(uniq_species)
-            nodes_lists = undefined_atoms_nodes(splitten_nodes, uniq_species)
-            nodes_lists.select(&method(:undefined_symmetric_atoms?))
+          def symmetric_related_nodes(uniq_species)
+            nodes_lists = atoms_nodes_in(splitten_nodes, uniq_species)
+            nodes_lists.select(&method(:with_symmetric_atoms?))
           end
 
           # @param [Array] nodes_lists
           # @param [Array] uniq_species
           # @return [Array]
-          def undefined_atoms_nodes(nodes_lists, uniq_species)
+          def atoms_nodes_in(nodes_lists, uniq_species)
             nodes_lists.each_with_object([]) do |nodes, acc|
-              ns = nodes.select { |n| undefined_atom_in?(n, uniq_species) }
+              ns = nodes.select { |n| uniq_species.include?(n.uniq_specie) }
               acc << ns unless ns.empty?
             end
           end
 
-          # @param [Nodes::BaseNode] node
+          # @param [Array] nodes
           # @param [Array] uniq_species
           # @return [Boolean]
-          # TODO: overriden by specie context
-          def undefined_atom_in?(node, uniq_species)
-            !dict.var_of(node.atom) && uniq_species.include?(node.uniq_specie)
+          # @deprecated
+          def atom_defined_and_not_in?(nodes, uniq_species)
+            any_defined_atom?(nodes) { |n| !uniq_species.include?(n.uniq_specie) }
           end
 
           # @param [Array] nodes
           # @param [Array] uniq_species
           # @return [Boolean]
-          def atom_defined_and_not_in?(nodes, uniq_species)
-            nodes.any? do |node|
-              dict.var_of(node.atom) && !uniq_species.include?(node.uniq_specie)
-            end
+          def atom_defined_and_in?(nodes, uniq_species)
+            any_defined_atom?(nodes) { |n| uniq_species.include?(n.uniq_specie) }
+          end
+
+          # @param [Array] nodes
+          # @yield [Nodes::BaseNode] additional check
+          # @return [Boolean]
+          def any_defined_atom?(nodes, &block)
+            nodes.any? { |node| dict.var_of(node.atom) && block[node] }
           end
 
           # @param [Array] nodes
           # @return [Array]
-          def undefined_symmetric_atoms?(nodes)
-            atoms_lists = nodes.map(&:symmetric_atoms)
-            !atoms_lists.any?(&:empty?) &&
-              !atoms_lists.any? { |atoms| atoms.any?(&dict.public_method(:var_of)) }
+          def with_symmetric_atoms?(nodes)
+            !nodes.map(&:symmetric_atoms).any?(&:empty?)
           end
 
           # @param [Array] rels_lists

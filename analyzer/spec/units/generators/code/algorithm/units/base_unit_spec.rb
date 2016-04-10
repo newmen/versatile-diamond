@@ -55,7 +55,7 @@ module VersatileDiamond
 
             it_behaves_like :check_anchored_species do
               include_context :alt_top_mob_context
-              let(:species) { [subject.species.max] } # -> [Bridge]
+              let(:species) { [subject.species.max] } # => [Bridge]
             end
           end
 

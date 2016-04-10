@@ -425,7 +425,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_previos_atoms(cond_expr_class, checking_nodes, &block)
-            vars_pairs = zip_vars_with_previos(checking_nodes.map(&:atom))
+            vars_pairs = zip_vars_with_previos(checking_nodes)
             if vars_pairs.empty?
               block.call
             else
@@ -433,11 +433,15 @@ module VersatileDiamond
             end
           end
 
-          # @param [Array] zipping_atoms
+          # @param [Array] zipping_nodes
           # @return [Array]
-          def zip_vars_with_previos(zipping_atoms)
-            zipping_atoms.select(&method(:old_atom_var?)).map do |atom|
-              [dict.var_of(atom), dict.prev_var_of(atom)]
+          def zip_vars_with_previos(zipping_nodes)
+            old_nodes = zipping_nodes.select { |n| old_atom_var?(n.atom) }
+            old_nodes.map do |node|
+              [
+                dict.var_of(node.atom),
+                dict.prev_var_of(node.atom) || atom_from_specie_call(node)
+              ]
             end
           end
 
@@ -521,8 +525,14 @@ module VersatileDiamond
           # @return [Expressions::Core::Expression]
           # TODO: move to MonoUnit?
           def atom_var_or_specie_call(node)
-            dict.var_of(node.atom) ||
-              dict.var_of(node.uniq_specie).atom_value(node.atom)
+            dict.var_of(node.atom) || atom_from_specie_call(node)
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @return [Expressions::Core::Expression]
+          # TODO: move to MonoUnit?
+          def atom_from_specie_call(node)
+            dict.var_of(node.uniq_specie).atom_value(node.atom)
           end
 
           # @param [Array] atoms_pairs
