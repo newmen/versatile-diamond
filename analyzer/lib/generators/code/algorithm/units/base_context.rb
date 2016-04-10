@@ -56,7 +56,7 @@ module VersatileDiamond
           # nodes which are not same as passed
           #
           # @param [Array] nodes
-          # @return [Array]
+          # @return [Array] nodes to which related the passed
           def existed_relations_to(nodes)
             filter_relations_to(nodes, &:exist?)
           end
@@ -65,7 +65,7 @@ module VersatileDiamond
           # from nodes which are not same as passed
           #
           # @param [Array] nodes
-          # @return [Array]
+          # @return [Array] nodes to which related the passed
           def not_existed_relations_to(nodes)
             filter_relations_to(nodes) { |rel| !rel.exist? }
           end
@@ -198,7 +198,7 @@ module VersatileDiamond
           # @param [Symbol] method_name
           # @param [Array] uniq_species
           def fileter_nodes_with(method_name, uniq_species)
-            species_nodes(uniq_species).send(method_name) do |node|
+            species_nodes(uniq_species).public_send(method_name) do |node|
               dict.var_of(node.atom)
             end
           end

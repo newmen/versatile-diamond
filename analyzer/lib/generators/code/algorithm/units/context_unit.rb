@@ -38,7 +38,9 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           def check_avail_species(&block)
             combine_avail_species_checks do
-              check_new_atoms(&block)
+              check_close_atoms do
+                check_new_atoms(&block)
+              end
             end
           end
 
@@ -53,6 +55,14 @@ module VersatileDiamond
             else
               check_avail_species_in(nbr, &block)
             end
+          end
+
+          def to_s
+            inspect
+          end
+
+          def inspect
+            "∞#{unit.inspect}∞"
           end
 
         protected
@@ -257,19 +267,17 @@ module VersatileDiamond
             end
           end
 
+          # All atoms of unit species already defined there...
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_new_atoms(&block)
-            check_close_atoms do
-              # all atoms of unit species already defined there
-              reached_nodes = @context.reached_nodes_with(species)
-              if !reached_nodes.empty? && atoms_comparison_required?(reached_nodes)
-                check_not_existed_previos_atoms(reached_nodes) do
-                  check_existed_previos_atoms(reached_nodes, &block)
-                end
-              else
-                block.call
+            reached_nodes = @context.reached_nodes_with(species)
+            if !reached_nodes.empty? && atoms_comparison_required?(reached_nodes)
+              check_not_existed_previos_atoms(reached_nodes) do
+                check_existed_previos_atoms(reached_nodes, &block)
               end
+            else
+              block.call
             end
           end
 
@@ -425,10 +433,10 @@ module VersatileDiamond
             end
           end
 
-          # @param [Array] atoms
+          # @param [Array] zipping_atoms
           # @return [Array]
-          def zip_vars_with_previos(atoms)
-            atoms.select(&dict.public_method(:prev_var_of)).map do |atom|
+          def zip_vars_with_previos(zipping_atoms)
+            zipping_atoms.select(&method(:old_atom_var?)).map do |atom|
               [dict.var_of(atom), dict.prev_var_of(atom)]
             end
           end
@@ -456,7 +464,7 @@ module VersatileDiamond
           # @return [Array]
           def similar_nodes_pairs
             totaly_different_defined_species_nodes.flat_map do |node|
-              nodes_pairs_with(node.unit_specie)
+              nodes_pairs_with(node.uniq_specie)
             end
           end
 
@@ -528,8 +536,8 @@ module VersatileDiamond
           # @param [Instance::SpecieInstance] other_specie
           # @return [Array]
           def atoms_pairs_to_nodes(atoms_pairs, self_specie, other_specie)
-            self_nodes = @context.specie_nodes([self_specie])
-            other_nodes = @context.specie_nodes([other_specie])
+            self_nodes = @context.species_nodes([self_specie])
+            other_nodes = @context.species_nodes([other_specie])
             atoms_pairs.each_with_object([]) do |(self_atom, other_atom), acc|
               self_node = self_nodes.find { |n| n.atom == self_atom }
               other_node = other_nodes.find { |n| n.atom == other_atom }
@@ -678,6 +686,12 @@ module VersatileDiamond
           # TODO: specie specific
           def checkable_neighbour_species?(a, b)
             [a, b].map(&:uniq_specie).reject(&:none?).size > 1
+          end
+
+          # @param [Atom] atom
+          # @return [Boolean]
+          def old_atom_var?(atom)
+            dict.prev_var_of(atom) || (!atoms.include?(atom) && dict.var_of(atom))
           end
         end
 

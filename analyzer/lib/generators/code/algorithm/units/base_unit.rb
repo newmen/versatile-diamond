@@ -107,7 +107,7 @@ module VersatileDiamond
             if defined_species.one?
               iterate_defined_specie_symmetries(defined_species.first, &block)
             elsif defined_species.empty?
-              raise 'Symmetric specie is not defined'
+              raise 'Symmetric specie was not defined'
             else
               raise 'Too many defined symmetric species'
             end
@@ -197,6 +197,16 @@ module VersatileDiamond
           def partially_symmetric?
             !atoms.one? && !symmetric_atoms.empty? &&
               symmetric_atoms.to_set < atoms.to_set
+          end
+
+          def to_s
+            inspect
+          end
+
+          def inspect
+            sis = species.map(&:inspect)
+            pops = nodes.map(&:properties).uniq.map(&:inspect)
+            "•[#{sis.join(' ')}] [#{pops.join(' ')}]•"
           end
 
         protected
