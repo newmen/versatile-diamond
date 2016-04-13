@@ -208,13 +208,14 @@ module VersatileDiamond
           # @return [Array] nodes with filtered relations
           def filter_relations_to(nodes, &block)
             species = nodes.map(&:uniq_specie).uniq
-            key_nodes_lists.each_with_object([]) do |key, acc|
+            rels_to_nodes = key_nodes_lists.each_with_object([]) do |key, acc|
               if atom_defined_and_not_in?(key, species)
                 each_bone_defined_relation(key) do |node, rel|
                   acc << node if nodes.include?(node) && block[rel]
                 end
               end
             end
+            rels_to_nodes.map(&:first).uniq
           end
 
           # @param [Array] nodes
