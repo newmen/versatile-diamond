@@ -300,7 +300,8 @@ module VersatileDiamond
           # @return [Array] nodes
           # @return [Boolean]
           def two_units_relation?(node, nodes)
-            backbone_graph[[node]].any? do |ns, _|
+            rels = backbone_graph[[node]]
+            rels && rels.any? do |ns, _|
               lists_are_identical?(nodes, ns, &:==)
             end
           end
