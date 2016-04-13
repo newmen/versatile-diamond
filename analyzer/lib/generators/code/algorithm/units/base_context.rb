@@ -105,7 +105,7 @@ module VersatileDiamond
             if nodes.empty?
               raise ArgumentError, 'Empty nodes list passed'
             elsif !nodes.one?
-              rels_lists = relations_of(nodes)
+              rels_lists = bone_relations_of(nodes)
               !rels_lists.any?(&:empty?) && same_relations?(rels_lists) &&
                 same_side_props?(rels_lists) && same_side_species?(rels_lists)
             else
@@ -158,6 +158,14 @@ module VersatileDiamond
             nodes.map(&nodes_graph.public_method(:[]))
           end
 
+          # @param [Array] nodes
+          # @return [Array]
+          def bone_relations_of(nodes)
+            nodes.zip(relations_of(nodes)).map do |node, rels|
+              rels.select { |n, _| bone_relation?(node, n) }
+            end
+          end
+
           # Gets all existed relations over full big graph of context
           # @param [Array] nodes
           # @return [Array]
@@ -194,10 +202,10 @@ module VersatileDiamond
           # @yield [Concepts::Bond] filter relation to selected nodes
           # @return [Array] nodes with filtered relations
           def filter_relations_to(nodes, &block)
-            species = nodes.map(&:uniq_specie)
+            species = nodes.map(&:uniq_specie).uniq
             key_nodes_lists.each_with_object([]) do |key, acc|
               if atom_defined_and_not_in?(key, species)
-                each_defined_relation(key) do |node, rel|
+                each_bone_defined_relation(key) do |node, rel|
                   acc << node if nodes.include?(node) && block[rel]
                 end
               end
@@ -206,12 +214,9 @@ module VersatileDiamond
 
           # @param [Array] nodes
           # @yield [Nodes::BaseNode, Concepts::Bond] iterates each relation of nodes
-          def each_defined_relation(nodes, &block)
-            rels = relations_of(nodes).reduce(:+)
-            backbone_graph[nodes].each do |ns, _|
-              rels.each do |n, r|
-                block[n, r] if @dict.var_of(n.atom) && ns.include?(n)
-              end
+          def each_bone_defined_relation(nodes, &block)
+            bone_relations_of(nodes).reduce(:+).each do |n, r|
+              block[n, r] if @dict.var_of(n.atom)
             end
           end
 
