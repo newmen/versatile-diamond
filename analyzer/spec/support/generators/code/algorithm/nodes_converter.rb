@@ -27,8 +27,9 @@ module VersatileDiamond
             # @param [Array | Hash] nodes_list which will be translated
             # @return [Array] translated atomic list of relations
             def translate_to_atomic_list(nodes_list)
-              nodes_list.each_with_object([]) do |(nodes, rels), acc|
-                acc << [grep_atoms(nodes), rels.map { |ns, r| [grep_atoms(ns), r] }]
+              nodes_list.map do |nodes, rels|
+                new_rels = rels.map { |ns, r| [grep_atoms(ns), r] }
+                [grep_atoms(nodes), new_rels]
               end
             end
 

@@ -52,14 +52,9 @@ module VersatileDiamond
       # Gets list of relations between target specs and sidepiece specs
       # @return [Array] the list of relations
       def relations
-        result = clean_links.reduce([]) do |acc, ((spec, _), rels)|
-          if sidepiece_specs.include?(spec)
-            acc + rels.reject { |(s, _), _| sidepiece_specs.include?(s) }.map(&:last)
-          else
-            acc
-          end
+        result = sidepiece_links.flat_map do |(spec, _), rels|
+          rels.reject { |(s, _), _| sidepiece?(s) }.map(&:last)
         end
-
         result.sort_by(&:to_s)
       end
 
@@ -68,6 +63,19 @@ module VersatileDiamond
       end
 
     private
+
+      # Checks that passed spec belongs to sidepiece specs
+      # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] spec
+      # @return [Boolean] is one of sidepiece specs or not
+      def sidepiece?(spec)
+        sidepiece_specs.include?(spec)
+      end
+
+      # Gets clean links of sidepiece specs
+      # @return [Array] the list of selected key-values from clean links
+      def sidepiece_links
+        clean_links.select { |(spec, _), _| sidepiece?(spec) }
+      end
 
       # Gets class of new replacing target instance
       # @return [Class] of new instance

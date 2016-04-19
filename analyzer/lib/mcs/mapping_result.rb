@@ -12,8 +12,8 @@ module VersatileDiamond
       # @return [Array] the immutable list of correspond pairs of spec_atom from both
       #   sides of reaction
       def self.rezip(result)
-        result.reduce([]) do |acc, (specs_pair, atoms_zip)|
-          acc + atoms_zip.map { |atoms_pair| specs_pair.zip(atoms_pair) }
+        result.flat_map do |specs_pair, atoms_zip|
+          atoms_zip.map { |atoms_pair| specs_pair.zip(atoms_pair) }
         end
       end
 

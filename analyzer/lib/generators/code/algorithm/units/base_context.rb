@@ -172,9 +172,8 @@ module VersatileDiamond
 
           # @return [Array] the list of lists of key nodes with defined atoms
           def key_defined_atom_nodes_list
-            key_nodes_lists.each_with_object([]) do |nodes, acc|
-              defined_atom_nodes = nodes.select(&method(:atom_defined?))
-              acc << defined_atom_nodes unless defined_atom_nodes.empty?
+            key_nodes_lists.map_non_empty do |nodes|
+              nodes.select(&method(:atom_defined?))
             end
           end
 
@@ -247,9 +246,8 @@ module VersatileDiamond
           # @param [Array] uniq_species
           # @return [Array]
           def undefined_atoms_nodes_in(nodes_lists, uniq_species)
-            nodes_lists.each_with_object([]) do |nodes, acc|
-              ns = nodes.select { |n| undefined_atom_of?(n, uniq_species) }
-              acc << ns unless ns.empty?
+            nodes_lists.map_non_empty do |nodes|
+              nodes.select { |n| undefined_atom_of?(n, uniq_species) }
             end
           end
 
@@ -260,11 +258,11 @@ module VersatileDiamond
             uniq_species.include?(node.uniq_specie)
           end
 
-          # @param [Array] uniq_species
           # @param [Nodes::BaseNode] node
+          # @param [Array] uniq_species
           # @return [Boolean]
-          def undefined_atom_of?(uniq_species, node)
-            !atom_defined?(node) && specie_in?(uniq_species, node)
+          def undefined_atom_of?(node, uniq_species)
+            !atom_defined?(node) && specie_in?(node, uniq_species)
           end
 
           # @param [Array] nodes

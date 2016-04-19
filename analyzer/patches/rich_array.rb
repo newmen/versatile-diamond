@@ -3,6 +3,16 @@ module VersatileDiamond
 
     module RichArray
       refine Array do
+        # Maps the current array to new array which items are non empty arrays
+        # @yield [Object] get each new item from item of original array
+        # @return [Array] the array of non empty arrays
+        def map_non_empty(&block)
+          each_with_object([]) do |item, acc|
+            sub_array = block[item]
+            acc << sub_array unless sub_array.empty?
+          end
+        end
+
         # Removes one item from array
         # @param [Object] item some item from array
         # @yeild [Object] if passed instead of item then finds index of item

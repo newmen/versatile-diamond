@@ -148,8 +148,8 @@ module VersatileDiamond
           # @param [Array] group of nodes between which the relations will be gotten
           # @return [Array] the list of relations
           def relations_from(group)
-            group.reduce([]) do |acc, node|
-              acc + small_graph[node].select { |n, _| group.include?(n) }
+            group.flat_map do |node|
+              small_graph[node].select { |n, _| group.include?(n) }
             end
           end
 

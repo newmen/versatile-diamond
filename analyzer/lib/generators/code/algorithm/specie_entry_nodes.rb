@@ -89,15 +89,10 @@ module VersatileDiamond
           # Selects the nodes which are mostly used as keys of grouped nodes graph
           # @return [Array] the array of most used nodes
           def most_used_nodes
-            anchor_nodes = @nodes.reject(&:none?).select(&:anchor?)
-            groups = anchor_nodes.groups do |node|
-              [originals_species_from(node), node.properties]
-            end
-            most_used = groups.reduce([]) do |acc, group|
-              # selects the best from each group
-              acc << group.max_by { |n| anchor_nodes.count(n) }
-            end
-            most_used.uniq
+            anchor_ns = @nodes.reject(&:none?).select(&:anchor?)
+            groups = anchor_ns.groups { |n| [originals_species_from(n), n.properties] }
+            # selects the best from each group
+            groups.map { |g| g.max_by(&anchor_ns.public_method(:count)) }.uniq
           end
 
           # Selects the most important nodes in keys of grouped nodes graph

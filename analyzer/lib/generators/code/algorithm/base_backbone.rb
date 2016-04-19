@@ -140,9 +140,7 @@ module VersatileDiamond
           # Collects all nodes from final graph
           # @return [Array] the sorted array of nodes lists
           def collect_nodes(graph)
-            lists = graph.reduce([]) do |acc, (nodes, rels)|
-              acc + [nodes] + rels.map(&:first)
-            end
+            lists = graph.flat_map { |nodes, rels| [nodes] + rels.map(&:first) }
             lists.uniq.sort_by(&:size)
           end
 

@@ -58,9 +58,7 @@ module VersatileDiamond
 
         describe 'different atoms' do
           let(:atoms) do
-            clone.links.reduce([]) do |acc, (atom, rels)|
-              acc + [atom] + rels.map(&:first)
-            end
+            clone.links.flat_map { |atom, rels| [atom] + rels.map(&:first) }
           end
 
           it { expect(atoms.all? { |a| dimer_base_dup.keyname(a) }).to be_truthy }

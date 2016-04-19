@@ -52,9 +52,7 @@ module VersatileDiamond
 
         describe 'different atoms' do
           let(:atoms) do
-            clone.links.reduce([]) do |acc, (atom, rels)|
-              acc + [atom] + rels.map(&:first)
-            end
+            clone.links.flat_map { |atom, rels| [atom] + rels.map(&:first) }
           end
 
           it { expect(atoms.uniq.select { |a| new_spec.keyname(a) }.size).to eq(3) }

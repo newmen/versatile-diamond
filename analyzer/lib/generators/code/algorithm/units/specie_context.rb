@@ -40,8 +40,8 @@ module VersatileDiamond
           # @param [Array] rels
           # @return [Array]
           def replace_rels(rels)
-            rels.each_with_object([]) do |(node, rel), acc|
-              replace_scopes([node]).each { |n| acc << [n, rel] }
+            rels.flat_map do |node, rel|
+              replace_scopes([node]).map { |n| [n, rel] }
             end
           end
 

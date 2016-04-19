@@ -94,11 +94,10 @@ module VersatileDiamond
           #   parameters hash
           def next_ways(graph, nodes)
             prev_nodes = nodes_set(graph)
-            nodes.reduce([]) do |acc, node|
-              rels = grouped_nodes_graph.big_graph[node].reject do |n, _|
-                prev_nodes.include?(n)
-              end
-              rels.empty? ? acc : acc + rels.map { |n, r| [node, n, r.params] }
+            nodes.flat_map do |node|
+              all_rels = grouped_nodes_graph.big_graph[node]
+              next_rels = all_rels.reject { |n, _| prev_nodes.include?(n) }
+              next_rels.map { |n, r| [node, n, r.params] }
             end
           end
 

@@ -386,9 +386,9 @@ module VersatileDiamond
       def similar_mergeable(chunks, same_targets)
         iterate_permutations(chunks, same_targets) do |chunks_groups, targets_maps|
           result = targets_maps.zip(chunks_groups).map do |ts_map, cs_group|
-            ts_map.reduce([]) do |acc, (k, v)|
+            ts_map.flat_map do |k, v|
               selected_chunks = cs_group.select { |ch| ch.targets.include?(k) }
-              acc + map_chunks_to_targets(selected_chunks, k, v)
+              map_chunks_to_targets(selected_chunks, k, v)
             end
           end
 

@@ -37,15 +37,19 @@ module VersatileDiamond
       #   sidepiece_spec which relations will be collected
       # @return [Array] the list of using relations
       def target_relations_of(sidepiece_spec)
-        clean_links.reduce([]) do |acc, ((spec, _), rels)|
-          if spec == sidepiece_spec
-            rels.reduce(acc) do |a, ((s, _), r)|
-              target_specs.include?(s) && !a.include?(r) ? (a << r) : a
-            end
-          else
-            acc
+        clean_links_of(sidepiece_spec).reduce([]) do |acc, ((spec, _), rels)|
+          rels.reduce(acc) do |a, ((s, _), r)|
+            target_specs.include?(s) && !a.include?(r) ? (a << r) : a
           end
         end
+      end
+
+      # Gets clean links of passed spec
+      # @param [Concepts::Spec | Concepts::SidepieceSpec | Concepts::VeiledSpec]
+      #   sidepiece_spec which relations will be collected
+      # @return [Array] the list of clean relations
+      def clean_links_of(sidepiece_spec)
+        clean_links.select { |(spec, _), _| spec == sidepiece_spec }
       end
     end
 

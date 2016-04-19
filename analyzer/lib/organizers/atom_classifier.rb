@@ -155,8 +155,8 @@ module VersatileDiamond
       # @return [Array] the list of default latticed atoms
       def default_latticed_atoms
         @_default_latticed_atoms ||=
-          used_lattices.compact.reduce([]) do |acc, lattice|
-            acc + %w(major surface).map do |name|
+          used_lattices.compact.flat_map do |lattice|
+            %w(major surface).map do |name|
               atom_hash = lattice.instance.send(:"#{name}_crystal_atom")
               props_hash = atom_hash.merge(lattice: lattice)
               AtomProperties.new(props_hash)

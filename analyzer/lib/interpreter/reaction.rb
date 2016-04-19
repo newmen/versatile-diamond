@@ -251,7 +251,7 @@ module VersatileDiamond
       # @param [Array] specs the list which items will be combinated between each other
       # @return [Array] the list of combinations
       def combinations(specs)
-        specs.size.times.reduce([]) { |acc, i| acc + specs.combination(i + 1).to_a }
+        specs.size.times.flat_map { |i| specs.combination(i + 1).to_a }
       end
     end
 

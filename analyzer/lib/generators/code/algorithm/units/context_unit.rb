@@ -11,6 +11,8 @@ module VersatileDiamond
           include Modules::ListsComparer
           extend Forwardable
 
+          attr_reader :unit # must be protected
+
           # @param [Expressions::VarsDictionary] dict
           # @param [BaseContext] context
           # @param [BaseUnit] unit
@@ -66,8 +68,6 @@ module VersatileDiamond
           end
 
         protected
-
-          attr_reader :unit
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]

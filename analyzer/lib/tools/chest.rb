@@ -130,7 +130,8 @@ module VersatileDiamond
         def all(*keys)
           @sac ||= {}
           keys.reduce([]) do |acc, key|
-            @sac[key] ? acc + @sac[key].values : acc
+            cell = @sac[key]
+            cell ? acc + cell.values : acc
           end
         end
 
