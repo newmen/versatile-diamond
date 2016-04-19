@@ -42,21 +42,14 @@ module VersatileDiamond
           # @param [Array] species
           # @return [Array]
           def reachable_nodes_with(species)
-            fileter_nodes_with(:reject, species)
-          end
-
-          # @param [Array] species
-          # @return [Array]
-          # @deprecated
-          def reached_nodes_with(species)
-            fileter_nodes_with(:select, species)
+            species_nodes(species).reject { |node| dict.var_of(node.atom) }
           end
 
           # Gets nodes which belongs to passed nodes but have existed relations from
           # nodes which are not same as passed
           #
           # @param [Array] nodes
-          # @return [Array] nodes to which related the passed
+          # @return [Array] nodes to which the another nodes are related
           def existed_relations_to(nodes)
             filter_relations_to(nodes, &:exist?)
           end
@@ -65,7 +58,7 @@ module VersatileDiamond
           # from nodes which are not same as passed
           #
           # @param [Array] nodes
-          # @return [Array] nodes to which related the passed
+          # @return [Array] nodes to which the another nodes are related
           def not_existed_relations_to(nodes)
             filter_relations_to(nodes) { |rel| !rel.exist? }
           end
@@ -193,14 +186,6 @@ module VersatileDiamond
                 defined = ns.select { |node| dict.var_of(node.uniq_specie) }
                 defined.empty? ? ns.first : defined.first
               end
-          end
-
-          # @param [Symbol] method_name
-          # @param [Array] uniq_species
-          def fileter_nodes_with(method_name, uniq_species)
-            species_nodes(uniq_species).public_send(method_name) do |node|
-              dict.var_of(node.atom)
-            end
           end
 
           # @param [Array] nodes

@@ -112,41 +112,6 @@ module VersatileDiamond
             end
           end
 
-          describe '#reached_nodes_with' do
-            describe 'without scope species' do
-              include_context :rab_context
-              let(:nodes) { subject.reached_nodes_with([node_specie]) }
-
-              describe 'undefined atom' do
-                it { expect(nodes).to be_empty }
-              end
-
-              describe 'defined atom' do
-                before { dict.make_atom_s(cr) }
-                it { expect(nodes.map(&:atom)).to eq([cr]) }
-              end
-            end
-
-            describe 'with scope species' do
-              include_context :two_mobs_context
-              it { expect(subject.reached_nodes_with([scope_specie])).to be_empty }
-            end
-
-            describe 'with one specie of scope' do
-              include_context :two_mobs_context
-              let(:nodes) { subject.reached_nodes_with([node_specie]) }
-
-              describe 'undefined atom' do
-                it { expect(nodes).to be_empty }
-              end
-
-              describe 'defined atom' do
-                before { dict.make_atom_s(cm) }
-                it { expect(nodes.map(&:atom)).to eq([cm]) }
-              end
-            end
-          end
-
           describe '#existed_relations_to' do
             let(:result) { subject.existed_relations_to(unit_nodes) }
 

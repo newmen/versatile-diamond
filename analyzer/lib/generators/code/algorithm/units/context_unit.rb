@@ -271,7 +271,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_new_atoms(&block)
-            reached_nodes = @context.reached_nodes_with(species)
+            reached_nodes = @context.species_nodes(species)
             if !reached_nodes.empty? && atoms_comparison_required?(reached_nodes)
               check_not_existed_previos_atoms(reached_nodes) do
                 check_existed_previos_atoms(reached_nodes, &block)
