@@ -36,13 +36,13 @@ module VersatileDiamond
           # @param [Array] species
           # @return [Array]
           def species_nodes(species)
-            bone_nodes.select { |node| species.include?(node.uniq_specie) }
+            bone_nodes.select { |node| specie_in?(node, species) }
           end
 
           # @param [Array] species
           # @return [Array]
           def reachable_nodes_with(species)
-            species_nodes(species).reject { |node| dict.var_of(node.atom) }
+            species_nodes(species).reject(&method(:atom_defined?))
           end
 
           # Gets nodes which belongs to passed nodes but have existed relations from
@@ -125,7 +125,19 @@ module VersatileDiamond
           # @param [Nodes::BaseNode] node
           # @return [Boolean]
           def defined?(node)
-            dict.var_of(node.atom) || dict.var_of(node.uniq_specie)
+            atom_defined?(node) || specie_defined?(node)
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @return [Boolean]
+          def atom_defined?(node)
+            !!dict.var_of(node.atom)
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @return [Boolean]
+          def specie_defined?(node)
+            !!dict.var_of(node.uniq_specie)
           end
 
           # @return [Array]
@@ -161,7 +173,7 @@ module VersatileDiamond
           # @return [Array] the list of lists of key nodes with defined atoms
           def key_defined_atom_nodes_list
             key_nodes_lists.each_with_object([]) do |nodes, acc|
-              defined_atom_nodes = nodes.select { |n| dict.var_of(n.atom) }
+              defined_atom_nodes = nodes.select(&method(:atom_defined?))
               acc << defined_atom_nodes unless defined_atom_nodes.empty?
             end
           end
@@ -204,7 +216,7 @@ module VersatileDiamond
             singulars = groups.select(&:one?)
             (singulars.empty? ? [] : singulars.reduce(:+)) +
               groups.reject(&:one?).map do |ns|
-                defined = ns.select { |node| dict.var_of(node.uniq_specie) }
+                defined = ns.select(&method(:specie_defined?))
                 defined.empty? ? ns.first : defined.first
               end
           end
@@ -220,25 +232,39 @@ module VersatileDiamond
           # @yield [Nodes::BaseNode, Concepts::Bond] iterates each relation of nodes
           def bone_defined_relation_of(nodes, &block)
             bone_relations_of(nodes).reduce(:+).select do |n, r|
-              @dict.var_of(n.atom) && block[n, r]
+              atom_defined?(n) && block[n, r]
             end
           end
 
           # @param [Array] uniq_species
           # @return [Array] lists of related nodes with undefined atoms
           def symmetric_related_nodes(uniq_species)
-            nodes_lists = atoms_nodes_in(splitten_nodes, uniq_species)
+            nodes_lists = undefined_atoms_nodes_in(splitten_nodes, uniq_species)
             nodes_lists.select(&method(:with_symmetric_atoms?))
           end
 
           # @param [Array] nodes_lists
           # @param [Array] uniq_species
           # @return [Array]
-          def atoms_nodes_in(nodes_lists, uniq_species)
+          def undefined_atoms_nodes_in(nodes_lists, uniq_species)
             nodes_lists.each_with_object([]) do |nodes, acc|
-              ns = nodes.select { |n| uniq_species.include?(n.uniq_specie) }
+              ns = nodes.select { |n| undefined_atom_of?(n, uniq_species) }
               acc << ns unless ns.empty?
             end
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @param [Array] uniq_species
+          # @return [Boolean]
+          def specie_in?(node, uniq_species)
+            uniq_species.include?(node.uniq_specie)
+          end
+
+          # @param [Array] uniq_species
+          # @param [Nodes::BaseNode] node
+          # @return [Boolean]
+          def undefined_atom_of?(uniq_species, node)
+            !atom_defined?(node) && specie_in?(uniq_species, node)
           end
 
           # @param [Array] nodes
