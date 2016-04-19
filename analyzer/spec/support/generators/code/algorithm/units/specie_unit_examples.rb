@@ -116,6 +116,11 @@ module VersatileDiamond
               let(:dept_uniq_specie) { dept_intermed_migr_down_half_base }
             end
 
+            shared_context :alt_half_intermed_context do
+              include_context :half_intermed_context
+              let(:unit_nodes) { ordered_graph.last.first }
+            end
+
             shared_context :tree_bridges_context do
               include_context :specie_unit_context
               let(:base_specs) { [dept_bridge_base, dept_uniq_specie] }

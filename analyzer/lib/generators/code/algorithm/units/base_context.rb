@@ -109,13 +109,7 @@ module VersatileDiamond
           # @param [Array] nodes
           # @return [Boolean]
           def related_from_other_defined?(nodes)
-            species = nodes.map(&:uniq_specie).uniq
-            backbone_graph.any? do |key, rels|
-              atom_defined_and_in?(key, species) &&
-                rels.any? do |ns, rp|
-                  flatten_relations_of(ns).any? { |n, _| nodes.include?(n) }
-                end
-            end
+            !map_bone_relation_to(nodes).empty?
           end
 
         private
@@ -164,6 +158,33 @@ module VersatileDiamond
             end
           end
 
+          # @return [Array] the list of lists of key nodes with defined atoms
+          def key_defined_atom_nodes_list
+            key_nodes_lists.each_with_object([]) do |nodes, acc|
+              defined_atom_nodes = nodes.select { |n| dict.var_of(n.atom) }
+              acc << defined_atom_nodes unless defined_atom_nodes.empty?
+            end
+          end
+
+          # @param [Array] nodes
+          # @return [Array]
+          def key_defined_atom_nodes_except(nodes)
+            key_defined_atom_nodes_list.reject do |key|
+              key.any? { |n| nodes.include?(n) }
+            end
+          end
+
+          # @param [Array] nodes
+          # @yield [Nodes::BaseNode, Concepts::Bond] each relation to each node
+          # @return [Array]
+          def map_bone_relation_to(nodes, &block)
+            key_defined_atom_nodes_except(nodes).flat_map do |defined_atom_nodes|
+              bone_defined_relation_of(defined_atom_nodes) do |node, rel|
+                nodes.include?(node) && (!block_given? || block[node, rel])
+              end
+            end
+          end
+
           # Gets all existed relations over full big graph of context
           # @param [Array] nodes
           # @return [Array]
@@ -192,22 +213,14 @@ module VersatileDiamond
           # @yield [Concepts::Bond] filter relation to selected nodes
           # @return [Array] nodes with filtered relations
           def filter_relations_to(nodes, &block)
-            species = nodes.map(&:uniq_specie).uniq
-            rels_to_nodes = key_nodes_lists.each_with_object([]) do |key, acc|
-              if atom_defined_and_not_in?(key, species)
-                each_bone_defined_relation(key) do |node, rel|
-                  acc << node if nodes.include?(node) && block[rel]
-                end
-              end
-            end
-            rels_to_nodes.map(&:first).uniq
+            map_bone_relation_to(nodes) { |_, r| block[r] }.map(&:first).uniq
           end
 
           # @param [Array] nodes
           # @yield [Nodes::BaseNode, Concepts::Bond] iterates each relation of nodes
-          def each_bone_defined_relation(nodes, &block)
-            bone_relations_of(nodes).reduce(:+).each do |n, r|
-              block[n, r] if @dict.var_of(n.atom)
+          def bone_defined_relation_of(nodes, &block)
+            bone_relations_of(nodes).reduce(:+).select do |n, r|
+              @dict.var_of(n.atom) && block[n, r]
             end
           end
 
@@ -229,31 +242,9 @@ module VersatileDiamond
           end
 
           # @param [Array] nodes
-          # @param [Array] uniq_species
-          # @return [Boolean]
-          # @deprecated
-          def atom_defined_and_not_in?(nodes, uniq_species)
-            any_defined_atom?(nodes) { |n| !uniq_species.include?(n.uniq_specie) }
-          end
-
-          # @param [Array] nodes
-          # @param [Array] uniq_species
-          # @return [Boolean]
-          def atom_defined_and_in?(nodes, uniq_species)
-            any_defined_atom?(nodes) { |n| uniq_species.include?(n.uniq_specie) }
-          end
-
-          # @param [Array] nodes
-          # @yield [Nodes::BaseNode] additional check
-          # @return [Boolean]
-          def any_defined_atom?(nodes, &block)
-            nodes.any? { |node| dict.var_of(node.atom) && block[node] }
-          end
-
-          # @param [Array] nodes
           # @return [Array]
           def with_symmetric_atoms?(nodes)
-            !nodes.map(&:symmetric_atoms).any?(&:empty?)
+            !nodes.map(&:symmetric_atoms).all?(&:empty?)
           end
 
           # @param [Array] rels_lists

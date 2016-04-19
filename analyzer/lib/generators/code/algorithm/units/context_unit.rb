@@ -273,9 +273,7 @@ module VersatileDiamond
           def check_new_atoms(&block)
             reached_nodes = @context.species_nodes(species)
             if !reached_nodes.empty? && atoms_comparison_required?(reached_nodes)
-              check_not_existed_previos_atoms(reached_nodes) do
-                check_existed_previos_atoms(reached_nodes, &block)
-              end
+              check_previous_atoms(reached_nodes, &block)
             else
               block.call
             end
@@ -401,6 +399,15 @@ module VersatileDiamond
             else
               atoms_pairs = checkable_pairs.map { |pair| pair.map(&:atom) }
               check_bonds_condition(atoms_pairs, &block)
+            end
+          end
+
+          # @param [Array] checking_nodes
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_previous_atoms(checking_nodes, &block)
+            check_not_existed_previos_atoms(checking_nodes) do
+              check_existed_previos_atoms(checking_nodes, &block)
             end
           end
 

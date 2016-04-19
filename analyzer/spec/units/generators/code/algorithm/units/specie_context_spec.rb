@@ -258,21 +258,43 @@ module VersatileDiamond
               it { expect(result).to be_falsey }
             end
 
-            describe 'side nodes with another specie are not related' do
+            describe 'side nodes with not defined self' do
               include_context :alt_intermed_context
+              before { dict.make_atom_s(cbr) }
+              it { expect(result).to be_falsey }
+            end
+
+            describe 'side nodes with not defined side' do
+              include_context :alt_intermed_context
+              before { dict.make_atom_s(cdr) }
               it { expect(result).to be_falsey }
             end
 
             describe 'side nodes with another specie are related' do
               include_context :alt_intermed_context
-              before { dict.make_atom_s(cbr) }
+              before do
+                dict.make_atom_s(cbr)
+                dict.make_atom_s(cdr)
+              end
               it { expect(result).to be_truthy }
             end
 
-            describe 'side nodes with not existed relation' do
+            describe 'forward side nodes with not existed relation' do
               include_context :half_intermed_context
-              before { dict.make_atom_s(cbl) }
+              before do
+                dict.make_atom_s([cbr, cbl])
+                dict.make_atom_s([cdr, cdl])
+              end
               it { expect(result).to be_truthy }
+            end
+
+            describe 'reverse side nodes with not existed relation' do
+              include_context :alt_half_intermed_context
+              before do
+                dict.make_atom_s([cbr, cbl])
+                dict.make_atom_s([cdr, cdl])
+              end
+              it { expect(result).to be_falsey }
             end
           end
         end
