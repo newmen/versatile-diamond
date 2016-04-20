@@ -238,16 +238,22 @@ module VersatileDiamond
           # @param [Array] uniq_species
           # @return [Array] lists of related nodes with undefined atoms
           def symmetric_related_nodes(uniq_species)
-            nodes_lists = undefined_atoms_nodes_in(splitten_nodes, uniq_species)
-            nodes_lists.select(&method(:with_symmetric_atoms?))
+            nodes_lists = nodes_with_species(splitten_nodes, uniq_species)
+            symmetric_nodes_lists = nodes_lists.select(&method(:with_symmetric_atoms?))
+            symmetric_nodes_lists.reject do |nodes|
+              backbone_graph.all? do |ns, rels|
+                rels.empty? || ((nodes & ns).empty? &&
+                                  (nodes & rels.map(&:first).reduce(:+)).empty?)
+              end
+            end
           end
 
           # @param [Array] nodes_lists
           # @param [Array] uniq_species
           # @return [Array]
-          def undefined_atoms_nodes_in(nodes_lists, uniq_species)
+          def nodes_with_species(nodes_lists, uniq_species)
             nodes_lists.map_non_empty do |nodes|
-              nodes.select { |n| undefined_atom_of?(n, uniq_species) }
+              nodes.select { |n| specie_in?(n, uniq_species) }
             end
           end
 
@@ -258,17 +264,10 @@ module VersatileDiamond
             uniq_species.include?(node.uniq_specie)
           end
 
-          # @param [Nodes::BaseNode] node
-          # @param [Array] uniq_species
-          # @return [Boolean]
-          def undefined_atom_of?(node, uniq_species)
-            !atom_defined?(node) && specie_in?(node, uniq_species)
-          end
-
           # @param [Array] nodes
           # @return [Array]
           def with_symmetric_atoms?(nodes)
-            !nodes.map(&:symmetric_atoms).all?(&:empty?)
+            !nodes.map(&:symmetric_atoms).any?(&:empty?)
           end
 
           # @param [Array] rels_lists

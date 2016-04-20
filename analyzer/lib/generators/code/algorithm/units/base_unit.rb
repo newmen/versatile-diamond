@@ -184,7 +184,8 @@ module VersatileDiamond
           # @return [Boolean]
           # TODO: specie specific rspec already exist
           def neighbour?(unit)
-            same_species = anchored_species.select { |s| unit.species.include?(s) }
+            selector_proc = unit.species.public_method(:include?)
+            same_species = anchored_species.select(&selector_proc)
             same_species.empty? || same_species.all?(&:none?)
           end
 

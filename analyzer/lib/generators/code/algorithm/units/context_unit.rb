@@ -63,9 +63,9 @@ module VersatileDiamond
           #   in the case when neighbour nodes are not similar
           # TODO: must be protected
           def asymmetric_related_atoms?
-            checking_nodes = @context.symmetric_close_nodes(species)
-            checking_nodes.one? ||
-              !(checking_nodes.empty? || @context.symmetric_relations?(checking_nodes))
+            close_nodes = @context.symmetric_close_nodes(species)
+            close_nodes.one? ||
+              !(close_nodes.empty? || @context.symmetric_relations?(close_nodes))
           end
 
           def to_s

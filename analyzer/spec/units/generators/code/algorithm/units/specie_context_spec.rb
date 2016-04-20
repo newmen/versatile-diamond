@@ -207,8 +207,7 @@ module VersatileDiamond
 
             describe 'just one node with undefined atom' do
               include_context :rab_context
-              it { expect(nodes.map(&:uniq_specie)).to eq([node_specie]) }
-              it { expect(nodes.map(&:atom)).to eq([cr]) }
+              it { expect(nodes).to be_empty }
             end
 
             describe 'just one node with defined atom' do
@@ -222,10 +221,62 @@ module VersatileDiamond
               it { expect(nodes).to be_empty }
             end
 
-            describe 'close symmetric nodes' do
+            describe 'close symmetric intermediate nodes' do
               include_context :intermed_context
               it { expect(nodes.map(&:uniq_specie)).to eq([node_specie]) }
               it { expect(nodes.map(&:atom)).to eq([cbr]) }
+            end
+
+            describe 'close atom half symmetric nodes' do
+              include_context :top_mob_context
+              it { expect(nodes.map(&:uniq_specie)).to eq([node_specie]) }
+              it { expect(nodes.map(&:atom)).to eq([cr]) }
+            end
+
+            describe 'close atom on half-reversed non symmetric nodes' do
+              include_context :alt_top_mob_context
+
+              describe 'one specie' do
+                it { expect(nodes).to be_empty }
+              end
+
+              describe 'two species' do
+                let(:bridge) { node_specie }
+                let(:methyl_on_bridge) { backbone.entry_nodes.first.first.uniq_specie }
+                let(:nodes) do
+                  subject.symmetric_close_nodes([bridge, methyl_on_bridge]).flatten
+                end
+                it { expect(nodes).to be_empty }
+              end
+            end
+
+            describe 'close atom half-reversed symmetric nodes' do
+              include_context :alt_top_mob_context
+
+              # override to MethylOnBridge
+              let(:node_specie) { backbone.entry_nodes.first.first.uniq_specie }
+
+              shared_examples_for :check_half_reverse_symmetric_nodes do
+                it { expect(nodes.map(&:uniq_specie)).to eq([node_specie]) }
+                it { expect(nodes.map(&:atom)).to eq([cr]) }
+              end
+
+              it_behaves_like :check_half_reverse_symmetric_nodes
+
+              it_behaves_like :check_half_reverse_symmetric_nodes do
+                before { dict.make_atom_s(cr) }
+              end
+
+              it_behaves_like :check_half_reverse_symmetric_nodes do
+                before { dict.make_atom_s(ct) }
+              end
+
+              it_behaves_like :check_half_reverse_symmetric_nodes do
+                before do
+                  dict.make_atom_s(ct)
+                  dict.make_atom_s(cr)
+                end
+              end
             end
           end
 
