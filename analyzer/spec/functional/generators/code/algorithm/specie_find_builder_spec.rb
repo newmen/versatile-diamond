@@ -342,7 +342,7 @@ module VersatileDiamond
         if (!anchor->hasRole(CROSS_BRIDGE_ON_DIMERS, #{role_ctl}))
         {
             Dimer *dimer1 = anchor->specByRole<Dimer>(#{d_cr});
-            Atom *atom1 = dimer1->atom(3);
+            Atom *atom1 = dimer1->atom(0);
             anchor->eachAmorphNeighbour([&](Atom *amorph1) {
                 if (amorph1->is(#{role_cm}))
                 {
@@ -353,10 +353,13 @@ module VersatileDiamond
                             if (neighbours1[0]->hasBondWith(neighbours1[1]))
                             {
                                 Dimer *dimer2 = neighbours1[0]->specByRole<Dimer>(#{d_cr});
-                                if (neighbours1[0]->hasBondWith(amorph1))
+                                if (neighbours1[1] == dimer2->atom(3))
                                 {
-                                    ParentSpec *parents[2] = { dimer1, dimer2 };
-                                    create<CrossBridgeOnDimers>(amorph1, parents);
+                                    if (neighbours1[0]->hasBondWith(amorph1))
+                                    {
+                                        ParentSpec *parents[2] = { dimer1, dimer2 };
+                                        create<CrossBridgeOnDimers>(amorph1, parents);
+                                    }
                                 }
                             }
                         }
@@ -383,7 +386,7 @@ module VersatileDiamond
         if (!anchor->hasRole(CROSS_BRIDGE_ON_DIMERS, #{role_cm}))
         {
             anchor->eachSpecsPortionByRole<MethylOnDimer>(#{mod_cm}, 2, [](MethylOnDimer **species1) {
-                Atom *atoms1[4] = { species1[0]->atom(1), species1[0]->atom(4), species1[1]->atom(1), species1[1]->atom(4) };
+                Atom *atoms1[4] = { species1[1]->atom(1), species1[1]->atom(4), species1[0]->atom(1), species1[0]->atom(4) };
                 Atom *atoms2[2] = { atoms1[0], atoms1[1] };
                 Atom *atoms3[2] = { atoms1[2], atoms1[3] };
                 eachNeighbours<2>(atoms2, &Diamond::cross_100, [&atoms1, &atoms3, &species1](Atom **neighbours1) {

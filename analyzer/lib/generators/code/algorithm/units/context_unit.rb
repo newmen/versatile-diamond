@@ -59,6 +59,15 @@ module VersatileDiamond
             end
           end
 
+          # @return [Boolean] gets false if close nodes are not symmetric and true
+          #   in the case when neighbour nodes are not similar
+          # TODO: must be protected
+          def asymmetric_related_atoms?
+            checking_nodes = @context.symmetric_close_nodes(species)
+            checking_nodes.one? ||
+              !(checking_nodes.empty? || @context.symmetric_relations?(checking_nodes))
+          end
+
           def to_s
             inspect
           end
@@ -103,14 +112,6 @@ module VersatileDiamond
             else
               raise 'Incorrect unit configuration'
             end
-          end
-
-          # @return [Boolean] gets false if close nodes are not symmetric and true
-          #   in the case when neighbour nodes are not similar
-          def asymmetric_related_atoms?
-            checking_nodes = @context.symmetric_close_nodes(species)
-            checking_nodes.one? ||
-              !(checking_nodes.empty? || @context.symmetric_relations?(checking_nodes))
           end
 
         private
@@ -443,7 +444,7 @@ module VersatileDiamond
           # @param [Array] zipping_nodes
           # @return [Array]
           def zip_vars_with_previos(zipping_nodes)
-            old_nodes = zipping_nodes.select { |n| old_atom_var?(n.atom) }
+            old_nodes = zipping_nodes.select(&method(:old_atom_var?))
             old_nodes.map do |node|
               [
                 dict.var_of(node.atom),
@@ -705,10 +706,12 @@ module VersatileDiamond
             [a, b].map(&:uniq_specie).reject(&:none?).size > 1
           end
 
-          # @param [Atom] atom
+          # @param [Nodes::BaseNode] node
           # @return [Boolean]
-          def old_atom_var?(atom)
-            dict.prev_var_of(atom) || (!atoms.include?(atom) && dict.var_of(atom))
+          def old_atom_var?(node)
+            dict.prev_var_of(node.atom) ||
+              (!atoms.include?(node.atom) &&
+                dict.var_of(node.uniq_specie) && dict.var_of(node.atom))
           end
         end
 
