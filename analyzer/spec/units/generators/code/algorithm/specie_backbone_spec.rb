@@ -118,6 +118,22 @@ module VersatileDiamond
               end
             end
 
+            describe 'under down migration through 111 face' do
+              subject { dept_top_methyl_on_half_extended_bridge_base }
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+              end
+
+              it_behaves_like :check_ordered_graph do
+                let(:entry_node) { backbone.entry_nodes.first }
+                let(:ordered_graph) do
+                  [
+                    [[cr], []]
+                  ]
+                end
+              end
+            end
+
             describe 'different dept_cross_bridge_on_bridges_base' do
               subject { dept_cross_bridge_on_bridges_base }
 
