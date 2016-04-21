@@ -82,7 +82,7 @@ module VersatileDiamond
           # @param [Nodes::BaseNode] b
           # @return [Concepts::Bond]
           def relation_between(a, b)
-            to_b = relations_of([a]).first.find { |node, _| node == b }
+            to_b = relations_of_one(a).find { |node, _| node == b }
             to_b && to_b.last
           end
 
@@ -162,35 +162,40 @@ module VersatileDiamond
             nodes.map(&nodes_graph.public_method(:[]))
           end
 
+          # @param [Nodes::BaseNode] node
+          # @return [Array]
+          def relations_of_one(node)
+            relations_of([node]).reduce(:+)
+          end
+
+          # @param [Array] nodes
+          # @return [Array]
+          def nodes_with_relations(nodes)
+            nodes.zip(relations_of(nodes))
+          end
+
           # @param [Array] nodes
           # @return [Array]
           def bone_relations_of(nodes)
-            nodes.zip(relations_of(nodes)).map do |node, rels|
+            nodes_with_relations(nodes).map do |node, rels|
               rels.select { |n, _| bone_relation?(node, n) }
             end
           end
 
-          # @return [Array] the list of lists of key nodes with defined atoms
-          def key_defined_atom_nodes_list
-            key_nodes_lists.map_non_empty do |nodes|
-              nodes.select(&method(:atom_defined?))
-            end
-          end
-
-          # @param [Array] nodes
+          # @param [Nodes::BaseNode] node
           # @return [Array]
-          def key_defined_atom_nodes_except(nodes)
-            key_defined_atom_nodes_list.reject do |key|
-              key.any? { |n| nodes.include?(n) }
-            end
+          def bone_relations_of_one(node)
+            bone_relations_of([node]).reduce(:+)
           end
 
           # @param [Array] nodes
           # @yield [Nodes::BaseNode, Concepts::Bond] each relation to each node
           # @return [Array]
           def map_bone_relation_to(nodes, &block)
-            key_defined_atom_nodes_except(nodes).flat_map do |defined_atom_nodes|
-              bone_defined_relation_of(defined_atom_nodes) do |node, rel|
+            keys = key_nodes_lists.reduce(:+).reject(&nodes.public_method(:include?))
+            keys.select(&method(:atom_defined?)).flat_map do |node|
+              rels = bone_relations_of_one(node).select { |n, _| atom_defined?(n) }
+              rels.select do |node, rel|
                 nodes.include?(node) && (!block_given? || block[node, rel])
               end
             end
@@ -225,14 +230,6 @@ module VersatileDiamond
           # @return [Array] nodes with filtered relations
           def filter_relations_to(nodes, &block)
             map_bone_relation_to(nodes) { |_, r| block[r] }.map(&:first).uniq
-          end
-
-          # @param [Array] nodes
-          # @yield [Nodes::BaseNode, Concepts::Bond] iterates each relation of nodes
-          def bone_defined_relation_of(nodes, &block)
-            bone_relations_of(nodes).reduce(:+).select do |n, r|
-              atom_defined?(n) && block[n, r]
-            end
           end
 
           # @param [Array] uniq_species
