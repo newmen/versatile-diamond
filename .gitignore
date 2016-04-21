@@ -18,6 +18,7 @@ engine/hand-generations/simple-diamond
 vde-*s.o*
 vde-*s.e*
 
+.DS_Store
 .idea
 *.dump
 .bundle/

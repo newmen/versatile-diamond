@@ -48,9 +48,9 @@ module VersatileDiamond
           intersec_result_pointer[:intersectsNum].times do
             isec = []
             isec_size.times do
-              id = data[i].read_uint
+              id = data[i].read_uint64
               isec << @ids_to_vertices[id]
-              i += FFI::TYPE_UINT32.size
+              i += FFI::TYPE_UINT64.size
             end
             result << isec
           end

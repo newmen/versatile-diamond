@@ -9,24 +9,24 @@ typedef AssocGraph<ObjectID> AG;
 
 void checkUnionOp()
 {
-    AG::Vertices first = { 1, 2, 3 };
+    AG::Vertices first = { 70142227367200, 2, 3 };
     AG::Vertices second = { 4, 2, 5, 3 };
-    assert(unionOp(first, second) == AG::Vertices({ 1, 2, 3, 4, 5 }));
-    assert(unionOp(second, first) == AG::Vertices({ 4, 2, 5, 3, 1 }));
+    assert(unionOp(first, second) == AG::Vertices({ 70142227367200, 2, 3, 4, 5 }));
+    assert(unionOp(second, first) == AG::Vertices({ 4, 2, 5, 3, 70142227367200 }));
 }
 
 void checkDiffOp()
 {
-    AG::Vertices first = { 1, 2, 3 };
+    AG::Vertices first = { 70142227367200, 2, 3 };
     AG::Vertices second = { 4, 2, 5, 3 };
-    assert(diffOp(first, second) == AG::Vertices({ 1 }));
+    assert(diffOp(first, second) == AG::Vertices({ 70142227367200 }));
     assert(diffOp(second, first) == AG::Vertices({ 4, 5 }));
 }
 
 void checkAssocGraph()
 {
     AG g;
-    ObjectID v1 = 1;
+    ObjectID v1 = 70142227367200;
     ObjectID v2 = 2;
     ObjectID v3 = 3;
     ObjectID v4 = 4;
@@ -46,7 +46,7 @@ void checkAssocGraph()
 
 void checkHanserRecursive()
 {
-    ObjectID v01 = 1;
+    ObjectID v01 = 70142227367200;
     ObjectID v02 = 2;
     ObjectID v03 = 3;
     ObjectID v11 = 11;

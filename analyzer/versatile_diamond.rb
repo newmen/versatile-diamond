@@ -14,6 +14,8 @@ require 'i18n'
 I18n.enforce_available_locales = true
 I18n.load_path << files_in('locales/*.yml')
 
+Encoding.default_external = Encoding::UTF_8
+
 require_relative 'load_helper' # useful methods
 require_each 'patches/*.rb' # same as monkey's patches
 using VersatileDiamond::Patches::RichString
