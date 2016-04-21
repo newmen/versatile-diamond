@@ -63,7 +63,7 @@ module VersatileDiamond
           # @param [Array] rel_args the arguments for #relation_proc method
           # @param [Array] sidepieces which will be checked after relations
           # @param [Array] prev_sidepieces the list of sidepieces which was used at
-          #   previos steps
+          #   previous steps
           # @return [Proc] which generates cpp code for check the sidepiece
           def check_sidepiece_proc(rel_args, sidepieces, prev_sidepieces)
             rl_proc = relations_proc(*rel_args)

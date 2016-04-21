@@ -159,7 +159,7 @@ module VersatileDiamond
         [variants, presented_cmbs]
       end
 
-      # Checks previos found chunks for similar as chunk and if them exist and their
+      # Checks previous found chunks for similar as chunk and if them exist and their
       # targets are different then swaps to chunk which targets most frequently used
       #
       # @param [Hash] variants of all found chunks

@@ -274,7 +274,9 @@ module VersatileDiamond
           def check_new_atoms(&block)
             reached_nodes = @context.species_nodes(species)
             if !reached_nodes.empty? && atoms_comparison_required?(reached_nodes)
-              check_previous_atoms(reached_nodes, &block)
+              check_not_existed_previous_atoms(reached_nodes) do
+                check_existed_previous_atoms(reached_nodes, &block)
+              end
             else
               block.call
             end
@@ -406,34 +408,25 @@ module VersatileDiamond
           # @param [Array] checking_nodes
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def check_previous_atoms(checking_nodes, &block)
-            check_not_existed_previos_atoms(checking_nodes) do
-              check_existed_previos_atoms(checking_nodes, &block)
-            end
-          end
-
-          # @param [Array] checking_nodes
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          def check_existed_previos_atoms(checking_nodes, &block)
+          def check_existed_previous_atoms(checking_nodes, &block)
             same_nodes = @context.existed_relations_to(checking_nodes)
-            check_previos_atoms(Expressions::EqualsCondition, same_nodes, &block)
+            check_previous_atoms(Expressions::EqualsCondition, same_nodes, &block)
           end
 
           # @param [Array] checking_nodes
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def check_not_existed_previos_atoms(checking_nodes, &block)
+          def check_not_existed_previous_atoms(checking_nodes, &block)
             not_nodes = @context.not_existed_relations_to(checking_nodes)
-            check_previos_atoms(Expressions::NotEqualsCondition, not_nodes, &block)
+            check_previous_atoms(Expressions::NotEqualsCondition, not_nodes, &block)
           end
 
           # @param [Class] cond_expr_class
           # @param [Array] checking_nodes
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def check_previos_atoms(cond_expr_class, checking_nodes, &block)
-            vars_pairs = zip_vars_with_previos(checking_nodes)
+          def check_previous_atoms(cond_expr_class, checking_nodes, &block)
+            vars_pairs = zip_vars_with_previous(checking_nodes)
             if vars_pairs.empty?
               block.call
             else
@@ -443,7 +436,7 @@ module VersatileDiamond
 
           # @param [Array] zipping_nodes
           # @return [Array]
-          def zip_vars_with_previos(zipping_nodes)
+          def zip_vars_with_previous(zipping_nodes)
             old_nodes = zipping_nodes.select(&method(:old_atom_var?))
             old_nodes.map do |node|
               [
