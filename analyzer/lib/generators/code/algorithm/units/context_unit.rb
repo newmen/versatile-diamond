@@ -63,7 +63,8 @@ module VersatileDiamond
           #   in the case when neighbour nodes are not similar
           # TODO: must be protected
           def asymmetric_related_atoms?
-            close_nodes = @context.symmetric_close_nodes(species)
+            area_nodes = @context.symmetric_close_nodes(species)
+            close_nodes = area_nodes.reject(&nodes.public_method(:include?))
             close_nodes.one? ||
               !(close_nodes.empty? || @context.symmetric_relations?(close_nodes))
           end
@@ -77,6 +78,8 @@ module VersatileDiamond
           end
 
         protected
+
+          def_delegator :unit, :nodes
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
@@ -297,11 +300,15 @@ module VersatileDiamond
             end
           end
 
+          # @param [ContextUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_avail_species_in(nbr, &block)
+            defined_ancn = defined_next_same_nodes(nbr)
             nbr.check_avail_species do
-              nbr.check_private_relations(&block)
+              check_eq_previous_atoms(defined_ancn, except_own: false) do
+                nbr.check_private_relations(&block)
+              end
             end
           end
 
@@ -352,7 +359,7 @@ module VersatileDiamond
             self_var = dict.var_of(atoms)
             nbr_var = dict.make_atom_s(nbr.atoms, name: 'neighbour')
             lattice =
-              Expressions::Core::ObjectType[unit.nodes.first.lattice_class.class_name]
+              Expressions::Core::ObjectType[nodes.first.lattice_class.class_name]
             relations = relations_between(self, nbr)
             are_same_relations = relations.uniq(&:exist?).one?
 
@@ -409,24 +416,42 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_existed_previous_atoms(checking_nodes, &block)
-            same_nodes = @context.existed_relations_to(checking_nodes)
-            check_previous_atoms(Expressions::EqualsCondition, same_nodes, &block)
+            relating_nodes = @context.existed_relations_to(checking_nodes)
+            check_eq_previous_atoms(relating_nodes, &block)
           end
 
           # @param [Array] checking_nodes
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_not_existed_previous_atoms(checking_nodes, &block)
-            not_nodes = @context.not_existed_relations_to(checking_nodes)
-            check_previous_atoms(Expressions::NotEqualsCondition, not_nodes, &block)
+            relating_nodes = @context.not_existed_relations_to(checking_nodes)
+            check_not_eq_previous_atoms(relating_nodes, &block)
+          end
+
+          # @param [Array] checking_nodes
+          # @param [Hash] kwargs set ignore own previous atoms or not
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_eq_previous_atoms(checking_nodes, **kwargs, &block)
+            cond_expr_class = Expressions::EqualsCondition
+            check_previous_atoms(cond_expr_class, checking_nodes, **kwargs, &block)
+          end
+
+          # @param [Array] checking_nodes
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_not_eq_previous_atoms(checking_nodes, &block)
+            cond_expr_class = Expressions::NotEqualsCondition
+            check_previous_atoms(cond_expr_class, checking_nodes, &block)
           end
 
           # @param [Class] cond_expr_class
           # @param [Array] checking_nodes
+          # @param [Hash] kwargs set ignore own previous atoms or not
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def check_previous_atoms(cond_expr_class, checking_nodes, &block)
-            vars_pairs = zip_vars_with_previous(checking_nodes)
+          def check_previous_atoms(cond_expr_class, checking_nodes, **kwargs, &block)
+            vars_pairs = zip_vars_with_previous(checking_nodes, **kwargs)
             if vars_pairs.empty?
               block.call
             else
@@ -434,10 +459,24 @@ module VersatileDiamond
             end
           end
 
+          # @param [ContextUnit] nbr
+          # @return [Array] the list of nodes which will be available again after
+          #   neighbour unit species check
+          def defined_next_same_nodes(nbr)
+            if @context.key?(nbr.nodes)
+              []
+            else
+              sncn = @context.symmetric_close_nodes(nbr.species)
+              undefined_sncn = sncn.reject { |n| dict.var_of(n.uniq_specie) }
+              undefined_sncn.select(&nodes.public_method(:include?))
+            end
+          end
+
           # @param [Array] zipping_nodes
+          # @param [Hash] kwargs set ignore own previous atoms or not
           # @return [Array]
-          def zip_vars_with_previous(zipping_nodes)
-            old_nodes = zipping_nodes.select(&method(:old_atom_var?))
+          def zip_vars_with_previous(zipping_nodes, **kwargs)
+            old_nodes = zipping_nodes.select { |n| old_atom_var?(n, **kwargs) }
             old_nodes.map do |node|
               [
                 dict.var_of(node.atom),
@@ -448,7 +487,7 @@ module VersatileDiamond
 
           # @return [Array]
           def zip_private_related_exprs
-            @context.private_relations_with(unit.nodes).map do |pair|
+            @context.private_relations_with(nodes).map do |pair|
               pair.map(&method(:atom_var_or_specie_call))
             end
           end
@@ -497,7 +536,7 @@ module VersatileDiamond
           #
           # @return [Array]
           def different_defined_species_nodes
-            other_nodes = all_nodes_with_atoms - unit.nodes
+            other_nodes = all_nodes_with_atoms - nodes
             if other_nodes.empty?
               []
             else
@@ -559,7 +598,7 @@ module VersatileDiamond
           # @param [ContextUnit] nbr
           # @return [Array]
           def neighbour_nodes_pairs(nbr)
-            nbr.unit.nodes.combination(2).select do |a, b|
+            nbr.nodes.combination(2).select do |a, b|
               relation = @context.relation_between(a, b)
               relation && relation.exist?
             end
@@ -616,7 +655,7 @@ module VersatileDiamond
           # @return [Boolean]
           def atom_used_many_times?
             atoms.one? &&
-              unit.nodes.all?(&all_popular_atoms_nodes.public_method(:include?))
+              nodes.all?(&all_popular_atoms_nodes.public_method(:include?))
           end
 
           # @return [Boolean]
@@ -700,10 +739,11 @@ module VersatileDiamond
           end
 
           # @param [Nodes::BaseNode] node
+          # @option [Boolean] :except_own
           # @return [Boolean]
-          def old_atom_var?(node)
+          def old_atom_var?(node, except_own: true)
             dict.prev_var_of(node.atom) ||
-              (!atoms.include?(node.atom) &&
+              (!(except_own && atoms.include?(node.atom)) &&
                 dict.var_of(node.uniq_specie) && dict.var_of(node.atom))
           end
         end

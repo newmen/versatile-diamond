@@ -112,6 +112,12 @@ module VersatileDiamond
             !map_bone_relation_to(nodes).empty?
           end
 
+          # @param [Array] nodes
+          # @return [Boolean]
+          def key?(nodes)
+            key_nodes_lists.include?(nodes)
+          end
+
         private
 
           attr_reader :dict, :nodes_graph, :backbone_graph
@@ -233,25 +239,24 @@ module VersatileDiamond
           end
 
           # @param [Array] uniq_species
-          # @return [Array] lists of related nodes with undefined atoms
+          # @return [Array] lists of symmetric nodes with passed species which have
+          #   bone relations to another nodes
           def symmetric_related_nodes(uniq_species)
-            nodes_lists = nodes_with_species(splitten_nodes, uniq_species)
-            symmetric_nodes_lists = nodes_lists.select(&method(:with_symmetric_atoms?))
-            symmetric_nodes_lists.reject do |nodes|
+            nodes = nodes_with_species(bone_nodes, uniq_species)
+            symmetric_nodes = nodes.select(&:symmetric_atoms?)
+            symmetric_nodes.reject do |node|
               backbone_graph.all? do |ns, rels|
-                rels.empty? || ((nodes & ns).empty? &&
-                                  (nodes & rels.map(&:first).reduce(:+)).empty?)
+                rels.empty? || !(ns.include?(node) ||
+                                  rels.map(&:first).reduce(:+).include?(node))
               end
             end
           end
 
-          # @param [Array] nodes_lists
+          # @param [Array] nodes
           # @param [Array] uniq_species
           # @return [Array]
-          def nodes_with_species(nodes_lists, uniq_species)
-            nodes_lists.map_non_empty do |nodes|
-              nodes.select { |n| specie_in?(n, uniq_species) }
-            end
+          def nodes_with_species(nodes, uniq_species)
+            nodes.select { |n| specie_in?(n, uniq_species) }
           end
 
           # @param [Nodes::BaseNode] node
@@ -259,12 +264,6 @@ module VersatileDiamond
           # @return [Boolean]
           def specie_in?(node, uniq_species)
             uniq_species.include?(node.uniq_specie)
-          end
-
-          # @param [Array] nodes
-          # @return [Array]
-          def with_symmetric_atoms?(nodes)
-            !nodes.map(&:symmetric_atoms).any?(&:empty?)
           end
 
           # @param [Array] rels_lists

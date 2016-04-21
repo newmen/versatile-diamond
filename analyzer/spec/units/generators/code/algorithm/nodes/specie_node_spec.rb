@@ -150,10 +150,11 @@ module VersatileDiamond
             it { expect(node_cb.sub_properties).to eq(props_ct) }
           end
 
-          describe '#symmetric_atoms' do
+          describe '#symmetric_atoms && #symmetric_atoms?' do
             it { expect(node_cm.symmetric_atoms).to be_empty }
             it { expect(node_cb.symmetric_atoms).to be_empty }
             it { expect(node_cr.symmetric_atoms).to be_empty }
+            it { expect(node_cr.symmetric_atoms?).to be_falsey }
 
             describe 'in symmetric specie' do
               let(:base_specs) { [dept_bridge_base] }
@@ -170,6 +171,7 @@ module VersatileDiamond
               let(:node_cr) { factory_rab.get_node(cr) }
 
               it { expect(node_cr.symmetric_atoms).to match_array([cl, cr]) }
+              it { expect(node_cr.symmetric_atoms?).to be_truthy }
             end
           end
 

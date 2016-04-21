@@ -203,7 +203,7 @@ module VersatileDiamond
           end
 
           describe '#symmetric_close_nodes' do
-            let(:nodes) { subject.symmetric_close_nodes([node_specie]).flatten }
+            let(:nodes) { subject.symmetric_close_nodes([node_specie]) }
 
             describe 'just one node with undefined atom' do
               include_context :rab_context
@@ -236,17 +236,15 @@ module VersatileDiamond
             describe 'close atom on half-reversed non symmetric nodes' do
               include_context :alt_top_mob_context
 
-              describe 'one specie' do
+              describe 'empty for bridge' do
                 it { expect(nodes).to be_empty }
               end
 
-              describe 'two species' do
-                let(:bridge) { node_specie }
+              describe 'not empty for methyl on bridge' do
                 let(:methyl_on_bridge) { backbone.entry_nodes.first.first.uniq_specie }
-                let(:nodes) do
-                  subject.symmetric_close_nodes([bridge, methyl_on_bridge]).flatten
-                end
-                it { expect(nodes).to be_empty }
+                let(:nodes) { subject.symmetric_close_nodes([methyl_on_bridge]) }
+                let(:result) { nodes.select { |n| n.uniq_specie == methyl_on_bridge } }
+                it { expect(nodes).to eq(result) }
               end
             end
 
@@ -347,6 +345,12 @@ module VersatileDiamond
               end
               it { expect(result).to be_falsey }
             end
+          end
+
+          describe '#key?' do
+            include_context :alt_half_intermed_context
+            it { expect(subject.key?(unit_nodes)).to be_truthy }
+            it { expect(subject.key?([unit_nodes.first])).to be_falsey }
           end
         end
 

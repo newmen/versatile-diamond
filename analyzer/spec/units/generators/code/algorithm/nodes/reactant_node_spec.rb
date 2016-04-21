@@ -109,6 +109,12 @@ module VersatileDiamond
             it { expect(node_ab.sub_properties).to eq(props_ab) }
           end
 
+          describe '#symmetric_atoms && #symmetric_atoms?' do
+            it { expect(node_aib.symmetric_atoms).to be_empty }
+            it { expect(node_ab.symmetric_atoms).to be_empty }
+            it { expect(node_ab.symmetric_atoms?).to be_falsey }
+          end
+
           describe '#lattice_class' do
             it { expect(node_aib.lattice_class).to eq(node_ab.lattice_class) }
           end
