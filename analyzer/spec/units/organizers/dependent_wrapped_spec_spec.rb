@@ -59,6 +59,10 @@ module VersatileDiamond
         end
       end
 
+      describe '#atoms' do
+        it { expect(dept_bridge_base.atoms).to eq(dept_bridge_base.links.keys) }
+      end
+
       describe '#anchors' do
         shared_examples_for :check_anchors do
           before do

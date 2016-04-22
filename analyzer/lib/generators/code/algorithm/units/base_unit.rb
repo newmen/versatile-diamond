@@ -55,9 +55,10 @@ module VersatileDiamond
 
           # @param [Symbol] method_name
           # @param [Array] calling_atoms
+          # @param [Hash] kwargs
           # @return [Array]
-          def atom_with_specie_calls(method_name, calling_atoms)
-            pack_with_species(calling_atoms).map do |atom, specie|
+          def atom_with_specie_calls(method_name, calling_atoms, **kwargs)
+            pack_with_species(calling_atoms, **kwargs).map do |atom, specie|
               dict.var_of(atom).public_send(method_name, specie)
             end
           end
@@ -67,7 +68,8 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_atoms_roles(checking_atoms, &block)
-            checks = atom_with_specie_calls(:role_in, checking_atoms)
+            checks =
+              atom_with_specie_calls(:role_in, checking_atoms, anchor_required: false)
             Expressions::AndCondition[checks, block.call]
           end
 
@@ -206,7 +208,7 @@ module VersatileDiamond
 
           def inspect
             sis = species.map(&:inspect)
-            pops = nodes.map(&:properties).uniq.map(&:inspect)
+            pops = nodes.uniq(&:atom).map(&:properties).map(&:inspect)
             "•[#{sis.join(' ')}] [#{pops.join(' ')}]•"
           end
 
@@ -303,11 +305,32 @@ module VersatileDiamond
           end
 
           # @param [Array] packing_atoms
+          # @param [Hash] kwargs
           # @return [Array]
-          def pack_with_species(packing_atoms)
-            packing_atoms.map do |atom|
-              [atom, species.find { |specie| specie.anchor?(atom) }]
+          def pack_with_species(packing_atoms, **kwargs)
+            packing_atoms.zip(packing_species(packing_atoms, **kwargs))
+          end
+
+          # @param [Array] packing_atoms
+          # @option [Boolean] :anchor_required
+          # @return [Array]
+          def packing_species(packing_atoms, anchor_required: true)
+            packing_species = packing_atoms.map(&method(:chose_specie_for))
+            if anchor_required
+              packing_species
+            else
+              packing_species.zip(packing_atoms).map do |specie, atom|
+                specie || species.find { |s| s.atom?(atom) } ||
+                  raise(ArgumentError, 'Cannot select specie for one of packing atoms')
+              end
             end
+          end
+
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   packing_atom the specie for which will be chosed
+          # @return [Instances::SpecieInstance]
+          def chose_specie_for(packing_atom)
+            species.find { |specie| specie.anchor?(packing_atom) }
           end
 
           # @return [Array]

@@ -89,7 +89,7 @@ module VersatileDiamond
           # @param [Array] species
           # @return [Array]
           def symmetric_close_nodes(species)
-            symmetric_related_nodes(species).uniq(&:to_set)
+            symmetric_related_nodes(species).uniq
           end
 
           # @param [Array] nodes

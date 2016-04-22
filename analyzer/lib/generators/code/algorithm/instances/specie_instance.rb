@@ -30,13 +30,6 @@ module VersatileDiamond
             original
           end
 
-          # Gets concept specie
-          # @return [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
-          # @deprecated
-          def concept
-            spec.spec
-          end
-
           # Gets symmetric atoms in original specie
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom the for which the symmetries will be gotten
@@ -83,6 +76,15 @@ module VersatileDiamond
           # @return [Boolean] is anchor or not
           def anchor?(atom)
             spec.anchors.include?(reflection_of(atom))
+          end
+
+          # Checks that passed atom belongs to current specie
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which will be checked
+          # @return [Boolean] is specie atom or not
+          def atom?(atom)
+            reflection = reflection_of(atom)
+            reflection && spec.spec.links.keys.include?(reflection)
           end
 
           # Checks that passed atom is symmetric in current specie

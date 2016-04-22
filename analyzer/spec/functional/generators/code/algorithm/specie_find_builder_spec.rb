@@ -269,6 +269,35 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_code do
+              subject { dept_two_methyls_on_dimer_base }
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
+              let(:typical_reactions) do
+                [
+                  dept_hydrogen_abs_from_gap,
+                  dept_incoherent_dimer_drop,
+                  dept_intermed_migr_dh_drop
+                ]
+              end
+              let(:find_algorithm) do
+                <<-CODE
+    Atom *atoms1[2] = { parent->atom(1), parent->atom(4) };
+    if (atoms1[1]->is(#{role_cr}))
+    {
+        if (!atoms1[0]->hasRole(TWO_METHYLS_ON_DIMER, #{role_cr}))
+        {
+            atoms1[1]->eachAmorphNeighbour([&parent](Atom *amorph1) {
+                if (amorph1->is(#{role_c1}))
+                {
+                    create<TwoMethylsOnDimer>(amorph1, parent);
+                }
+            });
+        }
+    }
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
               subject { dept_cross_bridge_on_bridges_base }
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:find_algorithm) do
@@ -452,12 +481,12 @@ module VersatileDiamond
               let(:base_specs) do
                 [dept_bridge_base, dept_methyl_on_bridge_base, subject]
               end
-              let(:typical_reactions) { [dept_intermed_migr_dh_drop] }
+              let(:typical_reactions) { [dept_migration_over_111] }
               let(:find_algorithm) do
                 <<-CODE
     if (anchor->is(#{role_ct}))
     {
-        if (!anchor->hasRole(TOP_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_ct}))
+        if (!anchor->checkAndFind(TOP_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_ct}))
         {
             MethylOnBridge *methylOnBridge1 = anchor->specByRole<MethylOnBridge>(#{role_ct});
             methylOnBridge1->eachSymmetry([](ParentSpec *methylOnBridge2) {
@@ -470,7 +499,7 @@ module VersatileDiamond
     }
     if (anchor->is(#{role_cr}))
     {
-        if (!anchor->hasRole(TOP_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_cr}))
+        if (!anchor->checkAndFind(TOP_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_cr}))
         {
             Bridge *bridge1 = anchor->specByRole<Bridge>(#{b_ct});
             eachNeighbour(anchor, &Diamond::front_110, [&](Atom *neighbour1) {

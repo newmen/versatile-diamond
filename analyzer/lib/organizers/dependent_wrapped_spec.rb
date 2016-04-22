@@ -39,10 +39,16 @@ module VersatileDiamond
         @_residual_links ||= target.links
       end
 
+      # @return [Array]
+      # TODO: must be protected
+      def atoms
+        links.keys
+      end
+
       # Gets anchors of internal specie
       # @return [Array] the array of anchor atoms
       def anchors
-        @_anchors ||= main_anchors + (complex? ? skipped_anchors : [])
+        @_anchors ||= (main_anchors + skipped_anchors).uniq
       end
 
       # Gets the parent specs of current instance
@@ -174,11 +180,6 @@ module VersatileDiamond
       end
 
     protected
-
-      # @return [Array]
-      def atoms
-        links.keys
-      end
 
       # Gets common atoms in case when other is direct parent of self or vice versa
       # @param [DependentWrappedSpec] other

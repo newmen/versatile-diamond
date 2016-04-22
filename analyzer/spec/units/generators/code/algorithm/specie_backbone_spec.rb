@@ -8,8 +8,12 @@ module VersatileDiamond
         describe SpecieBackbone, type: :algorithm do
           let(:base_specs) { [] }
           let(:specific_specs) { [] }
+          let(:typical_reactions) { [] }
           let(:generator) do
-            stub_generator(base_specs: base_specs, specific_specs: specific_specs)
+            stub_generator(
+              base_specs: base_specs,
+              specific_specs: specific_specs,
+              typical_reactions: typical_reactions)
           end
 
           let(:specie) { generator.specie_class(subject.name) }
@@ -61,14 +65,35 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_finite_graph do
+            describe 'different dept_two_methyls_on_dimer_base' do
               subject { dept_two_methyls_on_dimer_base }
-              let(:base_specs) { [dept_dimer_base, subject] }
-              let(:final_graph) do
-                {
-                  [cr] => [[[c1], param_amorph]],
-                  [cl] => [[[c2], param_amorph]]
-                }
+
+              it_behaves_like :check_finite_graph do
+                let(:base_specs) { [dept_dimer_base, subject] }
+                let(:final_graph) do
+                  {
+                    [cr] => [[[c1], param_amorph]],
+                    [cl] => [[[c2], param_amorph]]
+                  }
+                end
+              end
+
+              it_behaves_like :check_finite_graph do
+                let(:base_specs) { [dept_dimer_base, subject] }
+                let(:typical_reactions) do
+                  [
+                    dept_hydrogen_abs_from_gap,
+                    dept_incoherent_dimer_drop,
+                    dept_intermed_migr_dh_drop
+                  ]
+                end
+                let(:final_graph) do
+                  {
+                    [cl] => [],
+                    [cr] => [[[c1], param_amorph]],
+                    [c1] => []
+                  }
+                end
               end
             end
 
@@ -179,7 +204,7 @@ module VersatileDiamond
                   {
                     [ctl] => [[[cm], param_amorph]],
                     [ctr] => [[[cm], param_amorph]],
-                    [csl, ctl] => [[[csr, ctr], param_100_cross]]
+                    [csr, ctr] => [[[csl, ctl], param_100_cross]]
                   }
                 end
               end
@@ -191,7 +216,7 @@ module VersatileDiamond
                 let(:final_graph) do
                   {
                     [cm] => [],
-                    [csl, ctl] => [[[csr, ctr], param_100_cross]]
+                    [csr, ctr] => [[[csl, ctl], param_100_cross]]
                   }
                 end
               end
@@ -270,14 +295,35 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_ordered_graph do
+            describe 'different dept_two_methyls_on_dimer_base' do
               subject { dept_two_methyls_on_dimer_base }
-              let(:base_specs) { [dept_dimer_base, subject] }
-              let(:ordered_graph) do
-                [
-                  [[cr], [[[c1], param_amorph]]],
-                  [[cl], [[[c2], param_amorph]]]
-                ]
+
+              it_behaves_like :check_ordered_graph do
+                let(:base_specs) { [dept_dimer_base, subject] }
+                let(:ordered_graph) do
+                  [
+                    [[cr], [[[c1], param_amorph]]],
+                    [[cl], [[[c2], param_amorph]]]
+                  ]
+                end
+              end
+
+              it_behaves_like :check_ordered_graph do
+                let(:base_specs) { [dept_dimer_base, subject] }
+                let(:typical_reactions) do
+                  [
+                    dept_hydrogen_abs_from_gap,
+                    dept_incoherent_dimer_drop,
+                    dept_intermed_migr_dh_drop
+                  ]
+                end
+                let(:ordered_graph) do
+                  [
+                    [[cl], []],
+                    [[cr], [[[c1], param_amorph]]],
+                    [[c1], []]
+                  ]
+                end
               end
             end
 
@@ -433,9 +479,9 @@ module VersatileDiamond
               let(:base_specs) { [dept_dimer_base, subject] }
               let(:ordered_graph) do
                 [
-                  [[ctl], [[[cm], param_amorph]]],
-                  [[ctl, csl], [[[ctr, csr], param_100_cross]]],
-                  [[ctr], [[[cm], param_amorph]]]
+                  [[ctr], [[[cm], param_amorph]]],
+                  [[ctr, csr], [[[ctl, csl], param_100_cross]]],
+                  [[ctl], [[[cm], param_amorph]]]
                 ]
               end
             end

@@ -29,10 +29,6 @@ module VersatileDiamond
             it { expect(subject.spec).not_to eq(dept_unique_reactant) }
           end
 
-          describe '#concept' do
-            it { expect(subject.concept).to eq(vl_unique_reactant) }
-          end
-
           describe '#symmetric_atoms' do
             let(:base_specs) { [dept_bridge_base] }
             let(:specific_specs) { [dept_unique_reactant] }
@@ -79,6 +75,10 @@ module VersatileDiamond
 
               describe '#anchor?' do
                 it { expect(subject.anchor?(atom)).to eq(anchor) }
+              end
+
+              describe '#atom?' do
+                it { expect(subject.atom?(atom)).to be_truthy }
               end
 
               describe '#symmetric?' do

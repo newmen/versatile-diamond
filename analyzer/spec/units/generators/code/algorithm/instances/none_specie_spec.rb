@@ -74,6 +74,10 @@ module VersatileDiamond
                 it { expect(subject.anchor?(atom)).to be_truthy }
               end
 
+              describe '#atom?' do
+                it { expect(subject.atom?(atom)).to be_truthy }
+              end
+
               describe '#symmetric?' do
                 let(:specific_specs) { [dept_right_hydrogenated_bridge] }
                 let(:typical_reactions) { [dept_hydrogen_abs_from_gap] }
@@ -118,9 +122,9 @@ module VersatileDiamond
               include_context :with_other_proxy
               let(:pairs) do
                 [
-                  [ct, other.concept.atom(:cb)],
-                  [cr, other.concept.atom(:cr)],
-                  [cl, other.concept.atom(:cl)]
+                  [ct, other.spec.spec.atom(:cb)],
+                  [cr, other.spec.spec.atom(:cr)],
+                  [cl, other.spec.spec.atom(:cl)]
                 ]
               end
 

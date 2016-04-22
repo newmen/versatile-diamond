@@ -30,10 +30,6 @@ module VersatileDiamond
             it { expect(subject.spec).not_to eq(dept_uniq_specie) }
           end
 
-          describe '#concept' do
-            it { expect(subject.concept).to eq(bridge_base) }
-          end
-
           describe '#symmetric_atoms' do
             it { expect(subject.symmetric_atoms(cb)).to be_empty }
 
@@ -92,6 +88,11 @@ module VersatileDiamond
               it { expect(subject.anchor?(cm)).to be_falsey }
             end
 
+            describe '#atom?' do
+              it { expect(subject.atom?(cb)).to be_truthy }
+              it { expect(subject.atom?(cm)).to be_falsey }
+            end
+
             describe '#symmetric?' do
               before { subject.original.find_symmetries! }
               it { expect(subject.symmetric?(cb)).to be_falsey }
@@ -110,9 +111,9 @@ module VersatileDiamond
               include_context :with_other_proxy
               let(:pairs) do
                 [
-                  [cb, other.concept.atom(:cb)],
-                  [cr, other.concept.atom(:cr)],
-                  [cl, other.concept.atom(:cl)]
+                  [cb, other.spec.spec.atom(:cb)],
+                  [cr, other.spec.spec.atom(:cr)],
+                  [cl, other.spec.spec.atom(:cl)]
                 ]
               end
 

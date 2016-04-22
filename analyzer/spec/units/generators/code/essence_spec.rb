@@ -7,14 +7,18 @@ module VersatileDiamond
       describe Essence, use: :engine_generator do
         let(:base_specs) { [] }
         let(:specific_specs) { [] }
+        let(:typical_reactions) { [] }
         let(:generator) do
-          stub_generator(base_specs: base_specs, specific_specs: specific_specs)
+          stub_generator(
+            base_specs: base_specs,
+            specific_specs: specific_specs,
+            typical_reactions: typical_reactions)
         end
 
         let(:specie) { generator.specie_class(subject.name) }
         let(:essence) { specie.essence }
 
-        describe 'graphs' do
+        describe '#cut_links' do
           Algorithm::Support::RoleChecker::ANCHOR_KEYNAMES.each do |keyname|
             let(keyname) { subject.spec.atom(keyname) }
           end
@@ -91,16 +95,37 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_cut_links do
+          describe 'different dept_two_methyls_on_dimer_base' do
             subject { dept_two_methyls_on_dimer_base }
-            let(:base_specs) { [dept_dimer_base, subject] }
-            let(:cut_links) do
-              {
-                c1 => [[cr, free_bond]],
-                c2 => [[cl, free_bond]],
-                cr => [[c1, free_bond]],
-                cl => [[c2, free_bond]]
-              }
+
+            it_behaves_like :check_cut_links do
+              let(:base_specs) { [dept_dimer_base, subject] }
+              let(:cut_links) do
+                {
+                  c1 => [[cr, free_bond]],
+                  c2 => [[cl, free_bond]],
+                  cr => [[c1, free_bond]],
+                  cl => [[c2, free_bond]]
+                }
+              end
+            end
+
+            it_behaves_like :check_cut_links do
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
+              let(:typical_reactions) do
+                [
+                  dept_hydrogen_abs_from_gap,
+                  dept_incoherent_dimer_drop,
+                  dept_intermed_migr_dh_drop
+                ]
+              end
+              let(:cut_links) do
+                {
+                  cl => [],
+                  cr => [[c1, free_bond]],
+                  c1 => [[cr, free_bond]]
+                }
+              end
             end
           end
 

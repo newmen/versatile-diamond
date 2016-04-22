@@ -90,6 +90,8 @@ module VersatileDiamond
           # @return [Array] the array of most used nodes
           def most_used_nodes
             anchor_ns = @nodes.reject(&:none?).select(&:anchor?)
+            raise 'Anchor nodes not found' if anchor_ns.empty?
+
             groups = anchor_ns.groups { |n| [originals_species_from(n), n.properties] }
             # selects the best from each group
             groups.map { |g| g.max_by(&anchor_ns.public_method(:count)) }.uniq

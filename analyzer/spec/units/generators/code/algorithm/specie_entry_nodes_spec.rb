@@ -8,8 +8,12 @@ module VersatileDiamond
         describe SpecieEntryNodes, type: :algorithm do
           let(:base_specs) { [] }
           let(:specific_specs) { [] }
+          let(:typical_reactions) { [] }
           let(:generator) do
-            stub_generator(base_specs: base_specs, specific_specs: specific_specs)
+            stub_generator(
+              base_specs: base_specs,
+              specific_specs: specific_specs,
+              typical_reactions: typical_reactions)
           end
 
           let(:specie) { generator.specie_class(subject.name) }
@@ -54,8 +58,15 @@ module VersatileDiamond
 
           it_behaves_like :check_entry_nodes do
             subject { dept_two_methyls_on_dimer_base }
-            let(:base_specs) { [dept_dimer_base, subject] }
-            let(:points_list) { [[cr, cl]] }
+            let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
+            let(:typical_reactions) do
+              [
+                dept_hydrogen_abs_from_gap,
+                dept_incoherent_dimer_drop,
+                dept_intermed_migr_dh_drop
+              ]
+            end
+            let(:points_list) { [[cl]] }
           end
 
           it_behaves_like :check_entry_nodes do
