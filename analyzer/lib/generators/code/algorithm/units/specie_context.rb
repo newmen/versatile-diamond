@@ -50,6 +50,14 @@ module VersatileDiamond
           def replace_scopes(nodes)
             nodes.flat_map(&:split)
           end
+
+          # @param [Nodes::BaseNode] node
+          # @param [Array] _ automatically passed to super method
+          # @return [Boolean]
+          # @override
+          def related_in?(node, *)
+            node.splittable? || super
+          end
         end
 
       end

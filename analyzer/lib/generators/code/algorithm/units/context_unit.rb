@@ -64,7 +64,7 @@ module VersatileDiamond
           # TODO: must be protected
           def asymmetric_related_atoms?
             area_nodes = @context.symmetric_close_nodes(species)
-            close_nodes = area_nodes.reject(&nodes.public_method(:include?))
+            close_nodes = area_nodes.reject(&check_own_node_proc)
             close_nodes.one? ||
               !(close_nodes.empty? || @context.symmetric_relations?(close_nodes))
           end
@@ -138,6 +138,11 @@ module VersatileDiamond
             symmetric_nodes.empty? ? nodes : symmetric_nodes
           end
 
+          # @return [Proc]
+          def check_own_node_proc
+            nodes.public_method(:include?)
+          end
+
           # @return [Array]
           def check_asymmetric_inner_units_procs
             units.select(&:asymmetric_related_atoms?).map do |inner_unit|
@@ -169,7 +174,14 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_symmetries(&block)
-            symmetric? ? iterate_symmetries(&block) : block.call
+            if symmetric?
+              defined_ancns = defined_self_next_same_nodes
+              iterate_symmetries do
+                check_eq_previous_atoms(defined_ancns, except_own: false, &block)
+              end
+            else
+              block.call
+            end
           end
 
           # @yield incorporating statement
@@ -245,10 +257,10 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           def check_similar_defined_species(&block)
             similar_nodes = original_different_defined_species_nodes
-            if similar_nodes.empty?
+            species_pairs = similar_species_with(similar_nodes)
+            if species_pairs.empty?
               block.call
             else
-              species_pairs = similar_species_with(similar_nodes)
               vars_pairs = species_pairs.map(&method(:vars_for))
               Expressions::NotEqualsCondition[vars_pairs, block.call]
             end
@@ -311,9 +323,9 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_avail_species_in(nbr, &block)
-            defined_ancn = defined_next_same_nodes(nbr)
+            defined_ancns = defined_neighbour_self_same_nodes(nbr)
             nbr.check_avail_species do
-              check_eq_previous_atoms(defined_ancn, except_own: false) do
+              check_eq_previous_atoms(defined_ancns, except_own: false) do
                 nbr.check_private_relations(&block)
               end
             end
@@ -466,18 +478,24 @@ module VersatileDiamond
             end
           end
 
+          # @return [Array] the list of nodes which will be available again after
+          #   neighbour unit species check
+          def defined_self_next_same_nodes
+            sncns = @context.symmetric_close_nodes(species)
+            defined_sncns = sncns.select { |node| dict.var_of(node.uniq_specie) }
+            defined_sncns.any?(&check_own_node_proc) ? defined_sncns : []
+          end
+
           # @param [ContextUnit] nbr
           # @return [Array] the list of nodes which will be available again after
           #   neighbour unit species check
-          def defined_next_same_nodes(nbr)
+          def defined_neighbour_self_same_nodes(nbr)
             if @context.key?(nbr.nodes)
               []
             else
-              sncn = @context.symmetric_close_nodes(nbr.species)
-              undefined_sncn = sncn.reject { |n| dict.var_of(n.uniq_specie) }
-              undefined_sncn.select do |node|
-                nodes.include?(node) || nbr.nodes.include?(node)
-              end
+              sncns = @context.symmetric_close_nodes(nbr.species)
+              undefined_sncns = sncns.reject { |node| dict.var_of(node.uniq_specie) }
+              undefined_sncns.select(&check_own_node_proc)
             end
           end
 
@@ -504,10 +522,9 @@ module VersatileDiamond
           # @param [Array] checking_nodes
           # @return [Array]
           def similar_species_with(checking_nodes)
-            similar_species = similar_nodes_pairs.map(&:uniq_specie)
+            similar_species = checking_nodes.map(&:uniq_specie)
             similar_species.flat_map do |specie|
-              scmps = species.select { |s| s.original == specie.original }
-              scmps.zip([specie].cycle)
+              species.select { |s| s.original == specie.original }.zip([specie].cycle)
             end
           end
 
@@ -523,9 +540,11 @@ module VersatileDiamond
 
           # @return [Array]
           def original_different_defined_species_nodes
-            originals = species.map(&:original).uniq
             different_defined_species_nodes.select do |node|
-              originals.include?(node.uniq_specie.original)
+              nodes.any? do |n|
+                n.uniq_specie.original == node.uniq_specie.original &&
+                  n.sub_properties == node.sub_properties
+              end
             end
           end
 

@@ -37,6 +37,11 @@ module VersatileDiamond
             end
           end
 
+          # @return [Boolean]
+          def splittable?
+            split != [self]
+          end
+
           # Checks that target atom have maximal number of possible bonds
           # @return [Boolean] has atom maximal number of bonds or not
           def limited?

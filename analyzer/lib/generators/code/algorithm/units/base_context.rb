@@ -245,11 +245,8 @@ module VersatileDiamond
             nodes = nodes_with_species(bone_nodes, uniq_species)
             symmetric_nodes = nodes.select(&:symmetric_atoms?)
             # exclude nodes which haven't relations to another nodes
-            symmetric_nodes.reject do |node|
-              backbone_graph.all? do |ns, rels|
-                rels.empty? || !(ns.include?(node) ||
-                                  rels.map(&:first).reduce(:+).include?(node))
-              end
+            symmetric_nodes.select do |node|
+              backbone_graph.any? { |ns, rels| related_in?(node, ns, rels) }
             end
           end
 
@@ -265,6 +262,15 @@ module VersatileDiamond
           # @return [Boolean]
           def specie_in?(node, uniq_species)
             uniq_species.include?(node.uniq_specie)
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @param [Array] key_nodes
+          # @param [Array] rels
+          # @return [Boolean]
+          def related_in?(node, key_nodes, rels)
+            !rels.empty? && (key_nodes.include?(node) ||
+                              rels.map(&:first).reduce(:+).include?(node))
           end
 
           # @param [Array] rels_lists

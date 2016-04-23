@@ -50,6 +50,12 @@ module VersatileDiamond
             it { expect(node_cc.split.map(&:atom)).to eq([cc, cc]) }
           end
 
+          describe '#splittable?' do
+            it { expect(node_cm.splittable?).to be_falsey }
+            it { expect(node_cb.splittable?).to be_falsey }
+            it { expect(node_cc.splittable?).to be_truthy }
+          end
+
           describe '#uniq_specie' do
             it { expect(node_cm.uniq_specie.original).to eq(code_mob) }
             it { expect(node_cm.uniq_specie).

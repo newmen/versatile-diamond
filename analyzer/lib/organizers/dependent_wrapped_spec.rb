@@ -385,7 +385,7 @@ module VersatileDiamond
 
       # @param [Array] _
       # @return [Boolean] false
-      def excess_parent_relation?(*_)
+      def excess_parent_relation?(*)
         false
       end
 
