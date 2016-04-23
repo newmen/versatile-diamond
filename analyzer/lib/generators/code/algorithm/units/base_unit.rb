@@ -105,7 +105,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_specie_symmetries(&block)
-            defined_species = select_defined(species)
+            defined_species = defined_symmetric_species
             if defined_species.one?
               iterate_defined_specie_symmetries(defined_species.first, &block)
             elsif defined_species.empty?
@@ -238,6 +238,16 @@ module VersatileDiamond
             nodes.map(&method_name).uniq
           end
 
+          # @return [Array]
+          def defined_symmetric_species
+            symmetric_nodes = nodes.select(&:symmetric_atoms?)
+            if symmetric_nodes.empty?
+              select_defined(species)
+            else
+              select_defined(symmetric_nodes.map(&:uniq_specie))
+            end
+          end
+
           # @param [BaseUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
@@ -258,7 +268,8 @@ module VersatileDiamond
           def iterate_defined_specie_symmetries(specie, &block)
             predefn_vars = dict.defined_vars # get before make inner specie var
             ext_var = dict.var_of(specie)
-            inner_var = dict.make_specie_s(specie, type: abst_specie_type)
+            options = { type: abst_specie_type, name: specie.symmetric_var_name }
+            inner_var = dict.make_specie_s(specie, **options)
             ext_var.iterate_symmetries(predefn_vars, inner_var, block.call)
           end
 

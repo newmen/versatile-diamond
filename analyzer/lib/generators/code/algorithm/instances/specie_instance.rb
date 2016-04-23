@@ -128,10 +128,18 @@ module VersatileDiamond
               abrv = class_name.scan(/[A-Z][^A-Z]*/).map { |part| part[0] }
               "#{Specie::INTER_SPECIE_NAME}#{abrv.join}"
             else
-              var_name = class_name.dup
-              var_name[0] = var_name[0].downcase
-              var_name
+              name = class_name.dup
+              name[0] = name[0].downcase
+              name
             end
+          end
+
+          # Gets the name of defining symmetric specie variable
+          # @return [String] the symmetric specie variable name
+          def symmetric_var_name
+            name = var_name
+            name[0] = name[0].upcase
+            "symmetric#{name}"
           end
 
         private

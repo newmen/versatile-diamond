@@ -108,7 +108,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_symmetries(&block)
-            if species.one? || atoms.one?
+            if possible_symmetric_nodes.one?
               unit.iterate_specie_symmetries(&block)
             elsif asymmetric_related_atoms?
               unit.iterate_for_loop_symmetries(&block)
@@ -129,6 +129,13 @@ module VersatileDiamond
           # @return [Array]
           def units
             unit.units.map(&method(:context_unit))
+          end
+
+          # @return [Array]
+          def possible_symmetric_nodes
+            # already should be checked that unit is symmetric
+            symmetric_nodes = nodes.select(&:symmetric_atoms?)
+            symmetric_nodes.empty? ? nodes : symmetric_nodes
           end
 
           # @return [Array]

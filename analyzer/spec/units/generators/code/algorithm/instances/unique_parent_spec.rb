@@ -132,6 +132,10 @@ module VersatileDiamond
           describe '#var_name' do
             it { expect(subject.var_name).to eq('bridge') }
           end
+
+          describe '#symmetric_var_name' do
+            it { expect(subject.symmetric_var_name).to eq('symmetricBridge') }
+          end
         end
 
       end
