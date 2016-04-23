@@ -359,9 +359,7 @@ module VersatileDiamond
 
             it_behaves_like :check_code do
               subject { dept_cross_bridge_on_dimers_base }
-              let(:base_specs) do
-                [dept_bridge_base, dept_dimer_base, subject]
-              end
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
 
               let(:mod_cm) { role(dept_methyl_on_dimer_base, :cm) }
               let(:find_algorithm) do

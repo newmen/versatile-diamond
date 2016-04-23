@@ -18,6 +18,7 @@ module VersatileDiamond
         @links = straighten_graph(spec.links)
 
         @theres, @children, @rest = nil
+        @_clean_links = nil
         reset_caches!
       end
 
@@ -380,6 +381,12 @@ module VersatileDiamond
         [reactions, theres].any? do |container|
           container.any? { |item| item.each(:source).to_a.include?(spec) }
         end
+      end
+
+      # @param [Array] _
+      # @return [Boolean] false
+      def excess_parent_relation?(*_)
+        false
       end
 
       # Stores the residual of atom difference operation

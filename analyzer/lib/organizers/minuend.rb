@@ -23,12 +23,9 @@ module VersatileDiamond
       # @return [SpecResidual | ChunkResidual] substraction result
       def rest_links(other, mirror, &block)
         pairs_from(mirror).each_with_object({}) do |(own_key, other_key), rest|
-          unless other_key
+          if !other_key
             rest[own_key] = links[own_key] # <-- same as bottom
-            next
-          end
-
-          if different_or_used?(other, own_key, other_key, mirror.keys)
+          elsif different_or_used?(other, own_key, other_key, mirror.keys)
             rest[own_key] = links[own_key] # <-- same as top
             block[own_key] if block_given?
           end

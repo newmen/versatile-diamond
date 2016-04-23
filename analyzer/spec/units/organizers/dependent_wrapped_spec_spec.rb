@@ -123,10 +123,24 @@ module VersatileDiamond
           let(:keynames) { [:ctl, :cm, :ctr] }
         end
 
-        it_behaves_like :check_anchors do
-          let(:base_specs) { [subject, dept_methyl_on_dimer_base, target_spec] }
+        describe 'different dept_cross_bridge_on_dimers_base' do
           let(:target_spec) { dept_cross_bridge_on_dimers_base }
           let(:keynames) { [:cm, :ctl, :ctr, :csl, :csr] }
+
+          it_behaves_like :check_anchors do
+            let(:base_specs) { [subject, dept_methyl_on_dimer_base, target_spec] }
+          end
+
+          it_behaves_like :check_anchors do
+            let(:base_specs) { [subject, dept_dimer_base, target_spec] }
+            let(:typical_reactions) do
+              [
+                dept_sierpinski_drop,
+                dept_incoherent_dimer_drop,
+                dept_intermed_migr_dh_drop
+              ]
+            end
+          end
         end
 
         it_behaves_like :check_anchors do

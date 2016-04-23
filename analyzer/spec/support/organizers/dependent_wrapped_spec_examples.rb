@@ -55,7 +55,7 @@ module VersatileDiamond
             organize_base_specs_dependencies!(bases) unless bases.empty?
 
             unless specifics.empty?
-              organize_specific_specs_dependencies!(make_cache(bases), specifics)
+              organize_specific_specs_dependencies!(make_cache(bases), specifics.uniq)
             end
           end
 

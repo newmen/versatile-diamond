@@ -272,6 +272,25 @@ module VersatileDiamond
                 }
               end
             end
+
+            it_behaves_like :check_cut_links do
+              let(:base_specs) do
+                [
+                  dept_bridge_base,
+                  dept_dimer_base,
+                  dept_cross_bridge_on_bridges_base,
+                  subject
+                ]
+              end
+              let(:cut_links) do
+                {
+                  ctr => [[csr, bond_100_front], [ctl, position_100_cross]],
+                  ctl => [[csl, bond_100_front], [ctr, position_100_cross]],
+                  csr => [[ctr, bond_100_front], [csl, position_100_cross]],
+                  csl => [[ctl, bond_100_front], [csr, position_100_cross]],
+                }
+              end
+            end
           end
 
           describe 'intermediate specie of migration down process' do

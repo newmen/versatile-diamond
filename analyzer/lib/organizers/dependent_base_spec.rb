@@ -44,12 +44,12 @@ module VersatileDiamond
 
     private
 
-      # Provides comparison by number of relations
-      # @param [MinuendSpec] other see at #<=> same argument
+      # Provides the lowest level of comparing two minuend instances
+      # @param [MinuendSpec] other comparing instance
       # @return [Integer] the result of comparation
-      def order_relations(other, &block)
-        super(other) do
-          order(self, other, :external_bonds, &block)
+      def comparing_core(other)
+        order(self, other, :external_bonds) do
+          super(other)
         end
       end
     end

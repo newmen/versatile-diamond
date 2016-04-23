@@ -474,15 +474,33 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_ordered_graph do
+            describe 'different dept_cross_bridge_on_dimers_base' do
               subject { dept_cross_bridge_on_dimers_base }
-              let(:base_specs) { [dept_dimer_base, subject] }
-              let(:ordered_graph) do
-                [
-                  [[ctr], [[[cm], param_amorph]]],
-                  [[ctr, csr], [[[ctl, csl], param_100_cross]]],
-                  [[ctl], [[[cm], param_amorph]]]
-                ]
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
+
+              it_behaves_like :check_ordered_graph do
+                let(:ordered_graph) do
+                  [
+                    [[ctr], [[[cm], param_amorph]]],
+                    [[ctr, csr], [[[ctl, csl], param_100_cross]]],
+                    [[ctl], [[[cm], param_amorph]]]
+                  ]
+                end
+              end
+
+              it_behaves_like :check_ordered_graph do
+                let(:typical_reactions) do
+                  [
+                    dept_sierpinski_drop,
+                    dept_incoherent_dimer_drop
+                  ]
+                end
+                let(:ordered_graph) do
+                  [
+                    [[csl, csr], [[[ctl, ctr], param_100_front]]],
+                    [[csr], [[[csl], param_100_cross]]]
+                  ]
+                end
               end
             end
 

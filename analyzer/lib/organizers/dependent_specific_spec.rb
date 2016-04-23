@@ -38,7 +38,7 @@ module VersatileDiamond
       # @param [Array] similar_specs the array of specs where each spec has
       #   same basic spec
       def organize_dependencies!(base_cache, similar_specs)
-        similar_specs = similar_specs.reject { |s| s == self || self < s }
+        similar_specs = similar_specs.uniq.reject { |s| s == self || self < s }
         similar_specs.sort! { |a, b| b <=> a }
 
         parent = similar_specs.find do |possible_parent|
@@ -85,14 +85,11 @@ module VersatileDiamond
       # @param [MinuendSpec] other see at #<=> same argument
       # @return [Integer] the result of comparation
       # @override
-      def order_relations(other, &block)
-        super(other) do
-          order(self, other, :specific_atoms, :size) do
-            order(self, other, :dangling_bonds_num) do
-              order(self, other, :relevants_num, &block)
-            end
-          end
-        end
+      def inlay_orders(nest, other, **kwargs)
+        super(nest, other, **kwargs)
+        nest[:order, self, other, :specific_atoms, :size]
+        nest[:order, self, other, :dangling_bonds_num]
+        nest[:order, self, other, :relevants_num]
       end
 
       # Updates links by new base specie. Replaces correspond atoms in internal

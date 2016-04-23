@@ -25,6 +25,8 @@ module VersatileDiamond
         @owner = owner
         @links = links
         @atoms_to_parents = atoms_to_parents
+
+        @_clean_links = nil
       end
 
       # Clones the current instance and replaces value of internal owner variable and
@@ -94,14 +96,23 @@ module VersatileDiamond
         self.class.new(diff.owner, diff.links, full_atoms_to_parents)
       end
 
-      # Changes comparison behavior for more optimal base specs spliting
-      # @param [MinuendSpec] other see at #<=> same argument
-      # @return [Integer] the result of comparation
+      # In the case when comparing instances have the current class then checks number
+      # of atoms which were not mapped with parent spec
+      #
+      # @param [Proc] nest to which the call will be nested
+      # @param [Minuend] other comparing item
+      # @option [Boolean] :strong_types_order is the flag which if set then types info
+      #   also used for ordering
       # @override
-      # TODO: if you want that methyl_on_dimer belongs to dimer instead bridge and
-      #   methyl_on_bridge then remove this overriden method
-      def order_relations(other, &block)
-        order(other, self, :relations_num, &block)
+      def inlay_orders(nest, other, **kwargs)
+        nest[:order, self, other, :unmapped_num] if self.class == other.class
+        super(nest, other, **kwargs)
+      end
+
+      # Counts number of linked atoms which are not mapped to parent species
+      # @return [Integer] the nujmber of unmapped atoms
+      def unmapped_num
+        links.keys.reject(&atoms_to_parents.public_method(:[])).size
       end
 
       # Gets the number of external bonds for comparing with dependent base spec
@@ -132,6 +143,13 @@ module VersatileDiamond
       # @override
       def used?(_, atom)
         !!@atoms_to_parents[atom] || super
+      end
+
+      # @param [Array] atoms
+      # @return [Boolean]
+      def excess_parent_relation?(*atoms)
+        ps, qs = atoms.map(&atoms_to_parents.public_method(:[]))
+        ps && qs && !(ps & qs).empty?
       end
 
       # Merges collected references of atoms to parent specs
