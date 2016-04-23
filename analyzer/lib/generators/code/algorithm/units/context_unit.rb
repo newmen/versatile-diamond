@@ -252,8 +252,8 @@ module VersatileDiamond
           def iterate_undefined_species(&block)
             unit.iterate_species_by_role do
               check_similar_defined_species do
-                check_defined_context_parts do
-                  check_symmetries(&block)
+                check_symmetries do
+                  check_defined_context_parts(&block)
                 end
               end
             end
@@ -468,7 +468,9 @@ module VersatileDiamond
             else
               sncn = @context.symmetric_close_nodes(nbr.species)
               undefined_sncn = sncn.reject { |n| dict.var_of(n.uniq_specie) }
-              undefined_sncn.select(&nodes.public_method(:include?))
+              undefined_sncn.select do |node|
+                nodes.include?(node) || nbr.nodes.include?(node)
+              end
             end
           end
 
@@ -496,8 +498,8 @@ module VersatileDiamond
           # @return [Array]
           def similar_species_with(checking_nodes)
             similar_species = similar_nodes_pairs.map(&:uniq_specie)
-            species_pairs = species.flat_map do |specie|
-              scmps = similar_species.select { |s| s.original == specie.original }
+            similar_species.flat_map do |specie|
+              scmps = species.select { |s| s.original == specie.original }
               scmps.zip([specie].cycle)
             end
           end
@@ -507,26 +509,15 @@ module VersatileDiamond
           #
           # @return [Array]
           def similar_nodes_pairs
-            totaly_different_defined_species_nodes.flat_map do |node|
+            original_different_defined_species_nodes.flat_map do |node|
               nodes_pairs_with(node.uniq_specie)
             end
           end
 
           # @return [Array]
-          def totaly_different_defined_species_nodes
-            filter_original_different_defined_species_nodes(:reject)
-          end
-
-          # @return [Array]
           def original_different_defined_species_nodes
-            filter_original_different_defined_species_nodes(:select)
-          end
-
-          # @param [Symbol] method_name
-          # @return [Array]
-          def filter_original_different_defined_species_nodes(method_name)
             originals = species.map(&:original).uniq
-            different_defined_species_nodes.public_send(method_name) do |node|
+            different_defined_species_nodes.select do |node|
               originals.include?(node.uniq_specie.original)
             end
           end

@@ -88,10 +88,15 @@ module VersatileDiamond
 
           # @param [Array] vars
           # @return [Array] list of using variables
-          # @override
           def using(vars)
-            current, next_vars = self_using(vars)
-            (current + (value ? value.using(next_vars) : [])).uniq
+            check_using = -> v { v.parent_arr?(self) }
+            if vars.include?(self)
+              [self]
+            elsif item? && vars.any?(&check_using)
+              vars.select(&check_using)
+            else
+              []
+            end
           end
 
           # @return [Assign] the string with variable definition
@@ -132,20 +137,6 @@ module VersatileDiamond
           # @return [ScalarType]
           def arg_type
             type
-          end
-
-          # @param [Array] vars
-          # @return [Array]
-          def self_using(vars)
-            check_using = -> v { v.parent_arr?(self) }
-            if vars.include?(self)
-              [[self], vars - [self]]
-            elsif item? && vars.any?(&check_using)
-              arrs = vars.select(&check_using)
-              [arrs, vars - arrs]
-            else
-              [[], vars]
-            end
           end
         end
 

@@ -244,6 +244,7 @@ module VersatileDiamond
           def symmetric_related_nodes(uniq_species)
             nodes = nodes_with_species(bone_nodes, uniq_species)
             symmetric_nodes = nodes.select(&:symmetric_atoms?)
+            # exclude nodes which haven't relations to another nodes
             symmetric_nodes.reject do |node|
               backbone_graph.all? do |ns, rels|
                 rels.empty? || !(ns.include?(node) ||

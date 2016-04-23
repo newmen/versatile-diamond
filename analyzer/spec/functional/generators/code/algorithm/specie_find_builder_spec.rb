@@ -310,7 +310,7 @@ module VersatileDiamond
             anchor->eachAmorphNeighbour([&](Atom *amorph1) {
                 if (amorph1->is(#{role_cm}))
                 {
-                    eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour1) {
+                    eachNeighbour(anchor, &Diamond::cross_100, [&amorph1, &bridge1](Atom *neighbour1) {
                         if (neighbour1->is(#{role_ctr}))
                         {
                             Bridge *bridge2 = neighbour1->specByRole<Bridge>(#{b_ct});
@@ -374,7 +374,7 @@ module VersatileDiamond
                 if (amorph1->is(#{role_cm}))
                 {
                     Atom *atoms1[2] = { anchor, atom1 };
-                    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&amorph1, &anchor, &dimer1](Atom **neighbours1) {
+                    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&amorph1, &dimer1](Atom **neighbours1) {
                         if (neighbours1[0]->is(#{role_ctr}) && neighbours1[1]->is(#{role_csr}))
                         {
                             if (neighbours1[0]->hasBondWith(neighbours1[1]))
@@ -416,13 +416,63 @@ module VersatileDiamond
                 Atom *atoms1[4] = { species1[1]->atom(1), species1[1]->atom(4), species1[0]->atom(1), species1[0]->atom(4) };
                 Atom *atoms2[2] = { atoms1[0], atoms1[1] };
                 Atom *atoms3[2] = { atoms1[2], atoms1[3] };
-                eachNeighbours<2>(atoms2, &Diamond::cross_100, [&atoms1, &atoms3, &species1](Atom **neighbours1) {
+                eachNeighbours<2>(atoms2, &Diamond::cross_100, [&atoms3, &species1](Atom **neighbours1) {
                     if (neighbours1[0] == atoms3[0] && neighbours1[1] == atoms3[1])
                     {
                         ParentSpec *parents[2] = { species1[0], species1[1] };
                         create<CrossBridgeOnDimers>(parents);
                     }
                 });
+            });
+        }
+    }
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              subject { dept_cross_bridge_on_dimers_base }
+              let(:base_specs) do
+                [
+                  dept_bridge_base,
+                  dept_methyl_on_bridge_base,
+                  dept_cross_bridge_on_bridges_base,
+                  subject
+                ]
+              end
+              let(:typical_reactions) { [dept_cbod_drop] }
+
+              let(:bridge_ct) { role(dept_bridge_base, :ct) }
+              let(:cbob_ctr) { role(dept_cross_bridge_on_bridges_base, :ctr) }
+              let(:find_algorithm) do
+                <<-CODE
+    if (anchor->is(#{role_csr}))
+    {
+        if (!anchor->hasRole(CROSS_BRIDGE_ON_DIMERS, #{role_csr}))
+        {
+            Bridge *bridge1 = anchor->specByRole<Bridge>(#{bridge_ct});
+            eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour1) {
+                if (neighbour1->is(#{role_csr}))
+                {
+                    Bridge *bridge2 = neighbour1->specByRole<Bridge>(#{bridge_ct});
+                    Atom *atoms1[2] = { neighbour1, anchor };
+                    eachNeighbours<2>(atoms1, &Diamond::front_100, [&atoms1, &bridge1, &bridge2](Atom **neighbours1) {
+                        if (neighbours1[0]->is(#{role_ctr}) && neighbours1[1]->is(#{role_ctr}))
+                        {
+                            if (atoms1[0]->hasBondWith(neighbours1[0]) && atoms1[1]->hasBondWith(neighbours1[1]))
+                            {
+                                CrossBridgeOnBridges *crossBridgeOnBridges1 = neighbours1[0]->specByRole<CrossBridgeOnBridges>(#{cbob_ctr});
+                                crossBridgeOnBridges1->eachSymmetry([&bridge1, &bridge2, &neighbours1](ParentSpec *crossBridgeOnBridges2) {
+                                    if (neighbours1[0] == crossBridgeOnBridges2->atom(1) && neighbours1[1] == crossBridgeOnBridges2->atom(5))
+                                    {
+                                        ParentSpec *parents[3] = { crossBridgeOnBridges2, bridge2, bridge1 };
+                                        create<CrossBridgeOnDimers>(parents);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
             });
         }
     }

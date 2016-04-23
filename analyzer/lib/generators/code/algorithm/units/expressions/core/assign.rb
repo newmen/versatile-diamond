@@ -28,8 +28,6 @@ module VersatileDiamond
             end
           end
 
-          def_delegator :@var, :using
-
           # @param [Variable] var
           # @option [ScalarType] :type
           # @option [Expression] :value
@@ -49,6 +47,12 @@ module VersatileDiamond
           # @override
           def assign?
             true
+          end
+
+          # @param [Array] vars
+          # @return [Array] list of using variables
+          def using(vars)
+            (@var.using(vars) + @value.using(vars)).uniq
           end
 
         private
