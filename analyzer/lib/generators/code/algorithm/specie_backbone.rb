@@ -50,7 +50,9 @@ module VersatileDiamond
           #   atom by which the nodes will be found
           # @return [Array] nil or nodes any of which uses passed atom
           def find_nodes(lists_of_nodes, atom)
-            lists_of_nodes.find { |nodes| nodes.any? { |node| node.atom == atom } }
+            lists_of_nodes.find do |nodes|
+              nodes.any? { |node| node.atom == atom }
+            end
           end
 
           # Iterates each atom from specie atoms sequence, gets nodes for it and passes
@@ -148,7 +150,7 @@ module VersatileDiamond
           #
           # Groups again because could be case:
           # {
-          #   [1, 2] => [[[3, 4], flatten_rel], [5, 6], flatten_rel],
+          #   [1, 2] => [[[3, 4], flatten_rel], [[5, 6], flatten_rel]],
           #   [3, 4] => [[[1, 2], flatten_rel]],
           #   [5, 6] => [[[1, 2], flatten_rel]]
           # }
@@ -182,8 +184,7 @@ module VersatileDiamond
           # @param [Array] relations which will be grouped
           # @return [Array] the array where each item is array that contains the
           #   following elements: first item is relation parameters, second item is
-          #   array of all neighbour nodes groups available by passed key of grouped
-          #   graph
+          #   array of all neighbour nodes which uses such relation
           def group_again(relations)
             relations.group_by(&:last).map do |rel_props, group|
               [rel_props, group.map(&:first)]

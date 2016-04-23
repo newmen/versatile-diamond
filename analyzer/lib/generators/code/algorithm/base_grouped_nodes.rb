@@ -255,9 +255,8 @@ module VersatileDiamond
           def non_flatten_groups
             flatten_face_grouped_nodes.select do |group|
               same_another_nodes?(group) || group.any? do |node|
-                dept_only_from_group = flatten_relations_only_in?(group, node)
-                dept_only_from_group || small_graph[node].empty? ||
-                  (!dept_only_from_group && has_non_flatten_relation?(node))
+                flatten_relations_only_in?(group, node) ||
+                  small_graph[node].empty? || has_non_flatten_relation?(node)
               end
             end
           end

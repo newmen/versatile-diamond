@@ -140,6 +140,13 @@ module VersatileDiamond
               end
               let(:points_list) { [[cm]] }
             end
+
+            it_behaves_like :check_entry_nodes do
+              let(:base_specs) do
+                [dept_bridge_base, dept_cross_bridge_on_bridges_base, subject]
+              end
+              let(:points_list) { [[csl]] }
+            end
           end
 
           describe 'different dept_lower_methyl_on_half_extended_bridge_base' do
