@@ -145,7 +145,7 @@ module VersatileDiamond
               let(:base_specs) do
                 [dept_bridge_base, dept_cross_bridge_on_bridges_base, subject]
               end
-              let(:points_list) { [[csl]] }
+              let(:points_list) { [[csr]] }
             end
           end
 
