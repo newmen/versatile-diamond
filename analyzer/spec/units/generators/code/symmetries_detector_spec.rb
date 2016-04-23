@@ -261,6 +261,30 @@ module VersatileDiamond
         end
 
         it_behaves_like :check_symmetry do
+          subject { dept_cross_bridge_on_bridges_base }
+          let(:bases) do
+            [
+              subject,
+              dept_bridge_base,
+              dept_methyl_on_bridge_base,
+              dept_cross_bridge_on_dimers_base
+            ]
+          end
+          let(:specifics) { [] }
+          let(:typical_reactions) { [dept_cbod_drop] }
+          let(:symmetry_classes) do
+            ['ParentsSwapWrapper<EmptyBase<CROSS_BRIDGE_ON_BRIDGES>, ' \
+              'OriginalCrossBridgeOnBridges, 0, 1>']
+          end
+
+          let(:symmetric_keynames) { [:ctl, :ctr] }
+          let(:ctl) { cross_bridge_on_bridges_base.atom(:ctl) }
+          let(:ctr) { cross_bridge_on_bridges_base.atom(:ctr) }
+          it { expect(detector.symmetric_atoms(ctr)).to match_array([ctr, ctl]) }
+          it { expect(detector.symmetric_atoms(ctl)).to match_array([ctr, ctl]) }
+        end
+
+        it_behaves_like :check_symmetry do
           subject { dept_top_methyl_on_half_extended_bridge_base }
           let(:bases) { [subject, dept_bridge_base, dept_methyl_on_bridge_base] }
           let(:specifics) do

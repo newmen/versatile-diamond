@@ -419,6 +419,10 @@ module VersatileDiamond
         set(:cross_bridge_on_bridges) do
           SpecificSpec.new(cross_bridge_on_bridges_base)
         end
+        set(:twise_activated_cross_bridge_on_bridges) do
+          kwargs = { ctr: activated_cd.dup, ctl: activated_cd.dup }
+          SpecificSpec.new(cross_bridge_on_bridges_base, **kwargs)
+        end
 
         set(:cross_bridge_on_dimers_base) do
           s = SurfaceSpec.new(:cross_bridge_on_dimers)
@@ -431,6 +435,9 @@ module VersatileDiamond
           s.link(s.atom(:csl), s.atom(:csr), position_100_cross)
           s.link(s.atom(:ctl), s.atom(:ctr), position_100_cross)
           s.link(s.atom(:cm), s.atom(:ctl), free_bond); s
+        end
+        set(:cross_bridge_on_dimers) do
+          SpecificSpec.new(cross_bridge_on_dimers_base)
         end
 
         set(:intermed_migr_down_bridge_base) do
@@ -675,6 +682,28 @@ module VersatileDiamond
         set(:sierpinski_drop) do
           Reaction.new(:forward, 'sierpinski drop',
             crm_source, crm_products, crm_atom_map)
+        end
+
+        set(:cbodd_source) { [cross_bridge_on_dimers.dup] }
+        set(:cbodd_products) do
+          [
+            twise_activated_cross_bridge_on_bridges.dup,
+            activated_bridge.dup, activated_bridge.dup
+          ]
+        end
+        set(:cbodd_names_to_specs) do {
+          source: [[:cbod, cbodd_source.first]],
+          products: [
+            [:tacbob, cbodd_products.first],
+            [:ab1, cbodd_products[1]], [:ab2, cbodd_products[2]]
+          ]
+        } end
+        set(:cbodd_atom_map) do
+          Mcs::AtomMapper.map(cbodd_source, cbodd_products, cbodd_names_to_specs)
+        end
+        set(:cbod_drop) do
+          Reaction.new(:forward, 'cbod drop',
+            cbodd_source, cbodd_products, cbodd_atom_map)
         end
 
         set(:ah_source) do

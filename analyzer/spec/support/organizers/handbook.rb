@@ -125,6 +125,7 @@ module VersatileDiamond
           :symmetric_dimer_formation,
           :incoherent_dimer_drop,
           :sierpinski_drop,
+          :cbod_drop,
           :migration_over_111,
           :hydrogen_abs_from_gap,
           :hydrogen_migration,
