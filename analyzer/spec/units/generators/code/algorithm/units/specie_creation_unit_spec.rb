@@ -42,7 +42,10 @@ create<Bridge>(atoms2);
 
               describe 'which already arr' do
                 include_context :two_mobs_context
-                before { dict.make_specie_s(parent_species) }
+                before do
+                  instances_type = Expressions::ParentSpecieType[]
+                  dict.make_specie_s(parent_species, type: instances_type)
+                end
                 let(:code) { 'create<CrossBridgeOnBridges>(species1)' }
                 it { expect(subject.create.code).to eq(code) }
               end
@@ -52,8 +55,8 @@ create<Bridge>(atoms2);
                 before { parent_species.map(&dict.public_method(:make_specie_s)) }
                 let(:code) do
                   <<-CODE
-ParentSpec *species1[2] = { methylOnBridge1, methylOnBridge2 };
-create<CrossBridgeOnBridges>(species1);
+ParentSpec *parents[2] = { methylOnBridge1, methylOnBridge2 };
+create<CrossBridgeOnBridges>(parents);
                   CODE
                 end
                 it { expect(subject.create.code).to eq(code.rstrip) }

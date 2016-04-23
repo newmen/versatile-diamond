@@ -124,10 +124,10 @@ module VersatileDiamond
               include_context :with_other_proxy
               let(:pairs) do
                 [
-                  [cm, other.concept.atom(:cm)],
-                  [cb, other.concept.atom(:cb)],
-                  [cr, other.concept.atom(:cr)],
-                  [cl, other.concept.atom(:cl)]
+                  [cm, other.spec.spec.atom(:cm)],
+                  [cb, other.spec.spec.atom(:cb)],
+                  [cr, other.spec.spec.atom(:cr)],
+                  [cl, other.spec.spec.atom(:cl)]
                 ]
               end
 
