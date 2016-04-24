@@ -81,6 +81,11 @@ module VersatileDiamond
             @_sub_properties ||= uniq_specie.properties_of(atom)
           end
 
+          # @return [Boolean]
+          def coincide?
+            properties == sub_properties
+          end
+
           # @return [Array]
           def symmetric_atoms
             @_symmetric_atoms ||= uniq_specie.symmetric_atoms(atom)

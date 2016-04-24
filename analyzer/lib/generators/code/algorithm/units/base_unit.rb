@@ -135,7 +135,7 @@ module VersatileDiamond
           # @return [Expressions::Core::OpCall]
           def iterate_species_by_role(&block)
             if atoms.one?
-              predefn_vars = dict.defined_vars
+              predefn_vars = dict.defined_vars # get before make inner nbr specie var
               specie_var = dict.make_specie_s(select_undefined(species))
               atom_var = dict.var_of(atoms)
               atom_var.all_species_by_role(predefn_vars, specie_var, block.call)
@@ -148,7 +148,7 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           def iterate_portions_of_similar_species(&block)
             if atoms.one?
-              predefn_vars = dict.defined_vars
+              predefn_vars = dict.defined_vars # get before make inner nbr species var
               species_var = dict.make_specie_s(select_undefined(species))
               atom_var = dict.var_of(atoms)
               atom_var.species_portion_by_role(predefn_vars, species_var, block.call)
@@ -255,11 +255,7 @@ module VersatileDiamond
             predefn_vars = dict.defined_vars # get before make inner nbr atoms var
             atom_var = dict.var_of(atoms)
             nbr_var = dict.make_atom_s(nbr.atoms)
-            if nbr.atoms.any?(&:lattice)
-              atom_var.iterate_crystal_nbrs(predefn_vars, nbr_var, block.call)
-            else
-              atom_var.iterate_amorph_nbrs(predefn_vars, nbr_var, block.call)
-            end
+            atom_var.iterate_amorph_nbrs(predefn_vars, nbr_var, block.call)
           end
 
           # @param [Instances::SpecieInstance] specie

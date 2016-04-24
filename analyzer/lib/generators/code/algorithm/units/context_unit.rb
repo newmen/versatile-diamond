@@ -74,7 +74,9 @@ module VersatileDiamond
           end
 
           def inspect
-            "∞#{unit.inspect}∞"
+            sis = species.map(&:inspect)
+            pops = nodes.uniq(&:atom).map(&:properties).map(&:inspect)
+            "∞(#{sis.join(' ')})-(#{pops.join(' ')})∞"
           end
 
         protected
@@ -374,7 +376,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_crystal_relations(nbr, &block)
-            predefn_vars = dict.defined_vars
+            predefn_vars = dict.defined_vars # get before make inner nbr atoms var
             self_var = dict.var_of(atoms)
             nbr_var = dict.make_atom_s(nbr.atoms, name: 'neighbour')
             lattice =
@@ -639,10 +641,10 @@ module VersatileDiamond
             zip_nodes_of(a, b).map { |ns| @context.relation_between(*ns) }
           end
 
-          # @param [Array] units
+          # @param [Array] zipping_units
           # @return [Array]
-          def zip_nodes_of(*units)
-            as, bs = units.map(&:unit).map(&:nodes)
+          def zip_nodes_of(*zipping_units)
+            as, bs = zipping_units.map(&:unit).map(&:nodes)
             as.smart_zip(bs)
           end
 
@@ -670,15 +672,21 @@ module VersatileDiamond
           end
 
           # @return [Boolean]
+          def full_usages_match?
+            coincident_nodes = nodes.select(&:coincide?)
+            comparing_nodes = coincident_nodes.empty? ? nodes : coincident_nodes
+            count_possible_atom_usages != comparing_nodes.size
+          end
+
+          # @return [Boolean]
           def atom_used_many_times?
             atoms.one? &&
-              nodes.all?(&all_popular_atoms_nodes.public_method(:include?))
+              nodes.any?(&all_popular_atoms_nodes.public_method(:include?))
           end
 
           # @return [Boolean]
           def over_used_atom?
-            @_is_over_used_atom ||=
-              atom_used_many_times? && count_possible_atom_usages != species.size
+            @_is_over_used_atom ||= atom_used_many_times? && full_usages_match?
           end
 
           # @return [Boolean]
