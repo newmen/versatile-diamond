@@ -580,7 +580,7 @@ module VersatileDiamond
     {
         if (!anchor->checkAndFind(LOWER_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_cbr}))
         {
-            anchor->eachSpecByRole<Bridge>(#{b_cr}, [&](Bridge *bridge1) {
+            anchor->eachSpecByRole<Bridge>(#{role_cr}, [&](Bridge *bridge1) {
                 bridge1->eachSymmetry([&anchor](ParentSpec *symmetricBridge1) {
                     if (anchor == symmetricBridge1->atom(1))
                     {
@@ -611,26 +611,26 @@ module VersatileDiamond
     {
         if (!anchor->checkAndFind(LOWER_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_cr}))
         {
-            anchor->eachSpecByRole<Bridge>(#{role_cr}, [&](Bridge *target1) {
-                target1->eachSymmetry([&](ParentSpec *specie1) {
-                    if (specie1->atom(2) == anchor)
-                    {
-                        Bridge *specie2 = anchor->specByRole<Bridge>(#{b_ct});
-                        specie2->eachSymmetry([&](ParentSpec *specie3) {
-                            Atom *atom1 = specie3->atom(1);
-                            if (atom1->is(#{role_cbr}))
+            Bridge *bridge1 = anchor->specByRole<Bridge>(#{b_ct});
+            bridge1->eachSymmetry([&anchor](ParentSpec *symmetricBridge1) {
+                Atom *atom1 = symmetricBridge1->atom(1);
+                if (atom1->is(#{role_cbr}))
+                {
+                    anchor->eachSpecByRole<Bridge>(#{role_cr}, [&anchor, &atom1, &symmetricBridge1](Bridge *bridge2) {
+                        bridge2->eachSymmetry([&anchor, &atom1, &symmetricBridge1](ParentSpec *symmetricBridge2) {
+                            if (anchor == symmetricBridge2->atom(2))
                             {
-                                atom1->eachAmorphNeighbour([&](Atom *amorph1) {
+                                atom1->eachAmorphNeighbour([&symmetricBridge1, &symmetricBridge2](Atom *amorph1) {
                                     if (amorph1->is(#{role_cm}))
                                     {
-                                        ParentSpec *parents[2] = { specie3, specie1 };
+                                        ParentSpec *parents[2] = { symmetricBridge1, symmetricBridge2 };
                                         create<LowerMethylOnHalfExtendedBridge>(amorph1, parents);
                                     }
                                 });
                             }
                         });
-                    }
-                });
+                    });
+                }
             });
         }
     }

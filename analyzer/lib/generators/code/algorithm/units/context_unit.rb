@@ -39,10 +39,13 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_avail_species(&block)
-            combine_avail_species_checks do
-              check_close_atoms do
-                check_new_atoms(&block)
+            inner_units = unit.filled_inner_units
+            if inner_units.all?(&method(:complete_unit?))
+              call_procs(check_avail_species_procs(inner_units)) do
+                check_complete_unit(&block)
               end
+            else
+              call_procs(check_splitten_units_procs(inner_units), &block)
             end
           end
 
@@ -188,15 +191,43 @@ module VersatileDiamond
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def combine_avail_species_checks(&block)
-            call_procs(avail_species_check_procs, &block)
+          def check_complete_unit(&block)
+            check_close_atoms do
+              check_new_atoms(&block)
+            end
           end
 
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_splitten_unit(inner_unit, &block)
+            check_undefined_species_of(inner_unit) do
+              check_complete_unit(&block)
+            end
+          end
+
+          # @param [Array] inner_units
           # @return [Array]
-          def avail_species_check_procs
-            unit.filled_inner_units.map do |inner_unit|
+          def check_avail_species_procs(inner_units)
+            inner_units.map do |inner_unit|
               -> &block { check_undefined_species_of(inner_unit, &block) }
             end
+          end
+
+          # @param [Array] inner_units
+          # @return [Array]
+          def check_splitten_units_procs(inner_units)
+            # TODO: it is possible need to group inner units by #complete_unit?
+            # predicate and reorder the calls sequence
+            splitten_units = inner_units.flat_map(&method(:split_on_compliance))
+            splitten_units.map do |inner_unit|
+              -> &block { check_splitten_unit(inner_unit, &block) }
+            end
+          end
+
+          # @param [BaseUnit] inner_unit
+          # @return [Array]
+          def split_on_compliance(inner_unit)
+            complete_unit?(inner_unit) ? [inner_unit] : inner_unit.units
           end
 
           # @param [BaseUnit] inner_unit
@@ -761,6 +792,21 @@ module VersatileDiamond
           # TODO: specie specific
           def checkable_neighbour_species?(a, b)
             [a, b].map(&:uniq_specie).reject(&:none?).size > 1
+          end
+
+          # @param [BaseUnit] inner_unit
+          # @return [Boolean]
+          def complete_unit?(inner_unit)
+            @context.bone_referred?(inner_unit.nodes) ||
+              inner_unit.atoms.size > 1 ||
+              coincident_nodes_of?(inner_unit)
+          end
+
+          # @param [BaseUnit] inner_unit
+          # @return [Boolean]
+          def coincident_nodes_of?(inner_unit)
+            values = inner_unit.nodes.map(&:coincide?)
+            !values.any? || values.all?
           end
 
           # @param [Nodes::BaseNode] node
