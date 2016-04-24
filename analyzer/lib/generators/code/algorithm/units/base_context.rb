@@ -114,13 +114,6 @@ module VersatileDiamond
 
           # @param [Array] nodes
           # @return [Boolean]
-          def bone_referred?(nodes)
-            (key?(nodes) && !backbone_graph[nodes].empty?) ||
-              side_nodes_lists.include?(nodes)
-          end
-
-          # @param [Array] nodes
-          # @return [Boolean]
           def key?(nodes)
             key_nodes_lists.include?(nodes)
           end

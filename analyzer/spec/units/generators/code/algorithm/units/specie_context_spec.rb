@@ -347,18 +347,6 @@ module VersatileDiamond
             end
           end
 
-          describe '#bone_referred?' do
-            describe 'no reffered' do
-              include_context :two_mobs_context
-              it { expect(subject.bone_referred?(unit_nodes)).to be_falsey }
-            end
-
-            describe 'reffered by other' do
-              include_context :intermed_context
-              it { expect(subject.bone_referred?(unit_nodes)).to be_truthy }
-            end
-          end
-
           describe '#key?' do
             include_context :alt_half_intermed_context
             it { expect(subject.key?(unit_nodes)).to be_truthy }

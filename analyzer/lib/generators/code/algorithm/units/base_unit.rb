@@ -64,6 +64,11 @@ module VersatileDiamond
             nodes.select { |node| species.include?(node.uniq_specie) }
           end
 
+          # @return [Array]
+          def complete_inner_units
+            filled_inner_units.flat_map(&method(:split_on_compliance)).sort
+          end
+
           # @param [Symbol] method_name
           # @param [Array] calling_atoms
           # @param [Hash] kwargs
@@ -258,6 +263,25 @@ module VersatileDiamond
             nodes.map(&method_name).uniq
           end
 
+          # @param [BaseUnit] inner_unit
+          # @return [Array]
+          def split_on_compliance(inner_unit)
+            complete_unit?(inner_unit) ? [inner_unit] : inner_unit.units
+          end
+
+          # @param [BaseUnit] inner_unit
+          # @return [Boolean]
+          def complete_unit?(inner_unit)
+            !inner_unit.atoms.one? || coincident_nodes_of?(inner_unit)
+          end
+
+          # @param [BaseUnit] inner_unit
+          # @return [Boolean]
+          def coincident_nodes_of?(inner_unit)
+            values = inner_unit.nodes.map(&:coincide?)
+            !values.any? || values.all?
+          end
+
           # @return [Array]
           def defined_symmetric_species
             symmetric_nodes = nodes.select(&:symmetric_atoms?)
@@ -275,7 +299,11 @@ module VersatileDiamond
             predefn_vars = dict.defined_vars # get before make inner nbr atoms var
             atom_var = dict.var_of(atoms)
             nbr_var = dict.make_atom_s(nbr.atoms)
-            atom_var.iterate_amorph_nbrs(predefn_vars, nbr_var, block.call)
+            if !atoms.any?(&:lattice) && nbr.atoms.any?(&:lattice)
+              atom_var.iterate_crystal_nbrs(predefn_vars, nbr_var, block.call)
+            else
+              atom_var.iterate_amorph_nbrs(predefn_vars, nbr_var, block.call)
+            end
           end
 
           # @param [Instances::SpecieInstance] specie

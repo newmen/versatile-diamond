@@ -93,6 +93,46 @@ module VersatileDiamond
             it { expect(nodes).to eq([unit_nodes.first]) }
           end
 
+          describe '#complete_inner_units' do
+            describe 'mono unit' do
+              include_context :rab_context
+              subject { MonoUnit.new(dict, unit_nodes.first) }
+
+              describe 'undefined' do
+                it { expect(subject.complete_inner_units).to be_empty }
+              end
+
+              describe 'defined' do
+                before { dict.make_atom_s(cr) }
+                it { expect(subject.complete_inner_units).to eq([subject]) }
+              end
+            end
+
+            describe 'many units' do
+              subject { ManyUnits.new(dict, mono_units) }
+              let(:mono_units) do
+                unit_nodes.map { |node| MonoUnit.new(dict, node) }
+              end
+
+              describe 'undefined' do
+                include_context :tree_bridges_context
+                it { expect(subject.complete_inner_units).to be_empty }
+              end
+
+              describe 'defined both non complete' do
+                include_context :tree_bridges_context
+                before { dict.make_atom_s(cc) }
+                it { expect(subject.complete_inner_units).to eq([subject]) }
+              end
+
+              describe 'defined just one complete' do
+                include_context :alt_top_mob_context
+                before { dict.make_atom_s(cr) }
+                it { expect(subject.complete_inner_units).to eq(mono_units.sort) }
+              end
+            end
+          end
+
           describe '#atom_with_specie_calls' do
             include_context :alt_two_mobs_context
             before { dict.make_atom_s(ctl) }
@@ -261,7 +301,7 @@ return 0;
             before { dict.make_specie_s(node_specie) }
             let(:code) do
               <<-CODE
-bridge1->eachSymmetry([](ParentSpec *bridge2) {
+bridge1->eachSymmetry([](ParentSpec *symmetricBridge1) {
     return 0;
 })
               CODE

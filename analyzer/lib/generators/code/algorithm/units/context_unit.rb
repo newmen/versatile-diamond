@@ -39,7 +39,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_avail_species(&block)
-            inner_units = unit.filled_inner_units
+            inner_units = unit.complete_inner_units
             if inner_units.empty?
               check_complete_unit(&block)
             else
@@ -219,16 +219,9 @@ module VersatileDiamond
           # @param [Array] inner_units
           # @return [Array]
           def check_avail_species_procs(inner_units)
-            complete_units = inner_units.flat_map(&method(:split_on_compliance))
-            complete_units.sort.map do |inner_unit|
+            inner_units.map do |inner_unit|
               -> &block { check_splitten_unit(inner_unit, &block) }
             end
-          end
-
-          # @param [BaseUnit] inner_unit
-          # @return [Array]
-          def split_on_compliance(inner_unit)
-            complete_unit?(inner_unit) ? [inner_unit] : inner_unit.units
           end
 
           # @yield incorporating statement
@@ -782,20 +775,6 @@ module VersatileDiamond
           # TODO: specie specific
           def checkable_neighbour_species?(a, b)
             [a, b].map(&:uniq_specie).reject(&:none?).size > 1
-          end
-
-          # @param [BaseUnit] inner_unit
-          # @return [Boolean]
-          def complete_unit?(inner_unit)
-            @context.bone_referred?(inner_unit.nodes) ||
-              inner_unit.atoms.size > 1 || coincident_nodes_of?(inner_unit)
-          end
-
-          # @param [BaseUnit] inner_unit
-          # @return [Boolean]
-          def coincident_nodes_of?(inner_unit)
-            values = inner_unit.nodes.map(&:coincide?)
-            !values.any? || values.all?
           end
 
           # @param [Nodes::BaseNode] node

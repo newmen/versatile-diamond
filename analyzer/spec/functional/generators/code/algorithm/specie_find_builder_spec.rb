@@ -643,20 +643,22 @@ module VersatileDiamond
               let(:base_specs) do
                 [dept_bridge_base, dept_methyl_on_right_bridge_base, subject]
               end
+              let(:typical_reactions) { [dept_reverse_migration_over_111] }
               let(:find_algorithm) do
                 <<-CODE
     if (anchor->is(#{role_cbr}))
     {
-        if (!anchor->hasRole(LOWER_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_cbr}))
+        if (!anchor->checkAndFind(LOWER_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_cbr}))
         {
-            MethylOnRightBridge *specie1 = anchor->specByRole<MethylOnRightBridge>(#{role_cbr});
-            Atom *atom1 = specie1->atom(1);
-            if (atom1->is(#{role_cr})) {
-                atom1->eachSpecByRole<Bridge>(#{role_cr}, [&](Bridge *target1) {
-                    target1->eachSymmetry([&](ParentSpec *specie2) {
-                        if (atom1 == specie2->atom(2))
+            MethylOnRightBridge *methylOnRightBridge1 = anchor->specByRole<MethylOnRightBridge>(#{role_cbr});
+            Atom *atom1 = methylOnRightBridge1->atom(1);
+            if (atom1->is(#{role_cr}))
+            {
+                atom1->eachSpecByRole<Bridge>(#{role_cr}, [&atom1, &methylOnRightBridge1](Bridge *bridge1) {
+                    bridge1->eachSymmetry([&atom1, &methylOnRightBridge1](ParentSpec *symmetricBridge1) {
+                        if (atom1 == symmetricBridge1->atom(2))
                         {
-                            ParentSpec *parents[2] = { specie1, specie2 };
+                            ParentSpec *parents[2] = { methylOnRightBridge1, symmetricBridge1 };
                             create<LowerMethylOnHalfExtendedBridge>(parents);
                         }
                     });
@@ -666,18 +668,21 @@ module VersatileDiamond
     }
     if (anchor->is(#{role_cr}))
     {
-        if (!anchor->hasRole(LOWER_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_cr}))
+        if (!anchor->checkAndFind(LOWER_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_cr}))
         {
-            anchor->eachSpecByRole<Bridge>(#{role_cr}, [&](Bridge *target1) {
-                target1->eachSymmetry([&](ParentSpec *specie1) {
-                    if (specie1->atom(2) == anchor)
+            anchor->eachSpecByRole<Bridge>(#{role_cr}, [&](Bridge *bridge1) {
+                bridge1->eachSymmetry([&anchor](ParentSpec *symmetricBridge1) {
+                    if (anchor == symmetricBridge1->atom(2))
                     {
-                        eachNeighbour(anchor, &Diamond::cross_110, [&](Atom *neighbour1) {
-                            if (neighbour1->is(#{role_cbr}) && anchor->hasBondWith(neighbour1))
+                        eachNeighbour(anchor, &Diamond::cross_110, [&anchor, &symmetricBridge1](Atom *neighbour1) {
+                            if (neighbour1->is(#{role_cbr}))
                             {
-                                MethylOnRightBridge *specie2 = neighbour1->specByRole<MethylOnRightBridge>(#{role_cbr});
-                                ParentSpec *parents[2] = { specie2, specie1 };
-                                create<LowerMethylOnHalfExtendedBridge>(parents);
+                                if (anchor->hasBondWith(neighbour1))
+                                {
+                                    MethylOnRightBridge *methylOnRightBridge1 = neighbour1->specByRole<MethylOnRightBridge>(#{role_cbr});
+                                    ParentSpec *parents[2] = { methylOnRightBridge1, symmetricBridge1 };
+                                    create<LowerMethylOnHalfExtendedBridge>(parents);
+                                }
                             }
                         });
                     }

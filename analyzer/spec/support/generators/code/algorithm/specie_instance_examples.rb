@@ -45,7 +45,7 @@ module VersatileDiamond
                 Instances::UniqueParent.new(generator, dept_uniq_parent)
               end
 
-              [:cm, :cb, :cr, :cl, :ct, :ctr, :ctl, :cbr].each do |keyname|
+              [:cm, :cb, :cr, :cl, :ct, :ctr, :ctl, :cbr, :cc].each do |keyname|
                 let(keyname) { dept_uniq_specie.spec.atom(keyname) }
               end
             end
