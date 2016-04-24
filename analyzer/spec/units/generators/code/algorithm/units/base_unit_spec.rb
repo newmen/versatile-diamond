@@ -17,6 +17,18 @@ module VersatileDiamond
             before { dict.make_specie_s(uniq_parents) }
           end
 
+          describe '#<=>' do
+            include_context :two_mobs_context
+            let(:cm) { unit_nodes.first }
+            let(:ctr) { cbs_relation.first.first }
+            let(:ctl) { cbs_relation.last.first.first.first }
+
+            it { expect(cm <=> ctr).to eq(1) }
+            it { expect(ctr <=> cm).to eq(-1) }
+            it { expect(ctr <=> ctl).to eq(0) }
+            it { expect(ctl <=> ctr).to eq(0) }
+          end
+
           describe '#nodes' do
             include_context :two_mobs_context
             it { expect(subject.nodes).to eq(unit_nodes) }

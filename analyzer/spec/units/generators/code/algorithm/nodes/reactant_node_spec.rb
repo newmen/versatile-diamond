@@ -109,6 +109,11 @@ module VersatileDiamond
             it { expect(node_ab.sub_properties).to eq(props_ab) }
           end
 
+          describe '#coincide?' do
+            it { expect(node_aib.coincide?).to be_truthy }
+            it { expect(node_ab.coincide?).to be_truthy }
+          end
+
           describe '#symmetric_atoms && #symmetric_atoms?' do
             it { expect(node_aib.symmetric_atoms).to be_empty }
             it { expect(node_ab.symmetric_atoms).to be_empty }
