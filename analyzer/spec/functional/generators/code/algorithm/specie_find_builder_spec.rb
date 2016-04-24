@@ -378,7 +378,7 @@ module VersatileDiamond
                         {
                             if (neighbours1[0]->hasBondWith(neighbours1[1]))
                             {
-                                Dimer *dimer2 = neighbours1[0]->specByRole<Dimer>(#{d_cr});
+                                Dimer *dimer2 = neighbours1[1]->specByRole<Dimer>(#{d_cr});
                                 if (neighbours1[1] == dimer2->atom(3))
                                 {
                                     if (neighbours1[0]->hasBondWith(amorph1))
@@ -459,7 +459,7 @@ module VersatileDiamond
                         {
                             if (atoms1[0]->hasBondWith(neighbours1[0]) && atoms1[1]->hasBondWith(neighbours1[1]))
                             {
-                                CrossBridgeOnBridges *crossBridgeOnBridges1 = neighbours1[0]->specByRole<CrossBridgeOnBridges>(#{cbob_ctr});
+                                CrossBridgeOnBridges *crossBridgeOnBridges1 = neighbours1[1]->specByRole<CrossBridgeOnBridges>(#{cbob_ctr});
                                 crossBridgeOnBridges1->eachSymmetry([&bridge1, &bridge2, &neighbours1](ParentSpec *symmetricCrossBridgeOnBridges1) {
                                     if (neighbours1[0] == symmetricCrossBridgeOnBridges1->atom(1) && neighbours1[1] == symmetricCrossBridgeOnBridges1->atom(5))
                                     {
@@ -611,26 +611,26 @@ module VersatileDiamond
     {
         if (!anchor->checkAndFind(LOWER_METHYL_ON_HALF_EXTENDED_BRIDGE, #{role_cr}))
         {
-            Bridge *bridge1 = anchor->specByRole<Bridge>(#{b_ct});
-            bridge1->eachSymmetry([&anchor](ParentSpec *symmetricBridge1) {
-                Atom *atom1 = symmetricBridge1->atom(1);
-                if (atom1->is(#{role_cbr}))
-                {
-                    anchor->eachSpecByRole<Bridge>(#{role_cr}, [&anchor, &atom1, &symmetricBridge1](Bridge *bridge2) {
-                        bridge2->eachSymmetry([&anchor, &atom1, &symmetricBridge1](ParentSpec *symmetricBridge2) {
-                            if (anchor == symmetricBridge2->atom(2))
+            anchor->eachSpecByRole<Bridge>(#{role_cr}, [&](Bridge *bridge1) {
+                bridge1->eachSymmetry([&anchor](ParentSpec *symmetricBridge1) {
+                    if (anchor == symmetricBridge1->atom(2))
+                    {
+                        Bridge *bridge2 = anchor->specByRole<Bridge>(#{b_ct});
+                        bridge2->eachSymmetry([&symmetricBridge1](ParentSpec *symmetricBridge2) {
+                            Atom *atom1 = symmetricBridge2->atom(1);
+                            if (atom1->is(#{role_cbr}))
                             {
                                 atom1->eachAmorphNeighbour([&symmetricBridge1, &symmetricBridge2](Atom *amorph1) {
                                     if (amorph1->is(#{role_cm}))
                                     {
-                                        ParentSpec *parents[2] = { symmetricBridge1, symmetricBridge2 };
+                                        ParentSpec *parents[2] = { symmetricBridge2, symmetricBridge1 };
                                         create<LowerMethylOnHalfExtendedBridge>(amorph1, parents);
                                     }
                                 });
                             }
                         });
-                    });
-                }
+                    }
+                });
             });
         }
     }

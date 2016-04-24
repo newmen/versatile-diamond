@@ -220,7 +220,7 @@ module VersatileDiamond
           # @return [Array]
           def check_avail_species_procs(inner_units)
             complete_units = inner_units.flat_map(&method(:split_on_compliance))
-            complete_units.map do |inner_unit|
+            complete_units.sort.map do |inner_unit|
               -> &block { check_splitten_unit(inner_unit, &block) }
             end
           end
@@ -773,7 +773,7 @@ module VersatileDiamond
           def checkable_bond_between?(*pair)
             relation = @context.relation_between(*pair)
             relation.bond? && (relation != Concepts::Bond.amorph ||
-              checkable_neighbour_species?(*pair))
+                                checkable_neighbour_species?(*pair))
           end
 
           # @param [Nodes::BaseNode] a
@@ -788,8 +788,7 @@ module VersatileDiamond
           # @return [Boolean]
           def complete_unit?(inner_unit)
             @context.bone_referred?(inner_unit.nodes) ||
-              inner_unit.atoms.size > 1 ||
-              coincident_nodes_of?(inner_unit)
+              inner_unit.atoms.size > 1 || coincident_nodes_of?(inner_unit)
           end
 
           # @param [BaseUnit] inner_unit

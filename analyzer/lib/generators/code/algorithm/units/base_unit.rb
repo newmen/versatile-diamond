@@ -8,6 +8,7 @@ module VersatileDiamond
         # The basic unit for each other
         # @abstract
         class BaseUnit < GenerableUnit
+          include Modules::OrderProvider
 
           attr_reader :nodes
 
@@ -18,6 +19,16 @@ module VersatileDiamond
             @nodes = nodes
 
             @_species, @_anchored_species, @_atoms, @_symmetric_atoms = nil
+          end
+
+          # @param [BaseUnit] other
+          # @return [Integer]
+          def <=>(other)
+            order(self, other, :nodes, :size) do
+              order(self, other, :atoms, :size) do
+                order(self, other, :species, :size, &comparing_core(other))
+              end
+            end
           end
 
           # @return [Array]
@@ -225,6 +236,15 @@ module VersatileDiamond
           end
 
         private
+
+          # @param [BaseUnit] other
+          # @return [Proc]
+          def comparing_core(other)
+            -> do
+              sps, ops = [self, other].map { |u| u.nodes.map(&:sub_properties) }
+              ops <=> sps
+            end
+          end
 
           # @return [Boolean]
           # TODO: specie specific
