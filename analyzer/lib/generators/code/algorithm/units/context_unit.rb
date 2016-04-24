@@ -40,12 +40,12 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           def check_avail_species(&block)
             inner_units = unit.filled_inner_units
-            if inner_units.all?(&method(:complete_unit?))
+            if inner_units.empty?
+              check_complete_unit(&block)
+            else
               call_procs(check_avail_species_procs(inner_units)) do
                 check_complete_unit(&block)
               end
-            else
-              call_procs(check_splitten_units_procs(inner_units), &block)
             end
           end
 
@@ -205,31 +205,6 @@ module VersatileDiamond
             end
           end
 
-          # @param [Array] inner_units
-          # @return [Array]
-          def check_avail_species_procs(inner_units)
-            inner_units.map do |inner_unit|
-              -> &block { check_undefined_species_of(inner_unit, &block) }
-            end
-          end
-
-          # @param [Array] inner_units
-          # @return [Array]
-          def check_splitten_units_procs(inner_units)
-            # TODO: it is possible need to group inner units by #complete_unit?
-            # predicate and reorder the calls sequence
-            splitten_units = inner_units.flat_map(&method(:split_on_compliance))
-            splitten_units.map do |inner_unit|
-              -> &block { check_splitten_unit(inner_unit, &block) }
-            end
-          end
-
-          # @param [BaseUnit] inner_unit
-          # @return [Array]
-          def split_on_compliance(inner_unit)
-            complete_unit?(inner_unit) ? [inner_unit] : inner_unit.units
-          end
-
           # @param [BaseUnit] inner_unit
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
@@ -239,6 +214,21 @@ module VersatileDiamond
             else
               block.call
             end
+          end
+
+          # @param [Array] inner_units
+          # @return [Array]
+          def check_avail_species_procs(inner_units)
+            complete_units = inner_units.flat_map(&method(:split_on_compliance))
+            complete_units.map do |inner_unit|
+              -> &block { check_splitten_unit(inner_unit, &block) }
+            end
+          end
+
+          # @param [BaseUnit] inner_unit
+          # @return [Array]
+          def split_on_compliance(inner_unit)
+            complete_unit?(inner_unit) ? [inner_unit] : inner_unit.units
           end
 
           # @yield incorporating statement
