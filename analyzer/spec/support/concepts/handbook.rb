@@ -745,6 +745,20 @@ module VersatileDiamond
             m111_source, m111_products, m111_atom_map)
         end
 
+        set(:imdb_source) { [activated_bridge.dup, activated_methyl_on_bridge.dup] }
+        set(:imdb_products) { [intermed_migr_down_bridge.dup] }
+        set(:imdb_names_to_specs) do {
+          source: [[:ab, imdb_source.first], [:amob, imdb_source.last]],
+          products: [:imdb, imdb_products.first]
+        } end
+        set(:imdb_atom_map) do
+          Mcs::AtomMapper.map(imdb_source, imdb_products, imdb_names_to_specs)
+        end
+        set(:intermed_migr_db_formation) do
+          r = Reaction.new(:forward, 'intermed migr db formation',
+            imdb_source, imdb_products, imdb_atom_map)
+        end
+
         set(:imdcf_source) { [activated_bridge.dup, activated_methyl_on_dimer.dup] }
         set(:imdcf_products) { [intermed_migr_down_common.dup] }
         set(:imdcf_names_to_specs) do {

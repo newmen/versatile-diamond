@@ -116,6 +116,7 @@ module VersatileDiamond
           :methyl_incorporation,
           :methyl_to_gap,
           :two_dimers_form,
+          :intermed_migr_db_formation,
           :intermed_migr_dc_formation,
           :intermed_migr_dh_formation,
           :intermed_migr_df_formation,
@@ -133,6 +134,9 @@ module VersatileDiamond
         ])
         set(:dept_sierpinski_formation) do
           Organizers::DependentTypicalReaction.new(sierpinski_drop.reverse)
+        end
+        set(:dept_intermed_migr_db_drop) do
+          Organizers::DependentTypicalReaction.new(intermed_migr_db_formation.reverse)
         end
         set(:dept_intermed_migr_dc_drop) do
           Organizers::DependentTypicalReaction.new(intermed_migr_dc_formation.reverse)

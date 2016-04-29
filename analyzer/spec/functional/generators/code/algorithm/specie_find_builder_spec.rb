@@ -699,24 +699,27 @@ module VersatileDiamond
               let(:base_specs) do
                 [dept_bridge_base, dept_methyl_on_bridge_base, subject]
               end
+              let(:typical_reactions) { [dept_intermed_migr_db_drop] }
               let(:find_algorithm) do
                 <<-CODE
     if (anchor->is(#{role_cm}))
     {
         if (!anchor->hasRole(INTERMED_MIGR_DOWN_BRIDGE, #{role_cm}))
         {
-            anchor->eachSpecsPortionByRole<MethylOnBridge>(#{mob_cm}, 2, [&](MethylOnBridge **species1) {
-                species1[0]->eachSymmetry([&](ParentSpec *specie1) {
-                    Atom *atom1 = specie1->atom(2);
-                    Atom *atom2 = species1[1]->atom(1);
-                    eachNeighbour(atom1, &Diamond::cross_100, [&](Atom *neighbour1) {
-                        if (atom2 == neighbour1)
-                        {
-                            ParentSpec *parents[2] = { specie1, species1[1] };
-                            create<IntermedMigrDownBridge>(parents);
-                        }
+            anchor->eachSpecsPortionByRole<MethylOnBridge>(#{mob_cm}, 2, [](MethylOnBridge **species1) {
+                for (uint s = 0; s < 2; ++s)
+                {
+                    species1[s]->eachSymmetry([&species1](ParentSpec *symmetricMethylOnBridge1) {
+                        Atom *atoms1[2] = { symmetricMethylOnBridge1->atom(3), species1[1 - s]->atom(1) };
+                        eachNeighbour(atoms1[0], &Diamond::cross_100, [&atoms1, &species1, &symmetricMethylOnBridge1](Atom *neighbour1) {
+                            if (neighbour1 == atoms1[1])
+                            {
+                                ParentSpec *parents[2] = { symmetricMethylOnBridge1, species1[1 - s] };
+                                create<IntermedMigrDownBridge>(parents);
+                            }
+                        });
                     });
-                });
+                }
             });
         }
     }

@@ -79,7 +79,7 @@ module VersatileDiamond
           def inspect
             sis = species.map(&:inspect)
             pops = nodes.uniq(&:atom).map(&:properties).map(&:inspect)
-            "∞(#{sis.join(' ')})-(#{pops.join(' ')})∞"
+            "∞(#{sis.join(' ')})-=-(#{pops.join(' ')})∞"
           end
 
         protected
@@ -90,7 +90,7 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           # TODO: specie specific
           def select_specie_definition(&block)
-            if symmetric? || over_used_atom?
+            if !many_similar_species? && (symmetric? || over_used_atom?)
               check_many_undefined_species(&block)
             elsif atom_many_usages_like_in_context?
               check_similar_undefined_species(&block)
@@ -113,7 +113,8 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_symmetries(&block)
-            if possible_symmetric_nodes.one?
+            target_nodes = possible_symmetric_nodes
+            if target_nodes.one?
               unit.iterate_specie_symmetries(&block)
             elsif asymmetric_related_atoms?
               unit.iterate_for_loop_symmetries(&block)
@@ -140,7 +141,13 @@ module VersatileDiamond
           def possible_symmetric_nodes
             # already should be checked that unit is symmetric
             symmetric_nodes = nodes.select(&:symmetric_atoms?)
-            symmetric_nodes.empty? ? nodes : symmetric_nodes
+            if symmetric_nodes.empty?
+              nodes.reject do |node|
+                @context.symmetric_close_nodes([node.uniq_specie]).empty?
+              end
+            else
+              symmetric_nodes
+            end
           end
 
           # @return [Proc]
@@ -705,6 +712,13 @@ module VersatileDiamond
 
           # @return [Boolean]
           # TODO: just specie
+          def many_similar_species?
+            atom_many_usages_like_in_context? &&
+              !species.one? && species.map(&:original).uniq.one?
+          end
+
+          # @return [Boolean]
+          # TODO: just specie
           def atom_many_usages_like_in_context?
             @_is_atom_many_usages_like_in_context ||=
               if atom_used_many_times?
@@ -730,21 +744,15 @@ module VersatileDiamond
           # @param [Array] ca_nodes
           # @return [Boolean]
           def seems_different?(ca_nodes)
-            other_atoms = ca_nodes.map(&:atom).uniq
-            return false if lists_are_identical?(atoms, other_atoms, &:==)
-
-            oa_num = other_atoms.size
-            return false if oa_num >= species.size || oa_num % species.size == 0
-
-            sub_props = ca_nodes.map(&:sub_properties).uniq
-            return false unless oa_num % sub_props.size == 0
+            ca_species = ca_nodes.map(&:uniq_specie).uniq
+            return true unless lists_are_identical?(species, ca_species, &:==)
+            return true unless ca_nodes.map { |n| n.uniq_specie.original }.uniq.one?
 
             groups = ca_nodes.groups(&:uniq_specie)
-            return false unless groups.map(&:size).uniq.one?
-
-            group_subs = groups.first.map(&:sub_properties).uniq
-            !(lists_are_identical?(sub_props, group_subs, &:==) &&
-              lists_are_identical?(species, ca_nodes.map(&:uniq_specie).uniq, &:==))
+            !groups.one? &&
+              !lists_are_identical?(*groups) do |*ns|
+                ns.map(&:sub_properties).uniq.one?
+              end
           end
 
           # @param [Array] checking_nodes
