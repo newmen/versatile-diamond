@@ -79,7 +79,7 @@ module VersatileDiamond
           def inspect
             sis = species.map(&:inspect)
             pops = nodes.uniq(&:atom).map(&:properties).map(&:inspect)
-            "∞(#{sis.join(' ')})-=-(#{pops.join(' ')})∞"
+            "∞(#{sis.join(' ')}) | (#{pops.join(' ')})∞"
           end
 
         protected
