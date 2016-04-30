@@ -108,7 +108,7 @@ module VersatileDiamond
           # @param [Nodes::BaseNode] b
           # @return [Concepts::Bond]
           def relation_between(a, b)
-            to_b = relations_of_one(a).find { |node, _| node == b }
+            to_b = around_relations_of_one(a).find { |node, _| node == b }
             to_b && to_b.last
           end
 
@@ -190,20 +190,20 @@ module VersatileDiamond
 
           # @param [Array] nodes
           # @return [Array]
-          def relations_of(nodes)
+          def around_relations_of(nodes)
             nodes.map(&nodes_graph.public_method(:[]))
           end
 
           # @param [Nodes::BaseNode] node
           # @return [Array]
-          def relations_of_one(node)
-            relations_of([node]).reduce(:+)
+          def around_relations_of_one(node)
+            around_relations_of([node]).reduce(:+)
           end
 
           # @param [Array] nodes
           # @return [Array]
           def nodes_with_relations(nodes)
-            nodes.zip(relations_of(nodes))
+            nodes.zip(around_relations_of(nodes))
           end
 
           # @param [Array] nodes

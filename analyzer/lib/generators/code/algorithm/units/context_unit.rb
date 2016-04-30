@@ -670,7 +670,6 @@ module VersatileDiamond
           # @return [Boolean]
           def full_usages_match?
             return @_is_full_usages_match unless @_is_full_usages_match.nil?
-
             coincident_nodes = nodes.select(&:coincide?)
             comparing_nodes = coincident_nodes.empty? ? nodes : coincident_nodes
             @_is_full_usages_match =
@@ -686,7 +685,6 @@ module VersatileDiamond
           # @return [Boolean]
           def over_used_atom?
             return @_is_over_used_atom unless @_is_over_used_atom.nil?
-
             @_is_over_used_atom = atom_used_many_times? && !full_usages_match?
           end
 
@@ -722,7 +720,6 @@ module VersatileDiamond
           # @return [Boolean]
           def partially_symmetric?
             return @_is_partially_symmetric unless @_is_partially_symmetric.nil?
-
             @_is_partially_symmetric = unit.partially_symmetric? &&
               @context.symmetric_relations?(unit.nodes_with_atoms(symmetric_atoms))
           end
