@@ -122,6 +122,14 @@ module VersatileDiamond
             end
           end
 
+          # @return [Array]
+          def neighbour_nodes_pairs
+            nodes.combination(2).select do |a, b|
+              relation = @context.relation_between(a, b)
+              relation && relation.exist?
+            end
+          end
+
         private
 
           def_delegators :unit, :species, :anchored_species, :atoms, :symmetric_atoms
@@ -443,7 +451,7 @@ module VersatileDiamond
               block.call
             else
               nbr.unit.check_atoms_roles(new_atoms) do
-                check_bond_between(pairs + neighbour_nodes_pairs(nbr), &block)
+                check_bond_between(pairs + nbr.neighbour_nodes_pairs, &block)
               end
             end
           end
@@ -628,15 +636,6 @@ module VersatileDiamond
             nodes_pairs.map { |ns| ns.map(&method(:atom_var_or_specie_call)) }
           end
 
-          # @param [ContextUnit] nbr
-          # @return [Array]
-          def neighbour_nodes_pairs(nbr)
-            nbr.nodes.combination(2).select do |a, b|
-              relation = @context.relation_between(a, b)
-              relation && relation.exist?
-            end
-          end
-
           # Gets all existed relations over backbone graph of context
           # The first element of each item is pair of [from, to] nodes
           #
@@ -787,8 +786,9 @@ module VersatileDiamond
           # @return [Boolean]
           def checkable_bond_between?(*pair)
             relation = @context.relation_between(*pair)
-            relation.bond? && (relation != Concepts::Bond.amorph ||
-                                checkable_neighbour_species?(*pair))
+            relation.bond? &&
+              pair.all? { |n| @context.just_existed_bone_relations?(n) } &&
+              (relation != Concepts::Bond.amorph || checkable_neighbour_species?(*pair))
           end
 
           # @param [Nodes::BaseNode] a

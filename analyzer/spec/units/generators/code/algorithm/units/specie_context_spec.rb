@@ -392,7 +392,7 @@ module VersatileDiamond
             it { expect(subject.key?([unit_nodes.first])).to be_falsey }
           end
 
-          describe 'cutten_bone_relations_from?' do
+          describe '#cutten_bone_relations_from?' do
             let(:result) do
               subject.cutten_bone_relations_from?(cutting_nodes, target_nodes)
             end
@@ -412,6 +412,13 @@ module VersatileDiamond
               end
               it { expect(result).to be_truthy }
             end
+          end
+
+          describe '#just_existed_bone_relations?' do
+            include_context :half_intermed_context
+            let(:nodes) { ordered_graph.last.last.first.first }
+            it { expect(subject.just_existed_bone_relations?(nodes[0])).to be_falsey }
+            it { expect(subject.just_existed_bone_relations?(nodes[1])).to be_truthy }
           end
         end
 

@@ -152,6 +152,12 @@ module VersatileDiamond
             !!cutten_backbone[target_nodes]
           end
 
+          # @param [Nodes::BaseNode] node
+          # @return [Boolean]
+          def just_existed_bone_relations?(node)
+            both_dirs_bone_relations_of_one(node).all? { |_, r| r.exist? }
+          end
+
         private
 
           attr_reader :dict, :nodes_graph, :backbone_graph
@@ -226,6 +232,14 @@ module VersatileDiamond
           # @return [Array]
           def bone_relations_of_one(node)
             bone_relations_of([node]).reduce(:+)
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @return [Array]
+          def both_dirs_bone_relations_of_one(node)
+            around_relations_of_one(node).select do |n, _|
+              bone_relation?(node, n) || bone_relation?(n, node)
+            end
           end
 
           # @param [Array] nodes
