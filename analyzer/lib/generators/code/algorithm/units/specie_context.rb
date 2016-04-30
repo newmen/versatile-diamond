@@ -34,7 +34,8 @@ module VersatileDiamond
           # @return [Hash]
           # @override
           def backbone_graph
-            @_converted_backbone_graph ||= dup_graph(super, &method(:replace_scopes))
+            @_converted_backbone_graph ||=
+              dup_graph(super, &method(:replace_scopes)).freeze
           end
 
           # @param [Array] rels
