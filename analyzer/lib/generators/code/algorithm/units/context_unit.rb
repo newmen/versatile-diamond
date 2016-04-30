@@ -326,10 +326,10 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_new_atoms(&block)
-            rich_nodes = @context.reachable_bone_nodes_after(nodes)
-            if !rich_nodes.empty? && atoms_comparison_required?(rich_nodes)
-              check_not_existed_previous_atoms(rich_nodes) do
-                check_existed_previous_atoms(rich_nodes, &block)
+            reachable_nodes = @context.reachable_bone_nodes_after(nodes)
+            if !reachable_nodes.empty? && atoms_comparison_required?(reachable_nodes)
+              check_not_existed_previous_atoms(reachable_nodes) do
+                check_existed_previous_atoms(reachable_nodes, &block)
               end
             else
               block.call
@@ -355,7 +355,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_avail_species_in(nbr, &block)
-            defined_ancns = defined_neighbour_self_same_nodes(nbr)
+            defined_ancns = defined_same_neighbour_nodes(nbr)
             nbr.check_avail_species do
               check_eq_previous_atoms(defined_ancns, except_own: false) do
                 nbr.check_private_relations(&block)
@@ -521,13 +521,23 @@ module VersatileDiamond
           # @param [ContextUnit] nbr
           # @return [Array] the list of nodes which will be available again after
           #   neighbour unit species check
-          def defined_neighbour_self_same_nodes(nbr)
+          def defined_same_neighbour_nodes(nbr)
             if @context.key?(nbr.nodes)
-              []
+              defined_next_neighbour_nodes(nbr)
             else
               sncns = @context.symmetric_close_nodes(nbr.species)
               undefined_sncns = sncns.reject { |node| dict.var_of(node.uniq_specie) }
               undefined_sncns.select(&check_own_node_proc)
+            end
+          end
+
+          # @param [ContextUnit] nbr
+          # @return [Array]
+          def defined_next_neighbour_nodes(nbr)
+            if @context.cutten_bone_relations_from?(nodes, nbr.nodes)
+              []
+            else
+              nbr.nodes.select { |n| species.include?(n.uniq_specie) }
             end
           end
 

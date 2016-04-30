@@ -62,11 +62,11 @@ module VersatileDiamond
             species_nodes(species).reject(&method(:atom_defined?))
           end
 
-          # @param [Array] target_nodes
+          # @param [Array] cutting_nodes
           # @return [Array]
-          def reachable_bone_nodes_after(target_nodes)
-            cutten_backbone = cut_backbone_from(target_nodes)
-            species_nodes(target_nodes.map(&:uniq_specie)).select do |node|
+          def reachable_bone_nodes_after(cutting_nodes)
+            cutten_backbone = cut_backbone_from(cutting_nodes)
+            species_nodes(cutting_nodes.map(&:uniq_specie)).select do |node|
               cutten_backbone.any? { |key_rels| slice(*key_rels).include?(node) }
             end
           end
@@ -142,6 +142,14 @@ module VersatileDiamond
           # @return [Boolean]
           def key?(nodes)
             key_nodes_lists.include?(nodes)
+          end
+
+          # @param [Array] cutting_nodes
+          # @param [Array] target_nodes
+          # @return [Boolean]
+          def cutten_bone_relations_from?(cutting_nodes, target_nodes)
+            cutten_backbone = cut_backbone_from(cutting_nodes)
+            !!cutten_backbone[target_nodes]
           end
 
         private
@@ -307,12 +315,12 @@ module VersatileDiamond
             drop_proc = -> ns { nodes_without_species(ns, uniq_species) }
 
             reached = false
-            backbone_graph.each_with_object([]) do |(key, rels), acc|
+            backbone_graph.each_with_object({}) do |(key, rels), acc|
               reached ||= slice(key, rels).any? { |n| nodes.include?(n) }
               if reached
-                acc << [key, rels]
+                acc[key] = rels
               else
-                acc << [drop_proc[key], rels.map { |ns, rp| [drop_proc[ns], rp] }]
+                acc[drop_proc[key]] = rels.map { |ns, rp| [drop_proc[ns], rp] }
               end
             end
           end

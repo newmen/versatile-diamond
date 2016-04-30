@@ -391,6 +391,28 @@ module VersatileDiamond
             it { expect(subject.key?(unit_nodes)).to be_truthy }
             it { expect(subject.key?([unit_nodes.first])).to be_falsey }
           end
+
+          describe 'cutten_bone_relations_from?' do
+            let(:result) do
+              subject.cutten_bone_relations_from?(cutting_nodes, target_nodes)
+            end
+
+            describe 'no relations' do
+              include_context :intermed_context
+              let(:cutting_nodes) { ordered_graph.last.first }
+              let(:target_nodes) { entry_nodes.flat_map(&:split) }
+              it { expect(result).to be_falsey }
+            end
+
+            describe 'relations exists' do
+              include_context :alt_intermed_context
+              let(:cutting_nodes) { entry_nodes }
+              let(:target_nodes) do
+                ordered_graph.first.last.first.first.flat_map(&:split)
+              end
+              it { expect(result).to be_truthy }
+            end
+          end
         end
 
       end
