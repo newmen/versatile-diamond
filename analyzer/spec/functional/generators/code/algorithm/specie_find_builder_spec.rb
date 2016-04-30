@@ -752,9 +752,9 @@ module VersatileDiamond
             if (amorph1->is(#{role_cm}))
             {
                 amorph1->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&](MethylOnBridge *methylOnBridge1) {
-                    if (methylOnBridge1->atom(1) != anchor)
+                    if (anchor != methylOnBridge1->atom(1))
                     {
-                        methylOnBridge1->eachSymmetry([&anchor, &methylOnDimer1](ParentSpec *symmetricMethylOnBridge1) {
+                        methylOnBridge1->eachSymmetry([&amorph1, &anchor, &methylOnDimer1](ParentSpec *symmetricMethylOnBridge1) {
                             Atom *atom1 = symmetricMethylOnBridge1->atom(2);
                             eachNeighbour(atom1, &Diamond::cross_100, [&anchor, &methylOnDimer1](Atom *neighbour1) {
                                 if (neighbour1 == anchor)

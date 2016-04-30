@@ -294,8 +294,8 @@ module VersatileDiamond
           def iterate_undefined_species(&block)
             unit.iterate_species_by_role do
               check_similar_defined_species do
-                check_symmetries do
-                  check_defined_context_parts(&block)
+                check_defined_context_parts do
+                  check_symmetries(&block)
                 end
               end
             end
@@ -304,7 +304,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_defined_context_parts(&block)
-            nodes_pairs = similar_nodes_pairs
+            nodes_pairs = common_atoms_nodes_pairs
             if nodes_pairs.empty?
               block.call
             else
@@ -555,9 +555,11 @@ module VersatileDiamond
           # different species
           #
           # @return [Array]
-          def similar_nodes_pairs
-            original_different_defined_species_nodes.flat_map do |node|
-              nodes_pairs_with(node.uniq_specie)
+          def common_atoms_nodes_pairs
+            avail_species = all_nodes_with_atoms.map(&:uniq_specie).uniq
+            defined_species = select_defined(avail_species)
+            @context.similar_atoms_nodes_pairs(defined_species).reject do |ns|
+              ns.any? { |node| nodes.include?(node) }
             end
           end
 
@@ -587,20 +589,6 @@ module VersatileDiamond
             end
           end
 
-          # @param [Instance::SpecieInstance] other_specie
-          # @return [Array]
-          def nodes_pairs_with(other_specie)
-            species.flat_map do |self_specie|
-              all_atoms_pairs = self_specie.common_atoms_with(other_specie)
-              different_atoms_pairs = all_atoms_pairs.reject { |as| as.uniq.one? }
-              if different_atoms_pairs.empty?
-                []
-              else
-                atoms_pairs_to_nodes(different_atoms_pairs, self_specie, other_specie)
-              end
-            end
-          end
-
           # @param [Nodes::BaseNode] node
           # @return [Expressions::Core::Expression]
           # TODO: move to MonoUnit?
@@ -619,20 +607,6 @@ module VersatileDiamond
           # @return [Array]
           def nodes_pairs_to_atoms_exprs(nodes_pairs)
             nodes_pairs.map { |ns| ns.map(&method(:atom_var_or_specie_call)) }
-          end
-
-          # @param [Array] atoms_pairs
-          # @param [Instance::SpecieInstance] self_specie
-          # @param [Instance::SpecieInstance] other_specie
-          # @return [Array]
-          def atoms_pairs_to_nodes(atoms_pairs, self_specie, other_specie)
-            self_nodes = @context.species_nodes([self_specie])
-            other_nodes = @context.species_nodes([other_specie])
-            atoms_pairs.each_with_object([]) do |(self_atom, other_atom), acc|
-              self_node = self_nodes.find { |n| n.atom == self_atom }
-              other_node = other_nodes.find { |n| n.atom == other_atom }
-              acc << [self_node, other_node] if self_node && other_node
-            end
           end
 
           # @param [ContextUnit] nbr
@@ -671,7 +645,7 @@ module VersatileDiamond
 
           # @return [Array]
           def context_nodes_with_undefined_atoms
-            @context.reachable_nodes_with(select_defined(species))
+            @context.reachable_bone_nodes_with(select_defined(species))
           end
 
           # @return [Array]

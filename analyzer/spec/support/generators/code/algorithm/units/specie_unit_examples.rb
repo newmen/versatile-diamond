@@ -153,6 +153,18 @@ module VersatileDiamond
               include_context :top_mob_context
               let(:entry_nodes) { backbone.entry_nodes.last } # override
             end
+
+            shared_context :bottom_mob_context do
+              include_context :specie_unit_context
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_right_bridge_base, dept_uniq_specie]
+              end
+              let(:typical_reactions) { [dept_reverse_migration_over_111] }
+              let(:dept_uniq_specie) { dept_lower_methyl_on_half_extended_bridge_base }
+              let(:entry_nodes) do # override
+                backbone.entry_nodes.find { |ns| ns.any?(&:splittable?) }
+              end
+            end
           end
 
         end

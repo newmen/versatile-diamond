@@ -30,7 +30,7 @@ module VersatileDiamond
           # @param [Array] atoms
           # @return [Array]
           def atoms_nodes(atoms)
-            bone_nodes.select { |node| atoms.include?(node.atom) }
+            bone_nodes.select { |node| atom_in?(node, atoms) }
           end
 
           # @param [Array] species
@@ -41,8 +41,25 @@ module VersatileDiamond
 
           # @param [Array] species
           # @return [Array]
-          def reachable_nodes_with(species)
+          def reachable_bone_nodes_with(species)
             species_nodes(species).reject(&method(:atom_defined?))
+          end
+
+          # @param [Array] species
+          # @return [Array]
+          def similar_atoms_nodes_pairs(species)
+            species.combination(2).flat_map do |species_pair|
+              if species_pair.map(&:original).uniq.one?
+                []
+              else
+                atoms_pairs = atoms_pairs_for(*species_pair)
+                nodes_pairs = nodes_pairs_for(species_pair, atoms_pairs)
+                nodes_pairs.select do |ns|
+                  defined_bones = ns.map { |n| bone?(n) && atom_defined?(n) }
+                  defined_bones.any? && !defined_bones.all?
+                end
+              end
+            end
           end
 
           # Gets nodes which belongs to passed nodes but have existed relations from
@@ -250,6 +267,30 @@ module VersatileDiamond
             end
           end
 
+          # @param [SpecieInstance] s1
+          # @param [SpecieInstance] s2
+          # @return [Array]
+          def atoms_pairs_for(s1, s2)
+            s1.common_atoms_with(s2).reject { |as| as.uniq.one? }
+          end
+
+          # @param [Array] species_pair
+          # @param [Array] atoms_pairs
+          # @return [Array]
+          def nodes_pairs_for(species_pair, atoms_pairs)
+            atoms_pairs.map do |atoms_pair|
+              species_pair.zip(atoms_pair).map { |sa| node_by(*sa) }
+            end
+          end
+
+          # @param [SpecieInstance] specie
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom
+          # @return [Nodes::BaseNode]
+          def node_by(specie, atom)
+            nodes_graph.keys.find { |n| n.uniq_specie == specie && n.atom == atom }
+          end
+
           # @param [Array] nodes
           # @param [Array] uniq_species
           # @return [Array]
@@ -262,6 +303,13 @@ module VersatileDiamond
           # @return [Boolean]
           def specie_in?(node, uniq_species)
             uniq_species.include?(node.uniq_specie)
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @param [Array] atoms
+          # @return [Boolean]
+          def atom_in?(node, atoms)
+            atoms.include?(node.atom)
           end
 
           # @param [Nodes::BaseNode] node

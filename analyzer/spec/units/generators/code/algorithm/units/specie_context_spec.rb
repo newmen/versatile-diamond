@@ -76,10 +76,10 @@ module VersatileDiamond
             end
           end
 
-          describe '#reachable_nodes_with' do
+          describe '#reachable_bone_nodes_with' do
             describe 'without scope species' do
               include_context :rab_context
-              let(:nodes) { subject.reachable_nodes_with([node_specie]) }
+              let(:nodes) { subject.reachable_bone_nodes_with([node_specie]) }
 
               describe 'undefined atom' do
                 it { expect(nodes.map(&:uniq_specie)).to eq([node_specie]) }
@@ -93,12 +93,12 @@ module VersatileDiamond
 
             describe 'with scope species' do
               include_context :two_mobs_context
-              it { expect(subject.reachable_nodes_with([scope_specie])).to be_empty }
+              it { expect(subject.reachable_bone_nodes_with([scope_specie])).to be_empty }
             end
 
             describe 'with one specie of scope' do
               include_context :two_mobs_context
-              let(:nodes) { subject.reachable_nodes_with([node_specie]) }
+              let(:nodes) { subject.reachable_bone_nodes_with([node_specie]) }
 
               describe 'undefined atom' do
                 let(:uniq_species) { [node_specie, node_specie] }
@@ -108,6 +108,35 @@ module VersatileDiamond
               describe 'defined atom' do
                 before { dict.make_atom_s(cm) }
                 it { expect(nodes.map(&:uniq_specie)).to eq([node_specie]) }
+              end
+            end
+          end
+
+          describe '#similar_atoms_nodes_pairs' do
+            let(:avail_species) { unit_nodes.map(&:uniq_specie) }
+            let(:result) { subject.similar_atoms_nodes_pairs(avail_species) }
+
+            describe 'no pairs' do
+              include_context :bottom_mob_context
+              before { dict.make_atom_s(unit_nodes.first.atom) }
+              it { expect(result).to be_empty }
+            end
+
+            describe 'there is a pair of nodes' do
+              include_context :intermed_context
+              before do
+                latticed_entry = (backbone.entry_nodes - entry_nodes).first.first
+                dict.make_atom_s(latticed_entry.atom)
+              end
+
+              let(:pairs) do
+                nodes_graph = subject.send(:nodes_graph)
+                unit_nodes.map { |node| nodes_graph[node].map(&:first) }.uniq
+              end
+
+              it 'just one pair' do
+                expect(result.size).to eq(1)
+                expect(result.first).to match_array(pairs.first)
               end
             end
           end
@@ -287,7 +316,7 @@ module VersatileDiamond
             describe 'two nodes to one amorph (not symmetric by backbone)' do
               include_context :two_mobs_context
               before { dict.make_atom_s(cm) }
-              let(:nodes) { subject.reachable_nodes_with(uniq_parents) }
+              let(:nodes) { subject.reachable_bone_nodes_with(uniq_parents) }
               it { expect(subject.symmetric_relations?(nodes)).to be_falsey }
             end
           end

@@ -51,6 +51,22 @@ module VersatileDiamond
             nodes.flat_map(&:split)
           end
 
+          # @param [Array] _
+          # @return [Array]
+          # @override
+          def nodes_pairs_for(*)
+            super.reject do |n1, n2|
+              same_splitten_species?(n1, n2) || same_splitten_species?(n2, n1)
+            end
+          end
+
+          # @param [Nodes::BaseNode] n1
+          # @param [Nodes::BaseNode] n2
+          # @return [Boolean]
+          def same_splitten_species?(n1, n2)
+            n1.split.map(&:uniq_specie).include?(n2.uniq_specie)
+          end
+
           # @param [Nodes::BaseNode] node
           # @param [Array] _ automatically passed to super method
           # @return [Boolean]
