@@ -25,6 +25,7 @@ module VersatileDiamond
 
             @_is_partially_symmetric = nil
             @_is_over_used_atom, @_is_atom_many_usages_like_in_context = nil
+            @_is_full_usages_match = nil
           end
 
           # @yield incorporating statement
@@ -668,9 +669,12 @@ module VersatileDiamond
 
           # @return [Boolean]
           def full_usages_match?
+            return @_is_full_usages_match unless @_is_full_usages_match.nil?
+
             coincident_nodes = nodes.select(&:coincide?)
             comparing_nodes = coincident_nodes.empty? ? nodes : coincident_nodes
-            count_possible_atom_usages != comparing_nodes.size
+            @_is_full_usages_match =
+              (count_possible_atom_usages == comparing_nodes.size)
           end
 
           # @return [Boolean]
@@ -681,7 +685,9 @@ module VersatileDiamond
 
           # @return [Boolean]
           def over_used_atom?
-            @_is_over_used_atom ||= atom_used_many_times? && full_usages_match?
+            return @_is_over_used_atom unless @_is_over_used_atom.nil?
+
+            @_is_over_used_atom = atom_used_many_times? && !full_usages_match?
           end
 
           # @return [Boolean]
@@ -694,7 +700,11 @@ module VersatileDiamond
           # @return [Boolean]
           # TODO: just specie
           def atom_many_usages_like_in_context?
-            @_is_atom_many_usages_like_in_context ||=
+            unless @_is_atom_many_usages_like_in_context.nil?
+              return @_is_atom_many_usages_like_in_context
+            end
+
+            @_is_atom_many_usages_like_in_context =
               if atom_used_many_times?
                 context_prop = all_popular_atoms_nodes.first.properties
                 parent_props = all_popular_atoms_nodes.map(&:sub_properties)
@@ -711,7 +721,9 @@ module VersatileDiamond
 
           # @return [Boolean]
           def partially_symmetric?
-            @_is_partially_symmetric ||= unit.partially_symmetric? &&
+            return @_is_partially_symmetric unless @_is_partially_symmetric.nil?
+
+            @_is_partially_symmetric = unit.partially_symmetric? &&
               @context.symmetric_relations?(unit.nodes_with_atoms(symmetric_atoms))
           end
 
