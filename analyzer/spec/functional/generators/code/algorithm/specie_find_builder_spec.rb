@@ -861,28 +861,27 @@ module VersatileDiamond
 
               it_behaves_like :check_code do
                 subject { dept_intermed_migr_down_full_base }
+                let(:typical_reactions) { [dept_intermed_migr_df_drop] }
                 let(:find_algorithm) do
                   <<-CODE
     if (anchor->is(#{role_cdr}))
     {
         if (!anchor->hasRole(INTERMED_MIGR_DOWN_FULL, #{role_cdr}))
         {
-            MethylOnDimer *specie1 = anchor->specByRole<MethylOnDimer>(#{role_cdr});
-            Atom *atom1 = specie1->atom(0);
-            Atom *atom2 = specie1->atom(4);
-            if (atom1->is(#{role_cm}))
+            MethylOnDimer *methylOnDimer1 = anchor->specByRole<MethylOnDimer>(#{role_cdr});
+            Atom *atoms1[2] = { methylOnDimer1->atom(0), methylOnDimer1->atom(4) };
+            if (atoms1[0]->is(#{role_cm}))
             {
-                atom1->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&](MethylOnBridge *specie2) {
-                    if (specie2->atom(1) != anchor)
+                atoms1[0]->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&](MethylOnBridge *methylOnBridge1) {
+                    if (anchor != methylOnBridge1->atom(1))
                     {
-                        specie2->eachSymmetry([&](ParentSpec *specie3) {
-                            Atom *atom3 = specie3->atom(2);
-                            Atom *atom4 = specie3->atom(3);
-                            Atom *atoms1[2] = { atom3, atom4 };
-                            eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
-                                if (neighbours1[0] == anchor && neighbours1[1] == atom2 && neighbours1[0]->hasBondWith(neighbours1[1]))
+                        methylOnBridge1->eachSymmetry([&anchor, &atoms1, &methylOnDimer1](ParentSpec *symmetricMethylOnBridge1) {
+                            Atom *atoms2[2] = { symmetricMethylOnBridge1->atom(3), symmetricMethylOnBridge1->atom(2) };
+                            Atom *atoms3[2] = { atoms1[1], anchor };
+                            eachNeighbours<2>(atoms2, &Diamond::cross_100, [&atoms3, &methylOnDimer1, &symmetricMethylOnBridge1](Atom **neighbours1) {
+                                if (neighbours1[0] == atoms3[0] && neighbours1[1] == atoms3[1])
                                 {
-                                    ParentSpec *parents[2] = { specie1, specie3 };
+                                    ParentSpec *parents[2] = { methylOnDimer1, symmetricMethylOnBridge1 };
                                     create<IntermedMigrDownFull>(parents);
                                 }
                             });
@@ -896,19 +895,23 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(INTERMED_MIGR_DOWN_FULL, #{role_cm}))
         {
-            anchor->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&](MethylOnBridge *specie1) {
-                specie1->eachSymmetry([&](ParentSpec *specie2) {
-                    Atom *atom1 = specie2->atom(2);
-                    Atom *atom2 = specie2->atom(3);
-                    Atom *atoms1[2] = { atom1, atom2 };
-                    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
-                        if (neighbours1[0]->is(#{role_cdr}) && neighbours1[1]->is(#{role_cdl}) && neighbours1[0]->hasBondWith(neighbours1[1]))
+            anchor->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&](MethylOnBridge *methylOnBridge1) {
+                methylOnBridge1->eachSymmetry([&anchor](ParentSpec *symmetricMethylOnBridge1) {
+                    Atom *atoms1[2] = { symmetricMethylOnBridge1->atom(3), symmetricMethylOnBridge1->atom(2) };
+                    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&anchor, &symmetricMethylOnBridge1](Atom **neighbours1) {
+                        if (neighbours1[0]->is(#{role_cdl}) && neighbours1[1]->is(#{role_cdr}))
                         {
-                            MethylOnDimer *specie3 = neighbours1[0]->specByRole<MethylOnDimer>(#{role_cdr});
-                            if (specie3->atom(0) == anchor && specie3->atom(4) == neighbours1[1])
+                            if (neighbours1[0]->hasBondWith(neighbours1[1]))
                             {
-                                ParentSpec *parents[2] = { specie3, specie2 };
-                                create<IntermedMigrDownFull>(parents);
+                                MethylOnDimer *methylOnDimer1 = neighbours1[1]->specByRole<MethylOnDimer>(#{role_cdr});
+                                if (neighbours1[0] == methylOnDimer1->atom(4))
+                                {
+                                    if (anchor == methylOnDimer1->atom(0))
+                                    {
+                                        ParentSpec *parents[2] = { methylOnDimer1, symmetricMethylOnBridge1 };
+                                        create<IntermedMigrDownFull>(parents);
+                                    }
+                                }
                             }
                         }
                     });
