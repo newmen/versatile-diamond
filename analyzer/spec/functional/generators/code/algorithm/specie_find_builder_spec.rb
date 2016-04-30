@@ -780,7 +780,7 @@ module VersatileDiamond
                         if (neighbour1->is(#{role_cdr}))
                         {
                             MethylOnDimer *methylOnDimer1 = neighbour1->specByRole<MethylOnDimer>(#{role_cdr});
-                            if (methylOnDimer1->atom(0) == anchor)
+                            if (anchor == methylOnDimer1->atom(0))
                             {
                                 ParentSpec *parents[2] = { methylOnDimer1, symmetricMethylOnBridge1 };
                                 create<IntermedMigrDownCommon>(parents);

@@ -40,13 +40,11 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_avail_species(&block)
-            inner_units = unit.complete_inner_units
+            inner_units = splitten_inner_units
             if inner_units.empty?
               check_complete_unit(&block)
             else
-              call_procs(check_avail_species_procs(inner_units)) do
-                check_complete_unit(&block)
-              end
+              call_procs(check_avail_species_procs(inner_units), &block)
             end
           end
 
@@ -136,6 +134,16 @@ module VersatileDiamond
           # @return [Array]
           def units
             unit.units.map(&method(:context_unit))
+          end
+
+          # @return [Array]
+          def splitten_inner_units
+            inner_units = unit.complete_inner_units
+            if totally_splitten?(inner_units)
+              inner_units
+            else
+              inner_units.flat_map(&:units)
+            end
           end
 
           # @return [Array]
@@ -706,10 +714,23 @@ module VersatileDiamond
               if atom_used_many_times?
                 context_prop = all_popular_atoms_nodes.first.properties
                 parent_props = all_popular_atoms_nodes.map(&:sub_properties)
+                parent_props *= count_possible_atom_usages unless totally_popular?
                 parent_props.reduce(:safe_plus) == context_prop
               else
                 false
               end
+          end
+
+          # @return [Boolean]
+          def totally_popular?
+            lists_are_identical?(nodes, all_popular_atoms_nodes, &:==)
+          end
+
+          # @param [Array] inner_units
+          # @return [Boolean]
+          def totally_splitten?(inner_units)
+            inner_units.empty? || inner_units != [unit] ||
+              !atom_many_usages_like_in_context? || totally_popular?
           end
 
           # @return [Boolean]
