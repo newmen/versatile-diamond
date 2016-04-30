@@ -141,6 +141,16 @@ module VersatileDiamond
             end
           end
 
+          describe '#reachable_bone_nodes_after' do
+            include_context :alt_intermed_context
+            let(:result) { subject.reachable_bone_nodes_after(target_nodes) }
+            let(:target_nodes) do
+              keys = ordered_graph.flat_map(&:first)
+              backbone.entry_nodes.reduce(keys) { |acc, nodes| acc - nodes }
+            end
+            it { expect(result).to match_array(target_nodes) }
+          end
+
           describe '#existed_relations_to' do
             let(:result) { subject.existed_relations_to(unit_nodes) }
 

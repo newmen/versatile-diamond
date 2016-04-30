@@ -41,12 +41,6 @@ module VersatileDiamond
 
           # @param [Array] species
           # @return [Array]
-          def reachable_bone_nodes_with(species)
-            species_nodes(species).reject(&method(:atom_defined?))
-          end
-
-          # @param [Array] species
-          # @return [Array]
           def similar_atoms_nodes_pairs(species)
             species.combination(2).flat_map do |species_pair|
               if species_pair.map(&:original).uniq.one?
@@ -59,6 +53,21 @@ module VersatileDiamond
                   defined_bones.any? && !defined_bones.all?
                 end
               end
+            end
+          end
+
+          # @param [Array] species
+          # @return [Array]
+          def reachable_bone_nodes_with(species)
+            species_nodes(species).reject(&method(:atom_defined?))
+          end
+
+          # @param [Array] target_nodes
+          # @return [Array]
+          def reachable_bone_nodes_after(target_nodes)
+            cutten_backbone = cut_backbone_from(target_nodes)
+            species_nodes(target_nodes.map(&:uniq_specie)).select do |node|
+              cutten_backbone.any? { |key_rels| slice(*key_rels).include?(node) }
             end
           end
 
@@ -289,6 +298,37 @@ module VersatileDiamond
           # @return [Nodes::BaseNode]
           def node_by(specie, atom)
             nodes_graph.keys.find { |n| n.uniq_specie == specie && n.atom == atom }
+          end
+
+          # @param [Array] nodes
+          # @return [Array]
+          def cut_backbone_from(nodes)
+            uniq_species = nodes.map(&:uniq_specie)
+            drop_proc = -> ns { nodes_without_species(ns, uniq_species) }
+
+            reached = false
+            backbone_graph.each_with_object([]) do |(key, rels), acc|
+              reached ||= slice(key, rels).any? { |n| nodes.include?(n) }
+              if reached
+                acc << [key, rels]
+              else
+                acc << [drop_proc[key], rels.map { |ns, rp| [drop_proc[ns], rp] }]
+              end
+            end
+          end
+
+          # @param [Array] key_nodes
+          # @param [Array] rels
+          # @return [Array]
+          def slice(key_nodes, rels)
+            key_nodes + rels.flat_map(&:first)
+          end
+
+          # @param [Array] nodes
+          # @param [Array] uniq_species
+          # @return [Array]
+          def nodes_without_species(nodes, uniq_species)
+            nodes.reject { |n| specie_in?(n, uniq_species) }
           end
 
           # @param [Array] nodes
