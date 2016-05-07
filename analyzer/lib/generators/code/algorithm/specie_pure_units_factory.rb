@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm
 
         # Creates pure units for specie find algorithm
-        class SpeciePureUnitsFactory < BaseUnitsFactory
+        class SpeciePureUnitsFactory < BasePureUnitsFactory
         private
 
           # @param [Arra] args
@@ -17,6 +17,14 @@ module VersatileDiamond
           # @return [Units::ManySpecieUnits]
           def make_many_units(*args)
             Units::ManySpecieUnits.new(*args)
+          end
+
+          # Creates checker unit from one node
+          # @param [Nodes::BaseNode] node by which the checker unit will be created
+          # @return [Units::BasePureUnit]
+          # @override
+          def mono_unit(node)
+            node.splittable? ? many_units(node.split) : super
           end
         end
 
