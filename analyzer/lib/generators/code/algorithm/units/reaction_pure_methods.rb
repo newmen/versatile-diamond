@@ -18,13 +18,6 @@ module VersatileDiamond
           def neighbour?(unit)
             anchored_species.select(&unit.species.public_method(:include?)).empty?
           end
-
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          # TODO: rspec required
-          def check_different_atoms_roles(&block)
-            check_atoms_roles(nodes.map(&:atom), &block)
-          end
         end
 
       end

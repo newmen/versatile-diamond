@@ -6,6 +6,7 @@ module VersatileDiamond
       module Algorithm::Units
 
         # Decorates unit for bulding code on context
+        # @abstract
         class BaseContextUnit < GenerableUnit
           include Modules::ProcsReducer
           include Modules::ListsComparer
@@ -21,20 +22,7 @@ module VersatileDiamond
             @context = context
             @unit = unit
 
-            @_all_nodes_with_atoms, @_all_popular_atoms_nodes = nil
-
             @_is_partially_symmetric = nil
-            @_is_over_used_atom, @_is_atom_many_usages_like_in_context = nil
-            @_is_full_usages_match = nil
-          end
-
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          # TODO: specie specific
-          def check_existence(&block)
-            check_avail_atoms do
-              check_that_context_specie_not_found(&block)
-            end
           end
 
           # @yield incorporating statement
@@ -65,10 +53,10 @@ module VersatileDiamond
           # @return [Boolean] gets false if close nodes are not symmetric and true
           #   in the case when neighbour nodes are not similar
           def asymmetric_related_atoms?
-            area_nodes = @context.symmetric_close_nodes(species)
+            area_nodes = context.symmetric_close_nodes(species)
             close_nodes = area_nodes.reject(&check_own_node_proc)
             close_nodes.one? ||
-              !(close_nodes.empty? || @context.symmetric_relations?(close_nodes))
+              !(close_nodes.empty? || context.symmetric_relations?(close_nodes))
           end
 
           def to_s
@@ -84,19 +72,6 @@ module VersatileDiamond
         protected
 
           def_delegator :unit, :nodes
-
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          # TODO: specie specific
-          def select_specie_definition(&block)
-            if !many_similar_species? && (symmetric? || over_used_atom?)
-              check_many_undefined_species(&block)
-            elsif atom_many_usages_like_in_context?
-              check_similar_undefined_species(&block)
-            else
-              unit.define_undefined_species(&block)
-            end
-          end
 
           # @yield incorporating statement
           # @return [Expressions::NotEqualsCondition]
@@ -125,7 +100,7 @@ module VersatileDiamond
           # @return [Array]
           def neighbour_nodes_pairs
             nodes.combination(2).select do |a, b|
-              relation = @context.relation_between(a, b)
+              relation = context.relation_between(a, b)
               relation && relation.exist?
             end
           end
@@ -133,10 +108,11 @@ module VersatileDiamond
         private
 
           def_delegators :unit, :species, :anchored_species, :atoms, :symmetric_atoms
+          attr_reader :context
 
           # @return [BaseContextUnit]
           def context_unit(inner_unit)
-            self.class.new(dict, @context, inner_unit)
+            self.class.new(dict, context, inner_unit)
           end
 
           # @return [Array]
@@ -145,22 +121,12 @@ module VersatileDiamond
           end
 
           # @return [Array]
-          def splitten_inner_units
-            inner_units = unit.complete_inner_units
-            if totally_splitten?(inner_units)
-              inner_units
-            else
-              inner_units.flat_map(&:units)
-            end
-          end
-
-          # @return [Array]
           def possible_symmetric_nodes
             # already should be checked that unit is symmetric
             symmetric_nodes = nodes.select(&:symmetric_atoms?)
             if symmetric_nodes.empty?
               nodes.reject do |node|
-                @context.symmetric_close_nodes([node.uniq_specie]).empty?
+                context.symmetric_close_nodes([node.uniq_specie]).empty?
               end
             else
               symmetric_nodes
@@ -170,34 +136,6 @@ module VersatileDiamond
           # @return [Proc]
           def check_own_node_proc
             nodes.public_method(:include?)
-          end
-
-          # @return [Array]
-          def check_asymmetric_inner_units_procs
-            units.select(&:asymmetric_related_atoms?).map do |inner_unit|
-              -> &block { inner_unit.iterate_symmetries(&block) }
-            end
-          end
-
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          # TODO: just specie
-          def check_avail_atoms(&block)
-            if any_defined?(species)
-              check_symmetries do
-                check_close_atoms(&block)
-              end
-            else
-              unit.check_atoms_roles(atoms, &block)
-            end
-          end
-
-          # @yield incorporating statement
-          # @return [Expressions::OrCondition]
-          # TODO: just specie
-          def check_that_context_specie_not_found(&block)
-            checks = unit.atom_with_specie_calls(:not_found, atoms)
-            Expressions::OrCondition[checks, block.call]
           end
 
           # @yield incorporating statement
@@ -250,83 +188,9 @@ module VersatileDiamond
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          # TODO: specie specific
           def check_many_undefined_species(&block)
-            if over_used_atom? || atom_many_usages_like_in_context?
-              iterate_undefined_species(&block)
-            else
-              unit.define_undefined_species do
-                check_symmetries(&block)
-              end
-            end
-          end
-
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          def iterate_portioned_species(&block)
-            checking_nodes = context_nodes_with_undefined_atoms
-            if seems_different?(checking_nodes)
-              unit.iterate_species_by_loop(&block)
-            else
-              block.call
-            end
-          end
-
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          def check_each_asymmetric_inner_unit(&block)
-            call_procs(check_asymmetric_inner_units_procs, &block)
-          end
-
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          # TODO: just specie (do not move it to #unit.define_undefined_species)
-          def check_similar_undefined_species(&block)
-            if select_undefined(species).one?
-              check_many_undefined_species(&block)
-            else
-              unit.iterate_portions_of_similar_species do
-                iterate_portioned_species do
-                  check_each_asymmetric_inner_unit(&block)
-                end
-              end
-            end
-          end
-
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          def check_similar_defined_species(&block)
-            similar_nodes = original_different_defined_species_nodes
-            species_pairs = similar_species_with(similar_nodes)
-            if species_pairs.empty?
-              block.call
-            else
-              vars_pairs = species_pairs.map(&method(:vars_for))
-              Expressions::NotEqualsCondition[vars_pairs, block.call]
-            end
-          end
-
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          def iterate_undefined_species(&block)
-            unit.iterate_species_by_role do
-              check_similar_defined_species do
-                check_defined_context_parts do
-                  check_symmetries(&block)
-                end
-              end
-            end
-          end
-
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          def check_defined_context_parts(&block)
-            nodes_pairs = common_atoms_nodes_pairs
-            if nodes_pairs.empty?
-              block.call
-            else
-              exprs_pairs = nodes_pairs_to_atoms_exprs(nodes_pairs)
-              Expressions::NotEqualsCondition[exprs_pairs, block.call]
+            unit.define_undefined_species do
+              check_symmetries(&block)
             end
           end
 
@@ -334,28 +198,13 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_new_atoms(&block)
-            reachable_nodes = @context.reachable_bone_nodes_after(nodes)
+            reachable_nodes = context.reachable_bone_nodes_after(nodes)
             if !reachable_nodes.empty? && atoms_comparison_required?(reachable_nodes)
               check_not_existed_previous_atoms(reachable_nodes) do
                 check_existed_previous_atoms(reachable_nodes, &block)
               end
             else
               block.call
-            end
-          end
-
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          # TODO: specie specific
-          def check_close_atoms(&block)
-            checking_nodes = context_nodes_with_undefined_atoms
-            if checking_nodes.empty?
-              block.call
-            else
-              pure_unit = SpeciePureUnitsFactory.new(dict).unit(checking_nodes)
-              pure_unit.define_undefined_atoms do
-                pure_unit.check_different_atoms_roles(&block)
-              end
             end
           end
 
@@ -475,7 +324,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_existed_previous_atoms(checking_nodes, &block)
-            relating_nodes = @context.existed_relations_to(checking_nodes)
+            relating_nodes = context.existed_relations_to(checking_nodes)
             check_eq_previous_atoms(relating_nodes, &block)
           end
 
@@ -483,7 +332,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_not_existed_previous_atoms(checking_nodes, &block)
-            relating_nodes = @context.not_existed_relations_to(checking_nodes)
+            relating_nodes = context.not_existed_relations_to(checking_nodes)
             check_not_eq_previous_atoms(relating_nodes, &block)
           end
 
@@ -521,7 +370,7 @@ module VersatileDiamond
           # @return [Array] the list of nodes which will be available again after
           #   neighbour unit species check
           def defined_self_next_same_nodes
-            sncns = @context.symmetric_close_nodes(species)
+            sncns = context.symmetric_close_nodes(species)
             defined_sncns = sncns.select { |node| dict.var_of(node.uniq_specie) }
             defined_sncns.any?(&check_own_node_proc) ? defined_sncns : []
           end
@@ -530,10 +379,10 @@ module VersatileDiamond
           # @return [Array] the list of nodes which will be available again after
           #   neighbour unit species check
           def defined_same_neighbour_nodes(nbr)
-            if @context.key?(nbr.nodes)
+            if context.key?(nbr.nodes)
               defined_next_neighbour_nodes(nbr)
             else
-              sncns = @context.symmetric_close_nodes(nbr.species)
+              sncns = context.symmetric_close_nodes(nbr.species)
               undefined_sncns = sncns.reject { |node| dict.var_of(node.uniq_specie) }
               undefined_sncns.select(&check_own_node_proc)
             end
@@ -542,7 +391,7 @@ module VersatileDiamond
           # @param [BaseContextUnit] nbr
           # @return [Array]
           def defined_next_neighbour_nodes(nbr)
-            if @context.cutten_bone_relations_from?(nodes, nbr.nodes)
+            if context.cutten_bone_relations_from?(nodes, nbr.nodes)
               []
             else
               nbr.nodes.select { |n| species.include?(n.uniq_specie) }
@@ -564,55 +413,8 @@ module VersatileDiamond
 
           # @return [Array]
           def zip_private_related_exprs
-            @context.private_relations_with(nodes).map do |pair|
+            context.private_relations_with(nodes).map do |pair|
               pair.map(&method(:atom_var_or_specie_call))
-            end
-          end
-
-          # @param [Array] checking_nodes
-          # @return [Array]
-          def similar_species_with(checking_nodes)
-            similar_species = checking_nodes.map(&:uniq_specie)
-            similar_species.flat_map do |specie|
-              species.select { |s| s.original == specie.original }.zip([specie].cycle)
-            end
-          end
-
-          # Gets list of pairs of nodes which atoms are similar but belongs to
-          # different species
-          #
-          # @return [Array]
-          def common_atoms_nodes_pairs
-            avail_species = all_nodes_with_atoms.map(&:uniq_specie).uniq
-            defined_species = select_defined(avail_species)
-            @context.similar_atoms_nodes_pairs(defined_species).reject do |ns|
-              ns.any? { |node| nodes.include?(node) }
-            end
-          end
-
-          # @return [Array]
-          def original_different_defined_species_nodes
-            different_defined_species_nodes.select do |node|
-              nodes.any? do |n|
-                n.uniq_specie.original == node.uniq_specie.original &&
-                  n.sub_properties == node.sub_properties
-              end
-            end
-          end
-
-          # Gets nodes which uses the atoms like inner unit, but contains defined
-          # specie which is not same as any specie of inner unit
-          #
-          # @return [Array]
-          def different_defined_species_nodes
-            other_nodes = all_nodes_with_atoms - nodes
-            if other_nodes.empty?
-              []
-            else
-              other_nodes.select do |node|
-                other_specie = node.uniq_specie
-                !species.include?(other_specie) && dict.var_of(other_specie)
-              end
             end
           end
 
@@ -626,12 +428,6 @@ module VersatileDiamond
           # @return [Expressions::Core::Expression]
           def atom_from_specie_call(node)
             dict.var_of(node.uniq_specie).atom_value(node.atom)
-          end
-
-          # @param [Array] atoms_pairs
-          # @return [Array]
-          def nodes_pairs_to_atoms_exprs(nodes_pairs)
-            nodes_pairs.map { |ns| ns.map(&method(:atom_var_or_specie_call)) }
           end
 
           # Gets all existed relations over backbone graph of context
@@ -649,7 +445,7 @@ module VersatileDiamond
           # @param [BaseContextUnit] b
           # @return [Array]
           def relations_between(a, b)
-            zip_nodes_of(a, b).map { |ns| @context.relation_between(*ns) }
+            zip_nodes_of(a, b).map { |ns| context.relation_between(*ns) }
           end
 
           # @param [Array] zipping_units
@@ -657,87 +453,6 @@ module VersatileDiamond
           def zip_nodes_of(*zipping_units)
             as, bs = zipping_units.map(&:unit).map(&:nodes)
             as.smart_zip(bs)
-          end
-
-          # @return [Array]
-          def context_nodes_with_undefined_atoms
-            @context.reachable_bone_nodes_with(select_defined(species))
-          end
-
-          # @return [Array]
-          def all_nodes_with_atoms
-            @_all_nodes_with_atoms ||= @context.atoms_nodes(atoms)
-          end
-
-          # @return [Array]
-          def all_popular_atoms_nodes
-            @_all_popular_atoms_nodes ||=
-              all_nodes_with_atoms.select(&:used_many_times?)
-          end
-
-          # @return [Integer]
-          def count_possible_atom_usages
-            sum = all_popular_atoms_nodes.map(&:usages_num).reduce(:+)
-            num = all_popular_atoms_nodes.size
-            sum % num == 0 ? (sum / num) : sum
-          end
-
-          # @return [Boolean]
-          def full_usages_match?
-            return @_is_full_usages_match unless @_is_full_usages_match.nil?
-            coincident_nodes = nodes.select(&:coincide?)
-            comparing_nodes = coincident_nodes.empty? ? nodes : coincident_nodes
-            @_is_full_usages_match =
-              (count_possible_atom_usages == comparing_nodes.size)
-          end
-
-          # @return [Boolean]
-          def atom_used_many_times?
-            atoms.one? &&
-              nodes.any?(&all_popular_atoms_nodes.public_method(:include?))
-          end
-
-          # @return [Boolean]
-          def over_used_atom?
-            return @_is_over_used_atom unless @_is_over_used_atom.nil?
-            @_is_over_used_atom = atom_used_many_times? && !full_usages_match?
-          end
-
-          # @return [Boolean]
-          # TODO: just specie
-          def many_similar_species?
-            atom_many_usages_like_in_context? &&
-              !species.one? && species.map(&:original).uniq.one?
-          end
-
-          # @return [Boolean]
-          # TODO: just specie
-          def atom_many_usages_like_in_context?
-            unless @_is_atom_many_usages_like_in_context.nil?
-              return @_is_atom_many_usages_like_in_context
-            end
-
-            @_is_atom_many_usages_like_in_context =
-              if atom_used_many_times?
-                context_prop = all_popular_atoms_nodes.first.properties
-                parent_props = all_popular_atoms_nodes.map(&:sub_properties)
-                parent_props *= count_possible_atom_usages unless totally_popular?
-                parent_props.reduce(:safe_plus) == context_prop
-              else
-                false
-              end
-          end
-
-          # @return [Boolean]
-          def totally_popular?
-            lists_are_identical?(nodes, all_popular_atoms_nodes, &:==)
-          end
-
-          # @param [Array] inner_units
-          # @return [Boolean]
-          def totally_splitten?(inner_units)
-            inner_units.empty? || inner_units != [unit] ||
-              !atom_many_usages_like_in_context? || totally_popular?
           end
 
           # @return [Boolean]
@@ -749,7 +464,7 @@ module VersatileDiamond
           def partially_symmetric?
             return @_is_partially_symmetric unless @_is_partially_symmetric.nil?
             @_is_partially_symmetric = unit.partially_symmetric? &&
-              @context.symmetric_relations?(unit.nodes_with_atoms(symmetric_atoms))
+              context.symmetric_relations?(unit.nodes_with_atoms(symmetric_atoms))
           end
 
           # @param [Array] ca_nodes
@@ -769,32 +484,16 @@ module VersatileDiamond
           # @param [Array] checking_nodes
           # @return [Boolean]
           def atoms_comparison_required?(checking_nodes)
-            symmetric? || @context.related_from_other_defined?(checking_nodes)
-          end
-
-          # @param [Array] checking_nodes
-          # @return [Boolean]
-          # TODO: specie specific
-          def same_specie_in?(checking_nodes)
-            checking_species = checking_nodes.map(&:uniq_specie).uniq
-            checking_species.size < 2 && !checking_species.all?(&:none?)
+            symmetric? || context.related_from_other_defined?(checking_nodes)
           end
 
           # @param [Array] pair
           # @return [Boolean]
           def checkable_bond_between?(*pair)
-            relation = @context.relation_between(*pair)
+            relation = context.relation_between(*pair)
             relation.bond? &&
-              pair.all? { |n| @context.just_existed_bone_relations?(n) } &&
+              pair.all? { |n| context.just_existed_bone_relations?(n) } &&
               (relation != Concepts::Bond.amorph || checkable_neighbour_species?(*pair))
-          end
-
-          # @param [Nodes::BaseNode] a
-          # @param [Nodes::BaseNode] b
-          # @return [Boolean]
-          # TODO: specie specific
-          def checkable_neighbour_species?(a, b)
-            [a, b].map(&:uniq_specie).reject(&:none?).size > 1
           end
 
           # @param [Nodes::BaseNode] node

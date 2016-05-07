@@ -112,6 +112,53 @@ if (atoms1[0]->is(#{role_cr}) && atoms1[1]->is(#{role_cr}))
             end
             it { expect(expr.code).to eq(code) }
           end
+
+          describe '#iterate_species_by_role' do
+            include_context :two_mobs_context
+            before { dict.make_atom_s(cm) }
+
+            let(:role_cm) { node_specie.source_role(cm) }
+            let(:unit_nodes) { [entry_nodes.first.split.first] } # override
+            let(:code) do
+              <<-CODE
+amorph1->eachSpecByRole<MethylOnBridge>(#{role_cm}, [](MethylOnBridge *methylOnBridge1) {
+    return 456;
+})
+              CODE
+            end
+            let(:expr) { subject.iterate_species_by_role(&return456) }
+            it { expect(expr.code).to eq(code.rstrip) }
+          end
+
+          describe '#iterate_portions_of_similar_species' do
+            include_context :two_mobs_context
+            before { dict.make_atom_s(cm) }
+
+            let(:role_cm) { node_specie.source_role(cm) }
+            let(:code) do
+              <<-CODE
+amorph1->eachSpecsPortionByRole<MethylOnBridge>(#{role_cm}, 2, [](MethylOnBridge **species1) {
+    return 456;
+})
+              CODE
+            end
+            let(:expr) { subject.iterate_portions_of_similar_species(&return456) }
+            it { expect(expr.code).to eq(code.rstrip) }
+          end
+
+          describe '#iterate_species_by_loop' do
+            include_context :two_mobs_context
+            before { dict.make_specie_s(unit_nodes.map(&:uniq_specie)) }
+            let(:code) do
+              <<-CODE
+for (uint s = 0; s < 2; ++s)
+{
+    return 456;
+}
+              CODE
+            end
+            it { expect(subject.iterate_species_by_loop(&return456).code).to eq(code) }
+          end
         end
 
       end

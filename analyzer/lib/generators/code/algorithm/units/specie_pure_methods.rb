@@ -40,6 +40,38 @@ module VersatileDiamond
             end
           end
 
+          # @yield incorporating statement
+          # @return [Expressions::Core::OpCall]
+          def iterate_species_by_role(&block)
+            if atoms.one?
+              predefn_vars = dict.defined_vars # get before make inner nbr specie var
+              specie_var = dict.make_specie_s(select_undefined(species))
+              atom_var = dict.var_of(atoms)
+              atom_var.all_species_by_role(predefn_vars, specie_var, block.call)
+            else
+              raise 'Species iteration by role can occur from just one atom'
+            end
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def iterate_portions_of_similar_species(&block)
+            if atoms.one?
+              predefn_vars = dict.defined_vars # get before make inner nbr species var
+              species_var = dict.make_specie_s(select_undefined(species))
+              atom_var = dict.var_of(atoms)
+              atom_var.species_portion_by_role(predefn_vars, species_var, block.call)
+            else
+              raise 'Species portion iteration can occur from just one atom'
+            end
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def iterate_species_by_loop(&block)
+            dict.var_of(species).each(block.call)
+          end
+
         private
 
           # @return [Array]

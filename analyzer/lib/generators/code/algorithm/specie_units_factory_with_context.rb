@@ -13,9 +13,9 @@ module VersatileDiamond
           end
 
           # @param [Array] nodes for which the unit will be maked
-          # @return [Units::BaseContextUnit]
+          # @return [Units::ContextSpecieUnit]
           def unit(nodes)
-            Units::BaseContextUnit.new(dict, @context, super)
+            Units::ContextSpecieUnit.new(dict, @context, super)
           end
         end
 

@@ -16,6 +16,35 @@ module VersatileDiamond
             @_converted_backbone_graph = nil
           end
 
+          # @param [Array] atoms
+          # @return [Array]
+          def atoms_nodes(atoms)
+            bone_nodes.select { |node| atom_in?(node, atoms) }
+          end
+
+          # @param [Array] species
+          # @return [Array]
+          def similar_atoms_nodes_pairs(species)
+            species.combination(2).flat_map do |species_pair|
+              if species_pair.map(&:original).uniq.one?
+                []
+              else
+                atoms_pairs = atoms_pairs_for(*species_pair)
+                nodes_pairs = nodes_pairs_for(species_pair, atoms_pairs)
+                nodes_pairs.select do |ns|
+                  defined_bones = ns.map { |n| bone?(n) && atom_defined?(n) }
+                  defined_bones.any? && !defined_bones.all?
+                end
+              end
+            end
+          end
+
+          # @param [Array] species
+          # @return [Array]
+          def reachable_bone_nodes_with(species)
+            species_nodes(species).reject(&method(:atom_defined?))
+          end
+
         private
 
           # @return [Hash]
