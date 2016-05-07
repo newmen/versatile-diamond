@@ -9,6 +9,7 @@ module VersatileDiamond
         # @abstract
         class BaseUnit < GenerableUnit
           include Modules::OrderProvider
+          include SpecieAbstractType
 
           attr_reader :nodes
 
@@ -200,7 +201,7 @@ module VersatileDiamond
           end
 
           # @return [Boolean]
-          # TODO: specie specific rspec already exist
+          # TODO: specie specific, rspec already exist
           def neighbour?(unit)
             selector_proc = unit.species.public_method(:include?)
             same_species = anchored_species.select(&selector_proc)
@@ -312,7 +313,7 @@ module VersatileDiamond
           def iterate_defined_specie_symmetries(specie, &block)
             predefn_vars = dict.defined_vars # get before make inner specie var
             ext_var = dict.var_of(specie)
-            options = { type: abst_specie_type, name: specie.symmetric_var_name }
+            options = { type: abstract_type, name: specie.symmetric_var_name }
             inner_var = dict.make_specie_s(specie, **options)
             ext_var.iterate_symmetries(predefn_vars, inner_var, block.call)
           end
@@ -337,7 +338,7 @@ module VersatileDiamond
             vars = vars_for(nodes_with_species(undefined_species).map(&:atom))
             calls = vars.zip(undefined_species).map { |v, s| v.one_specie_by_role(s) }
             kwargs = { value: calls }
-            kwargs[:type] = abst_specie_type unless undefined_species.one?
+            kwargs[:type] = abstract_type unless undefined_species.one?
             dict.make_specie_s(undefined_species, **kwargs)
           end
 
@@ -394,12 +395,6 @@ module VersatileDiamond
               dict.var_of(n.uniq_specie) &&
                 (dict.var_of(n.atom) || !n.properties.include?(n.sub_properties))
             end
-          end
-
-          # @return [Expressions::Core::ObjectType]
-          # TODO: specie specific
-          def abst_specie_type
-            Expressions::ParentSpecieType[]
           end
         end
 

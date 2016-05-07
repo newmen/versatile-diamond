@@ -5,6 +5,8 @@ module VersatileDiamond
 
         # The unit for combines statements of specie creation
         class SpecieCreationUnit < GenerableUnit
+          include SpecieAbstractType
+
           # @param [Expressions::VarsDictionary] dict
           # @param [BaseContext] context
           # @param [Specie] specie
@@ -47,7 +49,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def redefine_parent_species_as_array(&block)
-            if same_arr?(@parent_species, type: abst_specie_type)
+            if same_arr?(@parent_species, type: abstract_type)
               block.call
             else
               remake_parent_species_as_array.define_var + block.call
@@ -98,7 +100,7 @@ module VersatileDiamond
             kwargs = {
               name: Code::Specie::ANCHOR_SPECIE_NAME,
               next_name: false,
-              type: abst_specie_type,
+              type: abstract_type,
               value: values
             }
             dict.make_specie_s(@parent_species, **kwargs)
@@ -124,13 +126,6 @@ module VersatileDiamond
                 arr && arr.items.map(&:instance) == instances # same order
               end
             end
-          end
-
-          # @return [Expressions::Core::ObjectType]
-          # TODO: specie specific
-          # TODO: copypasted from base unit
-          def abst_specie_type
-            Expressions::ParentSpecieType[].freeze
           end
         end
 
