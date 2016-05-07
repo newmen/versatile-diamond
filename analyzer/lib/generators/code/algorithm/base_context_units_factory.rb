@@ -18,12 +18,12 @@ module VersatileDiamond
 
         private
 
-          attr_reader :dict, :context
+          attr_reader :dict, :pure_factory, :context
 
           # @param [Array] nodes
           # @return [BasePureUnit]
           def pure_unit(nodes)
-            @pure_factory.unit(nodes)
+            pure_factory.unit(nodes)
           end
         end
 

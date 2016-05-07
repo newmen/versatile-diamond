@@ -19,12 +19,17 @@ module VersatileDiamond
           # @return [String] the string with cpp code of find algorithm
           def build
             dict.checkpoint!
-            backbone.entry_nodes.map(&method(:body_for)).map(&:shifted_code).join
+            @backbone.entry_nodes.map(&method(:body_for)).map(&:shifted_code).join
           end
 
         private
 
-          attr_reader :backbone, :dict
+          attr_reader :dict
+
+          # @return [Hash]
+          def nodes_graph
+            @backbone.big_graph
+          end
 
           # @return [BasePureUnitsFactory]
           def pure_factory
@@ -46,7 +51,7 @@ module VersatileDiamond
           # @param [Array] nodes from which walking will occure
           # @return [Expressions::Core::Statement]
           def combine_algorithm(nodes)
-            ordered_graph = backbone.ordered_graph_from(nodes)
+            ordered_graph = @backbone.ordered_graph_from(nodes)
             context = make_context_provider(ordered_graph)
             factory = make_context_factory(context)
             source_unit = factory.unit(nodes)

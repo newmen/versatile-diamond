@@ -29,7 +29,12 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_close_atoms(&block)
-            raise 'Implementation required'
+            checking_nodes = context_nodes_with_undefined_related_atoms
+            if checking_nodes.empty?
+              block.call
+            else
+              pure_factory.unit(checking_nodes).define_undefined_atoms(&block)
+            end
           end
 
           # @param [Array] checking_nodes

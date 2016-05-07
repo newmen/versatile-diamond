@@ -15,10 +15,12 @@ module VersatileDiamond
           attr_reader :unit # must be protected
 
           # @param [Expressions::VarsDictionary] dict
+          # @param [BasePureUnitsFactory] pure_factory
           # @param [BaseContextProvider] context
           # @param [BasePureUnit] unit
-          def initialize(dict, context, unit)
+          def initialize(dict, pure_factory, context, unit)
             super(dict)
+            @pure_factory = pure_factory
             @context = context
             @unit = unit
 
@@ -108,11 +110,11 @@ module VersatileDiamond
         private
 
           def_delegators :unit, :species, :anchored_species, :atoms, :symmetric_atoms
-          attr_reader :context
+          attr_reader :pure_factory, :context
 
           # @return [BaseContextUnit]
           def context_unit(inner_unit)
-            self.class.new(dict, context, inner_unit)
+            self.class.new(dict, pure_factory, context, inner_unit)
           end
 
           # @return [Array]

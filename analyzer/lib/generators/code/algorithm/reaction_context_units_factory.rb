@@ -8,7 +8,8 @@ module VersatileDiamond
           # @param [Array] nodes for which the unit will be maked
           # @return [Units::ContextReactionUnit]
           def unit(nodes)
-            Units::ContextReactionUnit.new(dict, context, pure_unit(nodes))
+            inner_unit = pure_unit(nodes)
+            Units::ContextReactionUnit.new(dict, pure_factory, context, inner_unit)
           end
 
           # @param [TypicalReaction] reaction

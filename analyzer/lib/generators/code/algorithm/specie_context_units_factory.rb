@@ -8,7 +8,7 @@ module VersatileDiamond
           # @param [Array] nodes for which the unit will be maked
           # @return [Units::ContextSpecieUnit]
           def unit(nodes)
-            Units::ContextSpecieUnit.new(dict, context, pure_unit(nodes))
+            Units::ContextSpecieUnit.new(dict, pure_factory, context, pure_unit(nodes))
           end
 
           # @param [Specie] specie

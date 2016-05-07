@@ -75,7 +75,7 @@ module VersatileDiamond
             if checking_nodes.empty?
               block.call
             else
-              pure_unit = SpeciePureUnitsFactory.new(dict).unit(checking_nodes)
+              pure_unit = pure_factory.unit(checking_nodes)
               pure_unit.define_undefined_atoms do
                 pure_unit.check_different_atoms_roles(&block)
               end

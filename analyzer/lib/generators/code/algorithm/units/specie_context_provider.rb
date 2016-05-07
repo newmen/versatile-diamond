@@ -7,10 +7,8 @@ module VersatileDiamond
         class SpecieContextProvider < BaseContextProvider
           include Modules::GraphDupper
 
-          # @param [Units::Expressions::VarsDictionary] dict
-          # @param [Hash] nodes_graph
-          # @param [Array] ordered_backbone
-          def initialize(dict, nodes_graph, ordered_backbone)
+          # @param [Array] _
+          def initialize(*)
             super
             @_converted_nodes_graph = nil
             @_converted_backbone_graph = nil

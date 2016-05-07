@@ -30,7 +30,7 @@ module VersatileDiamond
           # @param [Array] ordered_graph
           # @return [Units::SpecieContextProvider]
           def make_context_provider(ordered_graph)
-            Units::SpecieContextProvider.new(dict, backbone.big_graph, ordered_graph)
+            Units::SpecieContextProvider.new(dict, nodes_graph, ordered_graph)
           end
 
           # @oaram [SpecieContextUnitsFactory] factory
