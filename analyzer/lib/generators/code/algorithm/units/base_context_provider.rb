@@ -126,7 +126,7 @@ module VersatileDiamond
           # @param [Nodes::BaseNode] node
           # @return [Boolean]
           def just_existed_bone_relations?(node)
-            both_dirs_bone_relations_of_one(node).all? { |_, r| r.exist? }
+            both_directions_bone_relations_of_one(node).all? { |_, r| r.exist? }
           end
 
         private
@@ -207,7 +207,7 @@ module VersatileDiamond
 
           # @param [Nodes::BaseNode] node
           # @return [Array]
-          def both_dirs_bone_relations_of_one(node)
+          def both_directions_bone_relations_of_one(node)
             around_relations_of_one(node).select do |n, _|
               bone_relation?(node, n) || bone_relation?(n, node)
             end
@@ -294,7 +294,7 @@ module VersatileDiamond
           end
 
           # @param [Array] nodes
-          # @return [Array]
+          # @return [Hash]
           def cut_backbone_from(nodes)
             uniq_species = nodes.map(&:uniq_specie)
             drop_proc = -> ns { nodes_without_species(ns, uniq_species) }

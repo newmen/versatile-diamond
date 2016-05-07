@@ -4,26 +4,21 @@ module VersatileDiamond
       module Algorithm::Units
 
         # The unit for combines statements of specie creation
-        class SpecieCreationUnit < GenerableUnit
+        class SpecieCreationUnit < BaseCreationUnit
           include SpecieAbstractType
 
-          # @param [Expressions::VarsDictionary] dict
-          # @param [BaseContextProvider] context
+          # @param [Array] _
           # @param [Specie] specie
-          def initialize(dict, context, specie)
-            super(dict)
-            @specie = specie
-
-            @major_atoms = @specie.sequence.short
-            @addition_atoms = @specie.sequence.addition_atoms
-            @parent_species =
-              context.bone_nodes.map(&:uniq_specie).reject(&:none?).uniq.sort
+          def initialize(*, specie)
+            super
+            @major_atoms = specie.sequence.short
+            @addition_atoms = specie.sequence.addition_atoms
           end
 
           # @return [Expressions::Core::Statement]
           def create
-            if !@parent_species.empty? && all_defined?(@parent_species)
-              create_from_parent_species
+            if !source_species.empty? && all_defined?(source_species)
+              create_from_source_species
             elsif all_defined?(@major_atoms)
               create_from_major_atoms
             else
@@ -33,6 +28,17 @@ module VersatileDiamond
           end
 
         private
+
+          # @return [String]
+          def source_specie_name
+            Code::Specie::ANCHOR_SPECIE_NAME
+          end
+
+          # @return [Array]
+          # @override
+          def grep_context_species
+            super.reject(&:none?)
+          end
 
           # @param [Array] atoms
           # @param [Hash] kwargs
@@ -46,16 +52,6 @@ module VersatileDiamond
             end
           end
 
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          def redefine_parent_species_as_array(&block)
-            if same_arr?(@parent_species, type: abstract_type)
-              block.call
-            else
-              remake_parent_species_as_array.define_var + block.call
-            end
-          end
-
           # @return [Expressions::Core::Statement]
           def create_from_major_atoms
             redefine_atoms_as_array(@major_atoms) do
@@ -64,26 +60,21 @@ module VersatileDiamond
           end
 
           # @return [Expressions::Core::Statement]
-          def create_from_parent_species
-            redefine_parent_species_as_array do
+          def create_from_source_species
+            redefine_source_species_as_array do
               if @addition_atoms.empty?
-                create_with_parent_species
+                create_with_source_species
               else
                 create_with_additional_atoms
               end
             end
           end
 
-          # @return [Expressions::Core::FunctionCall]
-          def create_with_parent_species
-            call_create(dict.var_of(@parent_species))
-          end
-
           # @return [Expressions::Core::Statement]
           def create_with_additional_atoms
             kwargs = { name: 'additionalAtom', next_name: false }
             redefine_atoms_as_array(@addition_atoms, **kwargs) do
-              call_create(dict.var_of(@addition_atoms), dict.var_of(@parent_species))
+              call_create(dict.var_of(@addition_atoms), dict.var_of(source_species))
             end
           end
 
@@ -92,40 +83,6 @@ module VersatileDiamond
           # @return [Expressions::Core::Collection]
           def remake_atoms_as_array(atoms, **kwargs)
             dict.make_atom_s(atoms, **kwargs, value: vars_for(atoms))
-          end
-
-          # @return [Expressions::Core::Collection]
-          def remake_parent_species_as_array
-            values = vars_for(@parent_species)
-            kwargs = {
-              name: Code::Specie::ANCHOR_SPECIE_NAME,
-              next_name: false,
-              type: abstract_type,
-              value: values
-            }
-            dict.make_specie_s(@parent_species, **kwargs)
-          end
-
-          # @return [Expressions::Core::FunctionCall]
-          def call_create(*exprs)
-            type = Expressions::Core::ObjectType[@specie.class_name]
-            Expressions::Core::FunctionCall['create', *exprs, template_args: [type]]
-          end
-
-          # @param [Array] instances
-          # @option [Expressions::Core::ScalarType] :type
-          # @return [Boolean]
-          def same_arr?(instances, type: nil)
-            if instances.one?
-              true
-            else
-              arr = dict.var_of(instances)
-              if arr && type && arr.type != type.ptr
-                false
-              else
-                arr && arr.items.map(&:instance) == instances # same order
-              end
-            end
           end
         end
 

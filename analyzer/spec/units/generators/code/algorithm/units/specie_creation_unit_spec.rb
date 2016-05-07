@@ -6,13 +6,12 @@ module VersatileDiamond
       module Algorithm::Units
 
         describe SpecieCreationUnit, type: :algorithm do
-          subject { described_class.new(dict, context, specie) }
+          subject { described_class.new(dict, context, original_specie) }
           let(:context) do
             SpecieContextProvider.new(dict, backbone.big_graph, ordered_graph)
           end
-          let(:specie) { generator.specie_class(dept_uniq_specie.name) }
           let(:bone_nodes) { context.bone_nodes }
-          let(:addition_atoms) { specie.sequence.addition_atoms }
+          let(:addition_atoms) { original_specie.sequence.addition_atoms }
 
           describe '#create' do
             describe 'from major atoms which already arr' do
@@ -39,7 +38,7 @@ create<Bridge>(atoms2);
 
             describe 'from parent species' do
               let(:parent_species) do
-                bone_nodes.map(&:uniq_specie).reject(&:none?).uniq
+                bone_nodes.map(&:uniq_specie).reject(&:none?).uniq.sort
               end
 
               describe 'which already arr' do
