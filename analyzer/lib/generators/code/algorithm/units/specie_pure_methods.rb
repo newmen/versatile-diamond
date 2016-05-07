@@ -22,6 +22,13 @@ module VersatileDiamond
             !(species.all?(&:none?) || all_defined?(anchored_species))
           end
 
+          # @return [Boolean]
+          def neighbour?(unit)
+            selector_proc = unit.species.public_method(:include?)
+            same_species = anchored_species.select(&selector_proc)
+            same_species.empty? || same_species.all?(&:none?)
+          end
+
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_different_atoms_roles(&block)

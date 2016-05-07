@@ -472,22 +472,6 @@ return 0;
             end
           end
 
-          describe '#neighbour?' do
-            let(:nbr_unit) { described_class.new(dict, nbr_nodes) }
-
-            describe 'same specie' do
-              include_context :alt_two_mobs_context
-              let(:nbr_nodes) { entry_nodes.first.split }
-              it { expect(subject.neighbour?(nbr_unit)).to be_falsey }
-            end
-
-            describe 'same specie' do
-              include_context :alt_intermed_context
-              let(:nbr_nodes) { not_entry_nodes }
-              it { expect(subject.neighbour?(nbr_unit)).to be_truthy }
-            end
-          end
-
           describe '#fully_symmetric?' do
             describe 'realy symmetric' do
               include_context :rab_context

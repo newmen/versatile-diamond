@@ -101,6 +101,31 @@ module VersatileDiamond
             end
           end
 
+          describe '#neighbour?' do
+            let(:nbr_unit) { described_class.new(dict, nbr_node) }
+
+            describe 'same none specie' do
+              include_context :bridge_context
+              let(:nbr_node) { ordered_graph.last.first.first }
+              it { expect(subject.neighbour?(nbr_unit)).to be_truthy }
+            end
+
+            describe 'same not none specie' do
+              include_context :top_mob_context
+              let(:nbr_nodes) { ordered_graph.last.first.first.split }
+              let(:nbr_node) do
+                nbr_nodes.find { |n| n.uniq_specie == node_specie }
+              end
+              it { expect(subject.neighbour?(nbr_unit)).to be_falsey }
+            end
+
+            describe 'another not none specie' do
+              include_context :alt_intermed_context
+              let(:nbr_node) { not_entry_nodes.first }
+              it { expect(subject.neighbour?(nbr_unit)).to be_truthy }
+            end
+          end
+
           describe '#check_different_atoms_roles' do
             include_context :rab_context
 

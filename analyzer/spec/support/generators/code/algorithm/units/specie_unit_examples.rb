@@ -12,8 +12,12 @@ module VersatileDiamond
               let(:backbone) do
                 Algorithm::SpecieBackbone.new(generator, original_specie)
               end
-              let(:entry_nodes) { backbone.entry_nodes.first }
               let(:ordered_graph) { backbone.ordered_graph_from(entry_nodes) }
+              let(:entry_nodes) { backbone.entry_nodes.first }
+              let(:splitable_nodes) { backbone.entry_nodes - not_splitable_nodes }
+              let(:not_splitable_nodes) do
+                backbone.entry_nodes.reject { |ns| ns.any?(&:splittable?) }
+              end
 
               let(:dict) { Expressions::VarsDictionary.new }
               let(:original_specie) { generator.specie_class(dept_uniq_specie.name) }
@@ -160,11 +164,12 @@ module VersatileDiamond
               end
               let(:typical_reactions) { [dept_migration_over_111] }
               let(:dept_uniq_specie) { dept_top_methyl_on_half_extended_bridge_base }
+              let(:entry_nodes) { not_splitable_nodes.first } # override
             end
 
             shared_context :alt_top_mob_context do
               include_context :top_mob_context
-              let(:entry_nodes) { backbone.entry_nodes.last } # override
+              let(:entry_nodes) { splitable_nodes.first } # override
             end
 
             shared_context :bottom_mob_context do
@@ -174,9 +179,7 @@ module VersatileDiamond
               end
               let(:typical_reactions) { [dept_reverse_migration_over_111] }
               let(:dept_uniq_specie) { dept_lower_methyl_on_half_extended_bridge_base }
-              let(:entry_nodes) do # override
-                backbone.entry_nodes.find { |ns| ns.any?(&:splittable?) }
-              end
+              let(:entry_nodes) { splitable_nodes.first } # override
             end
           end
 

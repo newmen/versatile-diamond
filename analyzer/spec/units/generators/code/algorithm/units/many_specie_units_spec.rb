@@ -6,10 +6,15 @@ module VersatileDiamond
       module Algorithm::Units
 
         describe ManySpecieUnits, type: :algorithm do
-          subject { described_class.new(dict, units) }
-          let(:units) do
-            unit_nodes.map { |node| MonoPureUnit.new(dict, node) }
+          def nodes_to_mono_units(nodes)
+            nodes.map { |node| MonoPureUnit.new(dict, node) }
           end
+
+          def nodes_to_many_units(nodes)
+            described_class.new(dict, nodes_to_mono_units(nodes))
+          end
+
+          subject { nodes_to_many_units(unit_nodes) }
 
           let(:return456) do
             -> { Expressions::Core::Return[Expressions::Core::Constant[456]] }
@@ -33,7 +38,10 @@ module VersatileDiamond
 
           describe '#units' do
             include_context :two_mobs_context
-            it { expect(subject.units).to eq(units) }
+            it 'inner units are mono all' do
+              expect(subject.units.size).to eq(2)
+              expect(subject.units.flat_map(&:nodes)).to match_array(unit_nodes)
+            end
           end
 
           describe '#filled_inner_units' do
@@ -51,7 +59,7 @@ module VersatileDiamond
 
             describe 'just one specie is predefined' do
               before { dict.make_specie_s(subject.species.first) }
-              it { expect(subject.filled_inner_units).to eq([units.first]) }
+              it { expect(subject.filled_inner_units).to eq([subject.units.first]) }
             end
 
             describe 'species and atom are not defined' do
@@ -70,6 +78,13 @@ module VersatileDiamond
               before { dict.make_specie_s(unit_nodes.map(&:uniq_specie)) }
               it { expect(subject.checkable?).to be_falsey }
             end
+          end
+
+          describe '#neighbour?' do
+            include_context :alt_two_mobs_context
+            let(:nbr_unit) { nodes_to_many_units(nbr_nodes) }
+            let(:nbr_nodes) { entry_nodes.first.split }
+            it { expect(subject.neighbour?(nbr_unit)).to be_falsey }
           end
 
           describe '#check_different_atoms_roles' do

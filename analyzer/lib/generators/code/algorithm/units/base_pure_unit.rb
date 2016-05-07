@@ -182,14 +182,6 @@ module VersatileDiamond
           end
 
           # @return [Boolean]
-          # TODO: specie specific, rspec already exist
-          def neighbour?(unit)
-            selector_proc = unit.species.public_method(:include?)
-            same_species = anchored_species.select(&selector_proc)
-            same_species.empty? || same_species.all?(&:none?)
-          end
-
-          # @return [Boolean]
           def fully_symmetric?
             atoms.one? && symmetric_atoms.size > species.size
           end
