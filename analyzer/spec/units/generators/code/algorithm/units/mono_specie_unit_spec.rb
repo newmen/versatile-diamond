@@ -126,6 +126,11 @@ module VersatileDiamond
             end
           end
 
+          describe '#partially_symmetric?' do
+            include_context :rab_context
+            it { expect(subject.partially_symmetric?).to be_falsey }
+          end
+
           describe '#check_different_atoms_roles' do
             include_context :rab_context
 
@@ -145,6 +150,20 @@ if (atom1->is(#{role_cr}))
               CODE
             end
             it { expect(expr.code).to eq(code) }
+          end
+
+          describe '#iterate_specie_symmetries' do
+            include_context :rab_context
+            before { dict.make_specie_s(node_specie) }
+            let(:code) do
+              <<-CODE
+bridge1->eachSymmetry([](ParentSpec *symmetricBridge1) {
+    return 123;
+})
+              CODE
+            end
+            let(:expr) { subject.iterate_specie_symmetries(&return123) }
+            it { expect(expr.code).to eq(code.rstrip) }
           end
         end
 

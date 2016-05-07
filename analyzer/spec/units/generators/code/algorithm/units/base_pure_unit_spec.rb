@@ -296,20 +296,6 @@ return 0;
             end
           end
 
-          describe '#iterate_specie_symmetries' do
-            include_context :rab_context
-            before { dict.make_specie_s(node_specie) }
-            let(:code) do
-              <<-CODE
-bridge1->eachSymmetry([](ParentSpec *symmetricBridge1) {
-    return 0;
-})
-              CODE
-            end
-            let(:expr) { subject.iterate_specie_symmetries(&return0) }
-            it { expect(expr.code).to eq(code.rstrip) }
-          end
-
           describe '#iterate_for_loop_symmetries' do
             include_context :predefined_two_mobs_context
             let(:expr) { subject.iterate_for_loop_symmetries(&return0) }
@@ -481,22 +467,6 @@ return 0;
             describe 'not symmetric' do
               include_context :mob_context
               it { expect(subject.fully_symmetric?).to be_falsey }
-            end
-          end
-
-          describe '#partially_symmetric?' do
-            describe 'just one atom' do
-              include_context :rab_context
-              it { expect(subject.partially_symmetric?).to be_falsey }
-            end
-
-            describe 'too less atoms' do
-              include_context :alt_two_mobs_context
-              it { expect(subject.partially_symmetric?).to be_falsey }
-            end
-
-            describe 'much more atoms' do
-              pending 'add test with reactant nodes'
             end
           end
         end

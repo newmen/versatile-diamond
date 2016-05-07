@@ -87,6 +87,11 @@ module VersatileDiamond
             it { expect(subject.neighbour?(nbr_unit)).to be_falsey }
           end
 
+          describe '#partially_symmetric?' do
+            include_context :alt_two_mobs_context
+            it { expect(subject.partially_symmetric?).to be_falsey }
+          end
+
           describe '#check_different_atoms_roles' do
             include_context :incoherent_dimer_context
 
