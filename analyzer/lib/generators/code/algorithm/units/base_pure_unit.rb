@@ -182,12 +182,6 @@ module VersatileDiamond
           end
 
           # @return [Boolean]
-          # TODO: required specie specific rspec
-          def checkable?
-            relayable? && !all_defined?(anchored_species)
-          end
-
-          # @return [Boolean]
           # TODO: specie specific, rspec already exist
           def neighbour?(unit)
             selector_proc = unit.species.public_method(:include?)
@@ -237,12 +231,6 @@ module VersatileDiamond
               sps, ops = [self, other].map { |u| u.nodes.map(&:sub_properties) }
               ops <=> sps
             end
-          end
-
-          # @return [Boolean]
-          # TODO: specie specific
-          def relayable?
-            !species.all?(&:none?)
           end
 
           # @param [Symbol] method_name

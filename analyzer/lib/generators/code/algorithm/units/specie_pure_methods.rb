@@ -17,6 +17,11 @@ module VersatileDiamond
             dict.make_specie_s(species.first, **kwargs)
           end
 
+          # @return [Boolean]
+          def checkable?
+            !(species.all?(&:none?) || all_defined?(anchored_species))
+          end
+
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_different_atoms_roles(&block)

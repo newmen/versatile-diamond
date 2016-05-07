@@ -483,12 +483,7 @@ return 0;
 
             describe 'same specie' do
               include_context :alt_intermed_context
-              let(:nbr_nodes) { not_anchored_latticed_nodes.first }
-              let(:not_anchored_latticed_nodes) do
-                ordered_graph.map(&:first).select do |nodes|
-                  nodes.first.atom.lattice && !nodes.any?(&:anchor?)
-                end
-              end
+              let(:nbr_nodes) { not_entry_nodes }
               it { expect(subject.neighbour?(nbr_unit)).to be_truthy }
             end
           end

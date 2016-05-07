@@ -7,6 +7,12 @@ module VersatileDiamond
         module ReactionPureMethods
           include Algorithm::Units::ReactantAbstractType
 
+          # @return [Boolean]
+          # TODO: rspec required
+          def checkable?
+            !all_defined?(anchored_species)
+          end
+
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           # TODO: rspec required

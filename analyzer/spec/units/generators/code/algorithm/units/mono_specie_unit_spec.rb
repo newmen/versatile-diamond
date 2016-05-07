@@ -59,6 +59,48 @@ module VersatileDiamond
             end
           end
 
+          describe '#checkable?' do
+            describe 'root specie' do
+              include_context :bridge_context
+
+              describe 'undefined species' do
+                it { expect(subject.checkable?).to be_falsey }
+              end
+
+              describe 'all species are defined' do
+                before { dict.make_specie_s(node_specie) }
+                it { expect(subject.checkable?).to be_falsey }
+              end
+            end
+
+            describe 'anchored species have a parent' do
+              include_context :rab_context
+
+              describe 'undefined species' do
+                it { expect(subject.checkable?).to be_truthy }
+              end
+
+              describe 'all species are defined' do
+                before { dict.make_specie_s(node_specie) }
+                it { expect(subject.checkable?).to be_falsey }
+              end
+            end
+
+            describe 'no anchored species' do
+              include_context :intermed_context
+              let(:node) { not_entry_nodes.first }
+
+              describe 'undefined species' do
+                it { expect(subject.checkable?).to be_falsey }
+              end
+
+              describe 'all species are defined' do
+                before { dict.make_specie_s(node.uniq_specie) }
+                it { expect(subject.checkable?).to be_falsey }
+              end
+            end
+          end
+
           describe '#check_different_atoms_roles' do
             include_context :rab_context
 

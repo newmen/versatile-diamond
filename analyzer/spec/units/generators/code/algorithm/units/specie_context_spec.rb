@@ -220,17 +220,13 @@ module VersatileDiamond
 
             describe 'no relation' do
               include_context :intermed_context
-              let(:dimer_node) { (backbone.entry_nodes - entry_nodes).first.first }
-              let(:nbr_node) do
-                (ordered_graph.map(&:first) - backbone.entry_nodes).first.first
-              end
-              it { expect(nbr_node).to be_a(Algorithm::Nodes::BaseNode) }
+              let(:nbr_node) { not_entry_nodes.first }
               it { expect(relation).to be_nil }
             end
 
             describe 'bond' do
               include_context :alt_intermed_context
-              let(:nbr_node) { (backbone.entry_nodes - [entry_nodes]).first.first }
+              let(:nbr_node) { amorph_nodes.first }
               it { expect(relation).to eq(free_bond) }
             end
 

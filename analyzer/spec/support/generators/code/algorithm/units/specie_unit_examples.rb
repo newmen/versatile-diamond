@@ -98,8 +98,12 @@ module VersatileDiamond
               end
               let(:typical_reactions) { [dept_intermed_migr_dc_drop] }
 
-              let(:entry_nodes) do # override
+              let(:entry_nodes) { amorph_nodes } # override
+              let(:amorph_nodes) do
                 backbone.entry_nodes.reject { |ns| ns.first.atom.lattice }.first
+              end
+              let(:not_entry_nodes) do
+                (ordered_graph.map(&:first) - backbone.entry_nodes).first
               end
               let(:dept_uniq_specie) { dept_intermed_migr_down_common_base }
 

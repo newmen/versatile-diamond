@@ -59,6 +59,19 @@ module VersatileDiamond
             end
           end
 
+          describe '#checkable?' do
+            include_context :two_mobs_context
+
+            describe 'undefined species' do
+              it { expect(subject.checkable?).to be_truthy }
+            end
+
+            describe 'all species are defined' do
+              before { dict.make_specie_s(unit_nodes.map(&:uniq_specie)) }
+              it { expect(subject.checkable?).to be_falsey }
+            end
+          end
+
           describe '#check_different_atoms_roles' do
             include_context :incoherent_dimer_context
 
