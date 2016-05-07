@@ -8,7 +8,7 @@ module VersatileDiamond
           include SpecieAbstractType
 
           # @param [Expressions::VarsDictionary] dict
-          # @param [BaseContext] context
+          # @param [BaseContextProvider] context
           # @param [Specie] specie
           def initialize(dict, context, specie)
             super(dict)

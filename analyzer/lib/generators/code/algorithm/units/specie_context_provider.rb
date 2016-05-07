@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm::Units
 
         # The context for units of specie find algoritnm builder
-        class SpecieContext < BaseContext
+        class SpecieContextProvider < BaseContextProvider
           include Modules::GraphDupper
 
           # @param [Units::Expressions::VarsDictionary] dict

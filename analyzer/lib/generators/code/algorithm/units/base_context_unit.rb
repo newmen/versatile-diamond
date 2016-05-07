@@ -6,7 +6,7 @@ module VersatileDiamond
       module Algorithm::Units
 
         # Decorates unit for bulding code on context
-        class ContextUnit < GenerableUnit
+        class BaseContextUnit < GenerableUnit
           include Modules::ProcsReducer
           include Modules::ListsComparer
           extend Forwardable
@@ -14,7 +14,7 @@ module VersatileDiamond
           attr_reader :unit # must be protected
 
           # @param [Expressions::VarsDictionary] dict
-          # @param [BaseContext] context
+          # @param [BaseContextProvider] context
           # @param [BasePureUnit] unit
           def initialize(dict, context, unit)
             super(dict)
@@ -48,7 +48,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [ContextUnit] nbr
+          # @param [BaseContextUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_relations_with(nbr, &block)
@@ -61,9 +61,9 @@ module VersatileDiamond
             end
           end
 
+          # Must be protected
           # @return [Boolean] gets false if close nodes are not symmetric and true
           #   in the case when neighbour nodes are not similar
-          # TODO: must be protected
           def asymmetric_related_atoms?
             area_nodes = @context.symmetric_close_nodes(species)
             close_nodes = area_nodes.reject(&check_own_node_proc)
@@ -134,7 +134,7 @@ module VersatileDiamond
 
           def_delegators :unit, :species, :anchored_species, :atoms, :symmetric_atoms
 
-          # @return [ContextUnit]
+          # @return [BaseContextUnit]
           def context_unit(inner_unit)
             self.class.new(dict, @context, inner_unit)
           end
@@ -359,7 +359,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [ContextUnit] nbr
+          # @param [BaseContextUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_avail_species_in(nbr, &block)
@@ -371,7 +371,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [ContextUnit] nbr
+          # @param [BaseContextUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_neighbour_relations(nbr, &block)
@@ -382,7 +382,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [ContextUnit] nbr
+          # @param [BaseContextUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::AndCondition]
           def check_bonds_to_defined_neighbour(nbr, &block)
@@ -398,7 +398,7 @@ module VersatileDiamond
             Expressions::AndCondition[exprs, block.call]
           end
 
-          # @param [ContextUnit] nbr
+          # @param [BaseContextUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_relations(nbr, &block)
@@ -410,7 +410,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [ContextUnit] nbr
+          # @param [BaseContextUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_crystal_relations(nbr, &block)
@@ -440,7 +440,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [ContextUnit] nbr
+          # @param [BaseContextUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_existed_relations(nbr, &block)
@@ -526,7 +526,7 @@ module VersatileDiamond
             defined_sncns.any?(&check_own_node_proc) ? defined_sncns : []
           end
 
-          # @param [ContextUnit] nbr
+          # @param [BaseContextUnit] nbr
           # @return [Array] the list of nodes which will be available again after
           #   neighbour unit species check
           def defined_same_neighbour_nodes(nbr)
@@ -539,7 +539,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [ContextUnit] nbr
+          # @param [BaseContextUnit] nbr
           # @return [Array]
           def defined_next_neighbour_nodes(nbr)
             if @context.cutten_bone_relations_from?(nodes, nbr.nodes)
@@ -618,14 +618,12 @@ module VersatileDiamond
 
           # @param [Nodes::BaseNode] node
           # @return [Expressions::Core::Expression]
-          # TODO: move to MonoPureUnit?
           def atom_var_or_specie_call(node)
             dict.var_of(node.atom) || atom_from_specie_call(node)
           end
 
           # @param [Nodes::BaseNode] node
           # @return [Expressions::Core::Expression]
-          # TODO: move to MonoPureUnit?
           def atom_from_specie_call(node)
             dict.var_of(node.uniq_specie).atom_value(node.atom)
           end
@@ -639,7 +637,7 @@ module VersatileDiamond
           # Gets all existed relations over backbone graph of context
           # The first element of each item is pair of [from, to] nodes
           #
-          # @param [ContextUnit] nbr
+          # @param [BaseContextUnit] nbr
           # @return [Array]
           def nodes_with_existed_relations(nbr)
             ns_with_rs = zip_nodes_of(self, nbr).zip(relations_between(self, nbr))
@@ -647,8 +645,8 @@ module VersatileDiamond
             nodes_lists.reject(&method(:same_specie_in?))
           end
 
-          # @param [ContextUnit] a
-          # @param [ContextUnit] b
+          # @param [BaseContextUnit] a
+          # @param [BaseContextUnit] b
           # @return [Array]
           def relations_between(a, b)
             zip_nodes_of(a, b).map { |ns| @context.relation_between(*ns) }

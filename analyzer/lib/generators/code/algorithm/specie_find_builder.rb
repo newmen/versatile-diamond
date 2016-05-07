@@ -29,12 +29,12 @@ module VersatileDiamond
           attr_reader :backbone
 
           # @param [Array] ordered_graph
-          # @return [Units::SpecieContext]
+          # @return [Units::SpecieContextProvider]
           def specie_context(ordered_graph)
-            Units::SpecieContext.new(@dict, backbone.big_graph, ordered_graph)
+            Units::SpecieContextProvider.new(@dict, backbone.big_graph, ordered_graph)
           end
 
-          # @param [Units::SpecieContext] context
+          # @param [Units::SpecieContextProvider] context
           # @return [SpecieUnitsFactoryWithContext]
           def context_factory(context)
             SpecieUnitsFactoryWithContext.new(@dict, context)
@@ -82,13 +82,13 @@ module VersatileDiamond
             -> &block { unit.check_existence(&block) }
           end
 
-          # @param [Units::ContextUnit] unit
+          # @param [Units::BaseContextUnit] unit
           # @return [Proc] lazy calling for check species unit method
           def check_species_proc(unit)
             -> &block { unit.check_avail_species(&block) }
           end
 
-          # @param [Units::SpecieContext] context
+          # @param [Units::SpecieContextProvider] context
           # @return [Expressions::Core::Statement]
           def creator(context)
             Units::SpecieCreationUnit.new(@dict, context, @specie)

@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
       module Algorithm::Units
 
-        describe SpecieContext, type: :algorithm do
+        describe SpecieContextProvider, type: :algorithm do
           subject { described_class.new(dict, backbone.big_graph, ordered_graph) }
 
           shared_examples_for :empty_existed_relations do

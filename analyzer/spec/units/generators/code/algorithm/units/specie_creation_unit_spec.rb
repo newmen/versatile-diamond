@@ -7,7 +7,9 @@ module VersatileDiamond
 
         describe SpecieCreationUnit, type: :algorithm do
           subject { described_class.new(dict, context, specie) }
-          let(:context) { SpecieContext.new(dict, backbone.big_graph, ordered_graph) }
+          let(:context) do
+            SpecieContextProvider.new(dict, backbone.big_graph, ordered_graph)
+          end
           let(:specie) { generator.specie_class(dept_uniq_specie.name) }
           let(:bone_nodes) { context.bone_nodes }
           let(:addition_atoms) { specie.sequence.addition_atoms }

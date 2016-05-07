@@ -7,7 +7,7 @@ module VersatileDiamond
 
         # The context for units of find algoritnm builder
         # @abstract
-        class BaseContext
+        class BaseContextProvider
           include Modules::ListsComparer
 
           # @param [Units::Expressions::VarsDictionary] dict

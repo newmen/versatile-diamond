@@ -22,7 +22,8 @@ module VersatileDiamond
           end
 
           # Accumulates relations procs from passed unit
-          # @param [Units::ContextUnit] unit from which the relations will be collected
+          # @param [Units::BaseContextUnit] unit from which the relations will be
+          #   collected
           # @param [Array] nbrs the neighbour units
           # @return [Array] the array of collected relations procs
           def accumulate_relations(unit, nbrs)
