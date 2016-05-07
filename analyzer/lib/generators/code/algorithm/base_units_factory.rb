@@ -14,7 +14,7 @@ module VersatileDiamond
 
           # Makes unit that correspond to passed nodes
           # @param [Array] nodes for which the unit will be maked
-          # @return [Units::BaseUnit]
+          # @return [Units::BasePureUnit]
           def unit(nodes)
             nodes.one? ? mono_unit(nodes.first) : many_units(nodes)
           end
@@ -25,7 +25,7 @@ module VersatileDiamond
 
           # Creates checker unit from one node
           # @param [Nodes::BaseNode] node by which the checker unit will be created
-          # @return [Units::BaseUnit]
+          # @return [Units::BasePureUnit]
           def mono_unit(node, first_time: true)
             ns = first_time ? node.split : [node]
             ns.one? ? make_mono_unit(dict, node) : many_units(ns)
@@ -33,7 +33,7 @@ module VersatileDiamond
 
           # Creates many units by list of nodes
           # @param [Array] nodes by which the many units will be created
-          # @return [Units::ManyUnits]
+          # @return [Units::ManyPureUnits]
           def many_units(nodes)
             make_many_units(dict, nodes.map { |n| mono_unit(n, first_time: false) })
           end

@@ -4,7 +4,8 @@ module VersatileDiamond
       module Algorithm::Units
 
         # Unit for bulding code from many nodes
-        class ManyUnits < BaseUnit
+        # @abstract
+        class ManyPureUnits < BasePureUnit
           include Modules::ListsComparer
 
           # @param [Expressions::VarsDictionary] dict
@@ -12,22 +13,6 @@ module VersatileDiamond
           def initialize(dict, units)
             super(dict, units.flat_map(&:nodes))
             @units = units
-          end
-
-          # All different anchor atoms should have names
-          # TODO: specie specific (rspec already have)
-          # TODO: copy paste atom definition from MonoUnit
-          def define!
-            if species.one?
-              kwargs = { name: Code::Specie::ANCHOR_SPECIE_NAME, next_name: false }
-              dict.make_specie_s(species.first, **kwargs)
-            elsif atoms.one?
-              anchor = atoms.first
-              kwargs = { name: Code::Specie::ANCHOR_ATOM_NAME, next_name: false }
-              dict.make_atom_s(anchor, **kwargs)
-            else
-              raise 'Incorrect number of entry atoms'
-            end
           end
 
           # @return [Array]

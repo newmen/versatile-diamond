@@ -54,6 +54,15 @@ module VersatileDiamond
               let(:dept_uniq_specie) { dept_methyl_on_bridge_base }
             end
 
+            shared_context :incoherent_dimer_context do
+              include_context :specie_unit_context
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+              let(:specific_specs) { [dept_uniq_specie] }
+              let(:typical_reactions) { [dept_incoherent_dimer_drop] }
+
+              let(:dept_uniq_specie) { dept_twise_incoherent_dimer }
+            end
+
             shared_context :two_mobs_context do
               include_context :specie_unit_context
               let(:base_specs) { [dept_bridge_base, dept_uniq_specie] }

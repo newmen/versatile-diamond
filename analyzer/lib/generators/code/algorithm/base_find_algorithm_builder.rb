@@ -11,8 +11,8 @@ module VersatileDiamond
         private
 
           # Wraps calling of checking relations between generation units to lambda
-          # @param [Units::BaseUnit] unit from which relations will be checked
-          # @param [Units::BaseUnit] nbr to which relations will be checked
+          # @param [Units::ContextUnit] unit from which relations will be checked
+          # @param [Units::ContextUnit] nbr to which relations will be checked
           # @return [Proc] lazy calling for check relations unit method
           def relations_proc(unit, nbr)
             -> &block { unit.check_relations_with(nbr, &block) }

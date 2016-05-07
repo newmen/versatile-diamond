@@ -33,7 +33,7 @@ module VersatileDiamond
           end
 
           # Gets an unit from which the search begins
-          # @return [BaseUnit] the unit by which entry variables will be initialized
+          # @return [BasePureUnit] the unit by which entry variables will be initialized
           def initial_unit
             main_nodes = backbone.entry_nodes.flatten.uniq
             factory.make_unit(main_nodes)

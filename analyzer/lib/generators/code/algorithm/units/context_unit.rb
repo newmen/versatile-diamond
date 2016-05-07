@@ -15,7 +15,7 @@ module VersatileDiamond
 
           # @param [Expressions::VarsDictionary] dict
           # @param [BaseContext] context
-          # @param [BaseUnit] unit
+          # @param [BasePureUnit] unit
           def initialize(dict, context, unit)
             super(dict)
             @context = context
@@ -229,7 +229,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [BaseUnit] inner_unit
+          # @param [BasePureUnit] inner_unit
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_undefined_species_of(inner_unit, &block)
@@ -618,14 +618,14 @@ module VersatileDiamond
 
           # @param [Nodes::BaseNode] node
           # @return [Expressions::Core::Expression]
-          # TODO: move to MonoUnit?
+          # TODO: move to MonoPureUnit?
           def atom_var_or_specie_call(node)
             dict.var_of(node.atom) || atom_from_specie_call(node)
           end
 
           # @param [Nodes::BaseNode] node
           # @return [Expressions::Core::Expression]
-          # TODO: move to MonoUnit?
+          # TODO: move to MonoPureUnit?
           def atom_from_specie_call(node)
             dict.var_of(node.uniq_specie).atom_value(node.atom)
           end

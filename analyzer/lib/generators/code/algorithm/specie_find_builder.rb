@@ -76,13 +76,13 @@ module VersatileDiamond
             rels.map(&:first).map(&factory.public_method(:unit))
           end
 
-          # @param [Units::BaseUnit] unit the roles of which atoms will be checked
+          # @param [Units::BasePureUnit] unit the roles of which atoms will be checked
           # @return [Proc]
           def check_atoms_proc(unit)
             -> &block { unit.check_existence(&block) }
           end
 
-          # @param [Units::BaseUnit] unit
+          # @param [Units::ContextUnit] unit
           # @return [Proc] lazy calling for check species unit method
           def check_species_proc(unit)
             -> &block { unit.check_avail_species(&block) }

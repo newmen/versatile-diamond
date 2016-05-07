@@ -7,7 +7,7 @@ module VersatileDiamond
 
         # The basic unit for each other
         # @abstract
-        class BaseUnit < GenerableUnit
+        class BasePureUnit < GenerableUnit
           include Modules::OrderProvider
           include SpecieAbstractType
 
@@ -22,7 +22,7 @@ module VersatileDiamond
             @_species, @_anchored_species, @_atoms, @_symmetric_atoms = nil
           end
 
-          # @param [BaseUnit] other
+          # @param [BasePureUnit] other
           # @return [Integer]
           def <=>(other)
             order(self, other, :nodes, :size) do
@@ -58,9 +58,9 @@ module VersatileDiamond
             nodes.select { |node| atoms.include?(node.atom) }
           end
 
+          # Must be private (just as #nodes_with_atoms)
           # @param [Array] species
           # @return [Array]
-          # TODO: must be private (just as #nodes_with_atoms)
           def nodes_with_species(species)
             nodes.select { |node| species.include?(node.uniq_specie) }
           end
@@ -102,7 +102,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [BaseUnit] nbr
+          # @param [BasePureUnit] nbr
           # @param [Proc] crystal_rels_proc
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
@@ -243,7 +243,7 @@ module VersatileDiamond
 
         private
 
-          # @param [BaseUnit] other
+          # @param [BasePureUnit] other
           # @return [Proc]
           def comparing_core(other)
             -> do
@@ -264,19 +264,19 @@ module VersatileDiamond
             nodes.map(&method_name).uniq
           end
 
-          # @param [BaseUnit] inner_unit
+          # @param [BasePureUnit] inner_unit
           # @return [Array]
           def split_on_compliance(inner_unit)
             complete_unit?(inner_unit) ? [inner_unit] : inner_unit.units
           end
 
-          # @param [BaseUnit] inner_unit
+          # @param [BasePureUnit] inner_unit
           # @return [Boolean]
           def complete_unit?(inner_unit)
             !inner_unit.atoms.one? || coincident_nodes_of?(inner_unit)
           end
 
-          # @param [BaseUnit] inner_unit
+          # @param [BasePureUnit] inner_unit
           # @return [Boolean]
           def coincident_nodes_of?(inner_unit)
             values = inner_unit.nodes.map(&:coincide?)
@@ -293,7 +293,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [BaseUnit] nbr
+          # @param [BasePureUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_amorph_bonds(nbr, &block)
@@ -342,7 +342,7 @@ module VersatileDiamond
             dict.make_specie_s(undefined_species, **kwargs)
           end
 
-          # @param [BaseUnit] nbr
+          # @param [BasePureUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def redefine_self_and_nbr_atoms_if_need(nbr, &block)
@@ -390,6 +390,7 @@ module VersatileDiamond
           end
 
           # @return [Array]
+          # TODO: just specie
           def incoming_nodes
             nodes.select(&:different_atom_role?).select do |n|
               dict.var_of(n.uniq_specie) &&

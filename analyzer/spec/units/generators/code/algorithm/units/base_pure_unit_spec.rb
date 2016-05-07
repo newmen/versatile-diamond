@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
       module Algorithm::Units
 
-        describe BaseUnit, type: :algorithm do
+        describe BasePureUnit, type: :algorithm do
           subject { described_class.new(dict, unit_nodes) }
 
           let(:return0) do
@@ -96,7 +96,7 @@ module VersatileDiamond
           describe '#complete_inner_units' do
             describe 'mono unit' do
               include_context :rab_context
-              subject { MonoUnit.new(dict, unit_nodes.first) }
+              subject { MonoPureUnit.new(dict, unit_nodes.first) }
 
               describe 'undefined' do
                 it { expect(subject.complete_inner_units).to be_empty }
@@ -109,9 +109,9 @@ module VersatileDiamond
             end
 
             describe 'many units' do
-              subject { ManyUnits.new(dict, mono_units) }
+              subject { ManyPureUnits.new(dict, mono_units) }
               let(:mono_units) do
-                unit_nodes.map { |node| MonoUnit.new(dict, node) }
+                unit_nodes.map { |node| MonoPureUnit.new(dict, node) }
               end
 
               describe 'undefined' do

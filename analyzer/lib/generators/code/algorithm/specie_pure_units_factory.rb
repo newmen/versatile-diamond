@@ -8,15 +8,15 @@ module VersatileDiamond
         private
 
           # @param [Arra] args
-          # @return [Units::MonoUnit]
+          # @return [Units::MonoSpecieUnit]
           def make_mono_unit(*args)
-            Units::MonoUnit.new(*args)
+            Units::MonoSpecieUnit.new(*args)
           end
 
           # @param [Arra] args
-          # @return [Units::ManyUnits]
+          # @return [Units::ManySpecieUnits]
           def make_many_units(*args)
-            Units::ManyUnits.new(*args)
+            Units::ManySpecieUnits.new(*args)
           end
         end
 

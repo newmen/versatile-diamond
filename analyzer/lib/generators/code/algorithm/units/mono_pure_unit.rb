@@ -4,27 +4,12 @@ module VersatileDiamond
       module Algorithm::Units
 
         # Unit for bulding code from one node
-        class MonoUnit < BaseUnit
+        # @abstract
+        class MonoPureUnit < BasePureUnit
           # @param [Expressions::VarsDictionary] dict
           # @param [Nodes::SpecieNode] node
           def initialize(dict, node)
             super(dict, [node])
-          end
-
-          # Anytime is a previous found specie
-          # TODO: specie specific (rspec already have)
-          # TODO: copy paste atom definition from ManyUnits
-          def define!
-            parent = species.first
-            # TODO: it is possible that need to use unifier by atom
-            if parent.none? || parent.actual.spec.complex?
-              anchor = atoms.first
-              kwargs = { name: Code::Specie::ANCHOR_ATOM_NAME, next_name: false }
-              dict.make_atom_s(anchor, **kwargs)
-            else
-              kwargs = { name: Code::Specie::ANCHOR_SPECIE_NAME, next_name: false }
-              dict.make_specie_s(parent, **kwargs)
-            end
           end
 
           # @return [Array]
