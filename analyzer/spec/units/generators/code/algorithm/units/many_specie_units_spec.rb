@@ -11,6 +11,10 @@ module VersatileDiamond
             unit_nodes.map { |node| MonoPureUnit.new(dict, node) }
           end
 
+          let(:return456) do
+            -> { Expressions::Core::Return[Expressions::Core::Constant[456]] }
+          end
+
           describe '#define!' do
             before { subject.define! }
 
@@ -53,6 +57,27 @@ module VersatileDiamond
             describe 'species and atom are not defined' do
               it { expect(subject.filled_inner_units).to be_empty }
             end
+          end
+
+          describe '#check_different_atoms_roles' do
+            include_context :incoherent_dimer_context
+
+            before do
+              dict.make_specie_s(node_specie)
+              dict.make_atom_s([cl, cr])
+            end
+
+            let("role_cr") { node_specie.actual_role(cr) }
+            let(:expr) { subject.check_different_atoms_roles(&return456) }
+            let(:code) do
+              <<-CODE
+if (atoms1[0]->is(#{role_cr}) && atoms1[1]->is(#{role_cr}))
+{
+    return 456;
+}
+              CODE
+            end
+            it { expect(expr.code).to eq(code) }
           end
         end
 

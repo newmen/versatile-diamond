@@ -9,7 +9,6 @@ module VersatileDiamond
         # @abstract
         class BasePureUnit < GenerableUnit
           include Modules::OrderProvider
-          include SpecieAbstractType
 
           attr_reader :nodes
 
@@ -88,18 +87,6 @@ module VersatileDiamond
             checks =
               atom_with_specie_calls(:role_in, checking_atoms, anchor_required: false)
             Expressions::AndCondition[checks, block.call]
-          end
-
-          # @yield incorporating statement
-          # @return [Expressions::Core::Statement]
-          # TODO: just specie (rspec required)
-          def check_different_atoms_roles(&block)
-            checking_nodes = incoming_nodes.dup
-            if checking_nodes.empty?
-              block.call
-            else
-              check_atoms_roles(checking_nodes.map(&:atom), &block)
-            end
           end
 
           # @param [BasePureUnit] nbr
@@ -387,15 +374,6 @@ module VersatileDiamond
           # @return [Instances::SpecieInstance]
           def chose_specie_for(packing_atom)
             species.find { |specie| specie.anchor?(packing_atom) }
-          end
-
-          # @return [Array]
-          # TODO: just specie
-          def incoming_nodes
-            nodes.select(&:different_atom_role?).select do |n|
-              dict.var_of(n.uniq_specie) &&
-                (dict.var_of(n.atom) || !n.properties.include?(n.sub_properties))
-            end
           end
         end
 

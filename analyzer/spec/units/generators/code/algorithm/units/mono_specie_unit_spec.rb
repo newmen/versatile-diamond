@@ -9,6 +9,10 @@ module VersatileDiamond
           subject { described_class.new(dict, node) }
           let(:node) { unit_nodes.first }
 
+          let(:return123) do
+            -> { Expressions::Core::Return[Expressions::Core::Constant[123]] }
+          end
+
           describe '#define!' do
             before { subject.define! }
 
@@ -53,6 +57,27 @@ module VersatileDiamond
             describe 'specie and atom are not defined' do
               it { expect(subject.filled_inner_units).to be_empty }
             end
+          end
+
+          describe '#check_different_atoms_roles' do
+            include_context :rab_context
+
+            before do
+              dict.make_specie_s(node_specie)
+              dict.make_atom_s(cr)
+            end
+
+            let("role_cr") { node_specie.actual_role(cr) }
+            let(:expr) { subject.check_different_atoms_roles(&return123) }
+            let(:code) do
+              <<-CODE
+if (atom1->is(#{role_cr}))
+{
+    return 123;
+}
+              CODE
+            end
+            it { expect(expr.code).to eq(code) }
           end
         end
 

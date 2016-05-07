@@ -198,11 +198,6 @@ module VersatileDiamond
             it { expect(node_cr.limited?).to be_falsey }
             it { expect(node_cc.limited?).to be_truthy }
           end
-
-          describe '#different_atom_role?' do
-            it { expect(node_cb.different_atom_role?).to be_truthy }
-            it { expect(node_cm.different_atom_role?).to be_falsey }
-          end
         end
 
       end

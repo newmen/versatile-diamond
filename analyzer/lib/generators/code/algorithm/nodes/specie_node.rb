@@ -49,11 +49,6 @@ module VersatileDiamond
           end
 
           # @return [Boolean]
-          def different_atom_role?
-            properties != sub_properties
-          end
-
-          # @return [Boolean]
           # @override
           def used_many_times?
             scope? ? generator.many_times?(spec, atom) : super

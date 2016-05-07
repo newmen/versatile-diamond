@@ -18,7 +18,7 @@ module VersatileDiamond
             # @param [Array] exprs
             # @return [Core::OpAnd]
             def join(exprs)
-              Core::OpAnd[*exprs]
+              Core::OpAnd[*exprs.sort_by(&:code)]
             end
           end
         end

@@ -3,10 +3,10 @@ module VersatileDiamond
     module Code
       module Algorithm::Units
 
-        module SpecieAbstractType
+        module ReactantAbstractType
           # @return [Expressions::Core::ObjectType]
           def abstract_type
-            Expressions::ParentSpecieType[].freeze
+            Expressions::ReactantSpecieType[].freeze
           end
         end
 
