@@ -23,7 +23,6 @@ module VersatileDiamond
               let(:typical_reaction) { generator.reaction_class(dept_reaction.name) }
 
               # defaults
-              let(:unit_nodes) { entry_nodes.flat_map(&:split) }
               let(:node_specie) { entry_nodes.first.uniq_specie }
             end
 
@@ -33,6 +32,15 @@ module VersatileDiamond
               let(:specific_specs) { [dept_anchor_spec] }
               let(:dept_anchor_spec) { dept_activated_bridge }
               let(:dept_reaction) { dept_methyl_adsorption }
+            end
+
+            shared_context :sierpinski_drop_context do
+              include_context :reaction_unit_context
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, dept_anchor_spec]
+              end
+              let(:dept_anchor_spec) { dept_cross_bridge_on_bridges_base }
+              let(:dept_reaction) { dept_sierpinski_drop }
             end
 
             shared_context :dimer_formation_context do
