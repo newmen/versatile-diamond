@@ -7,7 +7,7 @@ module VersatileDiamond
 
         describe ManySpecieUnits, type: :algorithm do
           def nodes_to_mono_units(nodes)
-            nodes.map { |node| MonoPureUnit.new(dict, node) }
+            nodes.map { |node| MonoSpecieUnit.new(dict, node) }
           end
 
           def nodes_to_many_units(nodes)

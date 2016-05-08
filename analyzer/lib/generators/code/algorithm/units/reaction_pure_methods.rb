@@ -22,12 +22,12 @@ module VersatileDiamond
 
           # @return [Boolean]
           def checkable?
-            !all_defined?(anchored_species)
+            !all_defined?(species)
           end
 
           # @return [Boolean]
           def neighbour?(unit)
-            anchored_species.select(&unit.species.public_method(:include?)).empty?
+            species.select(&unit.species.public_method(:include?)).empty?
           end
         end
 

@@ -51,6 +51,15 @@ module VersatileDiamond
               let(:dept_other_spec) { dept_activated_bridge }
               let(:dept_reaction) { dept_dimer_formation }
             end
+
+            shared_context :intermed_migr_dh_formation_context do
+              include_context :reaction_unit_context
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+              let(:specific_specs) { [dept_anchor_spec, dept_other_spec] }
+              let(:dept_anchor_spec) { dept_activated_bridge }
+              let(:dept_other_spec) { dept_activated_methyl_on_dimer }
+              let(:dept_reaction) { dept_intermed_migr_dh_formation }
+            end
           end
 
         end
