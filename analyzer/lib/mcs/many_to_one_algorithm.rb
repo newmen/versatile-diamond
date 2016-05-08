@@ -219,14 +219,22 @@ module VersatileDiamond
       # @return [Array, Array] changed vertices for both graphs
       def select_on_remaining(mapped_big, mapped_small)
         small_to_big = Hash[mapped_small.zip(mapped_big)]
+        big_to_small = small_to_big.invert
 
         # because lattice may be changed
         @remaining_small_vertices.map! do |v|
           @small_graph.vertex_changed_to(v) || v
         end
 
-        changed_small = @remaining_small_vertices +
-          @small_graph.boundary_vertices(@remaining_small_vertices)
+        remaining_big = @remaining_small_vertices.map { |v| small_to_big[v] }
+        boundary_big = @big_graph.boundary_vertices(remaining_big)
+        pairs = boundary_big.map { |v| [v, big_to_small[v]] }.select(&:last)
+        different_pairs = pairs.select { |v, w| !v.same?(w) || realy_changed?(v, w) }
+        different_small = different_pairs.map(&:last)
+
+        boundary_small = @small_graph.boundary_vertices(@remaining_small_vertices)
+        changed_small =
+          (@remaining_small_vertices + boundary_small + different_small).uniq
 
         changed_big = changed_small.map { |v| small_to_big[v] }
         # because lattice may be changed again

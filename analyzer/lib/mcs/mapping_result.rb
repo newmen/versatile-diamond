@@ -289,7 +289,17 @@ module VersatileDiamond
 
         return unless next_atoms.map(&:to_set).reduce(:&).empty?
 
-        next_atoms.transpose.each do |diff_side_atoms|
+        reordered_atoms = next_atoms.combination(2).flat_map do |scope1, scope2|
+          variants_with_usages = scope1.permutation.map do |scope1_var|
+            pairs = scope1_var.zip(scope2)
+            positions = pairs.map { |pair| main_spec.position_between(*pair) }
+            [scope1_var, positions.compact.size]
+          end
+          aligned_atoms = variants_with_usages.max_by(&:last).first
+          [aligned_atoms, scope2].transpose
+        end
+
+        reordered_atoms.uniq.each do |diff_side_atoms|
           deep_small_pairs = diff_side_atoms.map { |a| other_side(main_spec, a) }
           deep_small_specs, deep_small_atoms = deep_small_pairs.transpose
           next if deep_small_specs.first == deep_small_specs.last
