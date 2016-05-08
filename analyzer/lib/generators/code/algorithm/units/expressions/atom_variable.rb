@@ -16,7 +16,7 @@ module VersatileDiamond
           # @param [Instances::SpecieInstance] specie
           # @return [Core::OpNot]
           def not_found(specie)
-            verify_anchor_of(specie) do
+            verify_anchor_of(specie, check_method: :actual_anchor?) do
               actual = specie.actual
               method_name = actual.find_endpoint? ? 'hasRole' : 'checkAndFind'
               enum_name = Core::Constant[actual.enum_name]
@@ -130,8 +130,8 @@ module VersatileDiamond
           # @param [Instances::SpecieInstance] specie
           # @yield incorporating statement
           # @return [Core::Statement]
-          def verify_anchor_of(specie, &block)
-            if specie.anchor?(instance)
+          def verify_anchor_of(specie, check_method: :anchor?, &block)
+            if specie.public_send(check_method, instance)
               block.call
             else
               raise ArgumentError, "#{code} is not anchor of #{specie.inspect}"

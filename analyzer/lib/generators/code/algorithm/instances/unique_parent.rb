@@ -41,6 +41,14 @@ module VersatileDiamond
             false
           end
 
+          # Checks that passed atom is anchor of actual specie
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which will be checked
+          # @return [Boolean] is anchor or not
+          def actual_anchor?(atom)
+            actual.spec.anchors.include?(actual_atom(atom))
+          end
+
         private
 
           # Gets the instance of atom which uses in actual specie

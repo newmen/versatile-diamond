@@ -49,7 +49,7 @@ module VersatileDiamond
       # Gets anchors of internal specie
       # @return [Array] the array of anchor atoms
       def anchors
-        @_anchors ||= (main_anchors + skipped_anchors).uniq
+        @_anchors ||= main_anchors + (complex? ? skipped_anchors : [])
       end
 
       # Gets the parent specs of current instance
@@ -331,7 +331,7 @@ module VersatileDiamond
             end
 
             result << bigger_bonded_atom ||
-              sorted_atoms.select { |own_atom| own_atom.lattice }.last ||
+              sorted_atoms.select(&:lattice).last ||
               sort_atoms(parent, twins_to_atoms, &:first).last.last
           end
         end

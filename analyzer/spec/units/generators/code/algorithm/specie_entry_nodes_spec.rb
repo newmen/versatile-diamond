@@ -56,7 +56,9 @@ module VersatileDiamond
 
           it_behaves_like :check_entry_nodes do
             subject { dept_two_methyls_on_dimer_base }
-            let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
+            let(:base_specs) do
+              [dept_bridge_base, dept_dimer_base, dept_methyl_on_dimer_base, subject]
+            end
             let(:typical_reactions) do
               [
                 dept_hydrogen_abs_from_gap,
@@ -64,7 +66,7 @@ module VersatileDiamond
                 dept_intermed_migr_dh_drop
               ]
             end
-            let(:points_list) { [[cl]] }
+            let(:points_list) { [[cr]] }
           end
 
           it_behaves_like :check_entry_nodes do

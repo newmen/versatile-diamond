@@ -83,6 +83,12 @@ module VersatileDiamond
               end
             end
 
+            describe '#actual_anchor?' do
+              it { expect(subject.actual_anchor?(cb)).to be_truthy }
+              it { expect(subject.actual_anchor?(cm)).to be_truthy }
+              it { expect(subject.actual_anchor?(cr)).to be_falsey }
+            end
+
             describe '#anchor?' do
               it { expect(subject.anchor?(cb)).to be_truthy }
               it { expect(subject.anchor?(cm)).to be_falsey }

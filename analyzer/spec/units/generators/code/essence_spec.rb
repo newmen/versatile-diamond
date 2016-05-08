@@ -110,7 +110,9 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_cut_links do
-              let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
+              let(:base_specs) do
+                [dept_bridge_base, dept_dimer_base, dept_methyl_on_dimer_base, subject]
+              end
               let(:typical_reactions) do
                 [
                   dept_hydrogen_abs_from_gap,
@@ -120,7 +122,6 @@ module VersatileDiamond
               end
               let(:cut_links) do
                 {
-                  cl => [],
                   cr => [[c1, free_bond]],
                   c1 => [[cr, free_bond]]
                 }

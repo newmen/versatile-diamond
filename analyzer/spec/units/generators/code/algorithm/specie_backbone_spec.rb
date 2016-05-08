@@ -77,7 +77,9 @@ module VersatileDiamond
               end
 
               it_behaves_like :check_finite_graph do
-                let(:base_specs) { [dept_dimer_base, subject] }
+                let(:base_specs) do
+                  [dept_dimer_base, dept_methyl_on_dimer_base, subject]
+                end
                 let(:typical_reactions) do
                   [
                     dept_hydrogen_abs_from_gap,
@@ -87,9 +89,7 @@ module VersatileDiamond
                 end
                 let(:final_graph) do
                   {
-                    [cl] => [],
-                    [cr] => [[[c1], param_amorph]],
-                    [c1] => []
+                    [cr] => [[[c1], param_amorph]]
                   }
                 end
               end
@@ -307,7 +307,9 @@ module VersatileDiamond
               end
 
               it_behaves_like :check_ordered_graph do
-                let(:base_specs) { [dept_dimer_base, subject] }
+                let(:base_specs) do
+                  [dept_dimer_base, dept_methyl_on_dimer_base, subject]
+                end
                 let(:typical_reactions) do
                   [
                     dept_hydrogen_abs_from_gap,
@@ -317,9 +319,7 @@ module VersatileDiamond
                 end
                 let(:ordered_graph) do
                   [
-                    [[cl], []],
-                    [[cr], [[[c1], param_amorph]]],
-                    [[c1], []]
+                    [[cr], [[[c1], param_amorph]]]
                   ]
                 end
               end

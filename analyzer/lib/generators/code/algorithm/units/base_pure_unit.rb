@@ -167,8 +167,20 @@ module VersatileDiamond
 
           def inspect
             sis = species.map(&:inspect)
-            pops = nodes.uniq(&:atom).map(&:properties).map(&:inspect)
-            "•[#{sis.join(' ')}] [#{pops.join(' ')}]•"
+            nas = nodes.uniq(&:atom)
+            spops = nas.map(&:sub_properties).map(&:inspect)
+            pkns = nas.map do |n|
+              n.spec.spec.keyname(n.uniq_specie.send(:reflection_of, n.atom))
+            end
+            ppops = nas.map(&:properties).map(&:inspect)
+            ckns = nas.map do |n|
+              ch = n.uniq_specie.spec.instance_variable_get(:@child)
+              ch && ch.spec.keyname(n.atom)
+            end
+            pkwps = pkns.zip(spops).map { |kp| kp.join(':') }
+            ckwps = ckns.zip(ppops).map { |kp| kp.join(':') }
+            bs = pkwps.zip(ckwps).map { |p, c| "(#{p})‡(#{c})" }
+            "•[#{sis.join(' ')}] [#{bs.join(' ')}]•"
           end
 
         protected
@@ -307,14 +319,11 @@ module VersatileDiamond
           # @option [Boolean] :anchor_required
           # @return [Array]
           def packing_species(packing_atoms, anchor_required: true)
-            packing_species = packing_atoms.map(&method(:chose_specie_for))
+            chosen_species = packing_atoms.map(&method(:chose_specie_for))
             if anchor_required
-              packing_species
+              chosen_species
             else
-              packing_species.zip(packing_atoms).map do |specie, atom|
-                specie || species.find { |s| s.atom?(atom) } ||
-                  raise(ArgumentError, 'Cannot select specie for one of packing atoms')
-              end
+              fix_packing_swas(chosen_species.zip(packing_atoms))
             end
           end
 
@@ -322,7 +331,16 @@ module VersatileDiamond
           #   packing_atom the specie for which will be chosed
           # @return [Instances::SpecieInstance]
           def chose_specie_for(packing_atom)
-            species.find { |specie| specie.anchor?(packing_atom) }
+            species.find { |specie| specie.actual_anchor?(packing_atom) }
+          end
+
+          # @param [Array] chosen_species
+          # @return [Array]
+          def fix_packing_swas(packing_swas)
+            packing_swas.map do |specie, atom|
+              specie || species.find { |s| s.atom?(atom) } ||
+                raise(ArgumentError, 'Cannot select specie for one of packing atoms')
+            end
           end
         end
 

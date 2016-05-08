@@ -67,7 +67,7 @@ module VersatileDiamond
                 Instances::UniqueReactant.new(generator, vl_unique_reactant)
               end
 
-              let_atoms_of(:'dept_none_specie.spec', [:cm, :cb, :ct, :cr, :cl])
+              let_atoms_of(:vl_unique_reactant, [:cm, :cb, :ct, :cr, :cl])
             end
 
             shared_context :unique_reactant_context do

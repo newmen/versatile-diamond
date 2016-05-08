@@ -137,11 +137,14 @@ module VersatileDiamond
           #   parent specie or not
           def uniq_anchored?(nodes, lists_of_nodes)
             return false unless nodes.all?(&:anchor?)
-            other_nodes = lists_of_nodes.flatten.reject { |node| nodes.include?(node) }
+            all_other_nodes = lists_of_nodes.flatten - nodes
+            other_anchored_nodes = all_other_nodes.select(&:anchor?)
+            return false if !all_other_nodes.empty? && other_anchored_nodes.empty?
+
             !nodes.map(&:uniq_specie).uniq.all? do |uniq_specie|
-              other_nodes.any? do |node|
-                node.anchor? && (node.uniq_specie == uniq_specie ||
-                  (node.scope? && node.uniq_specie.species.include?(uniq_specie)))
+              other_anchored_nodes.any? do |node|
+                node.uniq_specie == uniq_specie ||
+                  (node.scope? && node.uniq_specie.species.include?(uniq_specie))
               end
             end
           end
