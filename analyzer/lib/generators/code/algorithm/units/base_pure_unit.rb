@@ -58,10 +58,10 @@ module VersatileDiamond
 
           # @param [Symbol] method_name
           # @param [Array] calling_atoms
-          # @param [Hash] kwargs
+          # @yield [SpecieInstance, Atom] checks that atom belongs to specie
           # @return [Array]
-          def atom_with_specie_calls(method_name, calling_atoms, **kwargs)
-            pack_with_species(calling_atoms, **kwargs).map do |atom, specie|
+          def atom_with_specie_calls(method_name, calling_atoms, &block)
+            pack_with_species(calling_atoms, &block).map do |atom, specie|
               dict.var_of(atom).public_send(method_name, specie)
             end
           end
@@ -71,8 +71,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_atoms_roles(checking_atoms, &block)
-            checks =
-              atom_with_specie_calls(:role_in, checking_atoms, anchor_required: false)
+            checks = atom_with_specie_calls(:role_in, checking_atoms, &:atom?)
             Expressions::AndCondition[checks, block.call]
           end
 
@@ -308,38 +307,25 @@ module VersatileDiamond
           end
 
           # @param [Array] packing_atoms
-          # @param [Hash] kwargs
+          # @yield [SpecieInstance, Atom] checks that atom belongs to specie
           # @return [Array]
-          def pack_with_species(packing_atoms, **kwargs)
-            packing_atoms.zip(packing_species(packing_atoms, **kwargs))
+          def pack_with_species(packing_atoms, &block)
+            packing_atoms.zip(packing_species(packing_atoms, &block))
           end
 
           # @param [Array] packing_atoms
-          # @option [Boolean] :anchor_required
+          # @yield [SpecieInstance, Atom] checks that atom belongs to specie
           # @return [Array]
-          def packing_species(packing_atoms, anchor_required: true)
-            chosen_species = packing_atoms.map(&method(:chose_specie_for))
-            if anchor_required
-              chosen_species
-            else
-              fix_packing_swas(chosen_species.zip(packing_atoms))
-            end
+          def packing_species(packing_atoms, &block)
+            packing_atoms.map { |atom| chose_specie_with(atom, &block) }
           end
 
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   packing_atom the specie for which will be chosed
+          # @yield [SpecieInstance, Atom] checks that atom belongs to specie
           # @return [Instances::SpecieInstance]
-          def chose_specie_for(packing_atom)
-            species.find { |specie| specie.actual_anchor?(packing_atom) }
-          end
-
-          # @param [Array] chosen_species
-          # @return [Array]
-          def fix_packing_swas(packing_swas)
-            packing_swas.map do |specie, atom|
-              specie || species.find { |s| s.atom?(atom) } ||
-                raise(ArgumentError, 'Cannot select specie for one of packing atoms')
-            end
+          def chose_specie_with(packing_atom, &block)
+            species.find { |specie| block[specie, packing_atom] }
           end
         end
 

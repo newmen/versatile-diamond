@@ -73,6 +73,10 @@ module VersatileDiamond
                 end
               end
 
+              describe '#actual_anchor?' do
+                it { expect(subject.actual_anchor?(atom)).to eq(anchor) }
+              end
+
               describe '#anchor?' do
                 it { expect(subject.anchor?(atom)).to eq(anchor) }
               end

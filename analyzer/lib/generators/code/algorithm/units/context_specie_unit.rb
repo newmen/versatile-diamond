@@ -85,7 +85,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::OrCondition]
           def check_that_context_specie_not_found(&block)
-            checks = unit.atom_with_specie_calls(:not_found, atoms)
+            checks = unit.atom_with_specie_calls(:not_found, atoms, &:actual_anchor?)
             Expressions::OrCondition[checks, block.call]
           end
 

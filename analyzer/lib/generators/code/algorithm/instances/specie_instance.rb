@@ -70,7 +70,15 @@ module VersatileDiamond
             generator.atom_properties(original.spec, original_atom(atom))
           end
 
-          # Checks that passed atom is anchor
+          # Checks that passed atom is anchor of actual specie
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which will be checked
+          # @return [Boolean] is anchor or not
+          def actual_anchor?(atom)
+            actual.spec.anchors.include?(actual_atom(atom))
+          end
+
+          # Checks that passed atom is anchor of original specie
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom which will be checked
           # @return [Boolean] is anchor or not

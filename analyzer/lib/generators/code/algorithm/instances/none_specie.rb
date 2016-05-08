@@ -29,13 +29,6 @@ module VersatileDiamond
             false
           end
 
-          # "No specie" is always actual anchor
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom] _
-          # @return [Boolean] true
-          def actual_anchor?(_)
-            true
-          end
-
           def inspect
             "none:#{original.inspect}"
           end
