@@ -67,7 +67,6 @@ module VersatileDiamond
 
           describe '#neighbour?' do
             include_context :intermed_migr_dh_formation_context
-            let(:nbr_nodes) { ordered_graph.first.last.first.first }
             let(:nbr_unit) { nodes_to_many_units(nbr_nodes) }
             it { expect(subject.neighbour?(nbr_unit)).to be_truthy }
           end

@@ -53,8 +53,7 @@ module VersatileDiamond
 
           describe '#neighbour?' do
             include_context :dimer_formation_context
-            let(:nbr_node) { ordered_graph.first.last.first.first.first }
-            let(:nbr_unit) { described_class.new(dict, nbr_node) }
+            let(:nbr_unit) { described_class.new(dict, nbr_nodes.first) }
             it { expect(subject.neighbour?(nbr_unit)).to be_truthy }
           end
 

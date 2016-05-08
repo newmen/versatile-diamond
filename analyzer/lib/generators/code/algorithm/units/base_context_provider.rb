@@ -350,8 +350,7 @@ module VersatileDiamond
           # @param [Array] rels
           # @return [Boolean]
           def related_in?(node, key_nodes, rels)
-            !rels.empty? &&
-              (key_nodes.include?(node) || rels.flat_map(&:first).include?(node))
+            !rels.empty? && slice(key_nodes, rels).include?(node)
           end
 
           # @param [Array] rels_lists

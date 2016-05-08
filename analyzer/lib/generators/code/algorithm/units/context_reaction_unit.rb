@@ -29,7 +29,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_close_atoms(&block)
-            checking_nodes = context_nodes_with_undefined_related_atoms
+            checking_nodes = context.related_nodes_of(select_defined(species))
             if checking_nodes.empty?
               block.call
             else
