@@ -93,8 +93,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_symmetries(&block)
-            target_nodes = possible_symmetric_nodes
-            if target_nodes.one?
+            if one_symmetric_specie?
               unit.iterate_specie_symmetries(&block)
             elsif asymmetric_related_atoms?
               unit.iterate_for_loop_symmetries(&block)
@@ -124,19 +123,6 @@ module VersatileDiamond
           # @return [Array]
           def units
             unit.units.map(&method(:context_unit))
-          end
-
-          # @return [Array]
-          def possible_symmetric_nodes
-            # already should be checked that unit is symmetric
-            symmetric_nodes = nodes.select(&:symmetric_atoms?)
-            if symmetric_nodes.empty?
-              nodes.reject do |node|
-                context.symmetric_close_nodes([node.uniq_specie]).empty?
-              end
-            else
-              symmetric_nodes
-            end
           end
 
           # @return [Proc]
@@ -461,10 +447,28 @@ module VersatileDiamond
             as.smart_zip(bs)
           end
 
+          # @return [Array]
+          def possible_symmetric_nodes
+            # already should be checked that unit is symmetric
+            symmetric_nodes = nodes.select(&:symmetric_atoms?)
+            if symmetric_nodes.empty?
+              nodes.reject do |node|
+                context.symmetric_close_nodes([node.uniq_specie]).empty?
+              end
+            else
+              symmetric_nodes
+            end
+          end
+
           # @return [Boolean]
           def symmetric?
             unit.fully_symmetric? || unit.partially_symmetric? ||
               asymmetric_related_atoms?
+          end
+
+          # @return [Boolean]
+          def one_symmetric_specie?
+            possible_symmetric_nodes.map(&:uniq_specie).uniq.one?
           end
 
           # @param [Array] ca_nodes

@@ -68,8 +68,8 @@ module VersatileDiamond
               let(:base_specs) { [dept_methyl_on_bridge_base] }
               let(:find_algorithm) do
                 <<-CODE
-    target->eachSymmetry([](SpecificSpec *specie1) {
-        create<ForwardSierpinskiDrop>(specie1);
+    target->eachSymmetry([](SpecificSpec *symmetricCrossBridgeOnBridges1) {
+        create<ForwardSierpinskiDrop>(symmetricCrossBridgeOnBridges1);
     });
                 CODE
               end

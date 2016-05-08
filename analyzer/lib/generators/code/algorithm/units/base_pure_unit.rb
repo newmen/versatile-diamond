@@ -236,7 +236,7 @@ module VersatileDiamond
             if symmetric_nodes.empty?
               select_defined(species)
             else
-              select_defined(symmetric_nodes.map(&:uniq_specie))
+              select_defined(symmetric_nodes.map(&:uniq_specie).uniq)
             end
           end
 
