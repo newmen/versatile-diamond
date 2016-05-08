@@ -60,13 +60,6 @@ module VersatileDiamond
               let(:enum_name) { 'METHYL_ON_BRIDGE' }
               it { expect(var.not_found(subject).code).to eq(code) }
             end
-
-            describe 'unique reactant' do
-              include_context :unique_reactant_context
-              let(:atom) { cb }
-              let(:enum_name) { 'METHYL_ON_BRIDGE' }
-              it { expect(var.not_found(subject).code).to eq(code) }
-            end
           end
 
           describe '#one_specie_by_role' do
