@@ -155,7 +155,6 @@ module VersatileDiamond
           end
 
           # @return [Boolean]
-          # TODO: reaction unit requires rspec
           def partially_symmetric?
             !atoms.one? && !symmetric_atoms.empty? &&
               symmetric_atoms.to_set < atoms.to_set

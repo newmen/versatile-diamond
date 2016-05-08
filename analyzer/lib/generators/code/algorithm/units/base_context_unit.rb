@@ -68,9 +68,10 @@ module VersatileDiamond
           def inspect
             sis = species.map(&:inspect)
             pops = nodes.uniq(&:atom).map(&:properties).map(&:inspect)
-            kns = nas.map do |n|
-              ch = n.uniq_specie.spec.instance_variable_get(:@child)
-              ch && ch.spec.keyname(n.atom)
+            kns = nodes.map do |n|
+              ds = n.uniq_specie.spec
+              ch = ds.instance_variable_get(:@child) || ds
+              ch.spec.keyname(n.atom)
             end
             kwps = kns.zip(pops).map { |kp| kp.join(':') }
             "∞(#{sis.join(' ')}) | (#{kwps.join(' ')})∞"
@@ -464,6 +465,7 @@ module VersatileDiamond
 
           # @return [Boolean]
           def symmetric?
+binding.pry
             unit.fully_symmetric? || partially_symmetric? || asymmetric_related_atoms?
           end
 
