@@ -50,9 +50,18 @@ module VersatileDiamond
             e1 = @g1.edge(v1, v2)
             e2 = @g2.edge(w1, w2)
 
-            possible_same = block_given? && block[[v1, v2], [w1, w2]]
+            possible_same, realy_not_same =
+              if block_given?
+                cmp = block[[v1, v2], [w1, w2]]
+                [cmp, !cmp]
+              else
+                [false, false]
+              end
+
             similar_edges =
               (e1 && e2 && (e1 == e2 || (possible_same && e1.same?(e2)))) ||
+                (realy_not_same &&
+                          ((!e1 && e2 && !e2.exist?) || (!e2 && e1 && !e1.exist?))) ||
                 (bonds_checker && possible_same &&
                             ((!e2 && e1 && e1.bond? && bonds_checker[w1, w2]) ||
                               (!e1 && e2 && e2.bond? && bonds_checker[v1, v2])))
