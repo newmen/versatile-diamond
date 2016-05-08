@@ -68,7 +68,12 @@ module VersatileDiamond
           def inspect
             sis = species.map(&:inspect)
             pops = nodes.uniq(&:atom).map(&:properties).map(&:inspect)
-            "∞(#{sis.join(' ')}) | (#{pops.join(' ')})∞"
+            kns = nas.map do |n|
+              ch = n.uniq_specie.spec.instance_variable_get(:@child)
+              ch && ch.spec.keyname(n.atom)
+            end
+            kwps = kns.zip(pops).map { |kp| kp.join(':') }
+            "∞(#{sis.join(' ')}) | (#{kwps.join(' ')})∞"
           end
 
         protected

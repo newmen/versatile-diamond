@@ -47,8 +47,8 @@ module VersatileDiamond
         @graphs_to_specs.merge!(Hash[source_graphs.zip(source)])
         @graphs_to_specs.merge!(Hash[product_graphs.zip(products)])
 
-        @reaction_type = reaction_type # must be :association or :dissociation
-        # for current algorithm
+        # must be :association or :dissociation for current algorithm
+        @reaction_type = reaction_type
 
         @few_graphs, @big_graph =
           if @reaction_type == :association
@@ -157,16 +157,26 @@ module VersatileDiamond
       #
       # @return [AssocGraph] the resulted associaton graph
       def build_assoc_graph
-        AssocGraph.new(@big_graph, @small_graph,
-          comparer: method(:vertex_comparer)) do |(v1, w1), (v2, w2)|
+        bbvs = @boundary_big_vertices
+        rsvs = @remaining_small_vertices
 
-          (@boundary_big_vertices &&
-            (@boundary_big_vertices.include?(v1) ||
-              @boundary_big_vertices.include?(w1))) ||
-          (@remaining_small_vertices &&
-            (@remaining_small_vertices.include?(@small_graph.changed_vertex(v2) ||
-              @remaining_small_vertices.include?(@small_graph.changed_vertex(w2)))))
+        opts = {
+          comparer: method(:vertex_comparer),
+          bonds_checker: method(:can_bond?)
+        }
+
+        AssocGraph.new(@big_graph, @small_graph, **opts) do |(v1, v2), (w1, w2)|
+          (bbvs && (bbvs.include?(v1) || bbvs.include?(v2))) ||
+          (rsvs &&
+            (rsvs.include?(@small_graph.changed_vertex(w1) ||
+              rsvs.include?(@small_graph.changed_vertex(w2)))))
         end
+      end
+
+      # @param [Array] atoms
+      # @return [Boolean]
+      def can_bond?(*atoms)
+        atoms.all? { |a| a.actives > 0 }
       end
 
       # Compare two vertices in different graphs for creating associated vertex
@@ -181,9 +191,11 @@ module VersatileDiamond
         # valence is not compared because could not be case when names is equal
         # and valencies is not
         return false unless v.name == w.name && v.lattice == w.lattice
-        return true if (@boundary_big_vertices &&
-          @boundary_big_vertices.include?(v)) || (@remaining_small_vertices &&
+
+        cmp = (@boundary_big_vertices && @boundary_big_vertices.include?(v)) ||
+          (@remaining_small_vertices &&
             @remaining_small_vertices.include?(g2.changed_vertex(w)))
+        return true if cmp
 
         s1, s2 = @graphs_to_specs[g1], @graphs_to_specs[g2]
         cv, cw = g1.changed_vertex(v) || v, g2.changed_vertex(w) || w
@@ -231,14 +243,10 @@ module VersatileDiamond
         big_to_small = Hash[mapped_big.zip(mapped_small)]
         small_to_big = big_to_small.invert
 
-        changed_big =
-          if @boundary_big_vertices
-            @boundary_big_vertices
-          else
+        changed_big = @boundary_big_vertices ||
             # sum order is important!
             (vertices_with_differ_edges(mapped_big, big_to_small) +
               extreme_vertices!(mapped_big)).uniq
-          end
 
         changed_small = changed_big.map { |v| big_to_small[v] }.compact
         changed_small.select! { |v| realy_changed?(small_to_big[v], v) }
@@ -272,7 +280,9 @@ module VersatileDiamond
             next if bv == bw
             sw = big_to_small[bw]
 
-            if @big_graph.edges(bv, bw) != @small_graph.edges(sv, sw)
+            big_edges = @big_graph.edges(bv, bw)
+            small_edges = @small_graph.edges(sv, sw)
+            unless lists_are_identical?(big_edges, small_edges, &:==)
               vertices << bv << bw
             end
           end

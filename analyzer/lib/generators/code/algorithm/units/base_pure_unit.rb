@@ -174,8 +174,9 @@ module VersatileDiamond
             end
             ppops = nas.map(&:properties).map(&:inspect)
             ckns = nas.map do |n|
-              ch = n.uniq_specie.spec.instance_variable_get(:@child)
-              ch && ch.spec.keyname(n.atom)
+              ds = n.uniq_specie.spec
+              ch = ds.instance_variable_get(:@child) || ds
+              ch.spec.keyname(n.atom)
             end
             pkwps = pkns.zip(spops).map { |kp| kp.join(':') }
             ckwps = ckns.zip(ppops).map { |kp| kp.join(':') }

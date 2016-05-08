@@ -58,8 +58,8 @@ module VersatileDiamond
           else
             mapping = nil
             check_balance(source, products) do |ext_src, ext_prd|
-              # there could be raised CannotMap exception which will be rescued
-              # in check balance method
+              # CannotMap exception can be raised here and then will be rescued
+              # in #check_balance method
               mapping = Mcs::AtomMapper.map(ext_src, ext_prd, names_and_specs)
 
               # if source or products need (and can) to be extended then

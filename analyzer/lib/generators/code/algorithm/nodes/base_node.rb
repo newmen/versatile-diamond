@@ -103,7 +103,9 @@ module VersatileDiamond
           end
 
           def inspect
-            "(#{uniq_specie.inspect} | #{properties})"
+            child = spec.instance_variable_get(:@child) || spec
+            keyname = child.spec.keyname(atom)
+            "(#{uniq_specie.inspect} | #{keyname}:#{properties})"
           end
 
         attr_reader
