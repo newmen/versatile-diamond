@@ -166,8 +166,7 @@ module VersatileDiamond
       end
 
       describe '#relation_between' do
-        let(:ct) { activated_bridge.atom(:ct) }
-        let(:cr) { activated_bridge.atom(:cr) }
+        let_atoms_of(:activated_bridge, [:ct, :cr])
         it { expect(activated_bridge.relation_between(ct, cr)).to eq(bond_110_cross) }
         it { expect(activated_bridge.relation_between(cr, ct)).to eq(bond_110_front) }
       end

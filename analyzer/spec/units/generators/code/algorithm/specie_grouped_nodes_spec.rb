@@ -21,9 +21,7 @@ module VersatileDiamond
 
           let(:big_links_method) { :original_links }
 
-          Support::RoleChecker::ANCHOR_KEYNAMES.each do |keyname|
-            let(keyname) { subject.spec.atom(keyname) }
-          end
+          let_atoms_of(:'subject.spec', Support::RoleChecker::ANCHOR_KEYNAMES)
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_bridge_base }

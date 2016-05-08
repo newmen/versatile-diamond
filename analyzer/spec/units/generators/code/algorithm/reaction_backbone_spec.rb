@@ -70,8 +70,7 @@ module VersatileDiamond
               let(:ab) { source.last }
               let(:amob) { source.first }
               let(:ct) { ab.atom(:ct) }
-              let(:cb) { amob.atom(:cb) }
-              let(:cm) { amob.atom(:cm) }
+              let_atoms_of(:amob, [:cb, :cm])
 
               it_behaves_like :check_finite_graph do
                 let(:target_spec) { ab }
@@ -155,10 +154,8 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
               let(:ab) { source.first }
               let(:amod) { source.last }
-              let(:br) { ab.atom(:cr) }
-              let(:bl) { ab.atom(:cl) }
-              let(:dr) { amod.atom(:cr) }
-              let(:dl) { amod.atom(:cl) }
+              let_atoms_of(:ab, [:cr, :cl], [:br, :bl])
+              let_atoms_of(:amod, [:cr, :cl], [:dr, :dl])
 
               it_behaves_like :check_finite_graph do
                 let(:target_spec) { ab }
@@ -187,10 +184,8 @@ module VersatileDiamond
               subject { dept_methyl_incorporation }
               let(:amob) { source.first }
               let(:ad) { source.last }
-              let(:am1) { amob.atom(:cr) }
-              let(:am2) { amob.atom(:cl) }
-              let(:ad1) { ad.atom(:cr) }
-              let(:ad2) { ad.atom(:cl) }
+              let_atoms_of(:amob, [:cr, :cl], [:am1, :am2])
+              let_atoms_of(:ad, [:cr, :cl], [:ad1, :ad2])
 
               it_behaves_like :check_finite_graph do
                 let(:target_spec) { amob }
@@ -205,8 +200,7 @@ module VersatileDiamond
                 let(:base_specs) { [dept_bridge_base] }
                 let(:specific_specs) { [dept_extra_activated_methyl_on_bridge] }
                 let(:target_spec) { ad }
-                let(:amb) { amob.atom(:cb) }
-                let(:amm) { amob.atom(:cm) }
+                let_atoms_of(:amob, [:cb, :cm], [:amb, :amm])
                 let(:final_graph) do
                   {
                     [ad2, ad1] => [[[am1, am2], param_100_cross]],
@@ -222,8 +216,7 @@ module VersatileDiamond
               let(:eamob) { source.first }
               let(:rab) { source[1] }
               let(:aid) { source[2] }
-              let(:mr) { eamob.atom(:cr) }
-              let(:ml) { eamob.atom(:cl) }
+              let_atoms_of(:eamob, [:cr, :cl], [:mr, :ml])
               let(:ba) { rab.atom(:cr) }
               let(:da) { aid.atom(:cl) }
 
@@ -238,8 +231,7 @@ module VersatileDiamond
 
               describe 'from activated gap' do
                 let(:specific_specs) { [dept_extra_activated_methyl_on_bridge] }
-                let(:mb) { eamob.atom(:cb) }
-                let(:mm) { eamob.atom(:cm) }
+                let_atoms_of(:eamob, [:cb, :cm], [:mb, :mm])
 
                 it_behaves_like :check_finite_graph do
                   let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
@@ -421,8 +413,7 @@ module VersatileDiamond
               let(:ab) { source.last }
               let(:amob) { source.first }
               let(:ct) { ab.atom(:ct) }
-              let(:cb) { amob.atom(:cb) }
-              let(:cm) { amob.atom(:cm) }
+              let_atoms_of(:amob, [:cb, :cm])
 
               it_behaves_like :check_ordered_graph do
                 let(:target_spec) { ab }
@@ -503,10 +494,8 @@ module VersatileDiamond
               subject { dept_intermed_migr_dh_formation }
               let(:ab) { source.first }
               let(:amod) { source.last }
-              let(:br) { ab.atom(:cr) }
-              let(:bl) { ab.atom(:cl) }
-              let(:dr) { amod.atom(:cr) }
-              let(:dl) { amod.atom(:cl) }
+              let_atoms_of(:ab, [:cr, :cl], [:br, :bl])
+              let_atoms_of(:amod, [:cr, :cl], [:dr, :dl])
 
               it_behaves_like :check_ordered_graph do
                 let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
@@ -539,10 +528,8 @@ module VersatileDiamond
               subject { dept_methyl_incorporation }
               let(:amob) { source.first }
               let(:ad) { source.last }
-              let(:am1) { amob.atom(:cr) }
-              let(:am2) { amob.atom(:cl) }
-              let(:ad1) { ad.atom(:cr) }
-              let(:ad2) { ad.atom(:cl) }
+              let_atoms_of(:amob, [:cr, :cl], [:am1, :am2])
+              let_atoms_of(:ad, [:cr, :cl], [:ad1, :ad2])
 
               it_behaves_like :check_ordered_graph do
                 let(:base_specs) do
@@ -560,8 +547,7 @@ module VersatileDiamond
                 let(:base_specs) { [dept_bridge_base] }
                 let(:specific_specs) { [dept_activated_methyl_on_bridge] }
                 let(:target_spec) { ad }
-                let(:amb) { amob.atom(:cb) }
-                let(:amm) { amob.atom(:cm) }
+                let_atoms_of(:amob, [:cb, :cm], [:amb, :amm])
                 let(:ordered_graph) do
                   [
                     [[ad2, ad1], [[[am1, am2], param_100_cross]]],
@@ -581,8 +567,7 @@ module VersatileDiamond
               let(:amob) { subject.source.first }
               let(:br1) { subject.source[1] }
               let(:br2) { subject.source[2] }
-              let(:amr) { amob.atom(:cr) }
-              let(:aml) { amob.atom(:cl) }
+              let_atoms_of(:amob, [:cr, :cl], [:amr, :aml])
               let(:cr1) { br1.atom(:cr) }
               let(:cr2) { br2.atom(:cr) }
 
@@ -599,8 +584,7 @@ module VersatileDiamond
               it_behaves_like :check_ordered_graph do
                 let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
                 let(:target_spec) { br1 }
-                let(:amb) { amob.atom(:cb) }
-                let(:amm) { amob.atom(:cm) }
+                let_atoms_of(:amob, [:cb, :cm], [:amb, :amm])
                 let(:ordered_graph) do
                   [
                     [[cr1], [[[cr2], param_100_front]]],
@@ -617,8 +601,7 @@ module VersatileDiamond
               let(:eamob) { source.first }
               let(:rab) { source[1] }
               let(:aid) { source[2] }
-              let(:mr) { eamob.atom(:cr) }
-              let(:ml) { eamob.atom(:cl) }
+              let_atoms_of(:eamob, [:cr, :cl], [:mr, :ml])
               let(:ba) { rab.atom(:cr) }
               let(:da) { aid.atom(:cl) }
 
@@ -633,8 +616,7 @@ module VersatileDiamond
 
               describe 'from activated gap' do
                 let(:specific_specs) { [dept_extra_activated_methyl_on_bridge] }
-                let(:mb) { eamob.atom(:cb) }
-                let(:mm) { eamob.atom(:cm) }
+                let_atoms_of(:eamob, [:cb, :cm], [:mb, :mm])
 
                 it_behaves_like :check_ordered_graph do
                   let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
@@ -677,10 +659,8 @@ module VersatileDiamond
               let(:specific_specs) { [amob, adimod, dept_activated_dimer] }
               let(:amob) { source.first }
               let(:adimod) { source.last }
-              let(:br) { amob.atom(:cr) }
-              let(:bl) { amob.atom(:cl) }
-              let(:dr) { adimod.atom(:cr) }
-              let(:dl) { adimod.atom(:cl) }
+              let_atoms_of(:amob, [:cr, :cl], [:br, :bl])
+              let_atoms_of(:adimod, [:cr, :cl], [:dr, :dl])
 
               it_behaves_like :check_ordered_graph do
                 let(:target_spec) { amob }
@@ -694,8 +674,7 @@ module VersatileDiamond
 
               it_behaves_like :check_ordered_graph do
                 let(:target_spec) { adimod }
-                let(:bt) { amob.atom(:cb) }
-                let(:bm) { amob.atom(:cm) }
+                let_atoms_of(:amob, [:cb, :cm], [:bt, :bm])
                 let(:ordered_graph) do
                   [
                     [[dr, dl], [[[bl, br], param_100_cross]]],

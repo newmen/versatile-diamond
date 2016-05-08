@@ -119,9 +119,7 @@ module VersatileDiamond
           subject { dept_dimer_base }
           let(:bases) { [dept_bridge_base, subject] }
 
-          [:cl, :cr, :crb, :_cr0, :clb, :_cr1].each do |keyname|
-            let(keyname) { dimer_base.atom(keyname) }
-          end
+          let_atoms_of(:dimer_base, [:cl, :cr, :crb, :_cr0, :clb, :_cr1])
 
           it_behaves_like :check_symmetry do
             let(:specifics) { [dept_twise_incoherent_dimer] }
@@ -219,8 +217,7 @@ module VersatileDiamond
               end
               let(:symmetric_keynames) { [:_cr1, :clb] }
 
-              let(:clb) { activated_dimer.atom(:clb) }
-              let(:_cr1) { activated_dimer.atom(:_cr1) }
+              let_atoms_of(:activated_dimer, [:clb, :_cr1])
               it { expect(detector.symmetric_atoms(clb)).to match_array([clb, _cr1]) }
               it { expect(detector.symmetric_atoms(_cr1)).to match_array([clb, _cr1]) }
             end
@@ -252,10 +249,9 @@ module VersatileDiamond
             ['ParentsSwapWrapper<EmptySpecific<CROSS_BRIDGE_ON_BRIDGES>, ' \
               'OriginalCrossBridgeOnBridges, 0, 1>']
           end
-
           let(:symmetric_keynames) { [:ctl, :ctr] }
-          let(:ctl) { cross_bridge_on_bridges_base.atom(:ctl) }
-          let(:ctr) { cross_bridge_on_bridges_base.atom(:ctr) }
+
+          let_atoms_of(:cross_bridge_on_bridges_base, [:ctl, :ctr])
           it { expect(detector.symmetric_atoms(ctr)).to match_array([ctr, ctl]) }
           it { expect(detector.symmetric_atoms(ctl)).to match_array([ctr, ctl]) }
         end
@@ -276,10 +272,9 @@ module VersatileDiamond
             ['ParentsSwapWrapper<EmptyBase<CROSS_BRIDGE_ON_BRIDGES>, ' \
               'OriginalCrossBridgeOnBridges, 0, 1>']
           end
-
           let(:symmetric_keynames) { [:ctl, :ctr] }
-          let(:ctl) { cross_bridge_on_bridges_base.atom(:ctl) }
-          let(:ctr) { cross_bridge_on_bridges_base.atom(:ctr) }
+
+          let_atoms_of(:cross_bridge_on_bridges_base, [:ctl, :ctr])
           it { expect(detector.symmetric_atoms(ctr)).to match_array([ctr, ctl]) }
           it { expect(detector.symmetric_atoms(ctl)).to match_array([ctr, ctl]) }
         end
@@ -294,10 +289,9 @@ module VersatileDiamond
           let(:symmetry_classes) do
             ['AtomsSwapWrapper<EmptyBase<TOP_METHYL_ON_HALF_EXTENDED_BRIDGE>, 1, 2>']
           end
-
           let(:symmetric_keynames) { [:cbl, :cbr] }
-          let(:cbl) { top_methyl_on_half_extended_bridge_base.atom(:cbl) }
-          let(:cbr) { top_methyl_on_half_extended_bridge_base.atom(:cbr) }
+
+          let_atoms_of(:top_methyl_on_half_extended_bridge_base, [:cbl, :cbr])
           it { expect(detector.symmetric_atoms(cbr)).to match_array([cbr, cbl]) }
           it { expect(detector.symmetric_atoms(cbl)).to match_array([cbr, cbl]) }
         end

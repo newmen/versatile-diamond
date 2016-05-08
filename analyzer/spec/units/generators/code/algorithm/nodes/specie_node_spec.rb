@@ -20,8 +20,7 @@ module VersatileDiamond
           let(:code_mob) { generator.specie_class(dept_mob.name) }
           let(:dept_mob) { dept_methyl_on_bridge_base }
 
-          [:cm, :cb, :cr].each do |keyname|
-            let(keyname) { dept_mob.spec.atom(keyname) }
+          let_atoms_of(:'dept_mob.spec', [:cm, :cb, :cr]) do |keyname|
             let(:"node_#{keyname}") { factory_mob.get_node(send(keyname)) }
           end
 
@@ -178,8 +177,7 @@ module VersatileDiamond
               end
               let(:code_rab) { generator.specie_class(right_hydrogenated_bridge.name) }
 
-              let(:cr) { right_hydrogenated_bridge.atom(:cr) }
-              let(:cl) { right_hydrogenated_bridge.atom(:cl) }
+              let_atoms_of(:right_hydrogenated_bridge, [:cr, :cl])
               let(:node_cr) { factory_rab.get_node(cr) }
 
               it { expect(node_cr.symmetric_atoms).to match_array([cl, cr]) }

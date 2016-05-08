@@ -35,9 +35,7 @@ module VersatileDiamond
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_sierpinski_drop }
-            let(:a1) { source.first.atom(:ctl) }
-            let(:a2) { source.first.atom(:cm) }
-            let(:a3) { source.first.atom(:ctr) }
+            let_atoms_of(:'source.first', [:ctl, :cm, :ctr], [:a1, :a2, :a3])
 
             let(:flatten_face_grouped_atoms) { [[a1, a2, a3]] }
             let(:nodes_list) do
@@ -77,8 +75,7 @@ module VersatileDiamond
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_incoherent_dimer_drop }
             let(:id) { source.first }
-            let(:cr) { id.atom(:cr) }
-            let(:cl) { id.atom(:cl) }
+            let_atoms_of(:id, [:cr, :cl])
 
             let(:flatten_face_grouped_atoms) { [[cr, cl]] }
             let(:nodes_list) do
@@ -140,10 +137,8 @@ module VersatileDiamond
             subject { dept_intermed_migr_dh_formation }
             let(:abr) { source.first }
             let(:amod) { source.last }
-            let(:ab) { abr.atom(:cr) }
-            let(:ob) { abr.atom(:cl) }
-            let(:ad) { amod.atom(:cr) }
-            let(:od) { amod.atom(:cl) }
+            let_atoms_of(:abr, [:cr, :cl], [:ab, :ob])
+            let_atoms_of(:amod, [:cr, :cl], [:ad, :od])
 
             let(:flatten_face_grouped_atoms) { [[ad, od], [ab, ob]] }
             let(:nodes_list) do
@@ -166,10 +161,8 @@ module VersatileDiamond
             subject { dept_methyl_incorporation }
             let(:amob) { source.first }
             let(:ad) { source.last }
-            let(:am1) { amob.atom(:cr) }
-            let(:am2) { amob.atom(:cl) }
-            let(:ad1) { ad.atom(:cr) }
-            let(:ad2) { ad.atom(:cl) }
+            let_atoms_of(:amob, [:cr, :cl], [:am1, :am2])
+            let_atoms_of(:ad, [:cr, :cl], [:ad1, :ad2])
 
             let(:flatten_face_grouped_atoms) { [[am1, am2], [ad1, ad2]] }
             let(:nodes_list) do
@@ -193,8 +186,7 @@ module VersatileDiamond
             let(:amob) { source.first }
             let(:br1) { source[1] }
             let(:br2) { source[2] }
-            let(:amr) { amob.atom(:cr) }
-            let(:aml) { amob.atom(:cl) }
+            let_atoms_of(:amob, [:cr, :cl], [:amr, :aml])
             let(:cr1) { br1.atom(:cr) }
             let(:cr2) { br2.atom(:cr) }
 
@@ -222,8 +214,7 @@ module VersatileDiamond
             let(:eamob) { source.first }
             let(:rab) { source[1] }
             let(:aid) { source[2] }
-            let(:mr) { eamob.atom(:cr) }
-            let(:ml) { eamob.atom(:cl) }
+            let_atoms_of(:eamob, [:cr, :cl], [:mr, :ml])
             let(:ba) { rab.atom(:cr) }
             let(:da) { aid.atom(:cl) }
 

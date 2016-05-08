@@ -8,9 +8,7 @@ module VersatileDiamond
         subject { dept_bridge_base }
         let(:bigger) { dept_methyl_on_bridge_base }
 
-        [:ct, :cr, :cl].each do |kn|
-          let(kn) { bridge_base.atom(kn) }
-        end
+        let_atoms_of(:bridge_base, [:ct, :cr, :cl])
 
         let(:atom) { cr }
         let(:atom_relations) do
@@ -28,9 +26,10 @@ module VersatileDiamond
 
       it_behaves_like :check_clean_links do
         subject { dept_intermed_migr_down_full_base }
-        [:cm, :cb, :cbl, :cbr, :cdl, :cdr, :crb, :clb, :_cr0, :_cr1].each do |kn|
-          let(kn) { intermed_migr_down_full_base.atom(kn) }
-        end
+
+        let_atoms_of(:intermed_migr_down_full_base, [
+          :cm, :cb, :cbl, :cbr, :cdl, :cdr, :crb, :clb, :_cr0, :_cr1
+        ])
 
         let(:clean_links) do
           {

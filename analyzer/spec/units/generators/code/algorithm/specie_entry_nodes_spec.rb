@@ -20,9 +20,7 @@ module VersatileDiamond
           let(:backbone) { SpecieBackbone.new(generator, specie) }
           let(:entry_nodes) { described_class.new(backbone.final_graph).list }
 
-          Support::RoleChecker::ANCHOR_KEYNAMES.each do |keyname|
-            let(keyname) { subject.spec.atom(keyname) }
-          end
+          let_atoms_of(:'subject.spec', Support::RoleChecker::ANCHOR_KEYNAMES)
 
           it_behaves_like :check_entry_nodes do
             subject { dept_bridge_base }

@@ -111,9 +111,7 @@ module VersatileDiamond
               end
               let(:dept_uniq_specie) { dept_intermed_migr_down_common_base }
 
-              [:cbl, :cbr, :cdl, :cdr].each do |keyname|
-                let(keyname) { dept_uniq_specie.spec.atom(keyname) }
-              end
+              let_atoms_of(:'dept_uniq_specie.spec', [:cbl, :cbr, :cdl, :cdr])
             end
 
             shared_context :alt_intermed_context do

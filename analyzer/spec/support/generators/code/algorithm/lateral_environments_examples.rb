@@ -28,8 +28,7 @@ module VersatileDiamond
               let(:t2) { target_specs.last.atom(:ct) }
 
               let(:lateral_dimer) { sidepiece_spec_by_name(:dimer) }
-              let(:d1) { lateral_dimer.atom(:cr) }
-              let(:d2) { lateral_dimer.atom(:cl) }
+              let_atoms_of(:lateral_dimer, [:cr, :cl], [:d1, :d2])
 
               let(:lateral_bridge) { (sidepiece_specs - [lateral_dimer]).first }
               let(:b) { lateral_bridge.atom(:ct) }
@@ -64,8 +63,7 @@ module VersatileDiamond
 
               let(:edge_dimer) { sidepiece_specs.first }
 
-              let(:dm) { edge_dimer.atom(:cl) }
-              let(:dd) { edge_dimer.atom(:cr) }
+              let_atoms_of(:edge_dimer, [:cl, :cr], [:dm, :dd])
             end
           end
 

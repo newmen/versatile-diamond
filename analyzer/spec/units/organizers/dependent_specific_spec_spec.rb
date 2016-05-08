@@ -8,9 +8,7 @@ module VersatileDiamond
         subject { dept_activated_methyl_on_bridge }
         let(:bigger) { dept_activated_methyl_on_incoherent_bridge }
 
-        [:cm, :cb, :cr, :cl].each do |kn|
-          let(kn) { activated_methyl_on_bridge.atom(kn) }
-        end
+        let_atoms_of(:activated_methyl_on_bridge, [:cm, :cb, :cr, :cl])
 
         let(:atom) { cm }
         let(:atom_relations) { [free_bond, active_bond] }

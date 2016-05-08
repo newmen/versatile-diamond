@@ -47,9 +47,7 @@ module VersatileDiamond
             not_to raise_error }
 
           describe 'duplicate position' do
-            [:cr, :cl].each do |keyname|
-              let(keyname) { bridge_base.atom(keyname) }
-            end
+            let_atoms_of(:bridge_base, [:cr, :cl])
             it { expect { bridge_base.link(cl, cr, position_100_front) }.
               to raise_error position_duplicate }
           end

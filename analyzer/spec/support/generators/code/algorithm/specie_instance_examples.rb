@@ -31,9 +31,7 @@ module VersatileDiamond
               let(:base_specs) { [dept_none_specie] }
               let(:dept_none_specie) { dept_bridge_base }
 
-              [:ct, :cr, :cl].each do |keyname|
-                let(keyname) { dept_none_specie.spec.atom(keyname) }
-              end
+              let_atoms_of(:'dept_none_specie.spec', [:ct, :cr, :cl])
             end
 
             shared_context :raw_unique_parent_context do
@@ -45,9 +43,9 @@ module VersatileDiamond
                 Instances::UniqueParent.new(generator, dept_uniq_parent)
               end
 
-              [:cm, :cb, :cr, :cl, :ct, :ctr, :ctl, :cbr, :cc].each do |keyname|
-                let(keyname) { dept_uniq_specie.spec.atom(keyname) }
-              end
+              let_atoms_of(:'dept_uniq_specie.spec', [
+                :cm, :cb, :cr, :cl, :ct, :ctr, :ctl, :cbr, :cc
+              ])
             end
 
             shared_context :unique_parent_context do
@@ -69,9 +67,7 @@ module VersatileDiamond
                 Instances::UniqueReactant.new(generator, vl_unique_reactant)
               end
 
-              [:cm, :cb, :cr, :cl, :ct].each do |keyname|
-                let(keyname) { vl_unique_reactant.atom(keyname) }
-              end
+              let_atoms_of(:'dept_none_specie.spec', [:cm, :cb, :ct, :cr, :cl])
             end
 
             shared_context :unique_reactant_context do

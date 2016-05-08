@@ -41,8 +41,8 @@ module VersatileDiamond
           end
 
           describe '#build' do
-            Support::RoleChecker::ANCHOR_KEYNAMES.each do |keyname|
-              let(keyname) { first_spec.spec.atom(keyname) }
+            USING_KEYNAMES = Support::RoleChecker::ANCHOR_KEYNAMES
+            let_atoms_of(:'first_spec.spec', USING_KEYNAMES) do |keyname|
               let(:"role_#{keyname}") { role(first_spec, keyname) }
               let(:"snd_role_#{keyname}") { role(second_spec, keyname) }
             end

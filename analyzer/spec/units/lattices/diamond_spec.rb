@@ -65,8 +65,7 @@ describe Diamond do
 
       describe 'in three bridges' do
         let(:links) { three_bridges_base.links }
-        let(:a1) { three_bridges_base.atom(:cc) }
-        let(:a2) { three_bridges_base.atom(:ct) }
+        let_atoms_of(:three_bridges_base, [:cc, :ct], [:a1, :a2])
 
         it { expect(diamond.positions_between(a1, a2, links)).to match_array(poss) }
         it { expect(diamond.positions_between(a2, a1, links)).to match_array(poss) }

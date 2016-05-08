@@ -15,9 +15,7 @@ module VersatileDiamond
         end
         let(:bigger) { dept_methyl_on_dimer_base - dept_dimer_base }
 
-        [:cm, :cr, :crb, :_cr0, :cl, :clb, :_cr1].each do |kn|
-          let(kn) { methyl_on_dimer_base.atom(kn) }
-        end
+        let_atoms_of(:methyl_on_dimer_base, [:cm, :cr, :crb, :_cr0, :cl, :clb, :_cr1])
 
         let(:atom) { cr }
         let(:atom_relations) do

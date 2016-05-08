@@ -19,9 +19,8 @@ module VersatileDiamond
         let(:essence) { specie.essence }
 
         describe '#cut_links' do
-          Algorithm::Support::RoleChecker::ANCHOR_KEYNAMES.each do |keyname|
-            let(keyname) { subject.spec.atom(keyname) }
-          end
+          USING_KEYNAMES = Algorithm::Support::RoleChecker::ANCHOR_KEYNAMES
+          let_atoms_of(:'subject.spec', USING_KEYNAMES)
 
           shared_examples_for :check_cut_links do
             # each method should not change the state of essence

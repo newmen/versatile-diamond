@@ -16,6 +16,7 @@ RSpec::Expectations.configuration.warn_about_potential_false_positives = false
 RSpec.configure do |config|
   VD = VersatileDiamond
 
+  config.extend VD::Support::DefineAtomsHelper
   config.include VD::Support::Matchers
 
   config.include VD::Concepts::Support::Handbook

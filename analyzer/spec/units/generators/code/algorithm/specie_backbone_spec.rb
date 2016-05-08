@@ -19,9 +19,7 @@ module VersatileDiamond
           let(:specie) { generator.specie_class(subject.name) }
           let(:backbone) { described_class.new(generator, specie) }
 
-          Support::RoleChecker::ANCHOR_KEYNAMES.each do |keyname|
-            let(keyname) { subject.spec.atom(keyname) }
-          end
+          let_atoms_of(:'subject.spec', Support::RoleChecker::ANCHOR_KEYNAMES)
 
           describe '#final_graph' do
             it_behaves_like :check_finite_graph do
