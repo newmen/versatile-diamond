@@ -13,11 +13,11 @@ module VersatileDiamond
           before(:each) { subject } # do atom mapping
 
           it 'map and associate all' do
-            expect(mapping_result.full).to match_array(full)
+            expect(mapping_result.full).to match_multidim_array(full)
           end
 
           it 'map and associate changed' do
-            expect(mapping_result.changes).to match_array(changed)
+            expect(mapping_result.changes).to match_multidim_array(changed)
           end
         end
       end

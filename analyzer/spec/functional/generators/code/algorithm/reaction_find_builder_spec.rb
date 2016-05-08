@@ -472,7 +472,7 @@ module VersatileDiamond
               let(:base_specs) do
                 [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
               end
-              subject { dept_two_dimers_form }
+              subject { dept_two_side_dimers_formation }
 
               it_behaves_like :check_code do
                 let(:target_spec) { dept_right_activated_bridge }
@@ -500,7 +500,7 @@ module VersatileDiamond
                                     if (specie3->atom(2) == neighbours1[1] && specie3->atom(3) == neighbours1[0])
                                     {
                                         SpecificSpec *targets[3] = { specie1, specie3, target };
-                                        create<ForwardTwoDimersForm>(targets);
+                                        create<ForwardTwoSideDimersForm>(targets);
                                     }
                                 }
                             });

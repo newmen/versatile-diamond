@@ -212,7 +212,7 @@ module VersatileDiamond
             end
 
             describe 'two level dimers in all directions' do
-              subject { dept_two_dimers_form }
+              subject { dept_two_side_dimers_formation }
               let(:eamob) { source.first }
               let(:rab) { source[1] }
               let(:aid) { source[2] }
@@ -360,7 +360,7 @@ module VersatileDiamond
             end
 
             describe 'two level dimers in all directions' do
-              subject { dept_two_dimers_form }
+              subject { dept_two_side_dimers_formation }
               let(:eamob) { source.first }
               let(:rab) { source[1] }
               let(:aid) { source[2] }
@@ -597,7 +597,7 @@ module VersatileDiamond
             end
 
             describe 'two level dimers in all directions' do
-              subject { dept_two_dimers_form }
+              subject { dept_two_side_dimers_formation }
               let(:eamob) { source.first }
               let(:rab) { source[1] }
               let(:aid) { source[2] }

@@ -210,7 +210,7 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_grouped_nodes_graph do
-            subject { dept_two_dimers_form }
+            subject { dept_two_side_dimers_formation }
             let(:eamob) { source.first }
             let(:rab) { source[1] }
             let(:aid) { source[2] }

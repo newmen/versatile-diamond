@@ -266,6 +266,51 @@ module VersatileDiamond
 
             it_behaves_like :check_mapping_result
           end
+
+          describe 'next level dimer formation over activated dimer' do
+            let(:ab) { activated_bridge }
+            let(:ead_n_eamob) { ea_dimer_near_ea_mob }
+            let(:tl_bot_ad) { two_next_level_dimers_with_bottom_activated }
+
+            let(:source) { [ab, ead_n_eamob] }
+            let(:products) { [tl_bot_ad] }
+
+            let(:changed) do
+              [
+                [[ab, tl_bot_ad], [
+                  [ab.atom(:ct), tl_bot_ad.atom(:cbt)]
+                ]],
+                [[ead_n_eamob, tl_bot_ad], [
+                  [ead_n_eamob.atom(:cm), tl_bot_ad.atom(:ctr)],
+                  [ead_n_eamob.atom(:ctl), tl_bot_ad.atom(:ctl)],
+                  [ead_n_eamob.atom(:cdd), tl_bot_ad.atom(:cdd)]
+                ]]
+              ]
+            end
+            let(:full) do
+              [
+                [[ab, tl_bot_ad], [
+                  [ab.atom(:ct), tl_bot_ad.atom(:cbt)],
+                  [ab.atom(:cr), tl_bot_ad.atom(:clr)],
+                  [ab.atom(:cl), tl_bot_ad.atom(:cll)]
+                ]],
+                [[ead_n_eamob, tl_bot_ad], [
+                  [ead_n_eamob.atom(:cm), tl_bot_ad.atom(:ctr)],
+                  [ead_n_eamob.atom(:ctl), tl_bot_ad.atom(:ctl)],
+                  [ead_n_eamob.atom(:cmr), tl_bot_ad.atom(:cmr)],
+                  [ead_n_eamob.atom(:cml), tl_bot_ad.atom(:cml)],
+                  [ead_n_eamob.atom(:cdd), tl_bot_ad.atom(:cdd)],
+                  [ead_n_eamob.atom(:cdr), tl_bot_ad.atom(:cdr)],
+                  [ead_n_eamob.atom(:clb), tl_bot_ad.atom(:clb)],
+                  [ead_n_eamob.atom(:_cr1), tl_bot_ad.atom(:_cr1)],
+                  [ead_n_eamob.atom(:crb), tl_bot_ad.atom(:crb)],
+                  [ead_n_eamob.atom(:_cr0), tl_bot_ad.atom(:_cr0)]
+                ]]
+              ]
+            end
+
+            it_behaves_like :check_mapping_result
+          end
         end
       end
     end

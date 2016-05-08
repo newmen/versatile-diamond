@@ -168,14 +168,13 @@ module VersatileDiamond
 
       RSpec::Matchers.define :match_multidim_array do |expected|
         match do |actual|
-          lists_are_identical?(actual, expected) do |a, b|
-            lists_are_identical?(a, b, &:==)
-          end
+          lists_are_identical?(actual, expected, &method(:deep_identical?))
         end
 
         failure_message do |actual|
           "expected that\n#{multidim_array_to_s(actual)}\n" \
-            "should be like\n#{multidim_array_to_s(expected)}"
+            "should be like\n#{multidim_array_to_s(expected)}\n" \
+            "difference\n#{difference(actual, expected)}"
         end
 
         # Transforms matrix to string
@@ -185,6 +184,40 @@ module VersatileDiamond
           lines = matrix.map { |values| "    #{values.inspect}" }
           content = lines.join("\n")
           "[\n#{content}\n]"
+        end
+
+        # @param [Array] instances
+        # @return [Array]
+        def difference(actual, expected)
+          cutten_expected = expected.dup
+          cutten_actual = actual.reject do |ai|
+            same = cutten_expected.find { |ei| deep_identical?(ai, ei) }
+            cutten_expected.delete_one(same) if same
+          end
+          prechars(:+, cutten_actual) + prechars(:-, cutten_expected)
+        end
+
+        # @param [Symbol] sym
+        # @param [Object] instance
+        # @return [String]
+        def prechars(sym, instance)
+          "  #{sym} #{instance.inspect}\n"
+        end
+
+        # @param [Array] items
+        # @return [Boolean]
+        def deep_identical?(*items)
+          if arrays?(items)
+            lists_are_identical?(*items, &method(:deep_identical?))
+          else
+            items.uniq.one?
+          end
+        end
+
+        # @param [Array] items
+        # @return [Boolean]
+        def arrays?(items)
+          items.map(&:class).uniq == [Array]
         end
       end
 
