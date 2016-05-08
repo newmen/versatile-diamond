@@ -41,12 +41,6 @@ module VersatileDiamond
           def make_creator_unit(factory)
             factory.creator(@reaction)
           end
-
-          # @param [Units::ContextReactionUnit] _
-          # @return [Array]
-          def init_procs(_)
-            []
-          end
         end
 
       end

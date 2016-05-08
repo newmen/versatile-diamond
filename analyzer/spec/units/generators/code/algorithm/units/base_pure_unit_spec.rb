@@ -81,18 +81,6 @@ module VersatileDiamond
             it { expect(subject.symmetric_atoms).to match_array([cl, cr]) }
           end
 
-          describe '#nodes_with_atoms' do
-            include_context :two_mobs_context
-            it { expect(subject.nodes_with_atoms([cm])).to eq(unit_nodes) }
-            it { expect(subject.nodes_with_atoms([ctr])).to be_empty } # fake
-          end
-
-          describe '#nodes_with_species' do
-            include_context :two_mobs_context
-            let(:nodes) { subject.nodes_with_species([node_specie]) }
-            it { expect(nodes).to eq([unit_nodes.first]) }
-          end
-
           describe '#complete_inner_units' do
             describe 'mono unit' do
               include_context :rab_context

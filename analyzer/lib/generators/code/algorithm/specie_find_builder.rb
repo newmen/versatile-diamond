@@ -38,18 +38,6 @@ module VersatileDiamond
           def make_creator_unit(factory)
             factory.creator(@specie)
           end
-
-          # @param [Units::ContextSpecieUnit] source_unit
-          # @return [Array]
-          def init_procs(source_unit)
-            [check_atoms_proc(source_unit)]
-          end
-
-          # @param [Units::ContextSpecieUnit] unit
-          # @return [Proc]
-          def check_atoms_proc(source_unit)
-            -> &block { source_unit.check_existence(&block) }
-          end
         end
 
       end

@@ -23,8 +23,6 @@ module VersatileDiamond
             @pure_factory = pure_factory
             @context = context
             @unit = unit
-
-            @_is_partially_symmetric = nil
           end
 
           # @yield incorporating statement
@@ -465,15 +463,8 @@ module VersatileDiamond
 
           # @return [Boolean]
           def symmetric?
-binding.pry
-            unit.fully_symmetric? || partially_symmetric? || asymmetric_related_atoms?
-          end
-
-          # @return [Boolean]
-          def partially_symmetric?
-            return @_is_partially_symmetric unless @_is_partially_symmetric.nil?
-            @_is_partially_symmetric = unit.partially_symmetric? &&
-              context.symmetric_relations?(unit.nodes_with_atoms(symmetric_atoms))
+            unit.fully_symmetric? || unit.partially_symmetric? ||
+              asymmetric_related_atoms?
           end
 
           # @param [Array] ca_nodes

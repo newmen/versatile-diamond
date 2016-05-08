@@ -51,19 +51,6 @@ module VersatileDiamond
             @_symmetric_atoms ||= nodes.flat_map(&:symmetric_atoms).uniq
           end
 
-          # @param [Array] atoms
-          # @return [Array]
-          def nodes_with_atoms(atoms)
-            nodes.select { |node| atoms.include?(node.atom) }
-          end
-
-          # Must be private (just as #nodes_with_atoms)
-          # @param [Array] species
-          # @return [Array]
-          def nodes_with_species(species)
-            nodes.select { |node| species.include?(node.uniq_specie) }
-          end
-
           # @return [Array]
           def complete_inner_units
             filled_inner_units.flat_map(&method(:split_on_compliance)).sort
@@ -210,6 +197,18 @@ module VersatileDiamond
           # @return [Array]
           def uniq_from_nodes(method_name)
             nodes.map(&method_name).uniq
+          end
+
+          # @param [Array] atoms
+          # @return [Array]
+          def nodes_with_atoms(atoms)
+            nodes.select { |node| atoms.include?(node.atom) }
+          end
+
+          # @param [Array] species
+          # @return [Array]
+          def nodes_with_species(species)
+            nodes.select { |node| species.include?(node.uniq_specie) }
           end
 
           # @param [BasePureUnit] inner_unit
