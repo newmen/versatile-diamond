@@ -25,9 +25,10 @@ module VersatileDiamond
             !all_defined?(species)
           end
 
+          # @param [BasePureUnit] unit
           # @return [Boolean]
           def neighbour?(unit)
-            species.select(&unit.species.public_method(:include?)).empty?
+            anchored_species.select(&unit.species.public_method(:include?)).empty?
           end
 
           def inspect

@@ -55,9 +55,9 @@ module VersatileDiamond
             end
           end
 
-          describe '#reachable_bone_nodes_after' do
+          describe '#many_times_reachable_nodes' do
             include_context :sierpinski_formation_context
-            let(:nodes) { subject.reachable_bone_nodes_after(nbr_nodes) }
+            let(:nodes) { subject.many_times_reachable_nodes(nbr_nodes) }
             it { expect(nodes).to match_array(nbr_nodes + amorph_nodes) }
           end
 

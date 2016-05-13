@@ -35,7 +35,7 @@ module VersatileDiamond
 
           # @param [Array] cutting_nodes
           # @return [Array]
-          def reachable_bone_nodes_after(cutting_nodes)
+          def many_times_reachable_nodes(cutting_nodes)
             cutten_backbone = cut_backbone_from(cutting_nodes)
             species_nodes(cutting_nodes.map(&:uniq_specie)).select do |node|
               cutten_backbone.any? { |key_rels| slice(*key_rels).include?(node) }

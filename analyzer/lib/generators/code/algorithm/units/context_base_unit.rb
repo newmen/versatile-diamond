@@ -190,7 +190,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_new_atoms(&block)
-            reachable_nodes = context.reachable_bone_nodes_after(nodes)
+            reachable_nodes = context.many_times_reachable_nodes(nodes)
             if !reachable_nodes.empty? && atoms_comparison_required?(reachable_nodes)
               check_not_existed_previous_atoms(reachable_nodes) do
                 check_existed_previous_atoms(reachable_nodes, &block)

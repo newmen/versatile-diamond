@@ -81,15 +81,15 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_methyl_on_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchor = target->atom(0);
-    eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour1) {
+    Atom *atom1 = target->atom(0);
+    eachNeighbour(atom1, &Diamond::cross_100, [&target](Atom *neighbour1) {
         if (neighbour1->is(#{other_role_cb}))
         {
-            neighbour1->eachAmorphNeighbour([&](Atom *amorph1) {
+            neighbour1->eachAmorphNeighbour([&target](Atom *amorph1) {
                 if (amorph1->is(#{other_role_cm}))
                 {
-                    MethylOnBridgeCMs *specie1 = amorph1->specByRole<MethylOnBridgeCMs>(#{other_role_cm});
-                    SpecificSpec *targets[2] = { specie1, target };
+                    MethylOnBridgeCMs *methylOnBridgeCMs1 = amorph1->specByRole<MethylOnBridgeCMs>(#{other_role_cm});
+                    SpecificSpec *targets[2] = { methylOnBridgeCMs1, target };
                     create<ReverseSierpinskiDrop>(targets);
                 }
             });

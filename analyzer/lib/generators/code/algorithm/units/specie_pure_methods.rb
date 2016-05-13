@@ -22,6 +22,7 @@ module VersatileDiamond
             !(species.all?(&:none?) || all_defined?(anchored_species))
           end
 
+          # @param [BasePureUnit] unit
           # @return [Boolean]
           def neighbour?(unit)
             selector_proc = unit.species.public_method(:include?)
