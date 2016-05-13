@@ -7,7 +7,7 @@ module VersatileDiamond
 
         # Decorates unit for bulding code on context
         # @abstract
-        class BaseContextUnit < GenerableUnit
+        class ContextBaseUnit < GenerableUnit
           include Modules::ProcsReducer
           include Modules::ListsComparer
           extend Forwardable
@@ -36,11 +36,11 @@ module VersatileDiamond
             end
           end
 
-          # @param [BaseContextUnit] nbr
+          # @param [ContextBaseUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_relations_with(nbr, &block)
-            if unit.neighbour?(nbr)
+            if unit.neighbour?(nbr.unit)
               check_neighbour_relations(nbr) do
                 check_avail_species_in(nbr, &block)
               end
@@ -115,7 +115,7 @@ module VersatileDiamond
           def_delegators :unit, :species, :anchored_species, :atoms, :symmetric_atoms
           attr_reader :pure_factory, :context
 
-          # @return [BaseContextUnit]
+          # @return [ContextBaseUnit]
           def context_unit(inner_unit)
             self.class.new(dict, pure_factory, context, inner_unit)
           end
@@ -200,7 +200,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [BaseContextUnit] nbr
+          # @param [ContextBaseUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_avail_species_in(nbr, &block)
@@ -212,7 +212,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [BaseContextUnit] nbr
+          # @param [ContextBaseUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_neighbour_relations(nbr, &block)
@@ -223,7 +223,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [BaseContextUnit] nbr
+          # @param [ContextBaseUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::AndCondition]
           def check_bonds_to_defined_neighbour(nbr, &block)
@@ -239,7 +239,7 @@ module VersatileDiamond
             Expressions::AndCondition[exprs, block.call]
           end
 
-          # @param [BaseContextUnit] nbr
+          # @param [ContextBaseUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_relations(nbr, &block)
@@ -251,7 +251,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [BaseContextUnit] nbr
+          # @param [ContextBaseUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_crystal_relations(nbr, &block)
@@ -281,7 +281,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [BaseContextUnit] nbr
+          # @param [ContextBaseUnit] nbr
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_existed_relations(nbr, &block)
@@ -367,7 +367,7 @@ module VersatileDiamond
             defined_sncns.any?(&check_own_node_proc) ? defined_sncns : []
           end
 
-          # @param [BaseContextUnit] nbr
+          # @param [ContextBaseUnit] nbr
           # @return [Array] the list of nodes which will be available again after
           #   neighbour unit species check
           def defined_same_neighbour_nodes(nbr)
@@ -380,7 +380,7 @@ module VersatileDiamond
             end
           end
 
-          # @param [BaseContextUnit] nbr
+          # @param [ContextBaseUnit] nbr
           # @return [Array]
           def defined_next_neighbour_nodes(nbr)
             if context.cutten_bone_relations_from?(nodes, nbr.nodes)
@@ -425,7 +425,7 @@ module VersatileDiamond
           # Gets all existed relations over backbone graph of context
           # The first element of each item is pair of [from, to] nodes
           #
-          # @param [BaseContextUnit] nbr
+          # @param [ContextBaseUnit] nbr
           # @return [Array]
           def nodes_with_existed_relations(nbr)
             ns_with_rs = zip_nodes_of(self, nbr).zip(relations_between(self, nbr))
@@ -433,8 +433,8 @@ module VersatileDiamond
             nodes_lists.reject(&method(:same_specie_in?))
           end
 
-          # @param [BaseContextUnit] a
-          # @param [BaseContextUnit] b
+          # @param [ContextBaseUnit] a
+          # @param [ContextBaseUnit] b
           # @return [Array]
           def relations_between(a, b)
             zip_nodes_of(a, b).map { |ns| context.relation_between(*ns) }

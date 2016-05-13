@@ -80,7 +80,7 @@ module VersatileDiamond
           end
 
           # Accumulates relations procs from passed unit
-          # @param [Units::BaseContextUnit] unit from which the relations will be
+          # @param [Units::ContextBaseUnit] unit from which the relations will be
           #   collected
           # @param [Array] nbrs the neighbour units
           # @return [Array] the array of collected relations procs
@@ -88,19 +88,19 @@ module VersatileDiamond
             nbrs.map { |nbr| relations_proc(unit, nbr) }
           end
 
-          # @param [Units::BaseContextUnit] source_unit
+          # @param [Units::ContextBaseUnit] source_unit
           # @return [Array]
           def init_procs(source_unit)
             [initial_check_proc(source_unit)]
           end
 
-          # @param [Units::BaseContextUnit] unit
+          # @param [Units::ContextBaseUnit] unit
           # @return [Proc]
           def initial_check_proc(source_unit)
             -> &block { source_unit.check_existence(&block) }
           end
 
-          # @param [Units::BaseContextUnit] unit
+          # @param [Units::ContextBaseUnit] unit
           # @return [Proc] lazy calling for check species unit method
           def check_species_proc(unit)
             -> &block { unit.check_avail_species(&block) }

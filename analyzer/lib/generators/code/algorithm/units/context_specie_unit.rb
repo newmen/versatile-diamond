@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm::Units
 
         # Decorates unit for bulding specie dependent code on context
-        class ContextSpecieUnit < BaseContextUnit
+        class ContextSpecieUnit < ContextBaseUnit
           # @param [Array] _
           def initialize(*)
             super

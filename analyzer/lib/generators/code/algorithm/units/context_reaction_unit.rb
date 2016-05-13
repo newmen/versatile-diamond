@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm::Units
 
         # Decorates unit for bulding reaction dependent code on context
-        class ContextReactionUnit < BaseContextUnit
+        class ContextReactionUnit < ContextBaseUnit
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_existence(&block)
