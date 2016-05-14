@@ -299,19 +299,22 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_methyl_on_dimer }
               let(:find_algorithm) do
                 <<-CODE
-    target->eachSymmetry([](SpecificSpec *specie1) {
-        Atom *anchors[2] = { specie1->atom(2), specie1->atom(1) };
-        eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
-            if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cl}) && neighbours1[0]->hasBondWith(neighbours1[1]))
+    target->eachSymmetry([](SpecificSpec *symmetricBridgeCTs1) {
+        Atom *atoms1[2] = { symmetricBridgeCTs1->atom(2), symmetricBridgeCTs1->atom(1) };
+        eachNeighbours<2>(atoms1, &Diamond::cross_100, [&symmetricBridgeCTs1](Atom **neighbours1) {
+            if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cl}))
             {
-                neighbours1[0]->eachAmorphNeighbour([&](Atom *amorph1) {
-                    if (amorph1->is(#{other_role_cm}))
-                    {
-                        MethylOnDimerCMs *specie2 = amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm});
-                        SpecificSpec *targets[2] = { specie2, specie1 };
-                        create<ForwardIntermedMigrDfFormation>(targets);
-                    }
-                });
+                if (neighbours1[0]->hasBondWith(neighbours1[1]))
+                {
+                    neighbours1[0]->eachAmorphNeighbour([&symmetricBridgeCTs1](Atom *amorph1) {
+                        if (amorph1->is(#{other_role_cm}))
+                        {
+                            MethylOnDimerCMs *methylOnDimerCMs1 = amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm});
+                            SpecificSpec *targets[2] = { methylOnDimerCMs1, symmetricBridgeCTs1 };
+                            create<ForwardIntermedMigrDfFormation>(targets);
+                        }
+                    });
+                }
             }
         });
     });
