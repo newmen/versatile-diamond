@@ -173,16 +173,16 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_methyl_on_dimer }
               let(:find_algorithm) do
                 <<-CODE
-    target->eachSymmetry([](SpecificSpec *specie1) {
-        Atom *anchor = specie1->atom(2);
-        eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour1) {
+    target->eachSymmetry([](SpecificSpec *symmetricBridgeCTs1) {
+        Atom *atom1 = symmetricBridgeCTs1->atom(2);
+        eachNeighbour(atom1, &Diamond::cross_100, [&symmetricBridgeCTs1](Atom *neighbour1) {
             if (neighbour1->is(#{other_role_cr}))
             {
-                neighbour1->eachAmorphNeighbour([&](Atom *amorph1) {
+                neighbour1->eachAmorphNeighbour([&symmetricBridgeCTs1](Atom *amorph1) {
                     if (amorph1->is(#{other_role_cm}))
                     {
-                        MethylOnDimerCMs *specie2 = amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm});
-                        SpecificSpec *targets[2] = { specie2, specie1 };
+                        MethylOnDimerCMs *methylOnDimerCMs1 = amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm});
+                        SpecificSpec *targets[2] = { methylOnDimerCMs1, symmetricBridgeCTs1 };
                         create<ForwardIntermedMigrDcFormation>(targets);
                     }
                 });
