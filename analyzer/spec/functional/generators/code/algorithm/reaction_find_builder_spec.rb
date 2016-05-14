@@ -200,20 +200,23 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchor = target->atom(1);
-    eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour1) {
+    Atom *atom1 = target->atom(1);
+    eachNeighbour(atom1, &Diamond::cross_100, [&target](Atom *neighbour1) {
         if (neighbour1->is(#{other_role_cr}))
         {
-            eachNeighbour(neighbour1, &Diamond::front_110, [&](Atom *neighbour2) {
-                if (neighbour2->is(#{other_role_ct}) && neighbour1->hasBondWith(neighbour2))
+            eachNeighbour(neighbour1, &Diamond::front_110, [&neighbour1, &target](Atom *neighbour2) {
+                if (neighbour2->is(#{other_role_ct}))
                 {
-                    BridgeCTs *specie1 = neighbour2->specByRole<BridgeCTs>(#{other_role_ct});
-                    specie1->eachSymmetry([&](SpecificSpec *specie2) {
-                        if (specie2->atom(2) == neighbour1)
-                        {
-                            SpecificSpec *targets[2] = { target, specie2 };
-                            create<ForwardIntermedMigrDcFormation>(targets);
-                        }
+                    if (neighbour1->hasBondWith(neighbour2))
+                    {
+                        BridgeCTs *bridgeCTs1 = neighbour2->specByRole<BridgeCTs>(#{other_role_ct});
+                        bridgeCTs1->eachSymmetry([&neighbour1, &target](SpecificSpec *symmetricBridgeCTs1) {
+                            if (neighbour1 == symmetricBridgeCTs1->atom(2))
+                            {
+                                SpecificSpec *targets[2] = { target, symmetricBridgeCTs1 };
+                                create<ForwardIntermedMigrDcFormation>(targets);
+                            }
+                        });
                     }
                 }
             });

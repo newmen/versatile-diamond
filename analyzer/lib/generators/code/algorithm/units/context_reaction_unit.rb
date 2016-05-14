@@ -16,7 +16,11 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def select_specie_definition(&block)
-            check_many_undefined_species(&block)
+            if unit.anchored_species.empty?
+              block.call
+            else
+              check_many_undefined_species(&block)
+            end
           end
 
         private
@@ -39,7 +43,8 @@ module VersatileDiamond
           # @param [Array] checking_nodes
           # @return [Boolean]
           def same_specie_in?(checking_nodes)
-            checking_nodes.map(&:uniq_specie).uniq.size < 2
+            checking_nodes.map(&:uniq_specie).uniq.size < 2 &&
+              !checking_nodes.all?(&:lattice)
           end
 
           # @param [Array] _
