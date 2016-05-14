@@ -151,7 +151,7 @@ module VersatileDiamond
 
             describe 'two nodes to one crystal (with bone relations)' do
               include_context :alt_intermed_migr_df_formation_context
-              it { expect(subject.symmetric_relations?(nbr_nodes)).to be_truthy }
+              it { expect(subject.symmetric_relations?(nbr_nodes)).to be_falsey }
             end
           end
 

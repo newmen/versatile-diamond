@@ -94,7 +94,7 @@ module VersatileDiamond
             if nodes.empty?
               raise ArgumentError, 'Empty nodes list passed'
             elsif !nodes.one?
-              rels_lists = bone_relations_of(nodes)
+              rels_lists = both_directions_bone_relations_of(nodes)
               !rels_lists.any?(&:empty?) && same_relations?(rels_lists) &&
                 same_side_props?(rels_lists) && same_side_species?(rels_lists)
             else
@@ -205,12 +205,20 @@ module VersatileDiamond
             bone_relations_of([node]).reduce(:+)
           end
 
+          # @param [Array] nodes
+          # @return [Array]
+          def both_directions_bone_relations_of(nodes)
+            nodes.map do |node|
+              around_relations_of_one(node).select do |n, _|
+                bone_relation?(node, n) || bone_relation?(n, node)
+              end
+            end
+          end
+
           # @param [Nodes::BaseNode] node
           # @return [Array]
           def both_directions_bone_relations_of_one(node)
-            around_relations_of_one(node).select do |n, _|
-              bone_relation?(node, n) || bone_relation?(n, node)
-            end
+            both_directions_bone_relations_of([node]).reduce(:+)
           end
 
           # @param [Array] target_nodes
