@@ -263,21 +263,27 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchors[2] = { target->atom(1), target->atom(4) };
-    eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
+    Atom *atoms1[2] = { target->atom(1), target->atom(4) };
+    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&target](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}))
         {
-            eachNeighbour(neighbours1[0], &Diamond::front_110, [&](Atom *neighbour1) {
-                if (neighbour1->is(#{other_role_ct}) && neighbours1[0]->hasBondWith(neighbour1))
+            eachNeighbour(neighbours1[0], &Diamond::front_110, [&neighbours1, &target](Atom *neighbour1) {
+                if (neighbour1->is(#{other_role_ct}))
                 {
-                    BridgeCTs *specie1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
-                    specie1->eachSymmetry([&](SpecificSpec *specie2) {
-                        if (specie2->atom(2) == neighbours1[0] && specie2->atom(1) != neighbours1[1])
-                        {
-                            SpecificSpec *targets[2] = { target, specie2 };
-                            create<ForwardIntermedMigrDhFormation>(targets);
-                        }
-                    });
+                    if (neighbours1[0]->hasBondWith(neighbour1))
+                    {
+                        BridgeCTs *bridgeCTs1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
+                        bridgeCTs1->eachSymmetry([&neighbours1, &target](SpecificSpec *symmetricBridgeCTs1) {
+                            if (neighbours1[1] != symmetricBridgeCTs1->atom(1))
+                            {
+                                if (neighbours1[0] == symmetricBridgeCTs1->atom(2))
+                                {
+                                    SpecificSpec *targets[2] = { target, symmetricBridgeCTs1 };
+                                    create<ForwardIntermedMigrDhFormation>(targets);
+                                }
+                            }
+                        });
+                    }
                 }
             });
         }
