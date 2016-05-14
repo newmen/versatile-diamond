@@ -105,12 +105,12 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchor = target->atom(1);
-    eachNeighbour(anchor, &Diamond::cross_100, [&](Atom *neighbour1) {
+    Atom *atom1 = target->atom(1);
+    eachNeighbour(atom1, &Diamond::cross_100, [&target](Atom *neighbour1) {
         if (neighbour1->is(#{other_role_ct}))
         {
-            BridgeCTs *specie1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
-            SpecificSpec *targets[2] = { target, specie1 };
+            BridgeCTs *bridgeCTs1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
+            SpecificSpec *targets[2] = { target, bridgeCTs1 };
             create<ReverseSierpinskiDrop>(targets);
         }
     });
