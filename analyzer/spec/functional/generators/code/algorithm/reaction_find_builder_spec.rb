@@ -362,14 +362,17 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_dimer }
               let(:find_algorithm) do
                 <<-CODE
-    target->eachSymmetry([](SpecificSpec *specie1) {
-        Atom *anchors[2] = { specie1->atom(3), specie1->atom(2) };
-        eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
-            if (neighbours1[0]->is(#{other_role_cl}) && neighbours1[1]->is(#{other_role_cr}) && neighbours1[0]->hasBondWith(neighbours1[1]))
+    target->eachSymmetry([](SpecificSpec *symmetricMethylOnBridgeCMs1) {
+        Atom *atoms1[2] = { symmetricMethylOnBridgeCMs1->atom(3), symmetricMethylOnBridgeCMs1->atom(2) };
+        eachNeighbours<2>(atoms1, &Diamond::cross_100, [&symmetricMethylOnBridgeCMs1](Atom **neighbours1) {
+            if (neighbours1[0]->is(#{other_role_cl}) && neighbours1[1]->is(#{other_role_cr}))
             {
-                DimerCRs *specie2 = neighbours1[1]->specByRole<DimerCRs>(#{other_role_cr});
-                SpecificSpec *targets[2] = { specie2, specie1 };
-                create<ForwardMethylIncorporation>(targets);
+                if (neighbours1[0]->hasBondWith(neighbours1[1]))
+                {
+                    DimerCRs *dimerCRs1 = neighbours1[1]->specByRole<DimerCRs>(#{other_role_cr});
+                    SpecificSpec *targets[2] = { dimerCRs1, symmetricMethylOnBridgeCMs1 };
+                    create<ForwardMethylIncorporation>(targets);
+                }
             }
         });
     });

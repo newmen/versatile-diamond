@@ -264,7 +264,7 @@ module VersatileDiamond
 
             sns, nns = [self, nbr].map(&:unit).map(&:nodes).map do |ns|
               anchored = ns.select(&:anchor?)
-              anchored.empty? ? ns : anchored
+              !anchored.empty? && same_atoms?(ns, anchored) ? anchored : ns
             end
             ssz, nsz = [sns, nns].map(&:size)
             args = [predefn_vars, nbr_var, lattice, relations.first.params, block.call]
@@ -278,6 +278,12 @@ module VersatileDiamond
             else
               raise ArgumentError, 'Incorrect relations configuration between nodes'
             end
+          end
+
+          # @param [Array] nodes_lists
+          # @return [Boolean]
+          def same_atoms?(*nodes_lists)
+            lists_are_identical?(*nodes_lists.map { |ns| ns.map(&:atom).uniq }, &:==)
           end
 
           # @param [ContextBaseUnit] nbr
