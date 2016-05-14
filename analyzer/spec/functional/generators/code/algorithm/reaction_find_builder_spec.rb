@@ -134,12 +134,12 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchor = target->atom(0);
-    eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
+    Atom *atom1 = target->atom(0);
+    eachNeighbour(atom1, &Diamond::front_100, [&target](Atom *neighbour1) {
         if (neighbour1->is(#{other_role_ct}))
         {
-            BridgeCTs *specie1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
-            SpecificSpec *targets[2] = { target, specie1 };
+            BridgeCTs *bridgeCTs1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
+            SpecificSpec *targets[2] = { target, bridgeCTs1 };
             create<ForwardDimerFormation>(targets);
         }
     });
@@ -153,12 +153,12 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_incoherent_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchor = target->atom(0);
-    eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
+    Atom *atom1 = target->atom(0);
+    eachNeighbour(atom1, &Diamond::front_100, [&target](Atom *neighbour1) {
         if (neighbour1->is(#{other_role_ct}))
         {
-            BridgeCTsi *specie1 = neighbour1->specByRole<BridgeCTsi>(#{other_role_ct});
-            SpecificSpec *targets[2] = { specie1, target };
+            BridgeCTsi *bridgeCTsi1 = neighbour1->specByRole<BridgeCTsi>(#{other_role_ct});
+            SpecificSpec *targets[2] = { bridgeCTsi1, target };
             create<ForwardDimerFormation>(targets);
         }
     });
