@@ -33,31 +33,30 @@ module VersatileDiamond
             bone_nodes.select { |node| specie_in?(node, species) }
           end
 
-          # @param [Array] cutting_nodes
+          # @param [Array] species
           # @return [Array]
-          def many_times_reachable_nodes(cutting_nodes)
-            cutten_backbone = cut_backbone_from(cutting_nodes)
-            species_nodes(cutting_nodes.map(&:uniq_specie)).select do |node|
-              cutten_backbone.any? { |key_rels| slice(*key_rels).include?(node) }
-            end
+          def many_times_reachable_nodes(species)
+            species_nodes(species).select(&method(:many_times_reachable?))
           end
 
-          # Gets nodes which belongs to passed nodes but have existed relations from
-          # nodes which are not same as passed
+          # Gets nodes which belongs to checking nodes but have existed relations from
+          # target nodes which are not same as checking
           #
-          # @param [Array] nodes
+          # @param [Array] target_nodes
+          # @param [Array] checking_nodes
           # @return [Array] nodes to which the another nodes are related
-          def existed_relations_to(nodes)
-            filter_relations_to(nodes, &:exist?)
+          def existed_relations_to(target_nodes, checking_nodes)
+            filter_relations_to(target_nodes, checking_nodes, &:exist?)
           end
 
-          # Gets nodes which belongs to passed nodes but have not existed relations
-          # from nodes which are not same as passed
+          # Gets nodes which belongs to checking nodes but have not existed relations
+          # from target nodes which are not same as checking
           #
-          # @param [Array] nodes
+          # @param [Array] target_nodes
+          # @param [Array] checking_nodes
           # @return [Array] nodes to which the another nodes are related
-          def not_existed_relations_to(nodes)
-            filter_relations_to(nodes) { |rel| !rel.exist? }
+          def not_existed_relations_to(target_nodes, checking_nodes)
+            filter_relations_to(target_nodes, checking_nodes) { |rel| !rel.exist? }
           end
 
           # @param [Array] nodes
@@ -103,10 +102,11 @@ module VersatileDiamond
             end
           end
 
-          # @param [Array] nodes
+          # @param [Array] target_nodes
+          # @param [Array] checking_nodes
           # @return [Boolean]
-          def related_from_other_defined?(nodes)
-            !map_bone_relation_to(nodes).empty?
+          def related_from_other_defined?(target_nodes, checking_nodes)
+            !map_bone_relation_to(target_nodes, checking_nodes).empty?
           end
 
           # @param [Array] nodes
@@ -213,15 +213,18 @@ module VersatileDiamond
             end
           end
 
-          # @param [Array] nodes
+          # @param [Array] target_nodes
+          # @param [Array] checking_nodes
           # @yield [Nodes::BaseNode, Concepts::Bond] each relation to each node
           # @return [Array]
-          def map_bone_relation_to(nodes, &block)
-            keys = key_nodes_lists.reduce(:+).reject(&nodes.public_method(:include?))
+          def map_bone_relation_to(target_nodes, checking_nodes, &block)
+            skipping_nodes = species_nodes(target_nodes.map(&:uniq_specie).uniq)
+            skipping_proc = skipping_nodes.public_method(:include?)
+            keys = key_nodes_lists.reduce(:+).reject(&skipping_proc)
             keys.select(&method(:atom_defined?)).flat_map do |node|
               rels = bone_relations_of_one(node).select { |n, _| atom_defined?(n) }
-              rels.select do |node, rel|
-                nodes.include?(node) && (!block_given? || block[node, rel])
+              rels.select do |n, r|
+                checking_nodes.include?(n) && (!block_given? || block[n, r])
               end
             end
           end
@@ -250,11 +253,14 @@ module VersatileDiamond
               end
           end
 
-          # @param [Array] nodes
-          # @yield [Concepts::Bond] filter relation to selected nodes
-          # @return [Array] nodes with filtered relations
-          def filter_relations_to(nodes, &block)
-            map_bone_relation_to(nodes) { |_, r| block[r] }.map(&:first).uniq
+          # @param [Array] target_nodes
+          # @param [Array] checking_nodes
+          # @yield [Concepts::Bond] filter relation to checking nodes
+          # @return [Array] checking nodes with filtered relations
+          def filter_relations_to(target_nodes, checking_nodes, &block)
+            selected_nodes =
+              map_bone_relation_to(target_nodes, checking_nodes) { |_, r| block[r] }
+            selected_nodes.map(&:first).uniq
           end
 
           # @param [Array] uniq_species
@@ -413,6 +419,53 @@ module VersatileDiamond
             nodes.each_cons(2).all? do |a, b|
               a.atom != b.atom && a.properties.like?(b.properties)
             end
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @return [Boolean]
+          def many_times_reachable?(node)
+            (key_then_side_reachable?(node) && !direct_reachable?(node)) ||
+              many_sides_reachable?(node)
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @return [Boolean]
+          def key_then_side_reachable?(node)
+            check_proc = using_in_proc(node)
+            was_key = false
+            backbone_graph.any? do |key, rels|
+              if check_proc[key]
+                was_key = true
+                false # block result
+              elsif was_key
+                rels.map(&:first).any?(&check_proc)
+              else
+                false
+              end
+            end
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @return [Boolean]
+          def direct_reachable?(node)
+            check_proc = using_in_proc(node)
+            backbone_graph.any? do |key, rels|
+              check_proc[key] && rels.any? { |ns, _| ns.include?(node) }
+            end
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @return [Boolean]
+          def many_sides_reachable?(node)
+            check_proc = using_in_proc(node)
+            !key_nodes_lists.any?(&check_proc) &&
+              side_nodes_lists.select(&check_proc).size > 1
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @return [Proc]
+          def using_in_proc(node)
+            -> nodes { specie_in?(node, nodes.map(&:uniq_specie)) }
           end
         end
 

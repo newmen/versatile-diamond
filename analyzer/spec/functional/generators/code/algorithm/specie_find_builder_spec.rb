@@ -381,13 +381,10 @@ module VersatileDiamond
                             if (neighbours1[0]->hasBondWith(neighbours1[1]))
                             {
                                 Dimer *dimer2 = neighbours1[1]->specByRole<Dimer>(#{d_cr});
-                                if (neighbours1[1] == dimer2->atom(3))
+                                if (neighbours1[0]->hasBondWith(amorph1))
                                 {
-                                    if (neighbours1[0]->hasBondWith(amorph1))
-                                    {
-                                        ParentSpec *parents[2] = { dimer1, dimer2 };
-                                        create<CrossBridgeOnDimers>(amorph1, parents);
-                                    }
+                                    ParentSpec *parents[2] = { dimer1, dimer2 };
+                                    create<CrossBridgeOnDimers>(amorph1, parents);
                                 }
                             }
                         }

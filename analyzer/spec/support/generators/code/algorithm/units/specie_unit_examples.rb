@@ -138,7 +138,7 @@ module VersatileDiamond
 
             shared_context :alt_half_intermed_context do
               include_context :half_intermed_context
-              let(:unit_nodes) { ordered_graph.last.first }
+              let(:entry_nodes) { amorph_nodes } # override
             end
 
             shared_context :tree_bridges_context do

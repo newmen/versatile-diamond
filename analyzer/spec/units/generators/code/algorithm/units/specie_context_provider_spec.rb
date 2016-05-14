@@ -141,17 +141,24 @@ module VersatileDiamond
           end
 
           describe '#many_times_reachable_nodes' do
-            include_context :alt_intermed_context
-            let(:result) { subject.many_times_reachable_nodes(target_nodes) }
-            let(:target_nodes) do
-              keys = ordered_graph.flat_map(&:first)
-              backbone.entry_nodes.reduce(keys) { |acc, nodes| acc - nodes }
+            let(:result) { subject.many_times_reachable_nodes(target_species.uniq) }
+
+            describe 'from amorph' do
+              include_context :alt_half_intermed_context
+              let(:target_species) { not_entry_nodes.map(&:uniq_specie) }
+              it { expect(result).to match_array(not_entry_nodes + entry_nodes) }
             end
-            it { expect(result).to match_array(target_nodes) }
+
+            describe 'from dimer' do
+              include_context :half_intermed_context
+              let(:target_species) { entry_nodes.map(&:uniq_specie) }
+              let(:target_nodes) { ordered_graph.last.last.first.first }
+              it { expect(result).to match_array(target_nodes) }
+            end
           end
 
           describe '#existed_relations_to' do
-            let(:result) { subject.existed_relations_to(unit_nodes) }
+            let(:result) { subject.existed_relations_to(unit_nodes, unit_nodes) }
 
             it_behaves_like :empty_existed_relations
 
@@ -169,7 +176,7 @@ module VersatileDiamond
           end
 
           describe '#not_existed_relations_to' do
-            let(:result) { subject.not_existed_relations_to(unit_nodes) }
+            let(:result) { subject.not_existed_relations_to(unit_nodes, unit_nodes) }
 
             it_behaves_like :empty_existed_relations
 
@@ -326,7 +333,9 @@ module VersatileDiamond
           end
 
           describe '#related_from_other_defined?' do
-            let(:result) { subject.related_from_other_defined?(unit_nodes) }
+            let(:result) do
+              subject.related_from_other_defined?(unit_nodes, unit_nodes)
+            end
 
             describe 'key nodes are not related' do
               include_context :two_mobs_context
@@ -382,8 +391,10 @@ module VersatileDiamond
 
           describe '#key?' do
             include_context :alt_half_intermed_context
-            it { expect(subject.key?(unit_nodes)).to be_truthy }
-            it { expect(subject.key?([unit_nodes.first])).to be_falsey }
+            it { expect(subject.key?(entry_nodes)).to be_falsey }
+            it { expect(subject.key?(entry_nodes.flat_map(&:split))).to be_truthy }
+            it { expect(subject.key?(not_entry_nodes)).to be_truthy }
+            it { expect(subject.key?([not_entry_nodes.first])).to be_falsey }
           end
 
           describe '#cutten_bone_relations_from?' do

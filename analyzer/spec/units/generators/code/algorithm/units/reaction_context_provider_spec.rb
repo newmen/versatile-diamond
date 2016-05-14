@@ -57,13 +57,12 @@ module VersatileDiamond
 
           describe '#many_times_reachable_nodes' do
             include_context :sierpinski_formation_context
-            let(:nodes) { subject.many_times_reachable_nodes(nbr_nodes) }
-            it { expect(nodes).to match_array(nbr_nodes + amorph_nodes) }
+            it { expect(subject.many_times_reachable_nodes(nbr_species)).to be_empty }
           end
 
           describe '#existed_relations_to' do
             before { dict.make_atom_s([cbr, cbl, cdr, cdl]) }
-            let(:nodes) { subject.existed_relations_to(nbr_nodes) }
+            let(:nodes) { subject.existed_relations_to(nbr_nodes, nbr_nodes) }
 
             describe 'side nodes with another specie are related' do
               include_context :intermed_migr_df_formation_context
@@ -78,7 +77,7 @@ module VersatileDiamond
 
           describe '#not_existed_relations_to' do
             before { dict.make_atom_s([cbr, cbl, cdr, cdl]) }
-            let(:nodes) { subject.not_existed_relations_to(nbr_nodes) }
+            let(:nodes) { subject.not_existed_relations_to(nbr_nodes, nbr_nodes) }
 
             describe 'side nodes with another specie are related' do
               include_context :intermed_migr_df_formation_context
@@ -168,12 +167,14 @@ module VersatileDiamond
           end
 
           describe '#related_from_other_defined?' do
-            let(:result) { subject.related_from_other_defined?(nbr_nodes) }
+            let(:result) { subject.related_from_other_defined?(nbr_nodes, nbr_nodes) }
 
             describe 'key nodes are not related' do
               include_context :sierpinski_drop_context
               before { dict.make_atom_s(lattice_nodes.map(&:atom)) }
-              let(:result) { subject.related_from_other_defined?(amorph_nodes) }
+              let(:result) do
+                subject.related_from_other_defined?(amorph_nodes, amorph_nodes)
+              end
               it { expect(result).to be_falsey }
             end
 

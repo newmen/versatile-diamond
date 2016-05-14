@@ -190,7 +190,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_new_atoms(&block)
-            reachable_nodes = context.many_times_reachable_nodes(nodes)
+            reachable_nodes = context.many_times_reachable_nodes(species)
             if !reachable_nodes.empty? && atoms_comparison_required?(reachable_nodes)
               check_not_existed_previous_atoms(reachable_nodes) do
                 check_existed_previous_atoms(reachable_nodes, &block)
@@ -316,7 +316,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_existed_previous_atoms(checking_nodes, &block)
-            relating_nodes = context.existed_relations_to(checking_nodes)
+            relating_nodes = context.existed_relations_to(nodes, checking_nodes)
             check_eq_previous_atoms(relating_nodes, &block)
           end
 
@@ -324,7 +324,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_not_existed_previous_atoms(checking_nodes, &block)
-            relating_nodes = context.not_existed_relations_to(checking_nodes)
+            relating_nodes = context.not_existed_relations_to(nodes, checking_nodes)
             check_not_eq_previous_atoms(relating_nodes, &block)
           end
 
@@ -488,7 +488,7 @@ module VersatileDiamond
           # @param [Array] checking_nodes
           # @return [Boolean]
           def atoms_comparison_required?(checking_nodes)
-            symmetric? || context.related_from_other_defined?(checking_nodes)
+            symmetric? || context.related_from_other_defined?(nodes, checking_nodes)
           end
 
           # @param [Array] pair

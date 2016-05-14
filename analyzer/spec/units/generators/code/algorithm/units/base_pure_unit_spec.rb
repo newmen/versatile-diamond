@@ -125,7 +125,7 @@ module VersatileDiamond
             include_context :alt_two_mobs_context
             before { dict.make_atom_s(ctl) }
             let("role_ctl") { node_specie.actual_role(ctl) }
-            let(:expr) { subject.atom_with_specie_calls(:role_in, [ctl]) }
+            let(:expr) { subject.atom_with_specie_calls(:role_in, [ctl], &:anchor?) }
             it { expect(expr.map(&:code)).to eq(["atom1->is(#{role_ctl})"]) }
           end
 
