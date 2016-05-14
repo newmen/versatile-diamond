@@ -292,7 +292,8 @@ module VersatileDiamond
               block.call
             else
               nbr.unit.check_atoms_roles(new_atoms) do
-                check_bond_between(pairs + nbr.neighbour_nodes_pairs, &block)
+                clean_pairs = pairs.reject(&method(:same_specie_in?))
+                check_bond_between(clean_pairs + nbr.neighbour_nodes_pairs, &block)
               end
             end
           end
@@ -429,8 +430,12 @@ module VersatileDiamond
           # @return [Array]
           def nodes_with_existed_relations(nbr)
             ns_with_rs = zip_nodes_of(self, nbr).zip(relations_between(self, nbr))
-            nodes_lists = ns_with_rs.select { |_, r| r.exist? }.map(&:first)
-            nodes_lists.reject(&method(:same_specie_in?))
+            nodes_pairs = ns_with_rs.select { |_, r| r.exist? }.map(&:first)
+            uniq_pairs = nodes_pairs.uniq { |ns| ns.map(&:atom).to_set }
+            uniq_pairs.select do |ns|
+              a, b = ns.map { |n| pure_factory.unit([n]) }
+              a.neighbour?(b)
+            end
           end
 
           # @param [ContextBaseUnit] a

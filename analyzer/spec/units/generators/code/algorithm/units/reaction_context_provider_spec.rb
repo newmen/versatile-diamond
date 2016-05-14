@@ -35,26 +35,6 @@ module VersatileDiamond
             end
           end
 
-          describe '#related_nodes_of' do
-            let(:nodes) { subject.related_nodes_of([node_specie]) }
-
-            describe 'no related nodes' do
-              include_context :methyl_adsorbtion_context
-              it { expect(nodes).to be_empty }
-            end
-
-            describe 'nodes relates to defined species' do
-              include_context :dimer_formation_context
-              before { dict.make_specie_s(nbr_species) }
-              it { expect(nodes).to be_empty }
-            end
-
-            describe 'nodes relates to undefined species' do
-              include_context :dimer_formation_context
-              it { expect(nodes).to eq(entry_nodes) }
-            end
-          end
-
           describe '#many_times_reachable_nodes' do
             include_context :sierpinski_formation_context
             it { expect(subject.many_times_reachable_nodes(nbr_species)).to be_empty }
@@ -214,6 +194,27 @@ module VersatileDiamond
             it { expect(subject.key?(entry_nodes)).to be_truthy }
             it { expect(subject.key?(amorph_nodes)).to be_falsey }
             it { expect(subject.key?(lattice_nodes)).to be_falsey }
+          end
+
+          describe '#relations_from?' do
+            shared_examples_for :check_relations_from do
+              it { expect(subject.relations_from?(entry_nodes)).to eq(result) }
+            end
+
+            it_behaves_like :check_relations_from do
+              include_context :methyl_adsorbtion_context
+              let(:result) { false }
+            end
+
+            it_behaves_like :check_relations_from do
+              include_context :dimer_formation_context
+              let(:result) { true }
+            end
+
+            it_behaves_like :check_relations_from do
+              include_context :sierpinski_formation_context
+              let(:result) { true }
+            end
           end
 
           describe '#cutten_bone_relations_from?' do

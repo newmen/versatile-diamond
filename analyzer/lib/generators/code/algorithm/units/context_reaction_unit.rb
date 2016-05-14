@@ -29,11 +29,10 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_close_atoms(&block)
-            checking_nodes = context.related_nodes_of(select_defined(species))
-            if checking_nodes.empty?
-              block.call
+            if all_defined?(species) && context.relations_from?(nodes)
+              unit.define_undefined_atoms(&block)
             else
-              pure_factory.unit(checking_nodes).define_undefined_atoms(&block)
+              block.call
             end
           end
 

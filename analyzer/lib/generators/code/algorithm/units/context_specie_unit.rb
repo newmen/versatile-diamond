@@ -303,8 +303,12 @@ module VersatileDiamond
           # @param [Array] checking_nodes
           # @return [Boolean]
           def same_specie_in?(checking_nodes)
-            checking_species = checking_nodes.map(&:uniq_specie).uniq
-            checking_species.size < 2 && !checking_species.all?(&:none?)
+            if checking_nodes.any?(&:splittable?)
+              false
+            else
+              checking_species = checking_nodes.map(&:uniq_specie).uniq
+              checking_species.size < 2 && !checking_species.all?(&:none?)
+            end
           end
 
           # @param [Nodes::SpecieNode] a
