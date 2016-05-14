@@ -25,6 +25,13 @@ module VersatileDiamond
               # defaults
               let(:node_specie) { entry_nodes.first.uniq_specie }
               let(:nbr_nodes) { ordered_graph.first.last.first.first }
+
+              # abstract
+              let(:entry_atoms) { entry_nodes.map(&:atom) }
+              let(:nodes_species) { nodes.map(&:uniq_specie) }
+              let(:nodes_atoms) { nodes.map(&:atom) }
+              let(:nbr_species) { nbr_nodes.map(&:uniq_specie) }
+              let(:nbr_atoms) { nbr_nodes.map(&:atom) }
             end
 
             shared_context :methyl_adsorbtion_context do

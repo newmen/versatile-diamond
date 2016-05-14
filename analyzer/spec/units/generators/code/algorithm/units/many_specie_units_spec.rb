@@ -75,7 +75,7 @@ module VersatileDiamond
             end
 
             describe 'all species are defined' do
-              before { dict.make_specie_s(unit_nodes.map(&:uniq_specie)) }
+              before { dict.make_specie_s(unit_species) }
               it { expect(subject.checkable?).to be_falsey }
             end
           end
@@ -148,7 +148,7 @@ amorph1->eachSpecsPortionByRole<MethylOnBridge>(#{role_cm}, 2, [](MethylOnBridge
 
           describe '#iterate_species_by_loop' do
             include_context :two_mobs_context
-            before { dict.make_specie_s(unit_nodes.map(&:uniq_specie)) }
+            before { dict.make_specie_s(unit_species) }
             let(:code) do
               <<-CODE
 for (uint s = 0; s < 2; ++s)

@@ -45,7 +45,7 @@ module VersatileDiamond
 
             describe 'nodes relates to defined species' do
               include_context :dimer_formation_context
-              before { dict.make_specie_s(nbr_nodes.map(&:uniq_specie)) }
+              before { dict.make_specie_s(nbr_species) }
               it { expect(nodes).to be_empty }
             end
 
@@ -72,7 +72,7 @@ module VersatileDiamond
 
             describe 'side nodes with not existed relation' do
               include_context :intermed_migr_dh_formation_context
-              it { expect(nodes.map(&:atom)).to eq([cdr]) }
+              it { expect(nodes_atoms).to eq([cdr]) }
             end
           end
 
@@ -87,7 +87,7 @@ module VersatileDiamond
 
             describe 'side nodes with not existed relation' do
               include_context :intermed_migr_dh_formation_context
-              it { expect(nodes.map(&:atom)).to eq([cdl]) }
+              it { expect(nodes_atoms).to eq([cdl]) }
             end
           end
 
@@ -143,8 +143,8 @@ module VersatileDiamond
               describe 'close symmetric intermediate nodes' do
                 include_context :alt_intermed_migr_df_formation_context
                 it 'check nodes' do
-                  expect(nodes.map(&:uniq_specie)).to eq([nbr_specie] * 2)
-                  expect(nodes.map(&:atom)).to eq([cbr, cbl])
+                  expect(nodes_species).to eq([nbr_specie] * 2)
+                  expect(nodes_atoms).to eq([cbr, cbl])
                 end
               end
             end
@@ -179,21 +179,21 @@ module VersatileDiamond
 
             describe 'side nodes with not defined self' do
               include_context :intermed_migr_df_formation_context
-              before { dict.make_atom_s(nbr_nodes.map(&:atom)) }
+              before { dict.make_atom_s(nbr_atoms) }
               it { expect(result).to be_falsey }
             end
 
             describe 'side nodes with not defined side' do
               include_context :intermed_migr_df_formation_context
-              before { dict.make_atom_s(entry_nodes.map(&:atom)) }
+              before { dict.make_atom_s(entry_atoms) }
               it { expect(result).to be_falsey }
             end
 
             describe 'forward side nodes with not existed relation' do
               include_context :intermed_migr_df_formation_context
               before do
-                dict.make_atom_s(entry_nodes.map(&:atom))
-                dict.make_atom_s(nbr_nodes.map(&:atom))
+                dict.make_atom_s(entry_atoms)
+                dict.make_atom_s(nbr_atoms)
               end
               it { expect(result).to be_truthy }
             end
@@ -201,8 +201,8 @@ module VersatileDiamond
             describe 'reverse side nodes with not existed relation' do
               include_context :intermed_migr_dh_formation_context
               before do
-                dict.make_atom_s(entry_nodes.map(&:atom))
-                dict.make_atom_s(nbr_nodes.map(&:atom))
+                dict.make_atom_s(entry_atoms)
+                dict.make_atom_s(nbr_atoms)
               end
               it { expect(result).to be_truthy }
             end

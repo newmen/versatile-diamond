@@ -72,7 +72,7 @@ module VersatileDiamond
             describe 'with one specie of scope' do
               include_context :two_mobs_context
               let(:nodes) { subject.species_nodes([node_specie]) }
-              it { expect(nodes.map(&:uniq_specie)).to eq([node_specie, node_specie]) }
+              it { expect(nodes_species).to eq([node_specie, node_specie]) }
             end
           end
 
@@ -102,19 +102,18 @@ module VersatileDiamond
 
               describe 'undefined atom' do
                 let(:uniq_species) { [node_specie, node_specie] }
-                it { expect(nodes.map(&:uniq_specie)).to eq(uniq_species) }
+                it { expect(nodes_species).to eq(uniq_species) }
               end
 
               describe 'defined atom' do
                 before { dict.make_atom_s(cm) }
-                it { expect(nodes.map(&:uniq_specie)).to eq([node_specie]) }
+                it { expect(nodes_species).to eq([node_specie]) }
               end
             end
           end
 
           describe '#similar_atoms_nodes_pairs' do
-            let(:avail_species) { unit_nodes.map(&:uniq_specie) }
-            let(:result) { subject.similar_atoms_nodes_pairs(avail_species) }
+            let(:result) { subject.similar_atoms_nodes_pairs(unit_species) }
 
             describe 'no pairs' do
               include_context :bottom_mob_context
@@ -190,7 +189,7 @@ module VersatileDiamond
           describe '#private_relations_with' do
             before do
               specie_type = Expressions::ParentSpecieType[]
-              dict.make_specie_s(unit_nodes.map(&:uniq_specie), type: specie_type)
+              dict.make_specie_s(unit_species, type: specie_type)
             end
             let(:pairs) { subject.private_relations_with(unit_nodes) }
 
@@ -253,16 +252,16 @@ module VersatileDiamond
             describe 'close symmetric intermediate nodes' do
               include_context :intermed_context
               it 'check nodes' do
-                expect(nodes.map(&:uniq_specie)).to eq([node_specie])
-                expect(nodes.map(&:atom)).to eq([cbr])
+                expect(nodes_species).to eq([node_specie])
+                expect(nodes_atoms).to eq([cbr])
               end
             end
 
             describe 'close atom half symmetric nodes' do
               include_context :top_mob_context
               it 'check nodes' do
-                expect(nodes.map(&:uniq_specie)).to eq([node_specie])
-                expect(nodes.map(&:atom)).to eq([cr])
+                expect(nodes_species).to eq([node_specie])
+                expect(nodes_atoms).to eq([cr])
               end
             end
 
@@ -289,8 +288,8 @@ module VersatileDiamond
 
               shared_examples_for :check_half_reverse_symmetric_nodes do
                 it 'check nodes' do
-                  expect(nodes.map(&:uniq_specie)).to eq([node_specie])
-                  expect(nodes.map(&:atom)).to eq([cr])
+                  expect(nodes_species).to eq([node_specie])
+                  expect(nodes_atoms).to eq([cr])
                 end
               end
 

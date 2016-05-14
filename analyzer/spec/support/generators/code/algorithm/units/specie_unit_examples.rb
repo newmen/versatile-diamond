@@ -25,6 +25,11 @@ module VersatileDiamond
               # defaults
               let(:unit_nodes) { entry_nodes.flat_map(&:split) }
               let(:node_specie) { entry_nodes.first.uniq_specie }
+
+              # abstract
+              let(:unit_species) { unit_nodes.map(&:uniq_specie) }
+              let(:nodes_species) { nodes.map(&:uniq_specie) }
+              let(:nodes_atoms) { nodes.map(&:atom) }
             end
 
             shared_context :bridge_context do
