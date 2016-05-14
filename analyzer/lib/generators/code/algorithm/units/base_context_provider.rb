@@ -425,7 +425,7 @@ module VersatileDiamond
           # @return [Boolean]
           def many_times_reachable?(node)
             (key_then_side_reachable?(node) && !direct_reachable?(node)) ||
-              many_sides_reachable?(node)
+              first_rejected_side_reachable?(node) || many_sides_reachable?(node)
           end
 
           # @param [Nodes::BaseNode] node
@@ -452,6 +452,25 @@ module VersatileDiamond
             backbone_graph.any? do |key, rels|
               check_proc[key] && rels.any? { |ns, _| ns.include?(node) }
             end
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @return [Boolean]
+          def first_rejected_side_reachable?(node)
+            check_proc = using_in_proc(node)
+            backbone_graph.each do |key, rels|
+              if check_proc[key]
+                return false # from current checking function
+              else
+                return true if rels.any? do |ns, _|
+                  ns.include?(node) && key.any? do |k|
+                    relation = relation_between(k, node)
+                    relation && !relation.exist?
+                  end
+                end
+              end
+            end
+            false
           end
 
           # @param [Nodes::BaseNode] node

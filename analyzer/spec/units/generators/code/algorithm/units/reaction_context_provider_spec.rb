@@ -36,8 +36,17 @@ module VersatileDiamond
           end
 
           describe '#many_times_reachable_nodes' do
-            include_context :sierpinski_formation_context
-            it { expect(subject.many_times_reachable_nodes(nbr_species)).to be_empty }
+            let(:nodes) { subject.many_times_reachable_nodes(nbr_species) }
+
+            describe 'no any many times' do
+              include_context :sierpinski_formation_context
+              it { expect(nodes).to be_empty }
+            end
+
+            describe 'unreachable other side should be checked' do
+              include_context :intermed_migr_dh_formation_context
+              it { expect(nodes).to eq([nbr_nodes.sort.last]) }
+            end
           end
 
           describe '#existed_relations_to' do

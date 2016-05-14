@@ -53,8 +53,7 @@ module VersatileDiamond
           # @return [Boolean] gets false if close nodes are not symmetric and true
           #   in the case when neighbour nodes are not similar
           def asymmetric_related_atoms?
-            area_nodes = context.symmetric_close_nodes(species)
-            close_nodes = area_nodes.reject(&check_own_node_proc)
+            close_nodes = context.symmetric_close_nodes(species)
             close_nodes.one? ||
               !(close_nodes.empty? || context.symmetric_relations?(close_nodes))
           end
