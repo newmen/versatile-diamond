@@ -16,18 +16,16 @@ module VersatileDiamond
               if !type.type? || type.scalar?
                 arg_err!("Wrong type #{type.inspect}")
               else
-                super
+                super(FunctionCall[type.name, *args, **kwargs])
               end
             end
           end
 
           def_delegator :@constructor_call, :using
 
-          # @param [ObjectType] type
-          # @param [Array] args the list of expressions
-          # @param [Hash] kwargs
-          def initialize(type, *args, **kwargs)
-            @constructor_call = FunctionCall[type.name, *args, **kwargs]
+          # @param [FunctionCall] constructor_call
+          def initialize(constructor_call)
+            @constructor_call = constructor_call
           end
 
           # @return [String]

@@ -13,8 +13,7 @@ module VersatileDiamond
             # @param [Hash] kwargs
             # @return [FunctionCall]
             def [](specie, *args)
-              name = SpeciesReaction::ANCHOR_SPECIE_NAME
-              new(specie, Core::FunctionCall[name, *args])
+              new(specie, Core::FunctionCall['target', *args])
             end
           end
 
