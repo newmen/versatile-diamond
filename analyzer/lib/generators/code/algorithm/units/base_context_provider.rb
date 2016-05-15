@@ -17,6 +17,7 @@ module VersatileDiamond
             @dict = dict
             @nodes_graph = nodes_graph
             @backbone_graph = Hash[ordered_backbone]
+            @ordered_graph = ordered_backbone
 
             @_key_nodes_lists, @_side_nodes_lists = nil
             @_uniq_nodes = nil
@@ -120,8 +121,7 @@ module VersatileDiamond
           # @param [Array] target_nodes
           # @return [Boolean]
           def cutten_bone_relations_from?(cutting_nodes, target_nodes)
-            cutten_backbone = cut_backbone_from(cutting_nodes)
-            !!cutten_backbone[target_nodes]
+            cut_backbone_from(cutting_nodes).map(&:first).include?(target_nodes)
           end
 
           # @param [Nodes::BaseNode] node
@@ -132,7 +132,7 @@ module VersatileDiamond
 
         private
 
-          attr_reader :dict, :nodes_graph, :backbone_graph
+          attr_reader :dict, :nodes_graph, :backbone_graph, :ordered_graph
 
           # @param [Nodes::BaseNode] node
           # @return [Boolean]
@@ -312,12 +312,12 @@ module VersatileDiamond
             drop_proc = -> ns { nodes_without_species(ns, uniq_species) }
 
             reached = false
-            backbone_graph.each_with_object({}) do |(key, rels), acc|
+            ordered_graph.each_with_object([]) do |(key, rels), acc|
               reached ||= slice(key, rels).any? { |n| nodes.include?(n) }
               if reached
-                acc[key] = rels
+                acc << [key, rels]
               else
-                acc[drop_proc[key]] = rels.map { |ns, rp| [drop_proc[ns], rp] }
+                acc << [drop_proc[key], rels.map { |ns, rp| [drop_proc[ns], rp] }]
               end
             end
           end

@@ -12,6 +12,7 @@ module VersatileDiamond
             super
             @_converted_nodes_graph = nil
             @_converted_backbone_graph = nil
+            @_converted_ordered_graph = nil
           end
 
           # @param [Array] atoms
@@ -63,6 +64,15 @@ module VersatileDiamond
           def backbone_graph
             @_converted_backbone_graph ||=
               dup_graph(super, &method(:replace_scopes)).freeze
+          end
+
+          # @return [Hash]
+          # @override
+          def ordered_graph
+            @_converted_ordered_graph ||=
+              super.map do |ks, rels|
+                [replace_scopes(ks), rels.map { |ns, r| [replace_scopes(ns), r] }]
+              end.freeze
           end
 
           # @param [Array] rels

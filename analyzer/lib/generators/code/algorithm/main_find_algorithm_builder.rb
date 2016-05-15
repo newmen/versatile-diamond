@@ -56,7 +56,7 @@ module VersatileDiamond
             factory = make_context_factory(context)
             source_unit = factory.unit(nodes)
             procs = collect_procs(factory, ordered_graph, init_procs(source_unit))
-            call_procs(procs) { make_creator_unit(factory).create }
+            call_procs(procs, &make_creator_unit(factory).public_method(:create))
           end
 
           # Collects procs of conditions for body of find algorithm

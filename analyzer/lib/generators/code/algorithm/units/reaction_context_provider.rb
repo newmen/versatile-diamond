@@ -10,9 +10,7 @@ module VersatileDiamond
           # @param [Array] nodes
           # @return [Boolean]
           def relations_from?(nodes)
-            backbone_graph.any? do |key, rels|
-              !rels.empty? && nodes == key
-            end
+            backbone_graph.any? { |key, rels| !rels.empty? && nodes == key }
           end
 
         private
