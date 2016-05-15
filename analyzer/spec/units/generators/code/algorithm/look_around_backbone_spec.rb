@@ -8,6 +8,12 @@ module VersatileDiamond
         describe LookAroundBackbone, type: :algorithm, use: :chunks do
           let(:backbone) { described_class.new(generator, lateral_chunks) }
 
+            shared_examples_for :check_action_nodes do
+              it 'atoms of nodes' do
+                expect(grub_atoms(backbone.action_nodes)).to eq(atoms_lists)
+              end
+            end
+
           it_behaves_like :dimer_formation_in_different_envs do
             describe '#action_nodes' do
               let(:lateral_reactions) { [dept_end_lateral_df] }
@@ -45,6 +51,18 @@ module VersatileDiamond
               it_behaves_like :check_entry_nodes do
                 let(:lateral_reactions) { [dept_ewb_lateral_df] }
                 let(:points_list) { [[t1], [t1, t2]] }
+              end
+            end
+
+            describe '#action_nodes' do
+              let(:atoms_lists) { [t1, t2] }
+
+              it_behaves_like :check_action_nodes do
+                let(:lateral_reactions) { [dept_end_lateral_df] }
+              end
+
+              it_behaves_like :check_action_nodes do
+                let(:lateral_reactions) { [dept_ewb_lateral_df] }
               end
             end
 
@@ -147,6 +165,18 @@ module VersatileDiamond
               end
             end
 
+            describe '#action_nodes' do
+              let(:atoms_lists) { [t1, t2] }
+
+              it_behaves_like :check_action_nodes do
+                let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
+              end
+
+              it_behaves_like :check_action_nodes do
+                let(:lateral_reactions) { [dept_big_ab_lateral_sdf] }
+              end
+            end
+
             describe '#ordered_graph_from' do
               let(:ordered_graph) do
                 [
@@ -184,6 +214,12 @@ module VersatileDiamond
             describe '#entry_nodes' do
               it_behaves_like :check_entry_nodes do
                 let(:points_list) { [[tm], [td]] }
+              end
+            end
+
+            describe '#action_nodes' do
+              it_behaves_like :check_action_nodes do
+                let(:atoms_lists) { [tm, td] }
               end
             end
 

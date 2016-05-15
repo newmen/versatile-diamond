@@ -40,6 +40,7 @@ module VersatileDiamond
 
               let(:typical_reaction) { dept_symmetric_dimer_formation }
               let(:t1) { target_specs.first.atom(:ct) }
+              let(:t2) { (lateral_chunks.targets.map(&:last) - [t1]).first }
 
               let(:front_bridge) { sidepiece_spec_related_by(position_100_front) }
               let(:cross_bridge) { sidepiece_spec_related_by(position_100_cross) }
