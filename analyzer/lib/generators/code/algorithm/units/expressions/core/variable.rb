@@ -7,6 +7,7 @@ module VersatileDiamond
         class Variable < Statement
           extend InitValuesChecker
           include Expression
+          include Callable
 
           INDEX_RX = /\[.+?\]$/.freeze
 
@@ -107,14 +108,6 @@ module VersatileDiamond
           # @return [Assign] the string with argument definition
           def define_arg
             Assign[@name, type: arg_type]
-          end
-
-          # @param [String] method_name
-          # @param [Array] args
-          # @param [Hash] kwargs
-          # @return [OpCall] the string with method call
-          def call(method_name, *args, **kwargs)
-            OpCall[self, FunctionCall[method_name, *args, **kwargs]]
           end
 
         protected

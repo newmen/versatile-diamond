@@ -7,6 +7,7 @@ module VersatileDiamond
         class FunctionCall < Statement
           extend InitValuesChecker
           include Expression
+          include Callable
 
           class << self
             # @param [String] name

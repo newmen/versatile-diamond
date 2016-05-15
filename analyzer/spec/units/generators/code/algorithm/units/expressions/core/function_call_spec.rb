@@ -44,6 +44,11 @@ module VersatileDiamond
             it { expect(func2.name.code).to eq('many') }
             it { expect(tfunc0.name.code).to eq('templ') }
           end
+
+          describe '#call' do
+            it { expect(subject.call('hello').code).to eq('simple()->hello()') }
+            it { expect(func1.call('f', Constant[0]).code).to eq('mono(x)->f(0)') }
+          end
         end
 
       end
