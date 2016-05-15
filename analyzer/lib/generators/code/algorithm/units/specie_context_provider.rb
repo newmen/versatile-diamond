@@ -88,6 +88,14 @@ module VersatileDiamond
             end
           end
 
+          # @param [Array] nodes
+          # @return [Array]
+          def same_related_nodes(nodes)
+            nodes.select do |node|
+              backbone_graph.any? { |ns, rels| related_in?(node, ns, rels) }
+            end
+          end
+
           # @param [Nodes::BaseNode] n1
           # @param [Nodes::BaseNode] n2
           # @return [Boolean]
@@ -104,11 +112,11 @@ module VersatileDiamond
           end
 
           # @param [Nodes::BaseNode] node
-          # @param [Array] _ automatically passed to super method
+          # @param [Array] key_nodes
+          # @param [Array] rels
           # @return [Boolean]
-          # @override
-          def related_in?(node, *)
-            node.splittable? || super
+          def related_in?(node, key_nodes, rels)
+            node.splittable? || !rels.empty? && slice(key_nodes, rels).include?(node)
           end
         end
 

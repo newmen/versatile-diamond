@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm::Units
@@ -14,6 +16,16 @@ module VersatileDiamond
           end
 
         private
+
+          # @param [Array] nodes
+          # @return [Array]
+          def same_related_nodes(nodes)
+            nwbrs = nodes.map { |n| [n, both_directions_bone_relations_of_one(n)] }
+            groups = nwbrs.groups do |_, rels|
+              rels.map { |n, r| [n.properties, r] }.to_set
+            end
+            groups.select(&:one?).flat_map { |group| group.map(&:first) }
+          end
 
           # @param [Nodes::BaseNode] node
           # @return [Array] nodes

@@ -452,32 +452,38 @@ module VersatileDiamond
               let(:other_spec) { dept_extra_activated_methyl_on_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchor = target->atom(2);
-    eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
-        if (target->atom(1) != neighbour1 && neighbour1->is(#{role_cr}))
+    Atom *atom1 = target->atom(2);
+    eachNeighbour(atom1, &Diamond::front_100, [&](Atom *neighbour1) {
+        if (neighbour1 != target->atom(1))
         {
-            BridgeCRs *specie1 = neighbour1->specByRole<BridgeCRs>(#{role_cr});
-            if (specie1->atom(1) != anchor)
+            if (neighbour1->is(#{role_cr}))
             {
-                Atom *anchors1[2] = { neighbour1, anchor };
-                eachNeighbours<2>(anchors1, &Diamond::cross_100, [&](Atom **neighbours1) {
-                    if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
-                    {
-                        neighbourFrom(neighbours1, &Diamond::front_110_at, [&](Atom *neighbour2) {
-                            if (neighbour2->is(#{other_role_cb}) && neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
-                            {
-                                neighbour2->eachAmorphNeighbour([&](Atom *amorph1) {
-                                    if (amorph1->is(#{other_role_cm}))
+                BridgeCRs *bridgeCRs1 = neighbour1->specByRole<BridgeCRs>(#{role_cr});
+                if (atom1 != bridgeCRs1->atom(1))
+                {
+                    Atom *atoms1[2] = { neighbour1, atom1 };
+                    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&bridgeCRs1, &target](Atom **neighbours1) {
+                        if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
+                        {
+                            neighbourFrom(neighbours1, &Diamond::front_110_at, [&bridgeCRs1, &neighbours1, &target](Atom *neighbour2) {
+                                if (neighbour2->is(#{other_role_cb}))
+                                {
+                                    if (neighbours1[0]->hasBondWith(neighbour2) && neighbours1[1]->hasBondWith(neighbour2))
                                     {
-                                        MethylOnBridgeCMss *specie2 = amorph1->specByRole<MethylOnBridgeCMss>(#{other_role_cm});
-                                        SpecificSpec *targets[3] = { specie2, specie1, target };
-                                        create<ForwardMethylToGap>(targets);
+                                        neighbour2->eachAmorphNeighbour([&bridgeCRs1, &target](Atom *amorph1) {
+                                            if (amorph1->is(#{other_role_cm}))
+                                            {
+                                                MethylOnBridgeCMss *methylOnBridgeCMss1 = amorph1->specByRole<MethylOnBridgeCMss>(#{other_role_cm});
+                                                SpecificSpec *targets[3] = { methylOnBridgeCMss1, bridgeCRs1, target };
+                                                create<ForwardMethylToGap>(targets);
+                                            }
+                                        });
                                     }
-                                });
-                            }
-                        });
-                    }
-                });
+                                }
+                            });
+                        }
+                    });
+                }
             }
         }
     });

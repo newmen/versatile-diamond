@@ -82,7 +82,9 @@ module VersatileDiamond
           # @return [Expressions::NotEqualsCondition]
           def check_private_relations(&block)
             pairs = zip_private_related_exprs
-            if pairs.empty?
+            # TODO: it is possible that second condition should be extended
+            # Excepts secondary excess check of already checked atoms
+            if pairs.empty? || (!species.one? && pairs.size == species.size)
               block.call
             else
               Expressions::NotEqualsCondition[pairs, block.call]
@@ -241,7 +243,9 @@ module VersatileDiamond
           def iterate_relations(nbr, &block)
             crystal_rels_proc = -> &prc { iterate_crystal_relations(nbr, &prc) }
             unit.check_amorph_bonds_if_have(nbr.unit, crystal_rels_proc) do
-              check_existed_relations(nbr, &block)
+              check_private_relations do
+                check_existed_relations(nbr, &block)
+              end
             end
           end
 
