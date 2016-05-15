@@ -595,15 +595,15 @@ module VersatileDiamond
                 let(:thrid_spec) { dept_right_activated_bridge }
                 let(:find_algorithm) do
                   <<-CODE
-    target->eachSymmetry([](SpecificSpec *specie1) {
-        Atom *anchors[2] = { specie1->atom(2), specie1->atom(3) };
-        eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
+    target->eachSymmetry([](SpecificSpec *symmetricMethylOnBridgeCMss1) {
+        Atom *atoms1[2] = { symmetricMethylOnBridgeCMss1->atom(2), symmetricMethylOnBridgeCMss1->atom(3) };
+        eachNeighbours<2>(atoms1, &Diamond::cross_100, [&symmetricMethylOnBridgeCMss1](Atom **neighbours1) {
             if (neighbours1[0]->is(#{other_role_cl}) && neighbours1[1]->is(#{thrid_role_cr}))
             {
-                DimerCLsCRi *specie2 = neighbours1[0]->specByRole<DimerCLsCRi>(#{other_role_cl});
-                BridgeCRs *specie3 = neighbours1[1]->specByRole<BridgeCRs>(#{thrid_role_cr});
-                SpecificSpec *targets[3] = { specie2, specie1, specie3 };
-                create<ForwardTwoDimersForm>(targets);
+                DimerCLsCRi *dimerCLsCRi1 = neighbours1[0]->specByRole<DimerCLsCRi>(#{other_role_cl});
+                BridgeCRs *bridgeCRs1 = neighbours1[1]->specByRole<BridgeCRs>(#{thrid_role_cr});
+                SpecificSpec *targets[3] = { dimerCLsCRi1, symmetricMethylOnBridgeCMss1, bridgeCRs1 };
+                create<ForwardTwoSideDimersForm>(targets);
             }
         });
     });
