@@ -12,6 +12,17 @@ module VersatileDiamond
               !rels.empty? && nodes == key
             end
           end
+
+        private
+
+          # @param [Nodes::BaseNode] node
+          # @return [Array] nodes
+          # @return [Boolean]
+          def bone_with?(node, nodes)
+            specie = node.uniq_specie
+            nodes.any? { |n| bone_relation?(node, n) || n.uniq_specie == specie } &&
+              !both_units_related?(node, nodes)
+          end
         end
 
       end

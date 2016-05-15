@@ -145,6 +145,7 @@ module VersatileDiamond
             end
           end
 
+          # @param [BasePureUnit] inner_unit
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_splitten_unit(inner_unit, &block)
@@ -158,7 +159,10 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           def check_undefined_species_of(inner_unit, &block)
             if inner_unit.checkable?
-              context_unit(inner_unit).select_specie_definition(&block)
+              wrapped_unit = context_unit(inner_unit)
+              wrapped_unit.select_specie_definition do
+                wrapped_unit.check_private_relations(&block)
+              end
             else
               block.call
             end
@@ -200,9 +204,7 @@ module VersatileDiamond
           def check_avail_species_in(nbr, &block)
             defined_ancns = defined_same_neighbour_nodes(nbr)
             nbr.check_avail_species do
-              check_eq_previous_atoms(defined_ancns, except_own: false) do
-                nbr.check_private_relations(&block)
-              end
+              check_eq_previous_atoms(defined_ancns, except_own: false, &block)
             end
           end
 
@@ -239,9 +241,7 @@ module VersatileDiamond
           def iterate_relations(nbr, &block)
             crystal_rels_proc = -> &prc { iterate_crystal_relations(nbr, &prc) }
             unit.check_amorph_bonds_if_have(nbr.unit, crystal_rels_proc) do
-              check_private_relations do
-                check_existed_relations(nbr, &block)
-              end
+              check_existed_relations(nbr, &block)
             end
           end
 

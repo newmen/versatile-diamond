@@ -69,7 +69,8 @@ module VersatileDiamond
               majors = manies.select { |ns| bone_with?(node, ns) }
               defined = majors.select { |ns| ns.all?(&method(:defined?)) }
               sides = defined.select { |ns| ns.any?(&method(:bone?)) }
-              likes = sides.select(&method(:similar_properties?))
+              different = sides.reject { |ns| ns.map(&:uniq_specie).uniq.one? }
+              likes = different.select(&method(:similar_properties?))
               likes.flat_map { |ns| ns.combination(2).to_a }
             end
           end
@@ -406,18 +407,17 @@ module VersatileDiamond
           # @param [Nodes::BaseNode] node
           # @return [Array] nodes
           # @return [Boolean]
-          def bone_with?(node, nodes)
-            nodes.any? { |n| bone_relation?(node, n) } &&
-              !two_units_relation?(node, nodes)
+          def both_units_related?(node, nodes)
+            accurate_related?([node], nodes) || accurate_related?(nodes, [node])
           end
 
-          # @param [Nodes::BaseNode] node
-          # @return [Array] nodes
+          # @param [Array] nodes1
+          # @param [Array] nodes2
           # @return [Boolean]
-          def two_units_relation?(node, nodes)
-            rels = backbone_graph[[node]]
-            rels && rels.any? do |ns, _|
-              lists_are_identical?(nodes, ns, &:==)
+          def accurate_related?(nodes1, nodes2)
+            backbone_graph.any? do |key, rels|
+              lists_are_identical?(nodes1, key, &:==) &&
+                rels.any? { |ns, _| lists_are_identical?(nodes2, ns, &:==) }
             end
           end
 

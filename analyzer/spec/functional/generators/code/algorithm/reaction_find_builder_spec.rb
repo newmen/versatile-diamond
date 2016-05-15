@@ -425,17 +425,17 @@ module VersatileDiamond
               let(:other_spec) { dept_right_activated_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchors[2] = { target->atom(2), target->atom(3) };
-    eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
+    Atom *atoms1[2] = { target->atom(2), target->atom(3) };
+    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&target](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
         {
-            BridgeCRs *specie1 = neighbours1[0]->specByRole<BridgeCRs>(#{other_role_cr});
-            if (specie1->atom(1) != neighbours1[1])
+            BridgeCRs *bridgeCRs1 = neighbours1[1]->specByRole<BridgeCRs>(#{other_role_cr});
+            if (neighbours1[0] != bridgeCRs1->atom(1))
             {
-                BridgeCRs *specie2 = neighbours1[1]->specByRole<BridgeCRs>(#{other_role_cr});
-                if (specie2->atom(1) != neighbours1[0])
+                BridgeCRs *bridgeCRs2 = neighbours1[0]->specByRole<BridgeCRs>(#{other_role_cr});
+                if (neighbours1[1] != bridgeCRs2->atom(1))
                 {
-                    SpecificSpec *targets[3] = { target, specie1, specie2 };
+                    SpecificSpec *targets[3] = { target, bridgeCRs2, bridgeCRs1 };
                     create<ForwardMethylToGap>(targets);
                 }
             }

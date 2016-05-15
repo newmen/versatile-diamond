@@ -96,6 +96,14 @@ module VersatileDiamond
           end
 
           # @param [Nodes::BaseNode] node
+          # @return [Array] nodes
+          # @return [Boolean]
+          def bone_with?(node, nodes)
+            nodes.any? { |n| bone_relation?(node, n) } &&
+              !both_units_related?(node, nodes)
+          end
+
+          # @param [Nodes::BaseNode] node
           # @param [Array] _ automatically passed to super method
           # @return [Boolean]
           # @override
