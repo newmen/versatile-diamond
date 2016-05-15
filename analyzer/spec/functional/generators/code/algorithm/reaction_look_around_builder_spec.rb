@@ -180,31 +180,22 @@ module VersatileDiamond
               let(:typical_reaction) { dept_methyl_incorporation }
               let(:lateral_reactions) { [dept_de_lateral_mi] }
 
-              let(:amob) { (lateral_chunks.target_specs - [admr]).first }
-              let(:admr) do
-                lateral_chunks.target_specs.find { |s| s.name == :'dimer(cr: *)' }
-              end
-
-              let(:amob_cb) { role(amob, :cb) }
-              let(:admr_cl) { role(admr, :cl) }
-
-              let(:edge_dimer) { lateral_chunks.sidepiece_specs.first }
-              let(:edmr_cr) { role(edge_dimer, :cr) }
+              let(:edmr_cr) { role(dept_dimer_base, :cr) }
 
               it_behaves_like :check_code do
                 let(:find_algorithm) do
                   <<-CODE
     Atom *atoms1[2] = { target(1)->atom(1), target(0)->atom(3) };
     eachNeighbour(atoms1[1], &Diamond::front_110, [&](Atom *neighbour1) {
-        if (neighbour1->is(18) && atoms1[1]->hasBondWith(neighbour1))
+        if (neighbour1->is(#{edmr_cr}) && atoms1[1]->hasBondWith(neighbour1))
         {
-            LateralSpec *specie1 = neighbour1->specByRole<Dimer>(18);
+            LateralSpec *specie1 = neighbour1->specByRole<Dimer>(#{edmr_cr});
             if (specie1)
             {
                 eachNeighbour(atoms1[0], &Diamond::cross_100, [&](Atom *neighbour2) {
-                    if (neighbour2->is(18))
+                    if (neighbour2->is(#{edmr_cr}))
                     {
-                        LateralSpec *specie2 = neighbour2->specByRole<Dimer>(18);
+                        LateralSpec *specie2 = neighbour2->specByRole<Dimer>(#{edmr_cr});
                         if (specie2 == specie1)
                         {
                             chunks[index++] = new ForwardMethylIncorporationMiEdgeLateral(this, specie1);

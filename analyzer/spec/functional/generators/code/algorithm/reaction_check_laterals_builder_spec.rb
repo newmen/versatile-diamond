@@ -290,6 +290,61 @@ module VersatileDiamond
                 end
               end
             end
+
+            describe 'methyl incorporation near edge' do
+              it_behaves_like :check_code do
+                let(:typical_reaction) { dept_methyl_incorporation }
+                let(:lateral_reactions) { [dept_de_lateral_mi] }
+                let(:base_specs) do
+                  [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
+                end
+                let(:specific_specs) do
+                  [dept_activated_methyl_on_bridge, dept_activated_dimer]
+                end
+
+                let(:lateral_dimer) { sidepiece_spec_by_name(:dimer) }
+                let(:spec) { lateral_dimer }
+
+                let(:amob_cb) { role(dept_methyl_on_bridge, :cb) }
+                let(:admr_cl) { role(dept_dimer_base, :cl) }
+
+                let(:find_algorithm) do
+                  <<-CODE
+    Atom *atoms1[2] = { target->atom(3), target->atom(0) };
+    eachNeighbour(atoms1[0], &Diamond::cross_100, [&](Atom *neighbour1) {
+        if (neighbour1->is(#{amob_cb}))
+        {
+            SpecificSpec *specie1 = neighbour1->specByRole<MethylOnBridgeCMs>(#{amob_cb});
+            if (specie1)
+            {
+                ChainFactory<
+                    UnoLateralFactory,
+                    ForwardMethylIncorporationMiEdgeLateral,
+                    ForwardMethylIncorporation
+                > factory(target, specie1);
+                factory.checkoutReactions<ForwardMethylIncorporationMiEdgeLateral>();
+            }
+        }
+    });
+    eachNeighbour(atoms1[1], &Diamond::cross_110, [&](Atom *neighbour1) {
+        if (neighbour1->is(#{admr_cl}) && atoms1[1]->hasBondWith(neighbour1))
+        {
+            SpecificSpec *specie1 = neighbour1->specByRole<DimerCRs>(#{admr_cl});
+            if (specie1)
+            {
+                ChainFactory<
+                    UnoLateralFactory,
+                    ForwardMethylIncorporationMiEdgeLateral,
+                    ForwardMethylIncorporation
+                > factory(target, specie1);
+                factory.checkoutReactions<ForwardMethylIncorporationMiEdgeLateral>();
+            }
+        }
+    });
+                  CODE
+                end
+              end
+            end
           end
         end
 
