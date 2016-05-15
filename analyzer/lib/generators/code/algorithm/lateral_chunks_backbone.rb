@@ -35,14 +35,6 @@ module VersatileDiamond
             @_final_graph ||= make_final_graph
           end
 
-          # Makes small directed graph for check sidepiece species
-          # @param [Array] nodes for which the graph will returned
-          # @return [Array] the ordered list that contains the relations from final
-          #   graph
-          def ordered_graph_from(nodes)
-            [[nodes, final_graph[nodes]]]
-          end
-
         private
 
           attr_reader :lateral_chunks, :grouped_nodes_graph

@@ -69,11 +69,11 @@ module VersatileDiamond
         # @return [LateralReaction] the single lateral reaction
         def select_reaction(spec_atom)
           chunks_users = @root_chunks.select { |ch| ch.links[spec_atom] }
-          if chunks_users.size > 1
-            raise ArgumentError, 'Too many reactions uses passed spec_atom'
-          else
+          if chunks_users.one?
             chunk = chunks_users.first
             @generator.reaction_class(chunk.lateral_reaction.name)
+          else
+            raise ArgumentError, 'Too many reactions uses passed spec_atom'
           end
         end
 

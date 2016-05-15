@@ -226,7 +226,8 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.first }
                 let(:ordered_graph) do
                   [
-                    [[tm], [[[dm], param_100_cross]]]
+                    [[tm], [[[dm], param_100_cross]]],
+                    [[td], [[[dd], param_110_front]]]
                   ]
                 end
               end
@@ -235,7 +236,8 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.last }
                 let(:ordered_graph) do
                   [
-                    [[td], [[[dd], param_110_front]]]
+                    [[td], [[[dd], param_110_front]]],
+                    [[tm], [[[dm], param_100_cross]]]
                   ]
                 end
               end

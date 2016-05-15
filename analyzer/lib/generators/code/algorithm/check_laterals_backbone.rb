@@ -22,9 +22,8 @@ module VersatileDiamond
           # @param [Array] nodes for which the graph will returned
           # @return [Array] the ordered list that contains relations of final graph
           #   squized to one list if some nodes are similar
-          # @override
           def ordered_graph_from(nodes)
-            super(detect_key_nodes(final_graph, nodes))
+            [[nodes, final_graph[detect_key_nodes(final_graph, nodes)]]]
           end
 
         private
