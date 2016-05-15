@@ -9,10 +9,6 @@ module VersatileDiamond
           subject { described_class.new(dict, node) }
           let(:node) { entry_nodes.first }
 
-          let(:return37) do
-            -> { Expressions::Core::Return[Expressions::Core::Constant[37]] }
-          end
-
           describe '#define!' do
             include_context :methyl_adsorbtion_context
             before { subject.define! }

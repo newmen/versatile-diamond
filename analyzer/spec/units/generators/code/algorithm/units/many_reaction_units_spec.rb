@@ -16,10 +16,6 @@ module VersatileDiamond
 
           subject { nodes_to_many_units(entry_nodes) }
 
-          let(:return42) do
-            -> { Expressions::Core::Return[Expressions::Core::Constant[42]] }
-          end
-
           describe '#define!' do
             include_context :intermed_migr_dh_formation_context
             before { subject.define! }
