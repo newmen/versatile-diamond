@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        describe ReactionCheckLateralsBuilder, type: :algorithm, use: :chunks do
+        describe CheckLateralsFindBuilder, type: :algorithm, use: :chunks do
           let(:generator) do
             stub_generator(
               base_specs: respond_to?(:base_specs) ? base_specs : [],

@@ -41,10 +41,10 @@ module VersatileDiamond
 
         # Gets builder of check lateral algorighm from passed specie
         # @param [Specie] specie from which the algorithm will build
-        # @return [ReactionCheckLateralsBuilder] the builder of checkLaterals method
+        # @return [CheckLateralsFindBuilder] the builder of checkLaterals method
         #   code
         def check_laterals_builder_from(specie)
-          builder_class = Algorithm::ReactionCheckLateralsBuilder
+          builder_class = Algorithm::CheckLateralsFindBuilder
           builder_class.new(generator, lateral_chunks, specie)
         end
 
@@ -136,7 +136,7 @@ module VersatileDiamond
         # Builds look around algorithm for find all possible lateral reactions
         # @return [String] the string with cpp code of look around algorithm
         def look_around_algorithm
-          Algorithm::ReactionLookAroundBuilder.new(generator, lateral_chunks).build
+          Algorithm::LookAroundFindBuilder.new(generator, lateral_chunks).build
         end
 
         # Gets the arguments of check laterals method
