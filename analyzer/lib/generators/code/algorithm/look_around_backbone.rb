@@ -8,20 +8,6 @@ module VersatileDiamond
         class LookAroundBackbone < LateralChunksBackbone
           def_delegators :grouped_nodes_graph, :action_nodes
 
-          # Makes small directed graph for check sidepiece species
-          # @param [Array] nodes for which the graph will returned
-          # @return [Array] the ordered list that contains the relations from final
-          #   graph
-          def ordered_graph_from(nodes)
-            other_side = final_graph[nodes]
-            result = [[nodes, other_side]]
-            other_side.each_with_object(result) do |(nbrs, _), acc|
-              keys_related_to(nbrs).each do |key|
-                acc << [key, final_graph[key]] unless key == nodes
-              end
-            end
-          end
-
         private
 
           # Makes clean graph with relations only from target nodes
@@ -44,6 +30,20 @@ module VersatileDiamond
             final_graph.each_with_object([]) do |(key, rels), acc|
               nbrs = rels.flat_map(&:first)
               acc << key if nbrs.any? { |n| reactions.include?(reaction_with(n)) }
+            end
+          end
+
+          # Makes small directed graph for check sidepiece species
+          # @param [Array] nodes for which the graph will returned
+          # @return [Array] the ordered list that contains the relations from final
+          #   graph
+          def raw_directed_graph_from(nodes)
+            other_side = final_graph[nodes]
+            result = [[nodes, other_side]]
+            other_side.each_with_object(result) do |(nbrs, _), acc|
+              keys_related_to(nbrs).each do |key|
+                acc << [key, final_graph[key]] unless key == nodes
+              end
             end
           end
 

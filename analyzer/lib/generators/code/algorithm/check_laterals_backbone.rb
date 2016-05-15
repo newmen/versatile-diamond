@@ -18,15 +18,15 @@ module VersatileDiamond
             @specie = specie
           end
 
+        private
+
           # Squize final graph for similar key nodes
           # @param [Array] nodes for which the graph will returned
           # @return [Array] the ordered list that contains relations of final graph
           #   squized to one list if some nodes are similar
-          def ordered_graph_from(nodes)
+          def raw_directed_graph_from(nodes)
             [[nodes, final_graph[detect_key_nodes(final_graph, nodes)]]]
           end
-
-        private
 
           # Detects same key nodes in passed graph
           # @param [Hash] graph where key nodes will be checked

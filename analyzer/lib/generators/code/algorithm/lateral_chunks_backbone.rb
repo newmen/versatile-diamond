@@ -35,6 +35,15 @@ module VersatileDiamond
             @_final_graph ||= make_final_graph
           end
 
+          # Gets ordered graph from passed nodes where each side node is replaced
+          # @param [Array] nodes
+          # @return [Array]
+          def ordered_graph_from(nodes)
+            raw_directed_graph_from(nodes).map do |key, rels|
+              [key, rels.map { |ns, r| [ns.map(&method(:side_node)), r] }]
+            end
+          end
+
         private
 
           attr_reader :lateral_chunks, :grouped_nodes_graph
@@ -43,6 +52,12 @@ module VersatileDiamond
           # @return [LateralChunksGroupedNodes]
           def grouped_graph
             grouped_nodes_graph.final_graph
+          end
+
+          # @param [Nodes::ReactantNode] node
+          # @return [Nodes::SideNode]
+          def side_node(node)
+            Nodes::SideNode.new(node)
           end
         end
 
