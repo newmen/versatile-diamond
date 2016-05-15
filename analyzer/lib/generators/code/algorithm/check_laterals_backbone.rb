@@ -64,8 +64,7 @@ module VersatileDiamond
           # @param [Array] nodes_lists with two comparing arguments
           # @return [Boolean] are dependent species in passed lists identical or not
           def identical_specs?(*nodes_lists)
-            specs_lists = nodes_lists.map { |nodes| nodes.map(&:spec).uniq }
-            lists_are_identical?(*specs_lists, &:==)
+            lists_are_identical?(*nodes_lists.map { |nodes| nodes.map(&:spec).uniq })
           end
 
           # Makes clean graph with relations only from target nodes

@@ -201,8 +201,7 @@ module VersatileDiamond
           #   of atom properties
           # @return [Boolean] are equal lists of atom properties or not
           def equal_props?(*lists_of_nodes)
-            lists_of_props = lists_of_nodes.map { |ns| ns.map(&:properties) }
-            lists_are_identical?(*lists_of_props, &:==)
+            lists_are_identical?(*lists_of_nodes.map { |ns| ns.map(&:properties) })
           end
 
           # Also sorts the result list of connected nodes

@@ -381,7 +381,7 @@ module VersatileDiamond
           # @yield [Array] transforms the relations list
           # @return [Boolean]
           def same_rels_when?(rels_lists, &block)
-            lists_are_identical?(*rels_lists.map(&block), &:==)
+            lists_are_identical?(*rels_lists.map(&block))
           end
 
           # @param [Nodes::BaseNode] a
@@ -405,8 +405,8 @@ module VersatileDiamond
           # @return [Boolean]
           def accurate_related?(nodes1, nodes2)
             backbone_graph.any? do |key, rels|
-              lists_are_identical?(nodes1, key, &:==) &&
-                rels.any? { |ns, _| lists_are_identical?(nodes2, ns, &:==) }
+              lists_are_identical?(nodes1, key) &&
+                rels.any? { |ns, _| lists_are_identical?(nodes2, ns) }
             end
           end
 

@@ -53,7 +53,7 @@ module VersatileDiamond
         # Verifies that passed species belongs to source species set
         # @param [Array] species which will be checked
         def check_all_source!(specs)
-          unless lists_are_identical?(concept_source_species, specs, &:==)
+          unless lists_are_identical?(concept_source_species, specs)
             msg = 'The passed species do not belongs to set of source species'
             raise ArgumentError, msg
           end

@@ -68,8 +68,8 @@ module VersatileDiamond
       def same?(other)
         if self.class == other.class
           atom.same?(other.atom) &&
-            lists_are_identical?(options, other.options, &:==) &&
-            lists_are_identical?(monovalents, other.monovalents, &:==)
+            lists_are_identical?(options, other.options) &&
+            lists_are_identical?(monovalents, other.monovalents)
         elsif other.is_a?(VeiledAtom)
           other.same?(self)
         else

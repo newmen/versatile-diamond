@@ -282,7 +282,7 @@ module VersatileDiamond
           # @param [Array] nodes_lists
           # @return [Boolean]
           def same_atoms?(*nodes_lists)
-            lists_are_identical?(*nodes_lists.map { |ns| ns.map(&:atom).uniq }, &:==)
+            lists_are_identical?(*nodes_lists.map { |ns| ns.map(&:atom).uniq })
           end
 
           # @param [ContextBaseUnit] nbr
@@ -488,7 +488,7 @@ module VersatileDiamond
           # @return [Boolean]
           def seems_different?(ca_nodes)
             ca_species = ca_nodes.map(&:uniq_specie).uniq
-            return true unless lists_are_identical?(species, ca_species, &:==)
+            return true unless lists_are_identical?(species, ca_species)
             return true unless ca_nodes.map { |n| n.uniq_specie.original }.uniq.one?
 
             groups = ca_nodes.groups(&:uniq_specie)

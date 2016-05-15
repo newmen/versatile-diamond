@@ -19,10 +19,8 @@ module VersatileDiamond
                 lists_are_identical?(rels, expected_rels, &rels_cmpr)
               end
           else
-            lists_are_identical?(actual_keys, expected_keys, &:==) &&
-              actual.all? do |key, rels|
-                lists_are_identical?(rels, expected[key], &:==)
-              end
+            lists_are_identical?(actual_keys, expected_keys) &&
+              actual.all? { |key, rels| lists_are_identical?(rels, expected[key]) }
           end
         end
 
@@ -71,7 +69,7 @@ module VersatileDiamond
             end
           else
             actual.each_with_object({}) do |(v, rels), acc|
-              next if expected[v] && lists_are_identical?(rels, expected[v], &:==)
+              next if expected[v] && lists_are_identical?(rels, expected[v])
               if expected[v]
                 ed, rd = expected[v].dup, rels.dup
                 rd.delete_one(ed.pop) until ed.empty? || rd.empty?
@@ -133,7 +131,7 @@ module VersatileDiamond
         # @param [Array] keys2 the second comparing list
         # @return [Boolean] are identical lists or not
         def identical_multidim_keys?(keys1, keys2)
-          lists_are_identical?(keys1, keys2, &:==)
+          lists_are_identical?(keys1, keys2)
         end
 
         # Provides lambda function for compare relations of passed keys

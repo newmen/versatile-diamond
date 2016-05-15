@@ -39,7 +39,7 @@ module VersatileDiamond
           # @param [Array] selected_nodes
           # @return [Boolean]
           def same_nodes?(selected_nodes)
-            lists_are_identical?(selected_nodes, nodes, &:==)
+            lists_are_identical?(selected_nodes, nodes)
           end
 
           # @param [Array] selected_nodes
@@ -51,8 +51,7 @@ module VersatileDiamond
           # @param [Array] nodes_lists
           # @return [Boolean]
           def same_props_in?(nodes_lists)
-            props_lists = nodes_lists.map { |ns| ns.map(&:properties) }
-            lists_are_identical?(*props_lists, &:==)
+            lists_are_identical?(*nodes_lists.map { |ns| ns.map(&:properties) })
           end
         end
 

@@ -290,7 +290,7 @@ module VersatileDiamond
 
           # @return [Boolean]
           def totally_popular?
-            lists_are_identical?(nodes, all_popular_atoms_nodes, &:==)
+            lists_are_identical?(nodes, all_popular_atoms_nodes)
           end
 
           # @param [Array] inner_units

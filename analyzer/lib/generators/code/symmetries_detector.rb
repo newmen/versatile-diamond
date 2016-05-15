@@ -158,7 +158,7 @@ module VersatileDiamond
             end
 
             next if overlap.empty?
-            next if !complex_child && lists_are_identical?(overlap.flatten, atoms, &:==)
+            next if !complex_child && lists_are_identical?(overlap.flatten, atoms)
             next if all_overlaps.any? { |pairs| pairs.all?(&check_lambda) }
 
             all_overlaps << overlap

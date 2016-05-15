@@ -271,7 +271,7 @@ module VersatileDiamond
 
         big_edges = @big_graph.significant_edges_of(big_vertex)
         small_edges = @small_graph.significant_edges_of(small_vertex)
-        !lists_are_identical?(big_edges, small_edges, &:==)
+        !lists_are_identical?(big_edges, small_edges)
       end
 
       # Determines which vertices changed by changing the relative position or
@@ -290,9 +290,7 @@ module VersatileDiamond
 
             big_edges = @big_graph.edges(bv, bw)
             small_edges = @small_graph.edges(sv, sw)
-            unless lists_are_identical?(big_edges, small_edges, &:==)
-              vertices << bv << bw
-            end
+            vertices << bv << bw unless lists_are_identical?(big_edges, small_edges)
           end
         end
         result.to_a

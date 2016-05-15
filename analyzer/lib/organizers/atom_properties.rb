@@ -239,7 +239,7 @@ module VersatileDiamond
         info.all? do |key, value|
           internal_value = send(key)
           if internal_value.is_a?(Array)
-            lists_are_identical?(internal_value, value, &:==)
+            lists_are_identical?(internal_value, value)
           else
             internal_value == value
           end
@@ -514,7 +514,7 @@ module VersatileDiamond
       # @param [Symbol] method_name by which will be comparing
       # @return [Boolean] lists are equal or not
       def eq_by?(other, method_name)
-        lists_are_identical?(send(method_name), other.send(method_name), &:==)
+        lists_are_identical?(send(method_name), other.send(method_name))
       end
 
       DYNAMIC_STATES.each do |method_name|

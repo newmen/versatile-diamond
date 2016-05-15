@@ -61,7 +61,7 @@ module VersatileDiamond
       # @return [Boolean] are different or not
       def different_by?(method, other, own_key, other_key)
         srs, ors = send(method, own_key), other.send(method, other_key)
-        !lists_are_identical?(srs, ors, &:==)
+        !lists_are_identical?(srs, ors)
       end
 
       # Checks that bonds of both key have same relations sets

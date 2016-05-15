@@ -51,7 +51,7 @@ module VersatileDiamond
             end
 
             major_groups = non_complete_groups
-            if lists_are_identical?(major_groups.flatten, main_keys, &:==)
+            if lists_are_identical?(major_groups.flatten, main_keys)
               similar_groups = major_groups
             else
               similar_groups = non_flatten_groups + major_groups
@@ -359,7 +359,7 @@ module VersatileDiamond
           # @yeild [Array, (Array, Hash)] do for nodes and them neighbours
           def accurate_combine_relations(group, &block)
             accurate_node_groups_from(group).each do |nodes, nbrs|
-              next if lists_are_identical?(nodes, nbrs, &:==)
+              next if lists_are_identical?(nodes, nbrs)
 
               relation = nil
               nodes.zip(nbrs).each do |nd, nb|
