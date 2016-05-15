@@ -6,6 +6,9 @@ module VersatileDiamond
         # Cleans the chunks grouped nodes graph from not significant relations
         # @abstract
         class LateralChunksBackbone
+          extend Forwardable
+
+          def_delegator :grouped_nodes_graph, :big_graph
 
           # Initializes backbone by lateral chunks object
           # @param [EngineCode] generator the major engine code generator
@@ -37,9 +40,7 @@ module VersatileDiamond
           # @return [Array] the ordered list that contains the relations from final
           #   graph
           def ordered_graph_from(nodes)
-            [
-              [nodes, final_graph[nodes]]
-            ]
+            [[nodes, final_graph[nodes]]]
           end
 
         private

@@ -67,7 +67,7 @@ module VersatileDiamond
           # @param [Array] pairs which will be splited
           # @return [Array] the grouping result
           def group_by_reaction(pairs)
-            pairs.group_by(&:first).map { |first, pairs| [first, pairs.map(&:last)] }
+            pairs.group_by(&:first).map { |react, rwoss| [react, rwoss.map(&:last)] }
           end
 
           # Gets the instances of lateral reaction and relation proc arguments with
@@ -79,13 +79,13 @@ module VersatileDiamond
           def reaction_rl_sidepieces(nodes)
             checking_rels(nodes).map do |nbrs, rel_params|
               result = group_by_reaction(reactions_with_species(nbrs))
-              if result.size > 1
+              if result.one?
+                reaction, species = result.first
+                [reaction, [[nodes, nbrs, rel_params], species]]
+              else
                 msg = "Can't process nodes with different lateral chunks"
                 raise ArgumentError, msg
               end
-
-              reaction, species = result.first
-              [reaction, [[nodes, nbrs, rel_params], species]]
             end
           end
 

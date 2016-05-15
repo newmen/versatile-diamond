@@ -19,7 +19,7 @@ module VersatileDiamond
           # @return [String] the string with cpp code of find algorithm
           def build
             dict.checkpoint!
-            @backbone.entry_nodes.map(&method(:body_for)).map(&:shifted_code).join
+            combine_code
           end
 
         private
@@ -36,6 +36,11 @@ module VersatileDiamond
             @_pure_factory ||= make_pure_factory
           end
 
+          # @return [String]
+          def combine_code
+            @backbone.entry_nodes.map(&method(:body_for)).map(&:shifted_code).join
+          end
+
           # Generates the body of code from passed nodes
           # @param [Array] nodes from which the code will be generated
           # @return [String] the finding algorithm from passed nodes
@@ -45,8 +50,8 @@ module VersatileDiamond
             combine_algorithm(nodes)
           end
 
-          # Build find algorithm by combining procs that occured by walking on backbone
-          # ordered graph from nodes
+          # Builds find algorithm by combining procs that occured by walking on
+          # backbone ordered graph from nodes
           #
           # @param [Array] nodes from which walking will occure
           # @return [Expressions::Core::Statement]

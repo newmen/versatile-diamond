@@ -35,9 +35,11 @@ module VersatileDiamond
           # @return [Array] found key nodes or passed nodes list
           def detect_key_nodes(graph, nodes)
             keys = graph_with_same_nodes(graph, nodes).keys
-            raise 'Not only one similar key available' if keys.size > 1
-
-            keys.first || nodes
+            if keys.one?
+              keys.first || nodes
+            else
+              raise 'Not only one similar key available'
+            end
           end
 
           # Selects a part of passed graph which use same nodes as was passed
