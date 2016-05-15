@@ -387,26 +387,29 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_methyl_on_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchors[2] = { target->atom(3), target->atom(0) };
-    eachNeighbours<2>(anchors, &Diamond::cross_100, [&](Atom **neighbours1) {
+    Atom *atoms1[2] = { target->atom(3), target->atom(0) };
+    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&target](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
         {
-            neighbourFrom(neighbours1, &Diamond::front_110_at, [&](Atom *neighbour1) {
-                if (neighbour1->is(#{other_role_cb}) && neighbours1[0]->hasBondWith(neighbour1) && neighbours1[1]->hasBondWith(neighbour1))
+            neighbourFrom(neighbours1, &Diamond::front_110_at, [&neighbours1, &target](Atom *neighbour1) {
+                if (neighbour1->is(#{other_role_cb}))
                 {
-                    neighbour1->eachAmorphNeighbour([&](Atom *amorph1) {
-                        if (amorph1->is(#{other_role_cm}))
-                        {
-                            MethylOnBridgeCMs *specie1 = amorph1->specByRole<MethylOnBridgeCMs>(#{other_role_cm});
-                            specie1->eachSymmetry([](SpecificSpec *specie2) {
-                                if (specie2->atom(2) == neighbours1[1] && specie2->atom(3) == neighbours1[0])
-                                {
-                                    SpecificSpec *targets[2] = { target, specie2 };
-                                    create<ForwardMethylIncorporation>(targets);
-                                }
-                            });
-                        }
-                    });
+                    if (neighbours1[0]->hasBondWith(neighbour1) && neighbours1[1]->hasBondWith(neighbour1))
+                    {
+                        neighbour1->eachAmorphNeighbour([&neighbours1, &target](Atom *amorph1) {
+                            if (amorph1->is(#{other_role_cm}))
+                            {
+                                MethylOnBridgeCMs *methylOnBridgeCMs1 = amorph1->specByRole<MethylOnBridgeCMs>(#{other_role_cm});
+                                methylOnBridgeCMs1->eachSymmetry([&neighbours1, &target](SpecificSpec *symmetricMethylOnBridgeCMs1) {
+                                    if (neighbours1[0] == symmetricMethylOnBridgeCMs1->atom(3) && neighbours1[1] == symmetricMethylOnBridgeCMs1->atom(2))
+                                    {
+                                        SpecificSpec *targets[2] = { target, symmetricMethylOnBridgeCMs1 };
+                                        create<ForwardMethylIncorporation>(targets);
+                                    }
+                                });
+                            }
+                        });
+                    }
                 }
             });
         }

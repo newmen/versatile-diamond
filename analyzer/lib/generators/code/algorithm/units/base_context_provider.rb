@@ -466,19 +466,29 @@ module VersatileDiamond
           # @return [Boolean]
           def first_rejected_side_reachable?(node)
             check_proc = using_in_proc(node)
+            result = false
             backbone_graph.each do |key, rels|
               if check_proc[key]
-                return false # from current checking function
-              else
-                return true if rels.any? do |ns, _|
-                  ns.include?(node) && key.any? do |k|
-                    relation = relation_between(k, node)
-                    relation && !relation.exist?
-                  end
-                end
+                break
+              elsif rejected_relations_with?(node, key, rels)
+                result = true
+                break
               end
             end
-            false
+            result
+          end
+
+          # @param [Nodes::BaseNode] node
+          # @param [Array] key
+          # @param [Array] rels
+          # @return [Boolean]
+          def rejected_relations_with?(node, key, rels)
+            rels.any? do |ns, _|
+              ns.include?(node) && key.any? do |k|
+                relation = relation_between(k, node)
+                relation && !relation.exist?
+              end
+            end
           end
 
           # @param [Nodes::BaseNode] node

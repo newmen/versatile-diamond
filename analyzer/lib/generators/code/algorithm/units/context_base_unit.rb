@@ -124,11 +124,6 @@ module VersatileDiamond
             unit.units.map(&method(:context_unit))
           end
 
-          # @return [Proc]
-          def check_own_node_proc
-            nodes.public_method(:include?)
-          end
-
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_symmetries(&block)
@@ -370,7 +365,8 @@ module VersatileDiamond
           def defined_self_next_same_nodes
             sncns = context.symmetric_close_nodes(species)
             defined_sncns = sncns.select { |node| dict.var_of(node.uniq_specie) }
-            defined_sncns.any?(&check_own_node_proc) ? defined_sncns : []
+            own_node_proc = nodes.public_method(:include?)
+            defined_sncns.any?(&own_node_proc) ? defined_sncns : []
           end
 
           # @param [ContextBaseUnit] nbr
@@ -382,7 +378,10 @@ module VersatileDiamond
             else
               sncns = context.symmetric_close_nodes(nbr.species)
               undefined_sncns = sncns.reject { |node| dict.var_of(node.uniq_specie) }
-              undefined_sncns.select(&check_own_node_proc)
+              undefined_sncns.select do |node|
+                species.include?(node.uniq_specie) &&
+                  context.not_existed_relations_to(nodes, [node]).empty?
+              end
             end
           end
 
