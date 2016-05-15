@@ -17,14 +17,10 @@ module VersatileDiamond
 
             it_behaves_like :check_expr_init
 
-            describe 'wrong type' do
+            describe 'invalid arguments' do
               it { expect { described_class[type] }.to raise_error }
               it { expect { described_class[func1] }.to raise_error }
               it { expect { described_class[x] }.to raise_error }
-            end
-
-            describe 'invalid arguments' do
-              it { expect { described_class[type] }.to raise_error }
               it { expect { described_class[template_args: [x]] }.to raise_error }
             end
           end

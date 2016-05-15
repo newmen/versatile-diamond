@@ -22,6 +22,11 @@ module VersatileDiamond
             it { expect(subject.ptr).to eq(subject.ptr) }
           end
 
+          describe '#name' do
+            it { expect(subject.name).to eq('int') }
+            it { expect(subject.ptr.name).to eq('int *') }
+          end
+
           describe '#ptr?' do
             it { expect(subject.ptr?).to be_falsey }
             it { expect(scalar.ptr.ptr?).to be_truthy }

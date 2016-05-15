@@ -13,6 +13,10 @@ module VersatileDiamond
 
           it_behaves_like :check_predicates
 
+          describe '#name' do
+            it { expect(subject.name).to eq('Yo') }
+          end
+
           describe '#ptr' do
             subject { type.ptr }
             let(:is_scalar) { true }

@@ -19,19 +19,30 @@ module VersatileDiamond
                 arg_err!("Wrong type of function name #{name.inspect}")
               elsif empty?(name)
                 arg_err!('Calling function name cannot be empty')
-              elsif !args.all?(&:expr?)
-                insp_args = args.reject(&:expr?).inspect
-                arg_err!("Invalid arguemnts #{insp_args} for #{name} function call")
+              elsif !call_args?(args)
+                arg_err!("Invalid arguemnts #{args.inspect} for #{name} function call")
+              elsif !template_args?(kwargs)
+                insp_args = kwargs[:template_args].inspect
+                msg = "Invalid template arguments #{insp_args} for #{name} function"
+                arg_err!(msg)
               else
-                is_tmpl = -> arg { arg.const? || arg.type? }
-                if kwargs[:template_args] && !kwargs[:template_args].all?(&is_tmpl)
-                  insp_args = kwargs[:template_args].reject(&is_tmpl).inspect
-                  msg = "Invalid template arguments #{insp_args} for #{name} function"
-                  arg_err!(msg)
-                else
-                  super
-                end
+                super
               end
+            end
+
+          private
+
+            # @param [Array] exprs
+            # @return [Boolean]
+            def call_args?(exprs)
+              exprs.all?(&:expr?)
+            end
+
+            # @param [Hash] kwargs
+            # @return [Boolean]
+            def template_args?(kwargs)
+              !kwargs[:template_args] ||
+                kwargs[:template_args].all? { |arg| arg.const? || arg.type? }
             end
           end
 

@@ -33,6 +33,11 @@ module VersatileDiamond
             code == other.code
           end
 
+          # @return [String]
+          def name
+            value
+          end
+
           # Checks that current statement is expression
           # @return [Boolean] false
           # @override
