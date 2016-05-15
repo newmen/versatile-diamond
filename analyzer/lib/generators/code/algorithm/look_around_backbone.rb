@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm
@@ -6,6 +8,8 @@ module VersatileDiamond
         # Cleans the chunks grouped nodes graph from not significant relations and
         # gets the ordered graph by which the look around algorithm will be built
         class LookAroundBackbone < LateralChunksBackbone
+          include ListsComparer
+
           def_delegators :grouped_nodes_graph, :action_nodes
 
         private
@@ -23,34 +27,21 @@ module VersatileDiamond
             nodes.all? { |node| lateral_chunks.target_spec?(node.spec.spec) }
           end
 
-          # @param [Array] nodes
           # @return [Array]
-          def keys_related_to(nodes)
-            reactions = nodes.map(&method(:reaction_with))
-            final_graph.each_with_object([]) do |(key, rels), acc|
-              nbrs = rels.flat_map(&:first)
-              acc << key if nbrs.any? { |n| reactions.include?(reaction_with(n)) }
-            end
-          end
-
-          # Makes small directed graph for check sidepiece species
-          # @param [Array] nodes for which the graph will returned
-          # @return [Array] the ordered list that contains the relations from final
-          #   graph
-          def raw_directed_graph_from(nodes)
-            other_side = final_graph[nodes]
-            result = [[nodes, other_side]]
-            other_side.each_with_object(result) do |(nbrs, _), acc|
-              keys_related_to(nbrs).each do |key|
-                acc << [key, final_graph[key]] unless key == nodes
-              end
-            end
+          def grouped_keys
+            final_graph.keys.groups { |key| reactions_set_from(final_graph[key]) }
           end
 
           # @param [Array] nodes
-          # @return [LateralReaction] single lateral reaction
-          def reaction_with(node)
-            lateral_chunks.select_reaction(node.spec_atom)
+          # @return
+          def grouped_slices(nodes)
+            slices_with(nodes).groups { |_, rels| reactions_set_from(rels) }
+          end
+
+          # @param [Array] rels
+          # @return [Set]
+          def reactions_set_from(rels)
+            rels.flat_map(&:first).map(&method(:reaction_with)).to_set
           end
         end
 

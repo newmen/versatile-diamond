@@ -9,28 +9,27 @@ module VersatileDiamond
           let(:backbone) { described_class.new(generator, lateral_chunks, specie) }
           let(:specie) { generator.specie_class(spec.name) }
 
-          it_behaves_like :dimer_formation_in_different_envs do
-            describe '#final_graph' do
+          describe '#final_graph' do
+            it_behaves_like :dimer_formation_in_different_envs do
               describe 'dimer sidepiece' do
                 let(:spec) { lateral_dimer }
+
                 it_behaves_like :check_finite_graph do
+                  let(:lateral_reactions) { [dept_end_lateral_df] }
                   let(:final_graph) do
                     {
                       [d1, d2] => [[[t2, t1], param_100_cross]]
                     }
                   end
-
-                  let(:lateral_reactions) { [dept_end_lateral_df] }
                 end
 
                 it_behaves_like :check_finite_graph do
+                  let(:lateral_reactions) { [dept_ewb_lateral_df] }
                   let(:final_graph) do
                     {
                       [d1, d2] => [[[t1, t2], param_100_cross]]
                     }
                   end
-
-                  let(:lateral_reactions) { [dept_ewb_lateral_df] }
                 end
               end
 
@@ -47,7 +46,38 @@ module VersatileDiamond
               end
             end
 
-            describe '#entry_nodes' do
+            it_behaves_like :many_similar_activated_bridges do
+              let(:spec) { front_bridge }
+              let(:final_graph) do
+                {
+                  [cb] => [[[t1], param_100_front], [[t1], param_100_cross]]
+                }
+              end
+
+              it_behaves_like :check_finite_graph do
+                let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
+              end
+
+              it_behaves_like :check_finite_graph do
+                let(:lateral_reactions) { [dept_big_ab_lateral_sdf] }
+              end
+            end
+
+            it_behaves_like :methyl_incorporation_near_edge do
+              it_behaves_like :check_finite_graph do
+                let(:spec) { edge_dimer }
+                let(:final_graph) do
+                  {
+                    [dm] => [[[tm], param_100_cross]],
+                    [dd] => [[[td], param_110_cross]]
+                  }
+                end
+              end
+            end
+          end
+
+          describe '#entry_nodes' do
+            it_behaves_like :dimer_formation_in_different_envs do
               describe 'dimer sidepiece' do
                 let(:spec) { lateral_dimer }
                 let(:points_list) { [[d1, d2]] }
@@ -70,7 +100,29 @@ module VersatileDiamond
               end
             end
 
-            describe '#ordered_graph_from' do
+            it_behaves_like :many_similar_activated_bridges do
+              let(:spec) { front_bridge }
+              let(:points_list) { [[cb]] }
+
+              it_behaves_like :check_entry_nodes do
+                let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
+              end
+
+              it_behaves_like :check_entry_nodes do
+                let(:lateral_reactions) { [dept_big_ab_lateral_sdf] }
+              end
+            end
+
+            it_behaves_like :methyl_incorporation_near_edge do
+              it_behaves_like :check_entry_nodes do
+                let(:spec) { edge_dimer }
+                let(:points_list) { [[dm, dd]] }
+              end
+            end
+          end
+
+          describe '#ordered_graph_from' do
+            it_behaves_like :dimer_formation_in_different_envs do
               describe 'dimer sidepiece' do
                 let(:spec) { lateral_dimer }
 
@@ -120,39 +172,9 @@ module VersatileDiamond
                 end
               end
             end
-          end
 
-          it_behaves_like :many_similar_activated_bridges do
-            shared_examples_for :check_backbone do
-              describe '#final_graph' do
-                let(:final_graph) do
-                  {
-                    [cb] => [[[t1], param_100_front], [[t1], param_100_cross]]
-                  }
-                end
-
-                it_behaves_like :check_finite_graph do
-                  let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
-                end
-
-                it_behaves_like :check_finite_graph do
-                  let(:lateral_reactions) { [dept_big_ab_lateral_sdf] }
-                end
-              end
-
-              describe '#entry_nodes' do
-                let(:points_list) { [[cb]] }
-
-                it_behaves_like :check_entry_nodes do
-                  let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
-                end
-
-                it_behaves_like :check_entry_nodes do
-                  let(:lateral_reactions) { [dept_big_ab_lateral_sdf] }
-                end
-              end
-
-              describe '#ordered_graph_from' do
+            it_behaves_like :many_similar_activated_bridges do
+              shared_examples_for :check_ordered_graph_from do
                 it_behaves_like :check_ordered_graph do
                   let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
                 end
@@ -161,63 +183,32 @@ module VersatileDiamond
                   let(:lateral_reactions) { [dept_big_ab_lateral_sdf] }
                 end
               end
-            end
 
-            it_behaves_like :check_backbone do
-              let(:spec) { front_bridge }
-              let(:entry_node) { backbone.entry_nodes.last }
-              let(:ordered_graph) do
-                [
-                  [[cb], [[[t1], param_100_cross], [[t1], param_100_front]]]
-                ]
-              end
-            end
-
-            it_behaves_like :check_backbone do
-              let(:spec) { cross_bridge }
-              let(:entry_node) { backbone.entry_nodes.first }
-              let(:ordered_graph) do
-                [
-                  [[cb], [[[t1], param_100_cross], [[t1], param_100_front]]]
-                ]
-              end
-            end
-          end
-
-          it_behaves_like :methyl_incorporation_near_edge do
-            let(:spec) { edge_dimer }
-
-            describe '#final_graph' do
-              it_behaves_like :check_finite_graph do
-                let(:final_graph) do
-                  {
-                    [dm] => [[[tm], param_100_cross]],
-                    [dd] => [[[td], param_110_cross]]
-                  }
-                end
-              end
-            end
-
-            describe '#entry_nodes' do
-              it_behaves_like :check_entry_nodes do
-                let(:points_list) { [[dm], [dd]] }
-              end
-            end
-
-            describe '#ordered_graph_from' do
-              it_behaves_like :check_ordered_graph do
-                let(:entry_node) { backbone.entry_nodes.first }
+              it_behaves_like :check_ordered_graph_from do
+                let(:spec) { front_bridge }
                 let(:ordered_graph) do
                   [
-                    [[dm], [[[tm], param_100_cross]]]
+                    [[cb], [[[t1], param_100_cross], [[t1], param_100_front]]]
                   ]
                 end
               end
 
-              it_behaves_like :check_ordered_graph do
-                let(:entry_node) { backbone.entry_nodes.last }
+              it_behaves_like :check_ordered_graph_from do
+                let(:spec) { cross_bridge }
                 let(:ordered_graph) do
                   [
+                    [[cb], [[[t1], param_100_cross], [[t1], param_100_front]]]
+                  ]
+                end
+              end
+            end
+
+            it_behaves_like :methyl_incorporation_near_edge do
+              it_behaves_like :check_ordered_graph do
+                let(:spec) { edge_dimer }
+                let(:ordered_graph) do
+                  [
+                    [[dm], [[[tm], param_100_cross]]],
                     [[dd], [[[td], param_110_cross]]]
                   ]
                 end

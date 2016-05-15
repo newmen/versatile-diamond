@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm
@@ -20,24 +22,16 @@ module VersatileDiamond
 
         private
 
-          # Squize final graph for similar key nodes
-          # @param [Array] nodes for which the graph will returned
-          # @return [Array] the ordered list that contains relations of final graph
-          #   squized to one list if some nodes are similar
-          def raw_directed_graph_from(nodes)
-            [[nodes, final_graph[detect_key_nodes(final_graph, nodes)]]]
-          end
-
           # Detects same key nodes in passed graph
           # @param [Hash] graph where key nodes will be checked
           # @param [Array] nodes which analogies will checked in final graph
           # @return [Array] found key nodes or passed nodes list
           def detect_key_nodes(graph, nodes)
             keys = graph_with_same_nodes(graph, nodes).keys
-            if keys.one?
-              keys.first || nodes
-            else
+            if keys.size > 1
               raise 'Not only one similar key available'
+            else
+              keys.first || nodes
             end
           end
 
@@ -104,6 +98,23 @@ module VersatileDiamond
               next acc unless nodes.any? { |node| node.spec_atom == spec_atom }
               acc + rels.map(&:first)
             end
+          end
+
+          # @return [Array]
+          def grouped_keys
+            final_graph.keys.groups(&method(:reactions_set_from))
+          end
+
+          # @param [Array] nodes
+          # @return
+          def grouped_slices(nodes)
+            slices_with(nodes).groups { |key, _| reactions_set_from(key) }
+          end
+
+          # @param [Array] nodes
+          # @return [Set]
+          def reactions_set_from(nodes)
+            nodes.map(&method(:reaction_with)).to_set
           end
         end
 
