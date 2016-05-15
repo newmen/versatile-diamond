@@ -46,22 +46,20 @@ module VersatileDiamond
                 let(:find_algorithm) do
                   <<-CODE
     Atom *atoms1[2] = { target->atom(0), target->atom(3) };
-    target->eachSymmetry([](LateralSpec *specie1) {
-        eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
-            if (neighbours1[0]->is(#{aib_ct}) && neighbours1[1]->is(#{ab_ct}))
+    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&target](Atom **neighbours1) {
+        if (neighbours1[0]->is(#{aib_ct}) && neighbours1[1]->is(#{ab_ct}))
+        {
+            SpecificSpec *species1[2] = { neighbours1[0]->specByRole<BridgeCTsi>(#{aib_ct}), neighbours1[1]->specByRole<BridgeCTs>(#{ab_ct}) };
+            if (species1[0] && species1[1])
             {
-                SpecificSpec *species1[2] = { neighbours1[0]->specByRole<BridgeCTsi>(#{aib_ct}), neighbours1[1]->specByRole<BridgeCTs>(#{ab_ct}) };
-                if (species1[0] && species1[1])
-                {
-                    ChainFactory<
-                        DuoLateralFactory,
-                        #{class_name},
-                        ForwardDimerFormation
-                    > factory(specie1, species1);
-                    factory.checkoutReactions<#{class_name}>();
-                }
+                ChainFactory<
+                    DuoLateralFactory,
+                    #{class_name},
+                    ForwardDimerFormation
+                > factory(target, species1);
+                factory.checkoutReactions<#{class_name}>();
             }
-        });
+        }
     });
                   CODE
                 end
@@ -88,26 +86,24 @@ module VersatileDiamond
                   let(:find_algorithm) do
                     <<-CODE
     Atom *atoms1[2] = { target->atom(0), target->atom(3) };
-    target->eachSymmetry([](LateralSpec *specie1) {
-        eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
-            if (neighbours1[0]->is(#{aib_ct}) && neighbours1[1]->is(#{ab_ct}))
+    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&target](Atom **neighbours1) {
+        if (neighbours1[0]->is(#{aib_ct}) && neighbours1[1]->is(#{ab_ct}))
+        {
+            SpecificSpec *species1[2] = { neighbours1[0]->specByRole<BridgeCTsi>(#{aib_ct}), neighbours1[1]->specByRole<BridgeCTs>(#{ab_ct}) };
+            if (species1[0] && species1[1])
             {
-                SpecificSpec *species1[2] = { neighbours1[0]->specByRole<BridgeCTsi>(#{aib_ct}), neighbours1[1]->specByRole<BridgeCTs>(#{ab_ct}) };
-                if (species1[0] && species1[1])
-                {
-                    ChainFactory<
-                        DuoLateralFactory,
-                        #{class_name_with_dimer},
-                        ForwardDimerFormation
-                    > factory(specie1, species1);
-                    factory.checkoutReactions<
-                        #{class_name_with_bridge},
-                        #{class_name_with_dimer},
-                        ForwardDimerFormationEwbLateral
-                    >();
-                }
+                ChainFactory<
+                    DuoLateralFactory,
+                    #{class_name_with_dimer},
+                    ForwardDimerFormation
+                > factory(target, species1);
+                factory.checkoutReactions<
+                    #{class_name_with_bridge},
+                    #{class_name_with_dimer},
+                    ForwardDimerFormationEwbLateral
+                >();
             }
-        });
+        }
     });
                     CODE
                   end
@@ -119,17 +115,17 @@ module VersatileDiamond
                   let(:find_algorithm) do
                     <<-CODE
     Atom *atom1 = target->atom(0);
-    eachNeighbour(atom1, &Diamond::front_100, [&](Atom *neighbour1) {
+    eachNeighbour(atom1, &Diamond::front_100, [&target](Atom *neighbour1) {
         if (neighbour1->is(#{aib_ct}))
         {
-            SpecificSpec *specie1 = neighbour1->specByRole<BridgeCTsi>(#{aib_ct});
-            if (specie1)
+            BridgeCTsi *bridgeCTsi1 = neighbour1->specByRole<BridgeCTsi>(#{aib_ct});
+            if (bridgeCTsi1)
             {
                 ChainFactory<
                     UnoLateralFactory,
                     #{class_name_with_bridge},
                     ForwardDimerFormation
-                > factory(target, specie1);
+                > factory(target, bridgeCTsi1);
                 factory.checkoutReactions<
                     #{class_name_with_dimer},
                     #{class_name_with_two_dimer}
@@ -157,17 +153,17 @@ module VersatileDiamond
                 let(:find_algorithm) do
                   <<-CODE
     Atom *atoms1[2] = { target->atom(0), target->atom(3) };
-    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
+    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&target](Atom **neighbours1) {
         if (neighbours1[0]->is(#{id_cr}) && neighbours1[1]->is(#{id_cl}) && neighbours1[0]->hasBondWith(neighbours1[1]))
         {
-            SpecificSpec *species1[2] = { neighbours1[0]->specByRole<DimerCLiCRi>(#{id_cr}), neighbours1[1]->specByRole<DimerCLiCRi>(#{id_cl}) };
-            if (species1[0] && species1[0] == species1[1])
+            DimerCLiCRi *dimerCLiCRis1[2] = { neighbours1[0]->specByRole<DimerCLiCRi>(#{id_cr}), neighbours1[1]->specByRole<DimerCLiCRi>(#{id_cl}) };
+            if (dimerCLiCRis1[0] && dimerCLiCRis1[0] == dimerCLiCRis1[1])
             {
                 ChainFactory<
                     UnoLateralFactory,
                     ForwardIncoherentDimerDropEndLateral,
                     ForwardIncoherentDimerDrop
-                > factory(target, species1[0]);
+                > factory(target, dimerCLiCRis1[0]);
                 factory.checkoutReactions<ForwardIncoherentDimerDropEndLateral>();
             }
         }
@@ -189,17 +185,17 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     Atom *atom1 = target->atom(0);
-    eachNeighbour(atom1, &Diamond::cross_100, [&](Atom *neighbour1) {
+    eachNeighbour(atom1, &Diamond::cross_100, [&target](Atom *neighbour1) {
         if (neighbour1->is(2))
         {
-            SpecificSpec *specie1 = neighbour1->specByRole<BridgeCTs>(2);
-            if (specie1)
+            BridgeCTs *BridgeCTs1 = neighbour1->specByRole<BridgeCTs>(2);
+            if (BridgeCTs1)
             {
                 ChainFactory<
                     UnoLateralFactory,
                     CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs,
                     ForwardSymmetricDimerFormation
-                > factory(target, specie1);
+                > factory(target, BridgeCTs1);
                 factory.checkoutReactions<
                     CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs,
                     CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs,
@@ -216,17 +212,17 @@ module VersatileDiamond
             }
         }
     });
-    eachNeighbour(atom1, &Diamond::front_100, [&](Atom *neighbour1) {
+    eachNeighbour(atom1, &Diamond::front_100, [&target](Atom *neighbour1) {
         if (neighbour1->is(2))
         {
-            SpecificSpec *specie1 = neighbour1->specByRole<BridgeCTs>(2);
-            if (specie1)
+            BridgeCTs *bridgeCTs1 = neighbour1->specByRole<BridgeCTs>(2);
+            if (bridgeCTs1)
             {
                 ChainFactory<
                     UnoLateralFactory,
                     CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs,
                     ForwardSymmetricDimerFormation
-                > factory(target, specie1);
+                > factory(target, bridgeCTs1);
                 factory.checkoutReactions<
                     CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs,
                     CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs,
@@ -309,36 +305,36 @@ module VersatileDiamond
 
                 let(:find_algorithm) do
                   <<-CODE
-    Atom *atoms1[2] = { target->atom(3), target->atom(0) };
-    eachNeighbour(atoms1[0], &Diamond::cross_100, [&](Atom *neighbour1) {
-        if (neighbour1->is(#{amob_cb}))
-        {
-            SpecificSpec *specie1 = neighbour1->specByRole<MethylOnBridgeCMs>(#{amob_cb});
-            if (specie1)
+    target->eachSymmetry([](LateralSpec *symmetricDimer1) {
+        Atom *atoms1[2] = { symmetricDimer1->atom(3), symmetricDimer1->atom(0) };
+        eachNeighbour(atoms1[0], &Diamond::cross_100, [&](Atom *neighbour1) {
+            if (neighbour1->is(#{amob_cb}))
             {
-                ChainFactory<
-                    UnoLateralFactory,
-                    ForwardMethylIncorporationMiEdgeLateral,
-                    ForwardMethylIncorporation
-                > factory(target, specie1);
-                factory.checkoutReactions<ForwardMethylIncorporationMiEdgeLateral>();
+                MethylOnBridgeCMs *methylOnBridgeCMs1 = neighbour1->specByRole<MethylOnBridgeCMs>(#{amob_cb});
+                if (methylOnBridgeCMs1)
+                {
+                    eachNeighbour(atoms1[1], &Diamond::cross_110, [&](Atom *neighbour1) {
+                        if (neighbour1->is(#{admr_cl}))
+                        {
+                            if (atoms1[1]->hasBondWith(neighbour1))
+                            {
+                                DimerCRs *dimerCRs1 = neighbour1->specByRole<DimerCRs>(#{admr_cl});
+                                if (dimerCRs1)
+                                {
+                                    SpecificSpec *species1[2] = { methylOnBridgeCMs1, dimerCRs1 };
+                                    ChainFactory<
+                                        DuoLateralFactory,
+                                        ForwardMethylIncorporationMiEdgeLateral,
+                                        ForwardMethylIncorporation
+                                    > factory(symmetricDimer1, species1);
+                                    factory.checkoutReactions<ForwardMethylIncorporationMiEdgeLateral>();
+                                }
+                            }
+                        }
+                    });
+                }
             }
-        }
-    });
-    eachNeighbour(atoms1[1], &Diamond::cross_110, [&](Atom *neighbour1) {
-        if (neighbour1->is(#{admr_cl}) && atoms1[1]->hasBondWith(neighbour1))
-        {
-            SpecificSpec *specie1 = neighbour1->specByRole<DimerCRs>(#{admr_cl});
-            if (specie1)
-            {
-                ChainFactory<
-                    UnoLateralFactory,
-                    ForwardMethylIncorporationMiEdgeLateral,
-                    ForwardMethylIncorporation
-                > factory(target, specie1);
-                factory.checkoutReactions<ForwardMethylIncorporationMiEdgeLateral>();
-            }
-        }
+        });
     });
                   CODE
                 end
