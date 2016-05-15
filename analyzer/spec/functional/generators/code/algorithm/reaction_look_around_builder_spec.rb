@@ -175,19 +175,7 @@ module VersatileDiamond
               let(:typical_reaction) { dept_methyl_incorporation }
               let(:lateral_reactions) { [dept_de_lateral_mi] }
 
-              let(:amob) { (lateral_chunks.target_specs - [admr]).first }
-              let(:admr) do
-                lateral_chunks.target_specs.find { |s| s.name == :'dimer(cr: *)' }
-              end
-
-              let(:amob_cr) { role(amob, :cb) }
-              let(:admr_cl) { role(admr, :cl) }
-
-              let(:edge_dimer) do
-                concept_dimer = lateral_chunks.sidepiece_specs.first
-                generator.specie_class(concept_dimer.name).spec
-              end
-              let(:edmr_cr) { role(edge_dimer, :cr) }
+              let(:edmr_cr) { role(dept_dimer_base, :cr) }
 
               it_behaves_like :check_code do
                 let(:find_algorithm) do
