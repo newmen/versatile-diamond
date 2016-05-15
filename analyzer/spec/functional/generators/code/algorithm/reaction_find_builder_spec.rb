@@ -618,15 +618,18 @@ module VersatileDiamond
               let(:other_spec) { target_spec }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *anchor = target->atom(2);
-    eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
-        if (target->atom(1) != neighbour1 && neighbour1->is(#{role_cr}))
+    Atom *atom1 = target->atom(2);
+    eachNeighbour(atom1, &Diamond::front_100, [&](Atom *neighbour1) {
+        if (neighbour1 != target->atom(1))
         {
-            BridgeCRH *specie1 = neighbour1->specByRole<BridgeCRH>(#{role_cr});
-            if (specie1->atom(1) != anchor)
+            if (neighbour1->is(#{role_cr}))
             {
-                SpecificSpec *targets[2] = { target, specie1 };
-                create<ForwardHydrogenAbsFromGap>(targets);
+                BridgeCRH *bridgeCRH1 = neighbour1->specByRole<BridgeCRH>(#{role_cr});
+                if (atom1 != bridgeCRH1->atom(1))
+                {
+                    SpecificSpec *targets[2] = { target, bridgeCRH1 };
+                    create<ForwardHydrogenAbsFromGap>(targets);
+                }
             }
         }
     });

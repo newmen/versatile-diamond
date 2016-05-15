@@ -47,7 +47,7 @@ module VersatileDiamond
           # @return [Boolean] true
           # @override
           def const?
-            !!(value =~ /^[0-9]+|[A-Z][0-9A-Z_]*$/)
+            !!(value =~ /^(?:[0-9]+|[A-Z][0-9A-Z_]*)$/)
           end
 
           # @param [Array] vars
