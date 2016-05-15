@@ -5,7 +5,8 @@ module VersatileDiamond
 
         # Contain base logic for building find algorithms
         # @abstract
-        class MainFindAlgorithmBuilder < BaseFindAlgorithmBuilder
+        class FindAlgorithmBuilder
+          include Modules::ProcsReducer
 
           # @param [BaseBackbone] backbone
           def initialize(backbone)
@@ -19,7 +20,7 @@ module VersatileDiamond
           # @return [String] the string with cpp code of find algorithm
           def build
             dict.checkpoint!
-            combine_code
+            @backbone.entry_nodes.map(&method(:body_for)).map(&:shifted_code).join
           end
 
         private
@@ -34,11 +35,6 @@ module VersatileDiamond
           # @return [BasePureUnitsFactory]
           def pure_factory
             @_pure_factory ||= make_pure_factory
-          end
-
-          # @return [String]
-          def combine_code
-            @backbone.entry_nodes.map(&method(:body_for)).map(&:shifted_code).join
           end
 
           # Generates the body of code from passed nodes
@@ -109,6 +105,14 @@ module VersatileDiamond
           # @return [Proc] lazy calling for check species unit method
           def check_species_proc(unit)
             -> &block { unit.check_avail_species(&block) }
+          end
+
+          # Wraps calling of checking relations between generation units to lambda
+          # @param [Units::ContextBaseUnit] unit from which relations will be checked
+          # @param [Units::ContextBaseUnit] nbr to which relations will be checked
+          # @return [Proc] lazy calling for check relations unit method
+          def relations_proc(unit, nbr)
+            -> &block { unit.check_relations_with(nbr, &block) }
           end
         end
 

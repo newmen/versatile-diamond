@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm
 
         # Contain logic for building find specie algorithm
-        class SpecieFindBuilder < MainFindAlgorithmBuilder
+        class SpecieFindBuilder < FindAlgorithmBuilder
 
           # Inits builder by target specie and main engine code generator
           # @param [EngineCode] generator the major engine code generator
