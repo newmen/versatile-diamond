@@ -19,6 +19,7 @@ module VersatileDiamond
             @grouped_nodes_graph =
               LateralChunksGroupedNodes.new(generator, lateral_chunks)
 
+            @_side_nodes = {}
             @_final_graph = nil
           end
 
@@ -80,7 +81,7 @@ module VersatileDiamond
           # @param [Nodes::ReactantNode] node
           # @return [Nodes::SideNode]
           def side_node(node)
-            Nodes::SideNode.new(node)
+            @_side_nodes[node] ||= Nodes::SideNode.new(node)
           end
         end
 

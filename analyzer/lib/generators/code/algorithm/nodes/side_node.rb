@@ -15,6 +15,11 @@ module VersatileDiamond
             @_replaced_uniq_specie ||=
               Algorithm::Instances::OtherSideSpecie.new(original.uniq_specie)
           end
+
+          # @return [Boolean]
+          def side?
+            true
+          end
         end
 
       end

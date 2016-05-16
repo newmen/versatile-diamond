@@ -18,8 +18,6 @@ module VersatileDiamond
 
         private
 
-          attr_reader :lateral_chunks
-
           # @param [Units::ReactionContextProvider] context
           # @return [LateralContextUnitsFactory]
           def make_context_factory(context)
@@ -35,7 +33,7 @@ module VersatileDiamond
           # @oaram [LateralContextUnitsFactory] factory
           # @return [Units::LateralChunkCreationUnit]
           def make_creator_unit(factory)
-            factory.creator(lateral_chunks)
+            factory.creator(@lateral_chunks)
           end
         end
 

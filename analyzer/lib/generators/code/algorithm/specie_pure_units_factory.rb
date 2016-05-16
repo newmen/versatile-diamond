@@ -7,13 +7,13 @@ module VersatileDiamond
         class SpeciePureUnitsFactory < BasePureUnitsFactory
         private
 
-          # @param [Arra] args
+          # @param [Array] args
           # @return [Units::MonoSpecieUnit]
           def make_mono_unit(*args)
             Units::MonoSpecieUnit.new(*args)
           end
 
-          # @param [Arra] args
+          # @param [Array] args
           # @return [Units::ManySpecieUnits]
           def make_many_units(*args)
             Units::ManySpecieUnits.new(*args)

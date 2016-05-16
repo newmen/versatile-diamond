@@ -12,6 +12,11 @@ module VersatileDiamond
             [spec.spec, atom]
           end
 
+          # @return [Boolean]
+          def side?
+            false
+          end
+
           def inspect
             "⁝#{super}⁝"
           end

@@ -26,6 +26,10 @@ module VersatileDiamond
           describe '#spec_atom' do
             it { expect(subject.spec_atom).to eq(node.spec_atom) }
           end
+
+          describe '#side?' do
+            it { expect(subject.side?).to be_truthy }
+          end
         end
 
       end

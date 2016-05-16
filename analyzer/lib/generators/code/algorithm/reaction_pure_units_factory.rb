@@ -7,13 +7,13 @@ module VersatileDiamond
         class ReactionPureUnitsFactory < BasePureUnitsFactory
         private
 
-          # @param [Arra] args
+          # @param [Array] args
           # @return [Units::MonoReactionUnit]
           def make_mono_unit(*args)
             Units::MonoReactionUnit.new(*args)
           end
 
-          # @param [Arra] args
+          # @param [Array] args
           # @return [Units::ManyReactionUnits]
           def make_many_units(*args)
             Units::ManyReactionUnits.new(*args)
