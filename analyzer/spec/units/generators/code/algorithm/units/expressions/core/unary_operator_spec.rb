@@ -97,6 +97,21 @@ module VersatileDiamond
               describe '#code' do
                 it { expect(subject.code).to eq('<Yo>') }
                 it { expect(OpAngleBks[tmpl_args_seq].code).to eq('<Yo, 5>') }
+
+                describe 'many long args' do
+                  let(:long_name) { 'TooLongTypeName1234567890' }
+                  let(:args) { [ObjectType[long_name]] * 2 }
+                  let(:seq) { OpSequence[*args] }
+                  let(:code) do
+                    <<-CODE
+<
+    #{long_name},
+    #{long_name}
+>
+                    CODE
+                  end
+                  it { expect(OpAngleBks[seq].code).to eq(code.rstrip) }
+                end
               end
             end
 

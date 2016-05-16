@@ -35,6 +35,20 @@ module VersatileDiamond
           def initialize(*exprs)
             super(:'<>', *exprs)
           end
+
+        private
+
+          # @return [String]
+          # @override
+          def inner_code
+            super_code = super
+            args = super_code.split(', ')
+            if args.map(&:size).select { |s| s > 20 }.size > 1
+              "\n" + shift(args.join(",\n")) + "\n"
+            else
+              super_code
+            end
+          end
         end
 
       end
