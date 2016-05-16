@@ -28,6 +28,11 @@ module VersatileDiamond
             comparing_core(other)
           end
 
+          # @return [Boolean]
+          def proxy?
+            false
+          end
+
         private
 
           def_same_atom_method :reflection_of

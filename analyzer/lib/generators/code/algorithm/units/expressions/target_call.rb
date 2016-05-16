@@ -25,6 +25,11 @@ module VersatileDiamond
             super(original_call)
             @instance = specie
           end
+
+          # @return [Boolean]
+          def collection?
+            false
+          end
         end
 
       end

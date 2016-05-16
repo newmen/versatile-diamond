@@ -146,6 +146,10 @@ module VersatileDiamond
           describe '#symmetric_var_name' do
             it { expect(subject.symmetric_var_name).to eq('symmetricMethylOnBridge') }
           end
+
+          describe 'proxy?' do
+            it { expect(subject.proxy?).to be_falsey }
+          end
         end
 
       end

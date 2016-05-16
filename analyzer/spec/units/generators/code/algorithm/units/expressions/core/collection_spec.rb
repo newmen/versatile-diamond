@@ -53,6 +53,10 @@ module VersatileDiamond
             it { expect(subject.item?).to be_falsey }
           end
 
+          describe '#collection?' do
+            it { expect(subject.collection?).to be_truthy }
+          end
+
           describe '#parent_arr?' do
             it { expect(subject.parent_arr?(var)).to be_falsey }
             it { expect(subject.parent_arr?(item1)).to be_truthy }

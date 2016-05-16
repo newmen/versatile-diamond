@@ -68,6 +68,14 @@ module VersatileDiamond
             it { expect(subject.obj?).to be_truthy }
             it { expect(scv.obj?).to be_falsey }
           end
+
+          describe '#collection?' do
+            it { expect(subject.collection?).to be_falsey }
+          end
+
+          describe '#proxy?' do
+            it { expect(subject.proxy?).to be_falsey }
+          end
         end
 
       end

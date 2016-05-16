@@ -71,6 +71,18 @@ methylOnBridge1->eachSymmetry([](SpecificSpec *methylOnBridge2) {
               end
             end
           end
+
+          describe '#proxy?' do
+            include_context :unique_reactant_context
+
+            it { expect(var.proxy?).to be_falsey }
+
+            describe 'other side specie' do
+              let(:proxy) { Algorithm::Instances::OtherSideSpecie.new(subject) }
+              let(:other) { dict.make_specie_s(proxy) }
+              it { expect(other.proxy?).to be_truthy }
+            end
+          end
         end
 
       end

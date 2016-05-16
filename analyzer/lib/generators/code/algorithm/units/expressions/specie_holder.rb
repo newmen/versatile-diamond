@@ -19,6 +19,12 @@ module VersatileDiamond
           def atom_value(atom)
             call('atom', Core::Constant[instance.index(atom)])
           end
+
+          # @return [Boolean]
+          # @override
+          def proxy?
+            instance.proxy?
+          end
         end
 
       end

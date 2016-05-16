@@ -14,11 +14,7 @@ module VersatileDiamond
 
           # Saves current state to stack for future rollback to it if need
           def checkpoint!
-            @checkpoints << {
-              vars: deep_hash_dup(@vars),
-              next_names: @next_names.dup,
-              used_names: @used_names.dup
-            }
+            @checkpoints << current_state
           end
 
           # Restores previously saved state
@@ -26,13 +22,7 @@ module VersatileDiamond
           #   will be forgotten
           def rollback!(forget: false)
             state = forget ? @checkpoints.pop : @checkpoints.last
-            if state
-              @vars = deep_hash_dup(state[:vars])
-              @next_names = state[:next_names].dup
-              @used_names = state[:used_names].dup
-            else
-              reset!
-            end
+            state ? restore!(state) : reset!
           end
 
           # @param [Object] atom_s
@@ -81,6 +71,22 @@ module VersatileDiamond
             @vars = {}
             @next_names = []
             @used_names = Set.new
+          end
+
+          # @return [Hash]
+          def current_state
+            {
+              vars: deep_hash_dup(@vars),
+              next_names: @next_names.dup,
+              used_names: @used_names.dup
+            }
+          end
+
+          # @param [Hash] state
+          def restore!(state)
+            @vars = deep_hash_dup(state[:vars])
+            @next_names = state[:next_names].dup
+            @used_names = state[:used_names].dup
           end
 
           # @param [Hash] vars

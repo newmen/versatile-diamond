@@ -6,6 +6,11 @@ module VersatileDiamond
         # Garanties uniquality of all similar species
         class OtherSideSpecie < Tools::TransparentProxy
           binary_operations :'<=>'
+
+          # @return [Boolean]
+          def proxy?
+            true
+          end
         end
 
       end

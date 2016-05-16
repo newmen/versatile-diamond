@@ -76,6 +76,11 @@ module VersatileDiamond
           end
 
           # @return [Boolean]
+          def collection?
+            false
+          end
+
+          # @return [Boolean]
           def item?
             !!(code =~ INDEX_RX)
           end
@@ -85,6 +90,11 @@ module VersatileDiamond
           # @override
           def obj?
             !type.scalar? || type.ptr?
+          end
+
+          # @return [Boolean]
+          def proxy?
+            false
           end
 
           # @param [Array] vars

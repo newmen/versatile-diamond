@@ -59,6 +59,12 @@ module VersatileDiamond
             raise NoMethodError, msg
           end
 
+          # @return [Boolean]
+          # @override
+          def collection?
+            true
+          end
+
           # @param [Variable] var
           # @return [Boolean]
           # @override
