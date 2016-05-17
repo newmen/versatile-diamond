@@ -5,7 +5,10 @@ module VersatileDiamond
 
         # Provides common methods for reactant pure units
         module ReactantCommonMethods
-          include Algorithm::Units::ReactantAbstractType
+          # @return [Boolean]
+          def checkable?
+            !all_defined?(species)
+          end
 
           # @param [BasePureUnit] unit
           # @return [Boolean]

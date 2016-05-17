@@ -19,9 +19,9 @@ module VersatileDiamond
 
         private
 
-          # @return [ReactionPureUnitsFactory]
+          # @return [CheckLateralsPureUnitsFactory]
           def make_pure_factory
-            ReactionPureUnitsFactory.new(dict)
+            CheckLateralsPureUnitsFactory.new(dict)
           end
         end
 

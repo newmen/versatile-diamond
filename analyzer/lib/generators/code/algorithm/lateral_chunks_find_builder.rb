@@ -18,6 +18,12 @@ module VersatileDiamond
 
         private
 
+          # @return [Units::Expressions::TargetCallsDictionary]
+          # @override
+          def make_dict
+            Units::Expressions::TargetCallsDictionary.new
+          end
+
           # @param [Units::ReactionContextProvider] context
           # @return [LateralContextUnitsFactory]
           def make_context_factory(context)

@@ -11,9 +11,8 @@ module VersatileDiamond
           # @param [BaseBackbone] backbone
           def initialize(backbone)
             @backbone = backbone
-            @dict = Units::Expressions::VarsDictionary.new
 
-            @_pure_factory = nil
+            @_dict, @_pure_factory = nil
           end
 
           # Generates find algorithm cpp code
@@ -25,7 +24,16 @@ module VersatileDiamond
 
         private
 
-          attr_reader :dict
+          # @return [Units::Expressions::VarsDictionary]
+          def dict
+            @_dict ||= make_dict
+          end
+
+          # Default behaviour
+          # @return [Units::Expressions::VarsDictionary]
+          def make_dict
+            Units::Expressions::VarsDictionary.new
+          end
 
           # @return [Hash]
           def nodes_graph

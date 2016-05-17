@@ -6,6 +6,7 @@ module VersatileDiamond
         # Provides methods for reaction pure units
         module ReactionPureMethods
           include Algorithm::Units::ReactantCommonMethods
+          include Algorithm::Units::ReactantAbstractType
 
           # Anchor specie should has a name
           def define!
@@ -18,11 +19,6 @@ module VersatileDiamond
             else
               raise 'Incorrect number of entry species'
             end
-          end
-
-          # @return [Boolean]
-          def checkable?
-            !all_defined?(species)
           end
         end
 

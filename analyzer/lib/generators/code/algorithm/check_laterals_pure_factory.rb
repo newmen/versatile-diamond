@@ -3,8 +3,8 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        # Creates pure units for look around find algorithm
-        class LookAroundPureUnitsFactory < BasePureUnitsFactory
+        # Creates pure units for check laterals find algorithm
+        class CheckLateralsPureUnitsFactory < BasePureUnitsFactory
         private
 
           # @param [Units::Expressions::VarsDictionary] dict
@@ -12,9 +12,9 @@ module VersatileDiamond
           # @return [Units::MonoPureUnit]
           def make_mono_unit(dict, node)
             if node.side?
-              Units::MonoSidepieceUnit.new(dict, node)
+              Units::MonoReactionUnit.new(dict, node)
             else
-              Units::MonoLateralTargetUnit.new(dict, node)
+              Units::MonoSidepieceUnit.new(dict, node)
             end
           end
 
@@ -23,7 +23,7 @@ module VersatileDiamond
           # @return [Units::ManyPureUnits]
           def make_many_units(dict, nodes)
             unless nodes.any?(&:side?)
-              Units::ManyLateralTargetUnits.new(dict, nodes)
+              Units::ManyReactionUnits.new(dict, nodes)
             else
               Units::ManySidepieceUnits.new(dict, nodes)
             end
