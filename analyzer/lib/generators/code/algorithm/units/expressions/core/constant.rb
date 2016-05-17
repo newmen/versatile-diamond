@@ -12,8 +12,9 @@ module VersatileDiamond
 
           class << self
             # @param [String | Integer | Float] value
+            # @param [Hash] kwargs
             # @return [Constant]
-            def [](value)
+            def [](value, **kwargs)
               if side_spaces?(value)
                 arg_err!('Constant cannot contain side space charachters')
               elsif !valid?(value)

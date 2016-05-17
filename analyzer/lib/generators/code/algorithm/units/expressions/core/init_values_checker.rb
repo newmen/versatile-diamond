@@ -30,6 +30,13 @@ module VersatileDiamond
           def empty?(value)
             value.empty? || side_spaces?(value)
           end
+
+          # @param [Hash] kwargs
+          # @return [Boolean]
+          def template_args?(kwargs)
+            !kwargs[:template_args] ||
+              kwargs[:template_args].all? { |arg| arg.const? || arg.type? }
+          end
         end
 
       end

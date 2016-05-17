@@ -7,22 +7,15 @@ module VersatileDiamond
         class ScalarType < Constant
           class << self
             # @param [Object] name
+            # @param [Hash] kwargs
             # @return [ScalarType]
-            def [](name)
-              if_validated(name) { super }
-            end
-
-          private
-
-            # @param [String] name
-            # @yield
-            def if_validated(name, &block)
+            def [](name, **kwargs)
               if !str?(name)
                 arg_err!("Wrong type name #{name.inspect}")
               elsif empty?(name)
-                arg_err!('ScalarType cannot be empty')
+                arg_err!('Scalar type name cannot be empty')
               else
-                block.call
+                super
               end
             end
           end
@@ -35,7 +28,7 @@ module VersatileDiamond
 
           # @return [String]
           def name
-            value
+            code
           end
 
           # Checks that current statement is expression

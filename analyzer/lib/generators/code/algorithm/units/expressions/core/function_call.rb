@@ -37,13 +37,6 @@ module VersatileDiamond
             def call_args?(exprs)
               exprs.all?(&:expr?)
             end
-
-            # @param [Hash] kwargs
-            # @return [Boolean]
-            def template_args?(kwargs)
-              !kwargs[:template_args] ||
-                kwargs[:template_args].all? { |arg| arg.const? || arg.type? }
-            end
           end
 
           attr_reader :name

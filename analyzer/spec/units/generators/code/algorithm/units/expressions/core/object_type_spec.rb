@@ -15,6 +15,12 @@ module VersatileDiamond
 
           describe '#name' do
             it { expect(subject.name).to eq('Yo') }
+
+            describe 'with template args' do
+              let(:args) { [type] * 3 }
+              let(:templated_type) { described_class['Class', template_args: args] }
+              it { expect(templated_type.name).to eq('Class<Yo, Yo, Yo>') }
+            end
           end
 
           describe '#ptr' do
