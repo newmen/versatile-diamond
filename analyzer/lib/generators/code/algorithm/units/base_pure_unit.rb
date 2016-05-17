@@ -131,7 +131,7 @@ module VersatileDiamond
             if all_defined?(anchored_species)
               block.call
             else
-              make_undefined_species_from_anchors.define_var + block.call
+              check_undefined_species(&block)
             end
           end
 
@@ -227,6 +227,15 @@ module VersatileDiamond
           def coincident_nodes_of?(inner_unit)
             values = inner_unit.nodes.map(&:coincide?)
             !values.any? || values.all?
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_undefined_species(&block)
+            var = make_undefined_species_from_anchors
+            checking_exprs = var.collection? ? var.items : [var]
+            var.define_var +
+              Expressions::AndCondition[checking_exprs, block.call]
           end
 
           # @return [Array]
