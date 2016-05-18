@@ -121,6 +121,51 @@ module VersatileDiamond
             end
           end
 
+          describe '#action_nodes' do
+            it_behaves_like :dimer_formation_in_different_envs do
+              describe 'dimer sidepiece' do
+                let(:spec) { lateral_dimer }
+                let(:atoms_lists) { [d1, d2] }
+
+                it_behaves_like :check_action_nodes do
+                  let(:lateral_reactions) { [dept_end_lateral_df] }
+                end
+
+                it_behaves_like :check_action_nodes do
+                  let(:lateral_reactions) { [dept_ewb_lateral_df] }
+                end
+              end
+
+              describe 'bridge sidepiece' do
+                it_behaves_like :check_action_nodes do
+                  let(:lateral_reactions) { [dept_ewb_lateral_df] }
+                  let(:spec) { lateral_bridge }
+                  let(:atoms_lists) { [b] }
+                end
+              end
+            end
+
+            it_behaves_like :many_similar_activated_bridges do
+              let(:spec) { front_bridge }
+              let(:atoms_lists) { [cb] }
+
+              it_behaves_like :check_action_nodes do
+                let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
+              end
+
+              it_behaves_like :check_action_nodes do
+                let(:lateral_reactions) { [dept_big_ab_lateral_sdf] }
+              end
+            end
+
+            it_behaves_like :methyl_incorporation_near_edge do
+              it_behaves_like :check_action_nodes do
+                let(:spec) { edge_dimer }
+                let(:atoms_lists) { [dm, dd] }
+              end
+            end
+          end
+
           describe '#ordered_graph_from' do
             it_behaves_like :dimer_formation_in_different_envs do
               describe 'dimer sidepiece' do

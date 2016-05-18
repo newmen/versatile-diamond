@@ -91,10 +91,6 @@ module VersatileDiamond
           end
 
           describe '#action_nodes' do
-            shared_examples_for :check_action_nodes do
-              it { expect(grep_atoms(backbone.action_nodes)).to eq(atoms_lists) }
-            end
-
             it_behaves_like :dimer_formation_in_different_envs do
               let(:atoms_lists) { [t1, t2] }
 

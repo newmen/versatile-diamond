@@ -12,6 +12,10 @@ module VersatileDiamond
               end
             end
 
+            shared_examples_for :check_action_nodes do
+              it { expect(grep_atoms(backbone.action_nodes)).to eq(atoms_lists) }
+            end
+
             shared_examples_for :check_finite_graph do
               it { expect(backbone.big_graph).to be_a(Hash) }
               it 'translate to atomic graph and check' do

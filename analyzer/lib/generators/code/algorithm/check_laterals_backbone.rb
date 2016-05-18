@@ -20,6 +20,11 @@ module VersatileDiamond
             @specie = specie
           end
 
+          # @return [Array]
+          def action_nodes
+            entry_nodes.reduce(:+).uniq
+          end
+
         private
 
           # Detects same key nodes in passed graph
