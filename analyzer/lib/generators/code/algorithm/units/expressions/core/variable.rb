@@ -110,9 +110,17 @@ module VersatileDiamond
             end
           end
 
+          # @param [Array] constructor_args
           # @return [Assign] the string with variable definition
-          def define_var
-            Assign[full_name, type: type, value: value]
+          def define_var(*constructor_args)
+            if constructor_args.empty?
+              Assign[full_name, type: type, value: value]
+            elsif !value
+              Assign[full_name, type: type, constructor_args: constructor_args]
+            else
+              msg = "Cannot define var #{self} with value and constructor arguments"
+              raise ArgumentError, msg
+            end
           end
 
           # @return [Assign] the string with argument definition

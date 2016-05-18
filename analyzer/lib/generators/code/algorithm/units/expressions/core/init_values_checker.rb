@@ -31,6 +31,12 @@ module VersatileDiamond
             value.empty? || side_spaces?(value)
           end
 
+          # @param [Array] exprs
+          # @return [Boolean]
+          def call_args?(exprs)
+            exprs.all?(&:expr?)
+          end
+
           # @param [Hash] kwargs
           # @return [Boolean]
           def template_args?(kwargs)

@@ -5,12 +5,14 @@ module VersatileDiamond
 
         # Assign operator statements
         class Assign < Statement
+          extend InitValuesChecker
+
           class << self
             # @param [Variable] var
             # @option [ScalarType] :type
             # @option [Expression] :value
             # @return [Assign]
-            def [](var, type: nil, value: nil)
+            def [](var, type: nil, value: nil, constructor_args: nil)
               if !var.tin? && (var.const? || var.type? || var.assign?)
                 arg_err!("Cannot define not variable #{var.inspect}")
               elsif type && !type.type?
@@ -22,6 +24,19 @@ module VersatileDiamond
                 arg_err!(msg)
               elsif type && value && type.scalar? && value.scalar?
                 arg_err!("Cannot assign #{value.inspect} to pointer #{type.inspect}")
+              elsif value && constructor_args
+                msg = "Cannot define variable #{var.inspect}"
+                msg += " with value and constructor arguments"
+                arg_err!(msg)
+              elsif constructor_args && !type
+                msg = "Cannot call constructor of #{var.inspect} without type"
+                arg_err!(msg)
+              elsif constructor_args && type.scalar?
+                msg = "Cannot define scalar #{var.inspect} with constructor arguments"
+                arg_err!(msg)
+              elsif constructor_args && !call_args?(constructor_args)
+                msg = "Invalid arguemnts #{args.inspect} of #{name} constructor call"
+                arg_err!(msg)
               else
                 super
               end
@@ -31,10 +46,17 @@ module VersatileDiamond
           # @param [Variable] var
           # @option [ScalarType] :type
           # @option [Expression] :value
-          def initialize(var, type: nil, value: nil)
+          def initialize(var, type: nil, value: nil, constructor_args: nil)
             @var = var.freeze
             @type = type.freeze
             @value = value.freeze
+
+            if constructor_args
+              seq = OpSequence[*constructor_args]
+              @constructor_tail = OpRoundBks[seq].freeze
+            else
+              @constructor_tail = nil
+            end
           end
 
           # @return [String]
@@ -63,9 +85,16 @@ module VersatileDiamond
               @var.code
             elsif @type.ptr?
               @type.code + @var.code
+            elsif @constructor_tail
+              "#{type_with_var}#{@constructor_tail.code}"
             else
-              "#{@type.code} #{@var.code}"
+              type_with_var
             end
+          end
+
+          # @return [String]
+          def type_with_var
+            "#{@type.code} #{@var.code}"
           end
         end
 

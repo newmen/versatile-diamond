@@ -29,14 +29,6 @@ module VersatileDiamond
                 super
               end
             end
-
-          private
-
-            # @param [Array] exprs
-            # @return [Boolean]
-            def call_args?(exprs)
-              exprs.all?(&:expr?)
-            end
           end
 
           attr_reader :name

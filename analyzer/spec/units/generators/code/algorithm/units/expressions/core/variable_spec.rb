@@ -47,6 +47,10 @@ module VersatileDiamond
           describe '#define_var' do
             it { expect(subject.define_var.code).to eq('Yo *obj') }
             it { expect(vvl.define_var.code).to eq('Yo *val = simple()') }
+
+            describe 'constructor' do
+              it { expect(inst.define_var(x, y).code).to eq('Yo inst(x, y)') }
+            end
           end
 
           describe '#define_arg' do

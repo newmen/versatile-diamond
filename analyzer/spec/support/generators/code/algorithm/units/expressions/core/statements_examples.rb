@@ -31,6 +31,7 @@ module VersatileDiamond
 
               let(:scv) { Variable[1, scalar, 'i', Constant[0]]}
               let(:var) { Variable[:var, type.ptr, 'obj'] }
+              let(:inst) { Variable[:inst, type, 'inst'] }
               let(:vvl) { Variable[Object.new, type.ptr, 'val', func0] }
 
               let(:item1) { Variable[:one, scalar, 'item[0]'] }
