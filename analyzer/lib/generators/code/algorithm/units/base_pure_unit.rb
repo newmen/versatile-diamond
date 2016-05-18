@@ -268,8 +268,8 @@ module VersatileDiamond
           def iterate_defined_specie_symmetries(specie, &block)
             predefn_vars = dict.defined_vars # get before make inner specie var
             ext_var = dict.var_of(specie)
-            options = { type: abstract_type, name: specie.symmetric_var_name }
-            inner_var = dict.make_specie_s(specie, **options)
+            kwargs = { type: abstract_type, name: specie.symmetric_var_name }
+            inner_var = dict.make_specie_s(specie, **kwargs)
             ext_var.iterate_symmetries(predefn_vars, inner_var, block.call)
           end
 

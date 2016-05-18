@@ -6,16 +6,16 @@ module VersatileDiamond
       module Algorithm::Units
 
         describe MonoSidepieceUnit, type: :algorithm do
-          include_context :methyl_adsorbtion_context
+          include_context :look_around_context
+          include_context :small_activated_bridges_lateral_context
 
           before { subject.define! }
 
           subject { described_class.new(dict, node) }
-          let(:dict) { Expressions::TargetCallsDictionary.new }
           let(:node) { entry_nodes.first }
 
           describe '#define!' do
-            let(:var) { dict.var_of(node_specie) }
+            let(:var) { dict.var_of(target_species) }
             it { expect(var.code).to eq('sidepiece') }
           end
 

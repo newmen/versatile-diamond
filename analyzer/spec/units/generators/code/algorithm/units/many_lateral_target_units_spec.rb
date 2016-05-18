@@ -6,7 +6,8 @@ module VersatileDiamond
       module Algorithm::Units
 
         describe ManyLateralTargetUnits, type: :algorithm do
-          include_context :dimer_formation_context
+          include_context :look_around_context
+          include_context :end_dimer_formation_lateral_context
 
           def nodes_to_mono_units(nodes)
             nodes.map { |node| MonoLateralTargetUnit.new(dict, node) }
@@ -18,12 +19,11 @@ module VersatileDiamond
 
           before { subject.define! }
 
-          subject { nodes_to_many_units(entry_nodes + nbr_nodes) }
-          let(:dict) { Expressions::TargetCallsDictionary.new }
+          subject { nodes_to_many_units(entry_nodes) }
 
           describe '#define!' do
-            it { expect(dict.var_of(node_specie).code).to eq('target(0)') }
-            it { expect(dict.var_of(nbr_species.first).code).to eq('target(1)') }
+            it { expect(dict.var_of(first_ts).code).to eq('target(0)') }
+            it { expect(dict.var_of(last_ts).code).to eq('target(1)') }
           end
 
           describe '#checkable?' do

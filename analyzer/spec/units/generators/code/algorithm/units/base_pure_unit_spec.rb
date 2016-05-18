@@ -387,10 +387,13 @@ return 0;
               let(:code) do
                 <<-CODE
 Bridge *bridge1 = atom1->specByRole<Bridge>(#{node_specie.source_role(cr)});
-return 0;
+if (bridge1)
+{
+    return 0;
+}
                 CODE
               end
-              it { expect(expr.code).to eq(code.rstrip) }
+              it { expect(expr.code).to eq(code) }
             end
 
             describe 'specie already defined' do

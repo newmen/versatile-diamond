@@ -20,7 +20,7 @@ module VersatileDiamond
               let(:sidepiece_specs) { lateral_chunks.sidepiece_specs.to_a }
             end
 
-            shared_examples_for :dimer_formation_in_different_envs do
+            shared_context :dimer_formation_environment do
               include_context :with_organized_lateral_chunks
 
               let(:typical_reaction) { dept_dimer_formation }
@@ -34,7 +34,11 @@ module VersatileDiamond
               let(:b) { lateral_bridge.atom(:ct) }
             end
 
-            shared_examples_for :many_similar_activated_bridges do
+            shared_examples_for :dimer_formation_in_different_envs do
+              include_context :dimer_formation_environment
+            end
+
+            shared_context :similar_activated_bridges_environment do
               include_context :with_organized_lateral_chunks
 
               let(:typical_reaction) { dept_symmetric_dimer_formation }
@@ -48,7 +52,11 @@ module VersatileDiamond
               let(:cb) { cross_bridge.atom(:ct) }
             end
 
-            shared_examples_for :methyl_incorporation_near_edge do
+            shared_examples_for :many_similar_activated_bridges do
+              include_context :similar_activated_bridges_environment
+            end
+
+            shared_examples_for :methyl_incorporation_environment do
               include_context :with_organized_lateral_chunks
 
               let(:typical_reaction) { dept_methyl_incorporation }
@@ -65,6 +73,10 @@ module VersatileDiamond
               let(:edge_dimer) { sidepiece_specs.first }
 
               let_atoms_of(:edge_dimer, [:cl, :cr], [:dm, :dd])
+            end
+
+            shared_examples_for :methyl_incorporation_near_edge do
+              include_context :methyl_incorporation_environment
             end
           end
 
