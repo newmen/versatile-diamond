@@ -131,10 +131,6 @@ module VersatileDiamond
             let(:atom_ab) { concept_ab.atom(:ct) }
             it { expect(node_ab.spec_atom).to eq([concept_ab, atom_ab]) }
           end
-
-          describe '#side?' do
-            it { expect(node_aib.side?).to be_falsey }
-          end
         end
 
       end

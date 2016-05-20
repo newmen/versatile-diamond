@@ -18,6 +18,9 @@ module VersatileDiamond
         let(:lateral_bridge) do
           sidepiece_specs.select { |spec| spec.name == :bridge }.first
         end
+        let(:lateral_dimer) do
+          sidepiece_specs.select { |spec| spec.name == :dimer }.first
+        end
 
         describe '#total_chunk' do
           shared_examples_for :check_vertexes_and_relations_num do
@@ -74,6 +77,23 @@ module VersatileDiamond
             it_behaves_like :check_root_total_and_clean do
               let(:lateral_reactions) { [dept_ewb_lateral_df, dept_middle_lateral_df] }
             end
+          end
+        end
+
+        describe '#side_keys' do
+          let(:lateral_reactions) { [dept_ewb_lateral_df] }
+          it 'check spec-atom pairs' do
+            specs_atoms = subject.side_keys
+            expect(specs_atoms.size).to eq(3)
+
+            uniq_sidepiece_specs = specs_atoms.map(&:first).uniq
+            expect(uniq_sidepiece_specs).to match_array(subject.sidepiece_specs)
+
+            atoms = specs_atoms.map(&:last)
+            expect(atoms.uniq).to match_array(atoms)
+
+            expect(specs_atoms.select { |s, _| s == lateral_bridge }.size).to eq(1)
+            expect(specs_atoms.select { |s, _| s == lateral_dimer }.size).to eq(2)
           end
         end
 

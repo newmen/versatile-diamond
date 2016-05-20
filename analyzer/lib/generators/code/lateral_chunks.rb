@@ -26,7 +26,9 @@ module VersatileDiamond
           @all_chunks = lateral_reactions.map(&:chunk)
           @root_chunks = lateral_reactions.flat_map(&:internal_chunks).uniq
 
-          @_total_chunk, @_overall_chunk, @_unconcrete_affixes, @_root_times = nil
+          @_total_chunk, @_overall_chunk, @_unconcrete_affixes = nil
+          @_root_times, @_affixes_num = nil
+          @_side_keys = nil
         end
 
         # The method for detection relations between
@@ -59,9 +61,15 @@ module VersatileDiamond
         # Gets lateral reactoins grouped by number of internal chunks
         # @return [Hash] the grouping result
         def affixes_nums
-          @affixes.group_by do |lateral_reaction|
+          @_affixes_num ||= @affixes.group_by do |lateral_reaction|
             lateral_reaction.internal_chunks.size
           end
+        end
+
+        # Gets list of unique spec-atom pairs with sidepiece specs
+        # @return [Array] the list of pairs
+        def side_keys
+          @_side_keys ||= clean_links.keys.select { |s, _| sidepiece_spec?(s) }
         end
 
         # Gets the lateral reaction which uses passed spec and atom

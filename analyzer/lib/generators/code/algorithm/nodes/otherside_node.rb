@@ -4,19 +4,23 @@ module VersatileDiamond
       module Algorithm::Nodes
 
         # Replaces internal unique specie
-        class SideNode < Tools::TransparentProxy
+        class OthersideNode < LateralNode
+
+          # @param [LateralChunks] _
+          # @param [ReactantNode] _
           def initialize(*)
             super
-            @_replaced_uniq_specie = nil
+            @_otherside_specie = nil
           end
 
           # @return [Instances::OtherSideSpecie]
           def uniq_specie
-            @_replaced_uniq_specie ||=
+            @_otherside_specie ||=
               Algorithm::Instances::OtherSideSpecie.new(original.uniq_specie)
           end
 
           # @return [Boolean]
+          # @override
           def side?
             true
           end
