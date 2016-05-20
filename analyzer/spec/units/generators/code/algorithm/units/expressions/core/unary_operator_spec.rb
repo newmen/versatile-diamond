@@ -65,7 +65,7 @@ module VersatileDiamond
               it_behaves_like :check_predicates
 
               describe '#code' do
-                it { expect(subject.code).to eq('++i') }
+                it { expect(subject.code).to eq('i++') }
               end
             end
 
@@ -74,7 +74,7 @@ module VersatileDiamond
               it_behaves_like :check_predicates
 
               describe '#code' do
-                it { expect(subject.code).to eq('i++') }
+                it { expect(subject.code).to eq('++i') }
               end
             end
           end

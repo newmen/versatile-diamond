@@ -41,7 +41,7 @@ module VersatileDiamond
               let(:lda) { Lambda[[], var, func0 + func1] }
               let(:for_loop) do
                 ang = scv.define_var
-                For[ang, OpLess[scv, Constant[3]], OpRInc[scv], func0 + func1]
+                For[ang, OpLess[scv, Constant[3]], OpLInc[scv], func0 + func1]
               end
 
               let(:func0) { FunctionCall['simple'] }

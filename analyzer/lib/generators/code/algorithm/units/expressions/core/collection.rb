@@ -115,7 +115,7 @@ module VersatileDiamond
 
             assign = iterable_var.define_var
             cond = OpLess[iterable_var, Constant[items.size]]
-            op = OpRInc[iterable_var]
+            op = OpLInc[iterable_var]
             For[assign, cond, op, body]
           end
 
