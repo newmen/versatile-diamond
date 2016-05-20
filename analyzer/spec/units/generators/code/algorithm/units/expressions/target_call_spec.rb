@@ -8,7 +8,7 @@ module VersatileDiamond
         describe TargetCall, type: :algorithm do
           include_context :unique_reactant_context
 
-          let(:dict) { TargetCallsDictionary.new }
+          let(:dict) { LateralExprsDictionary.new }
           let(:var) { dict.make_target_s(subject) }
 
           describe '#instance' do

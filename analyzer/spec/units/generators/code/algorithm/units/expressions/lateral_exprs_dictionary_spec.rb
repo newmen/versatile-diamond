@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
       module Algorithm::Units::Expressions
 
-        describe TargetCallsDictionary, type: :algorithm do
+        describe LateralExprsDictionary, type: :algorithm do
           include_context :specie_instance_context
           include_context :raw_unique_reactant_context
 

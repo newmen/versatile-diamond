@@ -3,8 +3,8 @@ module VersatileDiamond
     module Code
       module Algorithm::Units::Expressions
 
-        # Provides addiitonal methods for create expression instances
-        class TargetCallsDictionary < VarsDictionary
+        # Provides addiitonal methods for lateral expression instances
+        class LateralExprsDictionary < VarsDictionary
           # @param [Object] specie_s
           def make_target_s(specie_s)
             if array?(specie_s)
