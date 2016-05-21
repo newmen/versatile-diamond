@@ -67,7 +67,7 @@ module VersatileDiamond
 
               it_behaves_like :check_entry_nodes do
                 let(:lateral_reactions) { [dept_ewb_lateral_df] }
-                let(:points_list) { [[t1], [t1, t2]] }
+                let(:points_list) { [[t1, t2], [t1]] }
               end
             end
 
@@ -173,7 +173,7 @@ module VersatileDiamond
                   let(:entry_node) { backbone.entry_nodes.first }
                   let(:ordered_graph) do
                     [
-                      [[t1], [[[b], param_100_front]]]
+                      [[t1, t2], [[[d1, d2], param_100_cross]]]
                     ]
                   end
                 end
@@ -182,7 +182,7 @@ module VersatileDiamond
                   let(:entry_node) { backbone.entry_nodes.last }
                   let(:ordered_graph) do
                     [
-                      [[t1, t2], [[[d1, d2], param_100_cross]]]
+                      [[t1], [[[b], param_100_front]]]
                     ]
                   end
                 end

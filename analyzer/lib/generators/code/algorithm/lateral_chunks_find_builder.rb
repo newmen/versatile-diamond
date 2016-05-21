@@ -19,7 +19,7 @@ module VersatileDiamond
           # @return [Units::Expressions::LateralExprsDictionary]
           # @override
           def make_dict
-            Units::Expressions::LateralExprsDictionary.new
+            Units::Expressions::LateralExprsDictionary.new(backbone.action_nodes)
           end
 
           # @param [Array] ordered_graph
@@ -28,10 +28,10 @@ module VersatileDiamond
             Units::LateralContextProvider.new(dict, nodes_graph, ordered_graph)
           end
 
+          # Define by default
           # @return [Boolean]
-          # @override
           def define_each_entry_node?
-            false
+            true
           end
 
           # @param [Array] nodes which will not defined again

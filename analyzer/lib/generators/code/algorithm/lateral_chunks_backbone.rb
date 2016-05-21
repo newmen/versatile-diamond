@@ -36,13 +36,14 @@ module VersatileDiamond
           # Gets list of nodes from which find begins
           # @return [Array] the array of anchor nodes
           def action_nodes
-            @grouped_nodes_graph.action_nodes(action_keys).map(&method(:target_node))
+            @_action_nodes ||=
+              @grouped_nodes_graph.action_nodes(action_keys).map(&method(:target_node))
           end
 
           # Gets entry nodes for generating algorithm
           # @return [Array] the array of entry nodes
           def entry_nodes
-            grouped_keys.sort
+            grouped_keys.sort { |a, b| b <=> a }
           end
 
           # Gets ordered graph from passed nodes where each side node is replaced

@@ -5,6 +5,12 @@ module VersatileDiamond
 
         # Provides addiitonal methods for lateral expression instances
         class LateralExprsDictionary < VarsDictionary
+          # @param [Array] action_nodes
+          def initialize(action_nodes)
+            super()
+            @action_atoms = action_nodes.map(&:atom)
+          end
+
           # @param [Object] specie_s
           def make_target_s(specie_s)
             if array?(specie_s)
@@ -42,6 +48,27 @@ module VersatileDiamond
 
         private
 
+          # @return [Array]
+          def action_vars
+            action_arr = var_of(@action_atoms)
+            @action_atoms.map(&method(:var_of)).compact +
+              (action_arr ? [action_arr] : [])
+          end
+
+          # @return [Array]
+          def action_used_names
+            action_insts.map(&:code)
+          end
+
+          # @return [Array]
+          def action_next_names
+            num_tailed = action_used_names.select { |name| name =~ /\d+$/ }
+            num_tailed.map do |name|
+              m = name.match(/^(.+?)(\d+)$/)
+              "#{m[1]}#{m[2].to_i.next}"
+            end
+          end
+
           # @override
           def reset!
             super
@@ -57,7 +84,12 @@ module VersatileDiamond
           # @param [Hash] state
           # @override
           def restore!(state)
-            super
+            fixed_state = state.dup
+            fixed_state[:vars].merge!(action_vars.map { |v| [v.instance, [v]] }.to_h)
+            fixed_state[:used_names] += action_used_names
+            fixed_state[:next_names] += action_next_names
+
+            super(fixed_state)
             @same_sidepieces = state[:same_sidepieces].dup
           end
 

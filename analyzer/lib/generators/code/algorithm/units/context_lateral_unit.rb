@@ -70,7 +70,7 @@ module VersatileDiamond
           # @return [Array]
           def reverse_vars_pairs(specie, other_vars)
             var = dict.var_of(specie)
-            other_vars.zip([var].cycle).map(&:reverse)
+            other_vars.zip([var].cycle)
           end
         end
 

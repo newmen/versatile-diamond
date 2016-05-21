@@ -82,19 +82,6 @@ module VersatileDiamond
                   let(:find_algorithm) do
                     <<-CODE
     Atom *atoms1[2] = { target(0)->atom(0), target(1)->atom(0) };
-    eachNeighbour(atoms1[0], &Diamond::front_100, [&](Atom *neighbour1) {
-        if (atoms1[1] != neighbour1)
-        {
-            if (neighbour1->is(#{bridge_ct}))
-            {
-                LateralSpec *bridge1 = neighbour1->specByRole<Bridge>(#{bridge_ct});
-                if (bridge1)
-                {
-                    chunks[index++] = new #{generating_class_name}(this, bridge1);
-                }
-            }
-        }
-    });
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [](Atom **neighbours1) {
         if (neighbours1[0]->is(#{dimer_cr}) && neighbours1[1]->is(#{dimer_cr}))
         {
@@ -111,6 +98,19 @@ module VersatileDiamond
                             chunks[index++] = new ForwardDimerFormationEndLateral(this, dimer2);
                         }
                     }
+                }
+            }
+        }
+    });
+    eachNeighbour(atoms1[0], &Diamond::front_100, [&atoms1](Atom *neighbour1) {
+        if (atoms1[1] != neighbour1)
+        {
+            if (neighbour1->is(#{bridge_ct}))
+            {
+                Bridge *bridge1 = neighbour1->specByRole<Bridge>(#{bridge_ct});
+                if (bridge1)
+                {
+                    chunks[index++] = new #{generating_class_name}(this, bridge1);
                 }
             }
         }
