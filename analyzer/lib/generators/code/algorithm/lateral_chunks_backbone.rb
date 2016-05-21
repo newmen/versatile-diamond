@@ -9,7 +9,6 @@ module VersatileDiamond
         # @abstract
         class LateralChunksBackbone
           include Modules::GraphDupper
-          include Modules::ListsComparer
           extend Forwardable
 
           # Initializes backbone by lateral chunks object
@@ -22,8 +21,8 @@ module VersatileDiamond
             @grouped_nodes_graph =
               LateralChunksGroupedNodes.new(generator, lateral_chunks)
 
-            @_action_nodes, @_grouped_ratio = nil
-            @_final_graph, @_big_graph, @_target_key_nodes = nil
+            @_action_nodes, @_final_graph, @_big_graph = nil
+            @_target_key_nodes, @_grouped_ratio = nil
           end
 
           # Cleans grouped graph from unsignificant relations
@@ -50,9 +49,9 @@ module VersatileDiamond
           # @param [Array] nodes
           # @return [Array]
           def ordered_graph_from(nodes)
-            is_dk = grouped_ratio.any? { |key, _| lists_are_identical?(key, nodes) }
+            is_dk = grouped_ratio.any? { |key, _| key.equal?(nodes) }
             grouped_ratio.select do |key, _|
-              (is_dk && lists_are_identical?(key, nodes)) ||
+              (is_dk && key.equal?(nodes)) ||
                 (!is_dk && key.all?(&nodes.public_method(:include?)))
             end
           end
@@ -96,7 +95,8 @@ module VersatileDiamond
           def mono_lateral_graph
             final_graph.flat_map do |key, rels|
               rels.map do |nbrs, rels|
-                [replace_nodes(key), [[replace_nodes(nbrs), rels]]]
+                # dup is significant here!
+                [replace_nodes(key).dup, [[replace_nodes(nbrs), rels]]]
               end
             end
           end
@@ -111,7 +111,9 @@ module VersatileDiamond
 
           # @return [Array]
           def grouped_keys
-            group_by_reactions(grouped_ratio).map { |group| group.flat_map(&:first) }
+            group_by_reactions(grouped_ratio).map do |group|
+              group.one? ? group.first.first : group.flat_map(&:first)
+            end
           end
 
           # @param [ReactantNode] node

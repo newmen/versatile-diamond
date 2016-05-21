@@ -12,6 +12,7 @@ module VersatileDiamond
           def initialize(lateral_chunks)
             @lateral_chunks = lateral_chunks
 
+            @target_nodes = {}
             @sidepiece_nodes = {}
             @otherside_nodes = {}
 
@@ -21,7 +22,7 @@ module VersatileDiamond
           # @param [ReactantNode] node
           # @return [TargetNode] unique target node of look around algorithm
           def target_node(node)
-            TargetNode.new(@lateral_chunks, node)
+            @target_nodes[node] ||= TargetNode.new(@lateral_chunks, node)
           end
 
           # @param [ReactantNode] node
