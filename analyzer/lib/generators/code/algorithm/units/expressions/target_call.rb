@@ -30,6 +30,11 @@ module VersatileDiamond
           def collection?
             false
           end
+
+          # @return [Boolean]
+          def item?
+            false
+          end
         end
 
       end

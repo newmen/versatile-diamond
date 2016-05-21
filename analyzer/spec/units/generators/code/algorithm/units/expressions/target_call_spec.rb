@@ -19,6 +19,10 @@ module VersatileDiamond
             it { expect(var.collection?).to be_falsey }
           end
 
+          describe '#item?' do
+            it { expect(var.item?).to be_falsey }
+          end
+
           describe '#iterate_symmetries' do
             let(:type) { SidepieceSpecieType[] }
             let(:inner_var) { dict.make_specie_s(subject, type: type) }

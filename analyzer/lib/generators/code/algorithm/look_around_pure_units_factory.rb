@@ -19,13 +19,13 @@ module VersatileDiamond
           end
 
           # @param [Units::Expressions::VarsDictionary] dict
-          # @param [Array] nodes
+          # @param [Array] units
           # @return [Units::ManyPureUnits]
-          def make_many_units(dict, nodes)
-            unless nodes.any?(&:side?)
-              Units::ManyLateralTargetUnits.new(dict, nodes)
+          def make_many_units(dict, units)
+            unless units.flat_map(&:nodes).any?(&:side?)
+              Units::ManyLateralTargetUnits.new(dict, units)
             else
-              Units::ManySidepieceUnits.new(dict, nodes)
+              Units::ManySidepieceUnits.new(dict, units)
             end
           end
         end

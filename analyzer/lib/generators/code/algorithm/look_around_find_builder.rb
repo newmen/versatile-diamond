@@ -8,7 +8,9 @@ module VersatileDiamond
 
           # Inits builder by main engine code generator and lateral chunks object
           # @param [EngineCode] generator the major engine code generator
-          def initialize(generator)
+          # @param [LateralChunks] lateral_chunks the target object by which the
+          #   algorithm will be generated
+          def initialize(generator, lateral_chunks)
             super(LookAroundBackbone.new(generator, lateral_chunks))
           end
 

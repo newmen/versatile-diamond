@@ -6,6 +6,14 @@ module VersatileDiamond
         # Contain logic for building lateral chunks algorithm
         # @abstract
         class LateralChunksFindBuilder < FindAlgorithmBuilder
+          # Generates find algorithm cpp code
+          # @return [String] the string with cpp code of find algorithm
+          # @override
+          def build
+            pure_factory.unit(backbone.action_nodes).define!
+            super
+          end
+
         private
 
           # @return [Units::Expressions::LateralExprsDictionary]
@@ -18,6 +26,13 @@ module VersatileDiamond
           # @return [Units::LateralContextProvider]
           def make_context_provider(ordered_graph)
             Units::LateralContextProvider.new(dict, nodes_graph, ordered_graph)
+          end
+
+          # @param [Array] nodes which will not defined again
+          # @return [Expressions::Core::Statement]
+          # @override
+          def define_algorithm(nodes)
+            combine_algorithm(nodes)
           end
         end
 

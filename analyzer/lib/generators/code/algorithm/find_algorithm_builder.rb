@@ -19,17 +19,19 @@ module VersatileDiamond
           # @return [String] the string with cpp code of find algorithm
           def build
             dict.checkpoint!
-            @backbone.entry_nodes.map(&method(:body_for)).map(&:shifted_code).join
+            backbone.entry_nodes.map(&method(:body_for)).map(&:shifted_code).join
           end
 
         private
+
+          attr_reader :backbone
 
           # @return [Units::Expressions::VarsDictionary]
           def dict
             @_dict ||= make_dict
           end
 
-          # Default behaviour
+          # Default dictionary
           # @return [Units::Expressions::VarsDictionary]
           def make_dict
             Units::Expressions::VarsDictionary.new
@@ -37,7 +39,7 @@ module VersatileDiamond
 
           # @return [Hash]
           def nodes_graph
-            @backbone.big_graph
+            backbone.big_graph
           end
 
           # @return [BasePureUnitsFactory]
@@ -47,9 +49,15 @@ module VersatileDiamond
 
           # Generates the body of code from passed nodes
           # @param [Array] nodes from which the code will be generated
-          # @return [String] the finding algorithm from passed nodes
+          # @return [Expressions::Core::Statement]
           def body_for(nodes)
             dict.rollback!
+            define_algorithm(nodes)
+          end
+
+          # @param [Array] nodes which will be defined at begin
+          # @return [Expressions::Core::Statement]
+          def define_algorithm(nodes)
             pure_factory.unit(nodes).define!
             combine_algorithm(nodes)
           end
@@ -60,7 +68,7 @@ module VersatileDiamond
           # @param [Array] nodes from which walking will occure
           # @return [Expressions::Core::Statement]
           def combine_algorithm(nodes)
-            ordered_graph = @backbone.ordered_graph_from(nodes)
+            ordered_graph = backbone.ordered_graph_from(nodes)
             context = make_context_provider(ordered_graph)
             factory = make_context_factory(context)
             source_unit = factory.unit(nodes)
