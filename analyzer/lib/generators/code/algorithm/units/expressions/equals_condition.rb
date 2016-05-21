@@ -10,7 +10,7 @@ module VersatileDiamond
             # @param [Core::Expression] body
             # @return [EqualsCondition]
             def [](exprs_pairs, body)
-              super(exprs_pairs.map(&method(:op)), body)
+              super(exprs_pairs.map(&method(:resort)).map(&method(:op)), body)
             end
 
           private

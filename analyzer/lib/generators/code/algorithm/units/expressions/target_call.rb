@@ -35,6 +35,12 @@ module VersatileDiamond
           def item?
             false
           end
+
+          # @param [Variable] _
+          # @return [Boolean] false
+          def parent_arr?(*)
+            false
+          end
         end
 
       end

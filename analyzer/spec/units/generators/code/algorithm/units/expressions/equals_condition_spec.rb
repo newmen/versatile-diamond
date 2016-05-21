@@ -33,7 +33,7 @@ if (atoms1[0] == atoms1[1])
             end
             let(:code) do
               <<-CODE
-if (atoms1[0] == atoms1[1] && bridge1->atom(0) == atoms1[0])
+if (atoms1[0] == atoms1[1] && atoms1[0] == bridge1->atom(0))
 {
     hello(atoms1[0], atoms1[1]);
 }

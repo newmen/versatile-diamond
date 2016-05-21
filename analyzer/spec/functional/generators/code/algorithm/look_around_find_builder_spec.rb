@@ -41,15 +41,24 @@ module VersatileDiamond
               describe 'just cross neighbours' do
                 let(:find_algorithm) do
                   <<-CODE
-    Atom *atoms1[2] = { target(1)->atom(0), target(0)->atom(0) };
-    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&](Atom **neighbours1) {
-        if (neighbours1[0]->is(#{dimer_cr}) && neighbours1[1]->is(#{dimer_cr}) && neighbours1[0]->hasBondWith(neighbours1[1]))
+    Atom *atoms1[2] = { target(0)->atom(0), target(1)->atom(0) };
+    eachNeighbours<2>(atoms1, &Diamond::cross_100, [](Atom **neighbours1) {
+        if (neighbours1[0]->is(#{dimer_cr}) && neighbours1[1]->is(#{dimer_cr}))
         {
-            Dimer *dimer1 = neighbours1[0]->specByRole<Dimer>(#{dimer_cr});
-            Dimer *dimer2 = neighbours1[1]->specByRole<Dimer>(#{dimer_cr});
-            if (dimer1 && dimer1 == dimer2)
+            if (neighbours1[0]->hasBondWith(neighbours1[1]))
             {
-                chunks[index++] = new #{class_name}(this, dimer1);
+                Dimer *dimer1 = neighbours1[1]->specByRole<Dimer>(#{dimer_cr});
+                if (dimer1)
+                {
+                    Dimer *dimer2 = neighbours1[0]->specByRole<Dimer>(#{dimer_cr});
+                    if (dimer2)
+                    {
+                        if (dimer1 == dimer2)
+                        {
+                            chunks[index++] = new #{class_name}(this, dimer2);
+                        }
+                    }
+                }
             }
         }
     });

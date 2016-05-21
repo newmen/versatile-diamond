@@ -37,15 +37,17 @@ module VersatileDiamond
           end
 
           # @param [Class] cond_expr_class
+          # @param [Instances::OtherSideSpecie] specie
           # @param [Array] other_vars
           # @return [Proc]
-          def check_sidepiece_proc(cond_expr_class, other_vars)
-            vars_pairs = reverse_vars_pairs(other_vars)
+          def check_sidepiece_proc(cond_expr_class, specie, other_vars)
+            vars_pairs = reverse_vars_pairs(specie, other_vars)
+            clean_pairs = vars_pairs.reject { |s, o| s.code > o.code }
             -> &block do
-              if vars_pairs.empty?
+              if clean_pairs.empty?
                 block.call
               else
-                cond_expr_class[vars_pairs, block.call]
+                cond_expr_class[clean_pairs, block.call]
               end
             end
           end
@@ -54,21 +56,21 @@ module VersatileDiamond
           # @return [Proc]
           def same_vars_proc(specie)
             vars = dict.same_vars(specie)
-            check_sidepiece_proc(Expressions::EqualsCondition, vars)
+            check_sidepiece_proc(Expressions::EqualsCondition, specie, vars)
           end
 
           # @param [Instances::OtherSideSpecie] specie
           # @return [Proc]
           def different_vars_proc(specie)
             vars = dict.different_vars(specie)
-            check_sidepiece_proc(Expressions::NotEqualsCondition, vars)
+            check_sidepiece_proc(Expressions::NotEqualsCondition, specie, vars)
           end
 
-          # @param [Array] vars
+          # @param [Array] other_vars
           # @return [Array]
-          def reverse_vars_pairs(vars)
+          def reverse_vars_pairs(specie, other_vars)
             var = dict.var_of(specie)
-            vars.zip([var].cycle).map(&:reverse)
+            other_vars.zip([var].cycle).map(&:reverse)
           end
         end
 
