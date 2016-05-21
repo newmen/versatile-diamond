@@ -63,6 +63,7 @@ module VersatileDiamond
               expect(other.spec_atom).to eq(front_spec_atom)
 
               expect(subject.spec_atom).not_to eq(other.spec_atom)
+              expect(subject.original.spec_atom).to eq(other.original.spec_atom)
             end
 
             describe 'different sidepieces' do
@@ -75,6 +76,9 @@ module VersatileDiamond
                 expect(subject.spec_atom).not_to eq(other.spec_atom)
                 expect(subject.spec_atom).not_to eq(different.spec_atom)
                 expect(other.spec_atom).not_to eq(different.spec_atom)
+
+                expect(subject.original.spec_atom).not_to eq(other.original.spec_atom)
+                expect(other.original.spec_atom).not_to eq(different.original.spec_atom)
               end
             end
           end

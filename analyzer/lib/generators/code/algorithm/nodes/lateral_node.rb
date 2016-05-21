@@ -6,6 +6,7 @@ module VersatileDiamond
         # Represents node which is used in lateral reaction alrogithms builders
         # @abstract
         class LateralNode < Tools::TransparentProxy
+          comparable
 
           # @param [LateralChunks] lateral_chunks
           # @param [ReactantNode] reactant_node

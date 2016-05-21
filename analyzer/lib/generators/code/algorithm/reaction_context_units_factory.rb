@@ -3,7 +3,7 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        # Creates pure units for specie find algorithm
+        # Creates pure units for reaction find algorithm
         class ReactionContextUnitsFactory < BaseContextUnitsFactory
           # @param [Array] nodes for which the unit will be maked
           # @return [Units::ContextReactionUnit]

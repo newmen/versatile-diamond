@@ -62,7 +62,7 @@ module VersatileDiamond
             it_behaves_like :dimer_formation_in_different_envs do
               it_behaves_like :check_entry_nodes do
                 let(:lateral_reactions) { [dept_end_lateral_df] }
-                let(:points_list) { [[t2, t1]] }
+                let(:points_list) { [[t1, t2]] }
               end
 
               it_behaves_like :check_entry_nodes do
@@ -72,10 +72,16 @@ module VersatileDiamond
             end
 
             it_behaves_like :many_similar_activated_bridges do
-              let(:points_list) { [[t1]] }
+              let(:points_list) { [[t1], [t1]] }
 
               it_behaves_like :check_entry_nodes do
                 let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
+
+                it 'same entry nodes are different' do
+                  fst, snd = backbone.entry_nodes
+                  expect(fst).not_to eq(snd)
+                  expect(fst.map(&:original)).to eq(snd.map(&:original))
+                end
               end
 
               it_behaves_like :check_entry_nodes do
@@ -85,7 +91,7 @@ module VersatileDiamond
 
             it_behaves_like :methyl_incorporation_near_edge do
               it_behaves_like :check_entry_nodes do
-                let(:points_list) { [[td, tm]] }
+                let(:points_list) { [[tm, td]] }
               end
             end
           end
@@ -184,18 +190,32 @@ module VersatileDiamond
             end
 
             it_behaves_like :many_similar_activated_bridges do
-              let(:ordered_graph) do
-                [
-                  [[t1], [[[cb], param_100_cross], [[fb], param_100_front]]]
-                ]
+              shared_examples_for :check_all_ordered_graphs do
+                it_behaves_like :check_ordered_graph do
+                  let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
+                end
+
+                it_behaves_like :check_ordered_graph do
+                  let(:lateral_reactions) { [dept_big_ab_lateral_sdf] }
+                end
               end
 
-              it_behaves_like :check_ordered_graph do
-                let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
+              it_behaves_like :check_all_ordered_graphs do
+                let(:entry_node) { backbone.entry_nodes.first }
+                let(:ordered_graph) do
+                  [
+                    [[t1], [[[cb], param_100_cross]]]
+                  ]
+                end
               end
 
-              it_behaves_like :check_ordered_graph do
-                let(:lateral_reactions) { [dept_big_ab_lateral_sdf] }
+              it_behaves_like :check_all_ordered_graphs do
+                let(:entry_node) { backbone.entry_nodes.last }
+                let(:ordered_graph) do
+                  [
+                    [[t1], [[[fb], param_100_front]]]
+                  ]
+                end
               end
             end
 

@@ -8,40 +8,38 @@ module VersatileDiamond
         # Cleans the chunks grouped nodes graph from not significant relations and
         # gets the ordered graph by which the look around algorithm will be built
         class LookAroundBackbone < LateralChunksBackbone
-          include ListsComparer
-
-          def_delegators :grouped_nodes_graph, :action_nodes
-
         private
 
-          # Makes clean graph with relations only from target nodes
-          # @return [Hash] the grouped graph with relations only from target nodes
-          def make_final_graph
-            grouped_graph.select { |nodes, _| target_nodes?(nodes) }
+          def_delegator :lateral_nodes_factory, :target_node
+
+          # @return [Symbol] name of predicate function
+          def target_predicate_name
+            :target_spec?
           end
 
-          # Checks that passed nodes contains specs which belongs to target specs
-          # @param [Array] nodes which will be checked
-          # @return [Boolean] are all nodes contain target spec
-          def target_nodes?(nodes)
-            nodes.all? { |node| lateral_chunks.target_spec?(node.spec.spec) }
+          # Gets list of spec-atom pairs from which the action nodes will be mapped
+          # @return [Array] the list of target spec-atom pairs
+          def action_keys
+            lateral_chunks.targets
           end
 
+          # @param [Array] key_with_rels
           # @return [Array]
-          def grouped_keys
-            final_graph.keys.groups { |key| reactions_set_from(final_graph[key]) }
+          def key_group_by_slice(key_with_rels)
+            key, rels = key_with_rels
+            [key.map(&:original).to_set, reactions_set_from(rels)]
           end
 
-          # @param [Array] nodes
-          # @return
-          def grouped_slices(nodes)
-            slices_with(nodes).groups { |_, rels| reactions_set_from(rels) }
+          # @param [Array] ordered_graph
+          # @return [Array]
+          def group_by_reactions(ordered_graph)
+            ordered_graph.groups { |_, rels| reactions_set_from(rels) }
           end
 
           # @param [Array] rels
           # @return [Set]
           def reactions_set_from(rels)
-            rels.flat_map(&:first).map(&method(:reaction_with)).to_set
+            rels.flat_map(&:first).map(&:lateral_reaction).to_set
           end
         end
 

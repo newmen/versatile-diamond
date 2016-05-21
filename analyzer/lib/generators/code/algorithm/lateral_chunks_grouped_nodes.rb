@@ -17,15 +17,14 @@ module VersatileDiamond
             super(ReactionNodesFactory.new(generator))
             @lateral_chunks = lateral_chunks
 
-            @_big_graph, @_small_graph, @_action_nodes, @_avail_nodes = nil
+            @_big_graph, @_small_graph, @_avail_nodes = nil
           end
 
-          # Gets list of nodes where each node correspond to one target of typical
-          # reaction
-          #
-          # @return [Array] the list of nodes with main targets
-          def action_nodes
-            @_action_nodes ||= @lateral_chunks.targets.map do |sa|
+          # Selects presented nodes or creates new
+          # @param [Array] specs_atoms the list of pairs
+          # @return [Array] the list of nodes
+          def action_nodes(specs_atoms)
+            specs_atoms.map do |sa|
               avail_nodes.find { |node| node.spec_atom == sa } || get_node(sa)
             end
           end

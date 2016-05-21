@@ -50,7 +50,8 @@ module VersatileDiamond
               let(:spec) { front_bridge }
               let(:final_graph) do
                 {
-                  [cb] => [[[t1], param_100_front], [[t1], param_100_cross]]
+                  [cb] => [[[t1], param_100_cross]],
+                  [fb] => [[[t1], param_100_front]]
                 }
               end
 
@@ -102,10 +103,16 @@ module VersatileDiamond
 
             it_behaves_like :many_similar_activated_bridges do
               let(:spec) { front_bridge }
-              let(:points_list) { [[cb]] }
+              let(:points_list) { [[cb], [cb]] }
 
               it_behaves_like :check_entry_nodes do
                 let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
+
+                it 'same entry nodes are different' do
+                  fst, snd = backbone.entry_nodes
+                  expect(fst).not_to eq(snd)
+                  expect(fst.map(&:original)).to eq(snd.map(&:original))
+                end
               end
 
               it_behaves_like :check_entry_nodes do
@@ -161,7 +168,7 @@ module VersatileDiamond
             it_behaves_like :methyl_incorporation_near_edge do
               it_behaves_like :check_action_nodes do
                 let(:spec) { edge_dimer }
-                let(:atoms_lists) { [dm, dd] }
+                let(:atoms_lists) { [dd, dm] }
               end
             end
           end
@@ -231,18 +238,40 @@ module VersatileDiamond
 
               it_behaves_like :check_ordered_graph_from do
                 let(:spec) { front_bridge }
+                let(:entry_node) { backbone.entry_nodes.first }
                 let(:ordered_graph) do
                   [
-                    [[cb], [[[t1], param_100_cross], [[t1], param_100_front]]]
+                    [[cb], [[[t1], param_100_cross]]]
+                  ]
+                end
+              end
+
+              it_behaves_like :check_ordered_graph_from do
+                let(:spec) { front_bridge }
+                let(:entry_node) { backbone.entry_nodes.last }
+                let(:ordered_graph) do
+                  [
+                    [[cb], [[[t1], param_100_front]]]
                   ]
                 end
               end
 
               it_behaves_like :check_ordered_graph_from do
                 let(:spec) { cross_bridge }
+                let(:entry_node) { backbone.entry_nodes.first }
                 let(:ordered_graph) do
                   [
-                    [[cb], [[[t1], param_100_cross], [[t1], param_100_front]]]
+                    [[cb], [[[t1], param_100_cross]]]
+                  ]
+                end
+              end
+
+              it_behaves_like :check_ordered_graph_from do
+                let(:spec) { cross_bridge }
+                let(:entry_node) { backbone.entry_nodes.last }
+                let(:ordered_graph) do
+                  [
+                    [[cb], [[[t1], param_100_front]]]
                   ]
                 end
               end

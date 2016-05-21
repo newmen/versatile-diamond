@@ -5,7 +5,7 @@ module VersatileDiamond
 
         # Garanties uniquality of all similar species
         class OtherSideSpecie < Tools::TransparentProxy
-          binary_operations :'<=>'
+          comparable
 
           # @return [Boolean]
           def proxy?

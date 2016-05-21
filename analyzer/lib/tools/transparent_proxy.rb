@@ -31,6 +31,15 @@ module VersatileDiamond
         def binary_operation?(operation)
           @binary_operations && @binary_operations.include?(operation)
         end
+
+        # Defines comparation method based on original values
+        def comparable
+          # @param [OtherSideSpecie] other
+          # @return [Integer]
+          define_method(:'<=>') do |other|
+            original <=> other.original
+          end
+        end
       end
 
       attr_reader :original
