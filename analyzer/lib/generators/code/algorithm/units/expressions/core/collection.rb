@@ -49,14 +49,15 @@ module VersatileDiamond
             define_method(method_name) { super() }
           end
 
-          # @param [String] method_name
-          # @param [Array] args
-          # @param [Hash] kwargs
-          # @raise [Exception]
-          # @override
-          def call(method_name, *args, **kwargs)
-            msg = "Method #{method_name.inspect} cannot be called for collection"
-            raise NoMethodError, msg
+          %i(call member).each do |method_name|
+            # @param [String] method_name
+            # @param [Array] args
+            # @param [Hash] kwargs
+            # @raise [Exception]
+            # @override
+            define_method(method_name) do |mn, *args, **kwargs|
+              raise NoMethodError, "Method #{mn} cannot be called for collection"
+            end
           end
 
           # @return [Boolean]

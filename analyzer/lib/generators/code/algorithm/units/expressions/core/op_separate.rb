@@ -5,9 +5,11 @@ module VersatileDiamond
 
         # Values separation operator statement
         class OpSeparate < OpSequence
-          # @param [Array] exprs to which the operation will be applied
-          def initialize(*exprs)
-            super(*exprs, mark: :';')
+        private
+
+          # @return [Symbol]
+          def mark
+            :';'
           end
         end
 

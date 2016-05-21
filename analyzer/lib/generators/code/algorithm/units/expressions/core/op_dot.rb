@@ -3,13 +3,13 @@ module VersatileDiamond
     module Code
       module Algorithm::Units::Expressions::Core
 
-        # Equal operator statement
-        class OpEq < OpCmp
+        # Call member over dot operator statement
+        class OpDot < OpCall
         private
 
           # @return [Symbol]
           def mark
-            :'=='
+            :'.'
           end
         end
 

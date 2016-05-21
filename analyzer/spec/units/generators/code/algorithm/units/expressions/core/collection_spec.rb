@@ -49,6 +49,10 @@ module VersatileDiamond
             it { expect { subject.call('some') }.to raise_error }
           end
 
+          describe '#member' do
+            it { expect { subject.member('some') }.to raise_error }
+          end
+
           describe '#item?' do
             it { expect(subject.item?).to be_falsey }
           end

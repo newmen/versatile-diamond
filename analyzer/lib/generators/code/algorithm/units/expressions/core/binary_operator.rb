@@ -7,10 +7,9 @@ module VersatileDiamond
         # @abstract
         class BinaryOperator < Operator
 
-          # @param [Symbol] mark the symbolic name of operation
           # @param [Array] exprs to which the operation will be applied
-          def initialize(mark, *exprs)
-            super(mark, *rectify(exprs))
+          def initialize(*exprs)
+            super(*rectify(exprs))
           end
 
           # @return [String] joins the argument by operation

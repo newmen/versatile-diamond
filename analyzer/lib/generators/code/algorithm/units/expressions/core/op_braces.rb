@@ -25,7 +25,7 @@ module VersatileDiamond
           # @param [Array] exprs to which the operation will be applied
           # @param [Hash] kwargs
           def initialize(*exprs, **kwargs)
-            super(:'{}', *exprs)
+            super(*exprs)
             @is_multilines = kwargs[:multilines]
             @ext_new_lines = kwargs[:ext_new_lines]
           end
@@ -37,6 +37,11 @@ module VersatileDiamond
           end
 
         private
+
+          # @return [Symbol]
+          def mark
+            :'{}'
+          end
 
           # @return [String]
           def inner_space

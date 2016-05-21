@@ -40,11 +40,6 @@ module VersatileDiamond
 
           def_delegators :'inner_exprs.last', :var?, :type?
 
-          # @param [Array] exprs to which the operation will be applied
-          def initialize(*exprs)
-            super(:'::', *exprs)
-          end
-
           # @return [String] joins the argument by operation
           # @override
           def code
@@ -64,6 +59,11 @@ module VersatileDiamond
           end
 
         private
+
+          # @return [Symbol]
+          def mark
+            :'::'
+          end
 
           # @return [Array]
           def fixed_exprs

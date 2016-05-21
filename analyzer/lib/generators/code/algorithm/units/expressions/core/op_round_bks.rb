@@ -28,9 +28,11 @@ module VersatileDiamond
 
           def_delegator :argument, :expr?
 
-          # @param [Array] exprs to which the operation will be applied
-          def initialize(*exprs)
-            super(:'()', *exprs)
+        private
+
+          # @return [Symbol]
+          def mark
+            :'()'
           end
         end
 

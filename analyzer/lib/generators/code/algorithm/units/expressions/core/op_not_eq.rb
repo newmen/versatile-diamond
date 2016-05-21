@@ -5,10 +5,11 @@ module VersatileDiamond
 
         # Equal operator statement
         class OpNotEq < OpCmp
+        private
 
-          # @param [Array] exprs to which the operation will be applied
-          def initialize(*exprs)
-            super(:'!=', *exprs)
+          # @return [Symbol]
+          def mark
+            :'!='
           end
         end
 

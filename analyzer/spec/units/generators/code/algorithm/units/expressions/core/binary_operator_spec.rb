@@ -166,6 +166,30 @@ for (int i = 0; i < 3; ++i)
             end
           end
 
+          describe 'OpDot' do
+            it { expect { OpDot[x] }.to raise_error }
+            it { expect { OpDot[type] }.to raise_error }
+            it { expect { OpDot[type, func0] }.to raise_error }
+            it { expect { OpDot[small_cond, x] }.to raise_error }
+            it { expect { OpDot[var, num] }.to raise_error }
+            it { expect { OpDot[var, type] }.to raise_error }
+            it { expect { OpDot[var, small_cond] }.to raise_error }
+            it { expect { OpDot[var, OpAnd[x, y]] }.to raise_error }
+
+            subject { OpDot[var, OpDot[var, func2]] }
+            let(:is_expr) { true }
+            let(:is_op) { false }
+
+            it_behaves_like :check_predicates
+
+            describe '#code' do
+              it { expect(subject.code).to eq('obj.obj.many(x, y)') }
+              it { expect(OpDot[var, x].code).to eq('obj.x') }
+              it { expect(OpDot[var, var].code).to eq('obj.obj') }
+              it { expect(OpDot[var, tfunc0].code).to eq('obj.templ<Yo, 5>()') }
+            end
+          end
+
           describe 'OpNs' do
             it { expect { OpNs[x] }.to raise_error }
             it { expect { OpNs[type] }.to raise_error }

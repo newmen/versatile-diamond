@@ -63,6 +63,10 @@ module VersatileDiamond
             it { expect(vvl.call('bar').code).to eq('val->bar()') }
           end
 
+          describe '#member' do
+            it { expect(vvl.member('bar').code).to eq('val.bar()') }
+          end
+
           describe '#item?' do
             it { expect(subject.item?).to be_falsey }
             it { expect(many_arr.items.first.item?).to be_truthy }

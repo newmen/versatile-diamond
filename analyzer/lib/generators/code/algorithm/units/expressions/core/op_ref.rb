@@ -32,11 +32,14 @@ module VersatileDiamond
 
           # @param [Array] exprs to which the operation will be applied
           def initialize(*exprs)
-            if exprs.empty?
-              super(:&, Constant[''])
-            else
-              super(:&, *exprs)
-            end
+            exprs.empty? ? super(Constant['']) : super
+          end
+
+        private
+
+          # @return [Symbol]
+          def mark
+            :&
           end
         end
 

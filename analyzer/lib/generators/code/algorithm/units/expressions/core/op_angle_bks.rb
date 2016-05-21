@@ -31,12 +31,12 @@ module VersatileDiamond
             end
           end
 
-          # @param [Array] exprs to which the operation will be applied
-          def initialize(*exprs)
-            super(:'<>', *exprs)
-          end
-
         private
+
+          # @return [Symbol]
+          def mark
+            :'<>'
+          end
 
           # @return [String]
           # @override

@@ -39,15 +39,17 @@ module VersatileDiamond
 
           def_delegators :'inner_exprs.last', :expr?, :var?
 
-          # @param [Array] exprs to which the operation will be applied
-          def initialize(*exprs)
-            super(:'->', *exprs)
-          end
-
           # @return [Boolean] false
           # @override
           def op?
             false
+          end
+
+        private
+
+          # @return [Symbol]
+          def mark
+            :'->'
           end
         end
 

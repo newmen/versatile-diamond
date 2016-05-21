@@ -20,11 +20,6 @@ module VersatileDiamond
             end
           end
 
-          # @param [Array] exprs to which the operation will be applied
-          def initialize(*exprs)
-            super(:'', *exprs)
-          end
-
           # @return [String]
           # @override
           def code
@@ -39,6 +34,11 @@ module VersatileDiamond
           end
 
         private
+
+          # @return [Symbol]
+          def mark
+            :''
+          end
 
           # @return [Boolean]
           def oneline?

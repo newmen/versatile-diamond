@@ -45,6 +45,11 @@ module VersatileDiamond
             it { expect(subject.call('hello').code).to eq('simple()->hello()') }
             it { expect(func1.call('f', Constant[0]).code).to eq('mono(x)->f(0)') }
           end
+
+          describe '#member' do
+            it { expect(subject.member('hello').code).to eq('simple().hello()') }
+            it { expect(func1.member('f', Constant[0]).code).to eq('mono(x).f(0)') }
+          end
         end
 
       end
