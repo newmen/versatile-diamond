@@ -17,7 +17,7 @@ module VersatileDiamond
             super(ReactionNodesFactory.new(generator))
             @lateral_chunks = lateral_chunks
 
-            @_big_graph, @_small_graph, @_avail_nodes = nil
+            @_overall_graph, @_big_graph, @_small_graph, @_avail_nodes = nil
           end
 
           # Selects presented nodes or creates new
@@ -29,6 +29,11 @@ module VersatileDiamond
             end
           end
 
+          # @return [Hash] the most biggest total graph of nodes
+          def overall_graph
+            @_overall_graph ||= transform_links(@lateral_chunks.overall_links)
+          end
+
           # Makes the nodes graph from original links between interacting atoms of
           # chunks
           #
@@ -37,13 +42,13 @@ module VersatileDiamond
             @_big_graph ||= transform_links(@lateral_chunks.links)
           end
 
+        private
+
           # Makes the nodes graph from positions of chunks
           # @return [Hash] the small graph of nodes
           def small_graph
             @_small_graph ||= transform_links(@lateral_chunks.clean_links)
           end
-
-        private
 
           # Gets list of nodes which were created under building final graph
           # @return [Array] the list of existed unique nodes

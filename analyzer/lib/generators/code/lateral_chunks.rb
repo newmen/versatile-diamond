@@ -37,6 +37,11 @@ module VersatileDiamond
           total_chunk.total_links
         end
 
+        # @return [Hash]
+        def overall_links
+          overall_chunk.total_links
+        end
+
         # Gets number of how many times the root chunks contains in total chunk
         # @return [Integer] the number of times
         def root_times
@@ -80,6 +85,8 @@ module VersatileDiamond
           if chunks_users.one?
             chunk = chunks_users.first
             @generator.reaction_class(chunk.lateral_reaction.name)
+          elsif chunks_users.empty?
+            raise ArgumentError, 'No reactions for passed spec_atom'
           else
             raise ArgumentError, 'Too many reactions uses passed spec_atom'
           end
@@ -135,7 +142,7 @@ module VersatileDiamond
         # Gets total chunk which adsorbs all chunk in self
         # @return [Organizers::TotalChunk] the overall chunk
         def overall_chunk
-          @_overall_chunk ||= make_total_chunk(@all_chunks)
+          @_overall_chunk ||= make_total_chunk(maximal_chunks)
         end
 
         # Makes total chunk instance
@@ -143,6 +150,21 @@ module VersatileDiamond
         # @return [Organizers::TotalChunk] the total chunk
         def make_total_chunk(chunks)
           Organizers::TotalChunk.new(reaction, chunks)
+        end
+
+        # Selects chunks with maximal value of unique sidepiece species
+        # @return [Array]
+        def maximal_chunks
+          sorted_chunks = @all_chunks.sort do |a, b|
+            b.sidepiece_specs.size <=> a.sidepiece_specs.size
+          end
+          sorted_chunks.each_with_object([]) do |chunk, acc|
+            acc << chunk if acc.all? do |ch|
+              sss = [chunk, ch].map(&:sidepiece_specs)
+              names = sss.map { |specs| specs.map(&:name) }
+              names.reduce(:&).empty?
+            end
+          end
         end
 
         # Checks that passed reactions can be merged

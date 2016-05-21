@@ -5,6 +5,25 @@ module VersatileDiamond
 
         # Decorates unit for bulding lateral dependent code on context
         class ContextLateralUnit < ContextReactionUnit
+          # @param [Expressions::VarsDictionary] _
+          # @param [BasePureUnitsFactory] _
+          # @param [BaseContextProvider] _
+          # @param [BasePureUnit] _
+          def initialize(*)
+            super
+            @_action_unit = nil
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_existence(&block)
+            if action_unit.species.one?
+              super { action_unit.define_undefined_atoms(&block) }
+            else
+              action_unit.define_undefined_atoms { super(&block) }
+            end
+          end
+
         protected
 
           # @yield incorporating statement
@@ -14,6 +33,11 @@ module VersatileDiamond
           end
 
         private
+
+          # @return [BasePureUnit]
+          def action_unit
+            @_action_unit ||= pure_factory.unit(context.action_nodes)
+          end
 
           # @return [Array]
           def sidepieces

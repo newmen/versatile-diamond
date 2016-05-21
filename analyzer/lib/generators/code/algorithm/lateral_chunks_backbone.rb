@@ -30,7 +30,7 @@ module VersatileDiamond
           # TODO: must be private!
           def final_graph
             @_final_graph ||=
-              @grouped_nodes_graph.final_graph.select { |key, _| final_key?(key) }
+              @grouped_nodes_graph.final_graph.select { |key, _| all_final_keys?(key) }
           end
 
           # Gets list of nodes from which find begins
@@ -61,7 +61,7 @@ module VersatileDiamond
           # @return [Hash]
           def big_graph
             @_big_graph ||=
-              dup_graph(@grouped_nodes_graph.big_graph, &method(:lateral_node))
+              dup_graph(@grouped_nodes_graph.overall_graph, &method(:lateral_node))
           end
 
         private
@@ -71,19 +71,20 @@ module VersatileDiamond
 
           # @param [Array] nodes
           # @return [Boolean]
-          def final_key?(nodes)
-            nodes.all? { |node| check_spec_of(node, target_predicate_name) }
+          def all_final_keys?(nodes)
+            nodes.all?(&method(:final_key?))
           end
 
-          # @return [Array]
-          def target_key_nodes
-            @_target_key_nodes ||= final_graph.keys.reduce(:+)
+          # @param [Nodes::ReactantNode] node
+          # @return [Boolean]
+          def final_key?(node)
+            check_spec_of(node, target_predicate_name)
           end
 
           # @param [ReactantNode] node
           # @return [LateralNode]
           def lateral_node(node)
-            target_key_nodes.include?(node) ? target_node(node) : otherside_node(node)
+            final_key?(node) ? target_node(node) : otherside_node(node)
           end
 
           # @param [Array] nodes

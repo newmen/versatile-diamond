@@ -23,7 +23,7 @@ module VersatileDiamond
           # @param [Array] nodes
           # @return [Boolean]
           # @override
-          def final_key?(nodes)
+          def all_final_keys?(nodes)
             super && nodes.all? { |n| n.uniq_specie.original == @specie }
           end
 

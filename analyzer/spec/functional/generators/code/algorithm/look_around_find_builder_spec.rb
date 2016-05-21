@@ -132,7 +132,7 @@ module VersatileDiamond
 
               let(:find_algorithm) do
                 <<-CODE
-    Atom *atoms1[2] = { #{target_atoms_definition} };
+    Atom *atoms1[2] = { target(0)->atom(0), target(1)->atom(0) };
     for (uint a = 0; a < 2; ++a)
     {
         eachNeighbour(atoms1[a], &Diamond::cross_100, [&](Atom *neighbour1) {
@@ -164,24 +164,15 @@ module VersatileDiamond
 
               it_behaves_like :check_code do
                 let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
-                let(:target_atoms_definition) do
-                  'target(1)->atom(0), target(0)->atom(0)'
-                end
               end
 
               it_behaves_like :check_code do
                 let(:lateral_reactions) { [dept_big_ab_lateral_sdf] }
-                let(:target_atoms_definition) do
-                  'target(0)->atom(0), target(1)->atom(0)'
-                end
               end
 
               it_behaves_like :check_code do
                 let(:lateral_reactions) do
                   [dept_small_ab_lateral_sdf, dept_big_ab_lateral_sdf]
-                end
-                let(:target_atoms_definition) do
-                  'target(1)->atom(0), target(0)->atom(0)'
                 end
               end
             end

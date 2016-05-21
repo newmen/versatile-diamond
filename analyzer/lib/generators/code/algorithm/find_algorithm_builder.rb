@@ -19,7 +19,7 @@ module VersatileDiamond
           # @return [String] the string with cpp code of find algorithm
           def build
             dict.checkpoint!
-            total_body.shifted_code
+            backbone.entry_nodes.map(&method(:body_for)).map(&:shifted_code).join
           end
 
         private
@@ -51,11 +51,6 @@ module VersatileDiamond
           # @return [Hash]
           def nodes_graph
             backbone.big_graph
-          end
-
-          # @return [Expressions::Core::Statement]
-          def total_body
-            backbone.entry_nodes.map(&method(:body_for)).reduce(:+)
           end
 
           # Generates the body of code from passed nodes
