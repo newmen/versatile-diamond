@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm::Units
 
         # The unit for combines statements of specie creation
-        class SpecieCreationUnit < BaseCreationUnit
+        class SpecieCreationUnit < MainCreationUnit
           include SpecieAbstractType
 
           # @param [Array] _

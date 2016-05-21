@@ -20,6 +20,7 @@ module VersatileDiamond
         ANCHOR_SPECIE_NAME = 'parent'.freeze
         TARGET_SPECIE_NAME = 'target'.freeze
         INTER_SPECIE_NAME = 'specie'.freeze
+        SIDE_SPECIE_NAME = 'sidepiece'.freeze
 
         attr_reader :spec, :original, :sequence, :essence
 

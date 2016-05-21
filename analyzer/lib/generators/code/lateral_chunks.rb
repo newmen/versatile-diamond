@@ -108,16 +108,6 @@ module VersatileDiamond
           end
         end
 
-        # Gets the ordered list of root lateral reactions and uses passed specie
-        # @param [Specie] specie which should be one of sidepiece species of reaction
-        # @return [Array] the list of single lateral reactions
-        def root_affixes_for(specie)
-          unconcrete_affixes.select do |lateral_reaction|
-            lateral_reaction.chunk.parents.empty? &&
-              lateral_reaction.sidepiece_species.include?(specie)
-          end
-        end
-
         # Checks that passed spec belongs to overall target specs set
         # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] spec
         #   which will be checked in the set of target specs

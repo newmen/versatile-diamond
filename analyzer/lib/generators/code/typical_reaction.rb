@@ -129,8 +129,9 @@ module VersatileDiamond
         # Gets the string by which chunks of lateral reactions define
         # @return [String] the string with null defined chunks of lateral reactions
         def define_lateral_chunks
+          var_name = "#{LATERAL_CHUNKS_NAME}[#{lateral_chunks_num}]"
           ptrs = (['nullptr'] * lateral_chunks_num).join(', ')
-          "SingleLateralReaction *chunks[#{lateral_chunks_num}] = { #{ptrs} }"
+          "SingleLateralReaction *#{var_name} = { #{ptrs} }"
         end
 
         # Builds look around algorithm for find all possible lateral reactions

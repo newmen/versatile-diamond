@@ -9,8 +9,8 @@ module VersatileDiamond
         include SpeciesUser
         extend Forwardable
 
-        ANCHOR_SPECIE_NAME = 'target'.freeze
-        SIDEPIECE_SPECIE_NAME = 'sidepiece'.freeze
+        LATERAL_CHUNKS_NAME = 'chunks'.freeze
+        CHUNKS_INDEX_NAME = 'index'.freeze
 
         def_delegators :reaction, :links, :clean_links, :relation_between
 

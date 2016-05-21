@@ -12,9 +12,8 @@ module VersatileDiamond
           #   algorithm will be generated
           # @param [Specie] target_specie from which the algorithm will be built
           def initialize(generator, lateral_chunks, target_specie)
-            backbone =
-              CheckLateralsBackbone.new(generator, lateral_chunks, target_specie)
-            super(backbone, lateral_chunks)
+            super(CheckLateralsBackbone.new(generator, lateral_chunks, target_specie))
+            @lateral_chunks = lateral_chunks
           end
 
         private
@@ -22,6 +21,18 @@ module VersatileDiamond
           # @return [CheckLateralsPureUnitsFactory]
           def make_pure_factory
             CheckLateralsPureUnitsFactory.new(dict)
+          end
+
+          # @param [Units::ReactionContextProvider] context
+          # @return [CheckLateralsContextUnitsFactory]
+          def make_context_factory(context)
+            CheckLateralsContextUnitsFactory.new(dict, pure_factory, context)
+          end
+
+          # @oaram [CheckLateralsContextUnitsFactory] factory
+          # @return [Units::CheckLateralsCreationUnit]
+          def make_creator_unit(factory)
+            factory.creator(@lateral_chunks)
           end
         end
 

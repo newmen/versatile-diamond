@@ -19,6 +19,7 @@ module VersatileDiamond
               let(:dict) { Expressions::LateralExprsDictionary.new }
 
               let(:target_species) { entry_nodes.map(&:uniq_specie).uniq }
+              let(:sidepiece_species) { side_nodes.map(&:uniq_specie).uniq }
 
               let(:first_ts) { target_species.first }
               let(:last_ts) { target_species.last }

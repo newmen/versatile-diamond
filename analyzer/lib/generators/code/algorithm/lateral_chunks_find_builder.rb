@@ -6,40 +6,18 @@ module VersatileDiamond
         # Contain logic for building lateral chunks algorithm
         # @abstract
         class LateralChunksFindBuilder < FindAlgorithmBuilder
-
-          # Inits builder by main engine code generator and lateral chunks object
-          # @param [LateralChunksBackbone] backbone of algorithm
-          # @param [LateralChunks] lateral_chunks the target object by which the
-          #   algorithm will be generated
-          def initialize(backbone, lateral_chunks)
-            super(backbone)
-            @lateral_chunks = lateral_chunks
-          end
-
         private
 
-          # @return [Units::Expressions::TargetCallsDictionary]
+          # @return [Units::Expressions::LateralExprsDictionary]
           # @override
           def make_dict
-            Units::Expressions::TargetCallsDictionary.new
-          end
-
-          # @param [Units::ReactionContextProvider] context
-          # @return [LateralContextUnitsFactory]
-          def make_context_factory(context)
-            LateralContextUnitsFactory.new(dict, pure_factory, context)
+            Units::Expressions::LateralExprsDictionary.new
           end
 
           # @param [Array] ordered_graph
-          # @return [Units::ReactionContextProvider]
+          # @return [Units::LateralContextProvider]
           def make_context_provider(ordered_graph)
-            Units::ReactionContextProvider.new(dict, nodes_graph, ordered_graph)
-          end
-
-          # @oaram [LateralContextUnitsFactory] factory
-          # @return [Units::LateralChunkCreationUnit]
-          def make_creator_unit(factory)
-            factory.creator(@lateral_chunks)
+            Units::LateralContextProvider.new(dict, nodes_graph, ordered_graph)
           end
         end
 

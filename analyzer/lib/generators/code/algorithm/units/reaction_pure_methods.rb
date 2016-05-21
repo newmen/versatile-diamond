@@ -12,7 +12,7 @@ module VersatileDiamond
           def define!
             if species.one?
               kwargs = {
-                name: Code::SpeciesReaction::ANCHOR_SPECIE_NAME,
+                name: Code::Specie::TARGET_SPECIE_NAME,
                 next_name: false
               }
               dict.make_specie_s(species.first, **kwargs)

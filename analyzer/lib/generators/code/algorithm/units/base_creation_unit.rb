@@ -7,13 +7,8 @@ module VersatileDiamond
         # @abstract
         class BaseCreationUnit < GenerableUnit
           # @param [Expressions::VarsDictionary] dict
-          # @param [BaseContextProvider] context
-          # @param [SoughtClass] creating_instance
-          def initialize(dict, context, creating_instance)
+          def initialize(dict)
             super(dict)
-            @context = context
-            @creating_class_name = creating_instance.class_name
-
             @_source_species = nil
           end
 
@@ -22,11 +17,6 @@ module VersatileDiamond
           # @return [Array]
           def source_species
             @_source_species ||= grep_context_species.sort
-          end
-
-          # @return [Array]
-          def grep_context_species
-            @context.bone_nodes.map(&:uniq_specie).uniq
           end
 
           # @yield incorporating statement
@@ -54,12 +44,6 @@ module VersatileDiamond
               value: values
             }
             dict.make_specie_s(source_species, **kwargs)
-          end
-
-          # @return [Expressions::Core::FunctionCall]
-          def call_create(*exprs)
-            type = Expressions::Core::ObjectType[@creating_class_name]
-            Expressions::Core::FunctionCall['create', *exprs, template_args: [type]]
           end
 
           # @param [Array] instances

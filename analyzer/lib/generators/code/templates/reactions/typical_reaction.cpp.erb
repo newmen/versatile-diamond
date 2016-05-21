@@ -17,7 +17,7 @@ void <%= class_name %>::checkLaterals(<%= check_laterals_arguments_str(specie) %
 
 <% end %>
 
-LateralReaction *<%= class_name %>::selectFrom(SingleLateralReaction **chunks, ushort num) const
+LateralReaction *<%= class_name %>::selectFrom(SingleLateralReaction **<%= SpeciesReaction::LATERAL_CHUNKS_NAME %>, ushort num) const
 {
     assert(num > 0);
 <%= select_from_algorithm %>
@@ -25,13 +25,13 @@ LateralReaction *<%= class_name %>::selectFrom(SingleLateralReaction **chunks, u
 
 SpecReaction *<%= class_name %>::lookAround()
 {
-    uint index = 0;
+    uint <%= SpeciesReaction::CHUNKS_INDEX_NAME %> = 0;
     <%= define_lateral_chunks %>;
 
 <%= look_around_algorithm %>
 
-    assert(index < <%= lateral_chunks_num %>);
-    return selectReaction(chunks, index);
+    assert(<%= SpeciesReaction::CHUNKS_INDEX_NAME %> < <%= lateral_chunks_num %>);
+    return selectReaction(<%= SpeciesReaction::LATERAL_CHUNKS_NAME %>, <%= SpeciesReaction::CHUNKS_INDEX_NAME %>);
 }
 <% end %>
 

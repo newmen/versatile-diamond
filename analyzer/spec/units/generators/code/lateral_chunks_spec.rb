@@ -117,16 +117,6 @@ module VersatileDiamond
             expect(affixes.map(&:chunk).any?(&:original?)).to be_truthy
           end
         end
-
-        describe '#root_affixes_for' do
-          let(:lateral_reactions) { [dept_ewb_lateral_df] }
-          let(:specie) { generator.specie_class(lateral_bridge.name) }
-          let(:affixes) { subject.root_affixes_for(specie) }
-          it 'check affixes' do
-            expect(affixes.size).to eq(1)
-            expect(affixes.map(&:chunk).any?(&:original?)).to be_falsey
-          end
-        end
       end
 
     end

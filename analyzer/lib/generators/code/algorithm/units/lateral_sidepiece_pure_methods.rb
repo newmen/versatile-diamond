@@ -11,7 +11,7 @@ module VersatileDiamond
           # Anchor specie should has a name
           def define!
             kwargs = {
-              name: Code::SpeciesReaction::SIDEPIECE_SPECIE_NAME,
+              name: Code::Specie::SIDE_SPECIE_NAME,
               next_name: false
             }
             kwargs[:type] = abstract_type unless species.one?
