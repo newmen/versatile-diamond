@@ -28,6 +28,12 @@ module VersatileDiamond
             Units::LateralContextProvider.new(dict, nodes_graph, ordered_graph)
           end
 
+          # @return [Boolean]
+          # @override
+          def define_each_entry_node?
+            false
+          end
+
           # @param [Array] nodes which will not defined again
           # @return [Expressions::Core::Statement]
           # @override

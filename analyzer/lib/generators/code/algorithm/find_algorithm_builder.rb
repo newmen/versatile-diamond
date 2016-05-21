@@ -19,7 +19,7 @@ module VersatileDiamond
           # @return [String] the string with cpp code of find algorithm
           def build
             dict.checkpoint!
-            backbone.entry_nodes.map(&method(:body_for)).map(&:shifted_code).join
+            total_body.shifted_code
           end
 
         private
@@ -37,14 +37,25 @@ module VersatileDiamond
             Units::Expressions::VarsDictionary.new
           end
 
+          # @return [BasePureUnitsFactory]
+          def pure_factory
+            @_pure_factory ||= make_pure_factory
+          end
+
+          # Define by default
+          # @return [Boolean]
+          def define_each_entry_node?
+            true
+          end
+
           # @return [Hash]
           def nodes_graph
             backbone.big_graph
           end
 
-          # @return [BasePureUnitsFactory]
-          def pure_factory
-            @_pure_factory ||= make_pure_factory
+          # @return [Expressions::Core::Statement]
+          def total_body
+            backbone.entry_nodes.map(&method(:body_for)).reduce(:+)
           end
 
           # Generates the body of code from passed nodes
@@ -52,13 +63,7 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           def body_for(nodes)
             dict.rollback!
-            define_algorithm(nodes)
-          end
-
-          # @param [Array] nodes which will be defined at begin
-          # @return [Expressions::Core::Statement]
-          def define_algorithm(nodes)
-            pure_factory.unit(nodes).define!
+            pure_factory.unit(nodes).define! if define_each_entry_node?
             combine_algorithm(nodes)
           end
 
@@ -111,7 +116,7 @@ module VersatileDiamond
             [initial_check_proc(source_unit)]
           end
 
-          # @param [Units::ContextBaseUnit] unit
+          # @param [Units::ContextBaseUnit] source_unit
           # @return [Proc]
           def initial_check_proc(source_unit)
             -> &block { source_unit.check_existence(&block) }

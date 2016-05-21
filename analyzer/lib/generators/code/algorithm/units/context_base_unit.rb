@@ -475,8 +475,7 @@ module VersatileDiamond
 
           # @return [Boolean]
           def symmetric?
-            unit.fully_symmetric? || unit.partially_symmetric? ||
-              asymmetric_related_atoms?
+            unit.symmetric? || asymmetric_related_atoms?
           end
 
           # @return [Boolean]

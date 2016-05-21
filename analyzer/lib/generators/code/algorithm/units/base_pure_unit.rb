@@ -136,14 +136,8 @@ module VersatileDiamond
           end
 
           # @return [Boolean]
-          def fully_symmetric?
-            atoms.one? && symmetric_atoms.size > species.size
-          end
-
-          # @return [Boolean]
-          def partially_symmetric?
-            !atoms.one? && !symmetric_atoms.empty? &&
-              symmetric_atoms.to_set < atoms.to_set
+          def symmetric?
+            fully_symmetric? || partially_symmetric?
           end
 
           def to_s
@@ -227,6 +221,17 @@ module VersatileDiamond
           def coincident_nodes_of?(inner_unit)
             values = inner_unit.nodes.map(&:coincide?)
             !values.any? || values.all?
+          end
+
+          # @return [Boolean]
+          def fully_symmetric?
+            atoms.one? && symmetric_atoms.size > species.size
+          end
+
+          # @return [Boolean]
+          def partially_symmetric?
+            !atoms.one? && !symmetric_atoms.empty? &&
+              symmetric_atoms.to_set < atoms.to_set
           end
 
           # @yield incorporating statement
