@@ -50,23 +50,18 @@ module VersatileDiamond
 
           # @return [Array]
           def action_vars
-            action_arr = var_of(@action_atoms)
-            @action_atoms.map(&method(:var_of)).compact +
-              (action_arr ? [action_arr] : [])
+            aa_arr = var_of(@action_atoms)
+            (aa_arr ? [aa_arr] : []) + @action_atoms.map(&method(:var_of)).compact
           end
 
           # @return [Array]
           def action_used_names
-            action_insts.map(&:code)
+            action_vars.map(&:code)
           end
 
           # @return [Array]
           def action_next_names
-            num_tailed = action_used_names.select { |name| name =~ /\d+$/ }
-            num_tailed.map do |name|
-              m = name.match(/^(.+?)(\d+)$/)
-              "#{m[1]}#{m[2].to_i.next}"
-            end
+            action_used_names.select { |name| name =~ /\d+$/ }
           end
 
           # @override
@@ -85,7 +80,8 @@ module VersatileDiamond
           # @override
           def restore!(state)
             fixed_state = state.dup
-            fixed_state[:vars].merge!(action_vars.map { |v| [v.instance, [v]] }.to_h)
+            atoms_vars_hash = action_vars.map { |v| [key_of(v.instance), [v]] }.to_h
+            fixed_state[:vars] = fixed_state[:vars].merge(atoms_vars_hash)
             fixed_state[:used_names] += action_used_names
             fixed_state[:next_names] += action_next_names
 

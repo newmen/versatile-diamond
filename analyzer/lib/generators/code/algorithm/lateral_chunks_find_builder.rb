@@ -30,6 +30,7 @@ module VersatileDiamond
 
           # Define by default
           # @return [Boolean]
+          # @override
           def define_each_entry_node?
             true
           end

@@ -16,7 +16,7 @@ module VersatileDiamond
                 values.flat_map { |rels| rels.flat_map(&:first) }.uniq
               end
 
-              let(:dict) { Expressions::LateralExprsDictionary.new }
+              let(:dict) { Expressions::LateralExprsDictionary.new(action_nodes) }
 
               let(:target_species) { entry_nodes.map(&:uniq_specie).uniq }
               let(:sidepiece_species) { side_nodes.map(&:uniq_specie).uniq }

@@ -6,28 +6,21 @@ module VersatileDiamond
       module Algorithm::Units::Expressions
 
         describe LateralExprsDictionary, type: :algorithm do
-          include_context :specie_instance_context
-          include_context :raw_unique_reactant_context
+          include_context :look_around_context
+          include_context :small_activated_bridges_lateral_context
 
-          let(:base_specs) { [dept_bridge_base, dept_unique_reactant] }
-          let(:dept_unique_reactant) { dept_methyl_on_bridge_base }
-
-          let(:reactant1) do
-            spec = Concepts::VeiledSpec.new(dept_unique_reactant.spec)
-            Algorithm::Instances::UniqueReactant.new(generator, spec)
-          end
-
-          let(:reactant2) do
-            spec = Concepts::VeiledSpec.new(dept_unique_reactant.spec)
-            Algorithm::Instances::UniqueReactant.new(generator, spec)
-          end
-
-          let(:species_arr) { [reactant1, reactant2] }
+          subject { described_class.new(action_nodes) }
+          let(:species_arr) { action_nodes.map(&:uniq_specie) }
+          let(:reactant1) { species_arr.first }
+          let(:reactant2) { species_arr.last }
 
           describe '#checkpoint! && #rollback!' do
             let(:proxy1) { Algorithm::Instances::OtherSideSpecie.new(reactant1) }
             let(:proxy2) { Algorithm::Instances::OtherSideSpecie.new(reactant1) }
             let(:proxy3) { Algorithm::Instances::OtherSideSpecie.new(reactant2) }
+            let(:side_atom) { side_nodes.first.atom }
+            let(:side_atoms) { [side_atom, side_atom.dup] }
+            let(:act_atoms) { action_nodes.map(&:atom) }
             let(:proxies12) { [proxy1, proxy2] }
             it 'expect sidepiece species' do
               subject.make_specie_s(reactant1)
@@ -46,6 +39,21 @@ module VersatileDiamond
               expect(subject.same_vars(proxy1)).to be_empty
               expect(subject.same_vars(proxy3)).to be_empty
               expect(subject.different_vars(proxy1)).to be_empty
+
+              subject.make_atom_s(act_atoms)
+              expect(subject.var_of(act_atoms).code).to eq('atoms1')
+              subject.rollback!
+              expect(subject.var_of(act_atoms).instance).to eq(act_atoms)
+              expect(subject.var_of(act_atoms.first).instance).to eq(act_atoms.first)
+              expect(subject.var_of(act_atoms.last).instance).to eq(act_atoms.last)
+              subject.make_atom_s(side_atoms)
+              expect(subject.var_of(act_atoms).code).to eq('atoms1')
+              expect(subject.var_of(side_atoms).code).to eq('atoms2')
+              subject.rollback!
+              expect(subject.var_of(act_atoms).code).to eq('atoms1')
+              expect(subject.var_of(side_atoms)).to be_nil
+              subject.rollback!(forget: true)
+              expect(subject.var_of(act_atoms)).to be_nil
             end
           end
 

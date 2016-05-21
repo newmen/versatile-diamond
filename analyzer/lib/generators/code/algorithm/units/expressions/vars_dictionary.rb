@@ -22,7 +22,11 @@ module VersatileDiamond
           #   will be forgotten
           def rollback!(forget: false)
             state = forget ? @checkpoints.pop : @checkpoints.last
-            state ? restore!(state) : reset!
+            if state
+              forget ? force_restore!(state) : restore!(state)
+            else
+              reset!
+            end
           end
 
           # @param [Object] atom_s
@@ -84,6 +88,11 @@ module VersatileDiamond
 
           # @param [Hash] state
           def restore!(state)
+            force_restore!(state)
+          end
+
+          # @param [Hash] state
+          def force_restore!(state)
             @vars = deep_hash_dup(state[:vars])
             @next_names = state[:next_names].dup
             @used_names = state[:used_names].dup
