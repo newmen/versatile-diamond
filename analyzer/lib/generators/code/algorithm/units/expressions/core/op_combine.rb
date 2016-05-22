@@ -48,7 +48,7 @@ module VersatileDiamond
           # @return [Array]
           def multilines
             inner_exprs.map do |expr|
-              inner_code = expr.code
+              inner_code = expr.code.rstrip
               expr.terminating? ? terminate(inner_code) : inner_code
             end
           end

@@ -19,7 +19,7 @@ module VersatileDiamond
           # @return [String] the string with cpp code of find algorithm
           def build
             dict.checkpoint!
-            backbone.entry_nodes.map(&method(:body_for)).map(&:shifted_code).join
+            complete_algorithm.shifted_code
           end
 
         private
@@ -53,6 +53,11 @@ module VersatileDiamond
             backbone.big_graph
           end
 
+          # @return [Expressions::Core::Statement]
+          def complete_algorithm
+            backbone.entry_nodes.map(&method(:body_for)).reduce(:+)
+          end
+
           # Generates the body of code from passed nodes
           # @param [Array] nodes from which the code will be generated
           # @return [Expressions::Core::Statement]
@@ -69,11 +74,17 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           def combine_algorithm(nodes)
             ordered_graph = backbone.ordered_graph_from(nodes)
-            context = make_context_provider(ordered_graph)
-            factory = make_context_factory(context)
+            factory = combine_context_factory(ordered_graph)
             source_unit = factory.unit(nodes)
             procs = collect_procs(factory, ordered_graph, init_procs(source_unit))
             call_procs(procs, &make_creator_unit(factory).public_method(:create))
+          end
+
+          # @param [Array] ordered_graph
+          # @return [BaseContextUnitsFactory] 
+          def combine_context_factory(ordered_graph)
+            context = make_context_provider(ordered_graph)
+            make_context_factory(context)
           end
 
           # Collects procs of conditions for body of find algorithm

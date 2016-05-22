@@ -8,14 +8,6 @@ module VersatileDiamond
         class LateralChunksFindBuilder < FindAlgorithmBuilder
           extend Forwardable
 
-          # Generates find algorithm cpp code
-          # @return [String] the string with cpp code of find algorithm
-          # @override
-          def build
-            pure_factory.unit(action_nodes).define!
-            super
-          end
-
         private
 
           def_delegator :backbone, :action_nodes
@@ -29,8 +21,12 @@ module VersatileDiamond
           # @param [Array] ordered_graph
           # @return [Units::LateralContextProvider]
           def make_context_provider(ordered_graph)
-            context_class = Units::LateralContextProvider
-            context_class.new(dict, nodes_graph, ordered_graph, action_nodes)
+            Units::LateralContextProvider.new(dict, nodes_graph, ordered_graph)
+          end
+
+          # @return [Units::ActionTargetUnit]
+          def make_action_unit
+            combine_context_factory([]).action_unit(action_nodes)
           end
 
           # Define by default
@@ -40,11 +36,10 @@ module VersatileDiamond
             false
           end
 
-          # @param [Array] nodes which will not defined again
           # @return [Expressions::Core::Statement]
           # @override
-          def define_algorithm(nodes)
-            combine_algorithm(nodes)
+          def complete_algorithm
+            make_action_unit.predefine! { super }
           end
         end
 

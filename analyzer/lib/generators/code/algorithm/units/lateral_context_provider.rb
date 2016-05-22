@@ -7,16 +7,6 @@ module VersatileDiamond
         class LateralContextProvider < ReactionContextProvider
           include Mcs::SpecsAtomsComparator
 
-          attr_reader :action_nodes
-
-          # @param [Units::Expressions::VarsDictionary] dict
-          # @param [Hash] nodes_graph
-          # @param [Array] ordered_graph
-          def initialize(dict, nodes_graph, ordered_graph, action_nodes)
-            super(dict, nodes_graph, ordered_graph)
-            @action_nodes = action_nodes.uniq(&:spec_atom)
-          end
-
           # @return [Array]
           def key_nodes
             key_nodes_lists.reduce(:+).reject(&:side?).uniq
@@ -28,7 +18,7 @@ module VersatileDiamond
           end
 
           # @return [Boolean]
-          def symmetric_actions?
+          def symmetric_actions?(action_nodes)
             sas = action_nodes.map(&:spec_atom)
             !sas.one? && same_sa?(*sas) &&
               !similar_relations?(side_relations_of(action_nodes))
