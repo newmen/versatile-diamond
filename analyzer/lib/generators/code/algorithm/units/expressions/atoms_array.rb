@@ -7,12 +7,6 @@ module VersatileDiamond
         class AtomsArray < Core::Collection
           include LatticePositionReference
 
-          # @param [Statement] body
-          # @return [For]
-          def each(body)
-            iterate(:a, body)
-          end
-
           # @param [Array] defined_vars
           # @param [AtomsArray] nbrs_arr
           # @param [Core::ObjectType] lattice

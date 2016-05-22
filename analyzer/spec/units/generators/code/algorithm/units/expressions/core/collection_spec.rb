@@ -25,6 +25,13 @@ module VersatileDiamond
 
           it_behaves_like :check_predicates
 
+          let(:return31) do
+            -> do
+              value = Algorithm::Units::Expressions::Core::Constant[31]
+              Algorithm::Units::Expressions::Core::Return[value]
+            end
+          end
+
           describe '#type' do
             it { expect(subject.type).to eq(type.ptr) }
           end
@@ -64,6 +71,20 @@ module VersatileDiamond
           describe '#parent_arr?' do
             it { expect(subject.parent_arr?(var)).to be_falsey }
             it { expect(subject.parent_arr?(item1)).to be_truthy }
+          end
+
+          describe '#iterate' do
+            let(:code) do
+              <<-CODE
+for (uint x = 0; x < 2; ++x)
+{
+    return 31;
+}
+              CODE
+            end
+            let(:dict) { Algorithm::Units::Expressions::VarsDictionary.new }
+            let(:result) { subject.iterate(dict.make_iterator(:x), return31.call) }
+            it { expect(result.code).to eq(code) }
           end
         end
 

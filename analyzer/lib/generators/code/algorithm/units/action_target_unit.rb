@@ -5,6 +5,7 @@ module VersatileDiamond
 
         # Decorates unit for bulding wrapper of target lateral atoms definition
         class ActionTargetUnit
+          extend Forwardable
 
           # @param [BaseContextProvider] context
           # @param [BasePureUnit] unit

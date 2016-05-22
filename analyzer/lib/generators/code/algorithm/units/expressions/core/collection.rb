@@ -73,10 +73,24 @@ module VersatileDiamond
             items.include?(var)
           end
 
-        private
+          # @param [Variable] var
+          # @param [Statement] body
+          # @return [For]
+          def iterate(var, body)
+            indexes = [
+              var,
+              OpMinus[Constant[1].freeze, var].freeze
+            ].freeze
 
-          ITERATOR_TYPE = ScalarType['uint'].freeze
-          ITERATOR_INIT_VALUE = Constant[0].freeze
+            update_indexes!(indexes)
+
+            assign = var.define_var
+            cond = OpLess[var, Constant[items.size]]
+            op = OpLInc[var]
+            For[assign, cond, op, body]
+          end
+
+        private
 
           # @return [OpCombine]
           # @override
@@ -94,30 +108,6 @@ module VersatileDiamond
           # @override
           def arg_type
             super.ptr
-          end
-
-          # @param [Symbol] iterable_var_name
-          # @param [Statement] body
-          # @return [For]
-          def iterate(iterable_var_name, body)
-            iterable_var = Variable[
-              iterable_var_name,
-              ITERATOR_TYPE,
-              iterable_var_name.to_s,
-              ITERATOR_INIT_VALUE
-            ].freeze
-
-            indexes = [
-              iterable_var,
-              OpMinus[Constant[1].freeze, iterable_var].freeze
-            ].freeze
-
-            update_indexes!(indexes)
-
-            assign = iterable_var.define_var
-            cond = OpLess[iterable_var, Constant[items.size]]
-            op = OpLInc[iterable_var]
-            For[assign, cond, op, body]
           end
 
           # @param [Array]

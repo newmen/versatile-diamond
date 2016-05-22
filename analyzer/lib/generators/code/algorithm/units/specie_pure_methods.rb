@@ -70,7 +70,7 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_species_by_loop(&block)
-            dict.var_of(species).each(block.call)
+            dict.var_of(species).iterate(dict.make_iterator(:s), block.call)
           end
 
           def inspect

@@ -56,12 +56,14 @@ module VersatileDiamond
             @type = type.freeze
             @name = Constant[name].freeze
             @value = value
+            @index = nil
           end
 
           # @param [Expression] new_index
           def update_index!(new_index)
             if item?
               new_name = code.sub(INDEX_RX, "[#{new_index.code}]")
+              @index = new_index.freeze
               @name = Constant[new_name].freeze
             else
               raise 'Cannot update index of variable which not belongs to any array'
@@ -100,11 +102,11 @@ module VersatileDiamond
           # @param [Array] vars
           # @return [Array] list of using variables
           def using(vars)
-            check_using = -> v { v.parent_arr?(self) }
             if vars.include?(self)
               [self]
-            elsif item? && vars.any?(&check_using)
-              vars.select(&check_using)
+            elsif item?
+              (@index ? @index.using(vars) : []) +
+                vars.select { |v| v.parent_arr?(self) }
             else
               []
             end

@@ -110,7 +110,7 @@ module VersatileDiamond
           def iterate_for_loop_symmetries(&block)
             define_undefined_atoms do
               redefine_atoms_as_array do
-                dict.var_of(atoms).each(block.call)
+                dict.var_of(atoms).iterate(dict.make_iterator(:a), block.call)
               end
             end
           end

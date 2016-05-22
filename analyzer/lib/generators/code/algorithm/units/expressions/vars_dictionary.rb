@@ -48,6 +48,15 @@ module VersatileDiamond
             make_var_s(:specie, specie_s, type, name, value, **nopts)
           end
 
+          # @param [Sybmol] x
+          # @param [Hash] nopts
+          # @return [Core::Variable]
+          def make_iterator(x, **nopts)
+            nopts[:next_name] ||= false
+            name = fix_name(x.to_s, **nopts)
+            store!(Core::Variable[x, ITERATOR_TYPE, name, ITERATOR_INIT_VALUE])
+          end
+
           # @param [Object] instance
           # @return [Core::Variable] or nil
           def var_of(instance)
@@ -70,6 +79,8 @@ module VersatileDiamond
 
           ATOM_TYPE = AtomType[].ptr.freeze
           DEFAULT_SPECIE_NAME = Code::Specie::INTER_SPECIE_NAME
+          ITERATOR_TYPE = ScalarType['uint'].freeze
+          ITERATOR_INIT_VALUE = Constant[0].freeze
 
           def reset!
             @vars = {}

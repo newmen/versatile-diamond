@@ -9,7 +9,6 @@ module VersatileDiamond
           include_context :look_around_context
           include_context :small_activated_bridges_lateral_context
 
-          subject { described_class.new(action_nodes) }
           let(:species_arr) { action_nodes.map(&:uniq_specie) }
           let(:reactant1) { species_arr.first }
           let(:reactant2) { species_arr.last }
@@ -39,21 +38,6 @@ module VersatileDiamond
               expect(subject.same_vars(proxy1)).to be_empty
               expect(subject.same_vars(proxy3)).to be_empty
               expect(subject.different_vars(proxy1)).to be_empty
-
-              subject.make_atom_s(act_atoms)
-              expect(subject.var_of(act_atoms).code).to eq('atoms1')
-              subject.rollback!
-              expect(subject.var_of(act_atoms).instance).to eq(act_atoms)
-              expect(subject.var_of(act_atoms.first).instance).to eq(act_atoms.first)
-              expect(subject.var_of(act_atoms.last).instance).to eq(act_atoms.last)
-              subject.make_atom_s(side_atoms)
-              expect(subject.var_of(act_atoms).code).to eq('atoms1')
-              expect(subject.var_of(side_atoms).code).to eq('atoms2')
-              subject.rollback!
-              expect(subject.var_of(act_atoms).code).to eq('atoms1')
-              expect(subject.var_of(side_atoms)).to be_nil
-              subject.rollback!(forget: true)
-              expect(subject.var_of(act_atoms)).to be_nil
             end
           end
 
