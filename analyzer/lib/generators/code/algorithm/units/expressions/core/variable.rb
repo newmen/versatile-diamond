@@ -15,15 +15,18 @@ module VersatileDiamond
             # @param [Object] instance
             # @param [ScalarType] type
             # @param [String] name
-            # @param [Expression] value
+            # @option [Expression] :value
+            # @option [Expression] :index
             # @return [Variable]
-            def [](instance, type, name, value = nil)
+            def [](instance, type, name, value: nil, index: nil)
               if !instance || (arr?(instance) && instance.empty?)
                 arg_err!('Instance of variable is not set')
               elsif !type.type?
                 arg_err!("Wrong variable type #{type.inspect}")
               elsif value && !valid?(instance, value)
                 arg_err!("Wrong type of variable value #{value.inspect}")
+              elsif index && !index.expr?
+                arg_err!("Wrong index value #{index.inspect}")
               elsif name && !str?(name)
                 arg_err!("Wrong type of variable name #{name.inspect}")
               elsif name && empty?(name)
@@ -44,29 +47,28 @@ module VersatileDiamond
             end
           end
 
-          def_delegator :@name, :code
+          def_delegator :full_name, :code
           attr_reader :instance, :type
 
           # @param [Object] instance
           # @param [ScalarType] type
           # @param [String] name
-          # @param [Expression] value
-          def initialize(instance, type, name, value = nil)
+          # @option [Expression] :value
+          # @option [Expression] :index
+          def initialize(instance, type, name, value: nil, index: nil)
             @instance = instance
             @type = type.freeze
             @name = Constant[name].freeze
             @value = value
-            @index = nil
+            @index = index
           end
 
           # @param [Expression] new_index
           def update_index!(new_index)
             if item?
-              new_name = code.sub(INDEX_RX, "[#{new_index.code}]")
               @index = new_index.freeze
-              @name = Constant[new_name].freeze
             else
-              raise 'Cannot update index of variable which not belongs to any array'
+              raise 'Cannot update index of variable'
             end
           end
 
@@ -84,7 +86,7 @@ module VersatileDiamond
 
           # @return [Boolean]
           def item?
-            !!(code =~ INDEX_RX)
+            !!@index
           end
 
           # Checks that current statement is object
@@ -103,10 +105,9 @@ module VersatileDiamond
           # @return [Array] list of using variables
           def using(vars)
             if vars.include?(self)
-              [self]
-            elsif item?
-              (@index ? @index.using(vars) : []) +
-                vars.select { |v| v.parent_arr?(self) }
+              [name]
+            elsif @index # do not use #item? here
+              @index.using(vars) + vars.select { |v| v.parent_arr?(self) }
             else
               []
             end
@@ -115,7 +116,9 @@ module VersatileDiamond
           # @param [Array] constructor_args
           # @return [Assign] the string with variable definition
           def define_var(*constructor_args)
-            if constructor_args.empty?
+            if item?
+              raise 'Cannot define a collection item separatedly'
+            elsif constructor_args.empty?
               Assign[full_name, type: type, value: value]
             elsif !value
               Assign[full_name, type: type, constructor_args: constructor_args]
@@ -127,7 +130,11 @@ module VersatileDiamond
 
           # @return [Assign] the string with argument definition
           def define_arg
-            Assign[@name, type: arg_type]
+            if item?
+              raise 'Cannot define a collection item separatedly'
+            else
+              Assign[name, type: arg_type]
+            end
           end
 
         protected
@@ -140,11 +147,12 @@ module VersatileDiamond
 
         private
 
-          attr_reader :value
+          attr_reader :name, :value
 
           # @return [Constant] the same name by default
           def full_name
-            @name
+            # do not use #item? here too
+            @index ? name + OpSquireBks[@index] : name
           end
 
           # @return [ScalarType]

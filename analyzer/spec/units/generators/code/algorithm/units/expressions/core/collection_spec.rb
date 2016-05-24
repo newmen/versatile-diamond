@@ -18,7 +18,9 @@ module VersatileDiamond
             it { expect { described_class[[var], type, 'o'] }.to raise_error }
 
             describe 'wrong number of values' do
-              let(:wrong_arr) { described_class[[var, vvl], type, 'nm', ['v']] }
+              let(:wrong_arr) do
+                described_class[[var, vvl], type, 'nm', values: ['v']]
+              end
               it { expect { wrong_arr }.to raise_error }
             end
           end

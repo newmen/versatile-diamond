@@ -9,7 +9,7 @@ module VersatileDiamond
           # @param [Array] nodes for which the unit will be maked
           # @return [Units::ContextReactionUnit]
           def action_unit(nodes)
-            Units::ActionTargetUnit.new(context, pure_unit(nodes))
+            Units::ActionTargetUnit.new(dict, context, pure_unit(nodes))
           end
 
           # @param [Array] nodes for which the unit will be maked

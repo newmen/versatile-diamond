@@ -6,6 +6,11 @@ module VersatileDiamond
         # Contain logic for building lateral chunks algorithm
         # @abstract
         class LateralChunksFindBuilder < FindAlgorithmBuilder
+          def initialize(*)
+            super
+            @_action_unit = nil
+          end
+
         private
 
           # @return [Units::Expressions::LateralExprsDictionary]
@@ -21,8 +26,9 @@ module VersatileDiamond
           end
 
           # @return [Units::ActionTargetUnit]
-          def make_action_unit
-            combine_context_factory([]).action_unit(backbone.action_nodes)
+          def action_unit
+            @_action_unit ||=
+              combine_context_factory([]).action_unit(backbone.action_nodes)
           end
 
           # Define by default
@@ -35,7 +41,7 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           # @override
           def complete_algorithm
-            make_action_unit.predefine! do
+            action_unit.predefine! do
               dict.checkpoint!
               super
             end

@@ -39,7 +39,7 @@ for (int i = 0; i < 3; ++i)
 }
                   CODE
                 end
-                it { expect(subject.code).to eq(code) }
+                it { expect(subject.code).to eq(code.rstrip) }
               end
             end
           end

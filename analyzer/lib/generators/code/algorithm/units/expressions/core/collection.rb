@@ -9,12 +9,12 @@ module VersatileDiamond
             # @param [Array] items
             # @param [ScalarType] type of collection item
             # @param [String] name which will be pluralized
-            # @param [Array] values
+            # @option [Array] :value
             # @return [Collection]
-            def [](items, type, name, values = nil)
+            def [](items, type, name, value: nil, **)
               if !arr?(items) || items.size < 2
                 arg_err!('Collection must contain more than one item')
-              elsif diff_sizes?(items, values)
+              elsif diff_sizes?(items, value)
                 arg_err!('Number of items is not equal to number of values')
               else
                 super
@@ -31,15 +31,15 @@ module VersatileDiamond
             end
           end
 
+          def_delegator :name, :code # @override
           attr_reader :items
 
           # @param [Array] items
           # @param [ScalarType] type
           # @param [String] name which will be pluralized
-          # @param [Array] values
-          # @param [Hash] kwargs
-          def initialize(items, type, name, values = nil, **kwargs)
-            super(items.map(&:instance), type, name, values)
+          # @param [Array] kwargs
+          def initialize(items, type, name, **kwargs)
+            super(items.map(&:instance), type, name, **kwargs)
             @items = items
           end
 
@@ -77,12 +77,7 @@ module VersatileDiamond
           # @param [Statement] body
           # @return [For]
           def iterate(var, body)
-            indexes = [
-              var,
-              OpMinus[Constant[1].freeze, var].freeze
-            ].freeze
-
-            update_indexes!(indexes)
+            update_indexes!([var, OpMinus[Constant[1], var]])
 
             assign = var.define_var
             cond = OpLess[var, Constant[items.size]]

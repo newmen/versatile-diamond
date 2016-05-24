@@ -11,10 +11,17 @@ module VersatileDiamond
           let(:pure_factory) { Algorithm::LookAroundPureUnitsFactory.new(dict) }
           let(:pure_unit) { pure_factory.unit(action_nodes) }
           let(:context) { LateralContextProvider.new(dict, backbone.big_graph, []) }
-          subject { described_class.new(context, pure_unit) }
+          subject { described_class.new(dict, context, pure_unit) }
 
           let(:return100) do
             -> { Expressions::Core::Return[Expressions::Core::Constant[100]] }
+          end
+
+          describe '#define_scope!' do
+            include_context :end_dimer_formation_lateral_context
+            before { subject.define_scope!(lateral_chunks.reaction) }
+            let(:vars) { [:this, :chunks, :index].map(&dict.public_method(:var_of)) }
+            it { expect(dict.defined_vars).to match_array(vars) }
           end
 
           describe '#predefine!' do

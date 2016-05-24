@@ -6,7 +6,7 @@ module VersatileDiamond
       module Algorithm::Units::Expressions
 
         describe SpeciesArray, type: :algorithm do
-          describe '#each' do
+          describe '#iterate' do
             include_context :two_mobs_context
             let(:arr) { dict.make_specie_s(unit_nodes.map(&:uniq_specie)) }
             let(:body) { Core::FunctionCall['hello', *arr.items] }
@@ -18,7 +18,8 @@ for (uint s = 0; s < 2; ++s)
 }
               CODE
             end
-            it { expect(arr.each(body).code).to eq(code) }
+            let(:index) { dict.make_iterator(:s) }
+            it { expect(arr.iterate(index, body).code).to eq(code) }
           end
         end
 

@@ -19,7 +19,7 @@ module VersatileDiamond
             it { expect(var.define_arg.code).to eq('Atom **as1') }
           end
 
-          describe '#each' do
+          describe '#iterate' do
             include_context :unique_parent_context
             let(:arr) { dict.make_atom_s([cb, cm]) }
             let(:body) { Core::FunctionCall['hello', *arr.items] }
@@ -31,7 +31,8 @@ for (uint a = 0; a < 2; ++a)
 }
               CODE
             end
-            it { expect(arr.each(body).code).to eq(code) }
+            let(:index) { dict.make_iterator(:a) }
+            it { expect(arr.iterate(index, body).code).to eq(code) }
           end
 
           describe '#iterate_over_lattice' do

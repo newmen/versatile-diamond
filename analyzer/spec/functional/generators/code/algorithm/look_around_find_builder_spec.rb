@@ -42,7 +42,7 @@ module VersatileDiamond
                 let(:find_algorithm) do
                   <<-CODE
     Atom *atoms1[2] = { target(0)->atom(0), target(1)->atom(0) };
-    eachNeighbours<2>(atoms1, &Diamond::cross_100, [](Atom **neighbours1) {
+    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&chunks, &index, &this](Atom **neighbours1) {
         if (neighbours1[0]->is(#{dimer_cr}) && neighbours1[1]->is(#{dimer_cr}))
         {
             if (neighbours1[0]->hasBondWith(neighbours1[1]))

@@ -25,9 +25,8 @@ module VersatileDiamond
 
           describe '#update_index!' do
             let(:new_index) { Constant[22] }
-            let(:item) { described_class[:item, type, 'items[5]'] }
-            before { item.update_index!(new_index) }
-            it { expect(item.code).to eq('items[22]') }
+            before { item1.update_index!(new_index) }
+            it { expect(item1.code).to eq('items[22]') }
             it { expect { subject.update_index!(new_index) }.to raise_error }
           end
 

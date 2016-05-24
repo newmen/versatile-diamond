@@ -30,31 +30,26 @@ module VersatileDiamond
           end
 
           # @param [Object] atom_s
-          # @option [String] :name
-          # @option [Core::Expression] :value
-          # @param [Hash] nopts
+          # @param [Hash] opts
           # @return [Core::Variable]
-          def make_atom_s(atom_s, name: nil, value: nil, **nopts)
-            make_var_s(:atom, atom_s, ATOM_TYPE, name, value, **nopts)
+          def make_atom_s(atom_s, **opts)
+            make_var_s(:atom, atom_s, type: ATOM_TYPE, **opts)
           end
 
           # @param [Object] specie_s
-          # @option [Core::ObjectType] :type
-          # @option [String] :name
-          # @option [Core::Expression] :value
-          # @param [Hash] nopts
+          # @param [Hash] opts
           # @return [Core::Variable]
-          def make_specie_s(specie_s, type: nil, name: nil, value: nil, **nopts)
-            make_var_s(:specie, specie_s, type, name, value, **nopts)
+          def make_specie_s(specie_s, **opts)
+            make_var_s(:specie, specie_s, **opts)
           end
 
           # @param [Sybmol] x
-          # @param [Hash] nopts
+          # @param [Hash] opts
           # @return [Core::Variable]
-          def make_iterator(x, **nopts)
-            nopts[:next_name] ||= false
-            name = fix_name(x.to_s, **nopts)
-            store!(Core::Variable[x, ITERATOR_TYPE, name, ITERATOR_INIT_VALUE])
+          def make_iterator(x, **opts)
+            type = ITERATOR_TYPE
+            default_value = ITERATOR_INIT_VALUE
+            store!(Core::Variable[x, type, x.to_s, value: default_value, **opts])
           end
 
           # @param [Object] instance
@@ -79,8 +74,8 @@ module VersatileDiamond
 
           ATOM_TYPE = AtomType[].ptr.freeze
           DEFAULT_SPECIE_NAME = Code::Specie::INTER_SPECIE_NAME
-          ITERATOR_TYPE = ScalarType['uint'].freeze
-          ITERATOR_INIT_VALUE = Constant[0].freeze
+          ITERATOR_TYPE = Core::ScalarType['uint'].freeze
+          ITERATOR_INIT_VALUE = Core::Constant[0].freeze
 
           def reset!
             @vars = {}
@@ -118,17 +113,14 @@ module VersatileDiamond
           end
 
           # @param [Object] instance
-          # @param [Array] args
-          # @param [Hash] nopts
+          # @param [Hash] opts
           # @return [Core::Variable]
-          def make_var_s(prefix, instance, type, name, value, **nopts)
+          def make_var_s(prefix, instance, **opts)
             if array?(instance)
-              send(:"#{prefix}s_array", instance, type, name, value, **nopts)
+              send(:"#{prefix}s_array", instance, **opts)
             else
-              method_name = :"#{prefix}_variable"
-              fixed_instance = fix_instance(instance)
-              fixed_value = fix_instance(value)
-              send(method_name, fixed_instance, type, name, fixed_value, **nopts)
+              opts[:value] &&= fix_instance(opts[:value])
+              send(:"#{prefix}_variable", fix_instance(instance), **opts)
             end
           end
 
@@ -208,50 +200,63 @@ module VersatileDiamond
 
           # @param [Concepts::Atom | Concepts::SpecificAtom | Concepts::AtomReference]
           #   atom variable of which will be maked
-          # @param [Core::ScalarType] type
-          # @param [String] name
-          # @param [Object] value
-          # @param [Hash] nopts
+          # @option [AtomType] :type
+          # @option [String] :name
+          # @option [Core::Expression] :value
+          # @option [Core::Expression] :index
+          # @param [Hash] opts
           # @return [AtomVariable]
-          def atom_variable(atom, type, name = nil, value = nil, **nopts)
-            name = fix_name(name || select_atom_name(atom), **nopts)
-            store!(AtomVariable[atom, type, name, value])
+          def atom_variable(atom, type: nil, name: nil, value: nil, index: nil, **opts)
+            name = fix_name(name || select_atom_name(atom), **opts) unless index
+            store!(AtomVariable[atom, type, name, value: value, index: index])
           end
 
           # @param [Array] atoms
-          # @param [Core::ScalarType] type
-          # @param [String] name
-          # @param [Array] values
+          # @option [AtomType] :type
+          # @option [String] :name
+          # @option [Array] :value
+          # @option [Core::Expression] :index
+          # @param [Hash] opts
           # @return [Core::Variable]
-          def atoms_array(atoms, type, name = nil, values = nil, **nopts)
-            name = fix_name(name || select_atom_name(*atoms), plur: true, **nopts)
-            items = array_items(:atom_variable, atoms, type, name, values)
-            store!(AtomsArray[items, type, name, values])
+          def atoms_array(atoms, type: nil, name: nil, value: nil, index: nil, **opts)
+            unless index
+              name = fix_name(name || select_atom_name(*atoms), plur: true, **opts)
+            end
+            kwargs = { type: type, name: name }
+            items = array_items(:atom_variable, atoms, value, **kwargs)
+            store!(AtomsArray[items, type, name, value: value, index: index])
           end
 
           # @param [Instances::SpecieInstance] specie variable of which will be maked
-          # @param [Core::ObjectType] type
-          # @param [String] name
-          # @param [Object] value
-          # @param [Hash] nopts
+          # @option [Core::ObjectType] :type
+          # @option [String] :name
+          # @option [Core::Expression] :value
+          # @option [Core::Expression] :index
+          # @param [Hash] opts
           # @return [SpecieVariable]
-          def specie_variable(specie, type = nil, name = nil, value = nil, **nopts)
+          def specie_variable(specie, type: nil, name: nil, value: nil, index: nil, **opts)
             type ||= specie_type(specie)
-            name = fix_name(name || specie.var_name, **nopts)
-            store!(SpecieVariable[specie, type.ptr, name, value])
+            name = fix_name(name || specie.var_name, **opts) unless index
+            vix = { value: value, index: index }
+            store!(SpecieVariable[specie, type.ptr, name, **vix])
           end
 
           # @param [Array] species
-          # @param [Core::ObjectType] type
-          # @param [String] name
-          # @param [Array] values
+          # @option [Core::ObjectType] :type
+          # @option [String] :name
+          # @option [Array] :value
+          # @option [Core::Expression] :index
+          # @param [Hash] opts
           # @return [Core::Variable]
-          def species_array(species, type = nil, name = nil, values = nil, **nopts)
+          def species_array(species, type: nil, name: nil, value: nil, index: nil, **opts)
             if type || species.map(&:original).uniq.one?
+              unless index
+                name = fix_name(name || DEFAULT_SPECIE_NAME, plur: true, **opts)
+              end
               ptr_type = (type || specie_type(species.first)).ptr
-              name = fix_name(name || DEFAULT_SPECIE_NAME, plur: true, **nopts)
-              items = array_items(:specie_variable, species, ptr_type, name, values)
-              store!(SpeciesArray[items, ptr_type, name, values])
+              kwargs = { type: ptr_type, name: name }
+              items = array_items(:specie_variable, species, value, **kwargs)
+              store!(SpeciesArray[items, ptr_type, name, value: value, index: index])
             else
               raise ArgumentError, 'Ambiguous array variable type for species'
             end
@@ -265,32 +270,15 @@ module VersatileDiamond
 
           # @param [Symbol] method_name
           # @param [Array] instances
-          # @param [Core::ScalarType] type
-          # @param [String] plur_name
           # @param [Array] values
+          # @option [Hash] opts
           # @return [Array]
-          def array_items(method_name, instances, type, plur_name, values)
-            items_names = instances_names(instances, plur_name)
-            zip_vars(method_name, instances, type, items_names, values)
-          end
-
-          # @param [Symbol] method_name
-          # @param [Array] instances
-          # @param [Core::ScalarType] type
-          # @param [Array] names
-          # @param [Array] values
-          # @return [Array]
-          def zip_vars(method_name, instances, type, names, values)
-            instances.zip(names, values || [nil].cycle).map do |inst, name, val|
-              send(method_name, inst, type, name, val, next_name: false)
+          def array_items(method_name, instances, values, **opts)
+            vars_pairs = values || [nil].cycle
+            instances.zip(vars_pairs).map.with_index do |(inst, val), i|
+              opts.merge!({ value: val, index: Core::Constant[i], next_name: false })
+              send(method_name, inst, **opts)
             end
-          end
-
-          # @param [Array] instances
-          # @param [String] plur_name
-          # @return [Array]
-          def instances_names(instances, plur_name)
-            instances.map.with_index { |_, i| "#{plur_name}[#{i}]" }
           end
         end
 

@@ -9,9 +9,16 @@ module VersatileDiamond
 
           # @param [BaseContextProvider] context
           # @param [BasePureUnit] unit
-          def initialize(context, unit)
+          def initialize(dict, context, unit)
+            @dict = dict
             @context = context
             @unit = unit
+          end
+
+          # @param [TypicalReaction] reaction
+          def define_scope!(reaction)
+            dict.make_this(reaction)
+            dict.make_chunks_next_item
           end
 
           # @yield incorporating statement
@@ -34,7 +41,7 @@ module VersatileDiamond
         private
 
           def_delegators :unit, :nodes, :species
-          attr_reader :unit, :context
+          attr_reader :dict, :unit, :context
 
         end
 

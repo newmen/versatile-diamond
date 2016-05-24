@@ -7,7 +7,9 @@ module VersatileDiamond
 
         describe LookAroundCreationUnit, type: :algorithm do
           include_context :look_around_context
+          include_context :action_unit_context
 
+          before { action_unit.define_scope!(lateral_chunks.reaction) }
           subject { described_class.new(dict, context) }
           let(:context) do
             LateralContextProvider.new(dict, backbone.big_graph, ordered_graph)

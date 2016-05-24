@@ -29,14 +29,16 @@ module VersatileDiamond
               let(:type) { ObjectType['Yo'] }
               let(:scalar) { ScalarType['int'] }
 
-              let(:scv) { Variable[1, scalar, 'i', Constant[0]]}
+              let(:scv) { Variable[1, scalar, 'i', value: Constant[0]]}
               let(:var) { Variable[:var, type.ptr, 'obj'] }
               let(:inst) { Variable[:inst, type, 'inst'] }
-              let(:vvl) { Variable[Object.new, type.ptr, 'val', func0] }
+              let(:vvl) { Variable[Object.new, type.ptr, 'val', value: func0] }
 
-              let(:item1) { Variable[:one, scalar, 'item[0]'] }
-              let(:item2) { Variable[:two, scalar, 'item[1]'] }
-              let(:many_arr) { Collection[[item1, item2], type.ptr, 'many', [x, y]] }
+              let(:item1) { Variable[:one, scalar, 'items', index: Constant[0]] }
+              let(:item2) { Variable[:two, scalar, 'items', index: Constant[1]] }
+              let(:many_arr) do
+                Collection[[item1, item2], type.ptr, 'many', value: [x, y]]
+              end
 
               let(:lda) { Lambda[[], var, func0 + func1] }
               let(:for_loop) do

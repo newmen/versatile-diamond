@@ -1,14 +1,13 @@
 module VersatileDiamond
   module Generators
     module Code
-      module Algorithm::Units::Expressions::Core
+      module Algorithm::Units::Expressions
 
-        # Represents "this" instance
-        class This < Constant
+        # Represents chunks type statement
+        class ChunksType < Core::ObjectType
           class << self
-            # @return [This]
             def []
-              super('this')
+              super('SingleLateralReaction')
             end
           end
         end

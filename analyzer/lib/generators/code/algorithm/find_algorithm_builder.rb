@@ -18,7 +18,6 @@ module VersatileDiamond
           # Generates find algorithm cpp code
           # @return [String] the string with cpp code of find algorithm
           def build
-            dict.checkpoint!
             complete_algorithm.shifted_code
           end
 

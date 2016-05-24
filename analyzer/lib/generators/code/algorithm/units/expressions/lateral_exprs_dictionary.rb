@@ -5,6 +5,20 @@ module VersatileDiamond
 
         # Provides addiitonal methods for lateral expression instances
         class LateralExprsDictionary < VarsDictionary
+          # @param [TypicalReaction]
+          # @return [Core::Variable]
+          def make_this(reaction)
+            type = Core::ObjectType[reaction.class_name].ptr
+            store!(Core::Variable[:this, type, 'this'])
+          end
+
+          # @return [Core::Variable]
+          def make_chunks_next_item
+            name = "#{SpeciesReaction::LATERAL_CHUNKS_NAME}"
+            index = OpRInc[make_iterator(:index)]
+            store!(ChunksList[:chunks, CHUNKS_TYPE, name, index: index])
+          end
+
           # @param [Object] specie_s
           def make_target_s(specie_s)
             if array?(specie_s)
@@ -41,6 +55,8 @@ module VersatileDiamond
           end
 
         private
+
+          CHUNKS_TYPE = ChunksType[].ptr.freeze
 
           # @override
           def reset!

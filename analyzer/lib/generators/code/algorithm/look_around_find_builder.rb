@@ -12,6 +12,7 @@ module VersatileDiamond
           #   algorithm will be generated
           def initialize(generator, lateral_chunks)
             super(LookAroundBackbone.new(generator, lateral_chunks))
+            @reaction = lateral_chunks.reaction
           end
 
         private
@@ -31,6 +32,13 @@ module VersatileDiamond
           # @return [Units::LookAroundCreationUnit]
           def make_creator_unit(factory)
             factory.creator
+          end
+
+          # @return [Expressions::Core::Statement]
+          # @override
+          def complete_algorithm
+            action_unit.define_scope!(@reaction)
+            super
           end
         end
 

@@ -103,20 +103,16 @@ module VersatileDiamond
             it { expect(subject.defined_vars).to be_empty }
 
             describe 'not empty' do
+              let(:some_index) { subject.make_iterator(:c) }
               let(:cb_var) { subject.make_atom_s(cb, name: 'x') }
-              before { cb_var }
-              it { expect(subject.defined_vars).to eq([cb_var]) }
+              before { [cb_var, some_index] }
+              it { expect(subject.defined_vars).to eq([cb_var, some_index]) }
 
               describe 'many' do
-                let(:cm_var) { subject.make_atom_s(cm, name: 'y') }
                 before { cm_var }
-                it { expect(subject.defined_vars).to match_array([cb_var, cm_var]) }
-              end
-
-              describe 'repeat' do
-                let(:other_var) { subject.make_atom_s(cb, name: 'z') }
-                before { other_var }
-                it { expect(subject.defined_vars).to match_array([cb_var, other_var]) }
+                let(:cm_var) { subject.make_atom_s(cm, name: 'y') }
+                let(:vars) { [cb_var, some_index, cm_var] }
+                it { expect(subject.defined_vars).to match_array(vars) }
               end
             end
           end
