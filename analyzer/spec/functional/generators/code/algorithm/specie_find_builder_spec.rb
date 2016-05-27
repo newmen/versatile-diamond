@@ -777,9 +777,9 @@ module VersatileDiamond
             anchor->eachSpecsPortionByRole<MethylOnBridge>(#{mob_cm}, 2, [](MethylOnBridge **species1) {
                 for (uint s = 0; s < 2; ++s)
                 {
-                    species1[s]->eachSymmetry([&species1](ParentSpec *symmetricMethylOnBridge1) {
+                    species1[s]->eachSymmetry([&s, &species1](ParentSpec *symmetricMethylOnBridge1) {
                         Atom *atoms1[2] = { symmetricMethylOnBridge1->atom(3), species1[1 - s]->atom(1) };
-                        eachNeighbour(atoms1[0], &Diamond::cross_100, [&atoms1, &species1, &symmetricMethylOnBridge1](Atom *neighbour1) {
+                        eachNeighbour(atoms1[0], &Diamond::cross_100, [&atoms1, &s, &species1, &symmetricMethylOnBridge1](Atom *neighbour1) {
                             if (atoms1[1] == neighbour1)
                             {
                                 ParentSpec *parents[2] = { symmetricMethylOnBridge1, species1[1 - s] };

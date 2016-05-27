@@ -54,8 +54,8 @@ module VersatileDiamond
           #   in the case when neighbour nodes are not similar
           def asymmetric_related_atoms?
             close_nodes = context.symmetric_close_nodes(species)
-            close_nodes.one? ||
-              !(close_nodes.empty? || context.symmetric_relations?(close_nodes))
+            !close_nodes.empty? &&
+              (close_nodes.one? || !context.symmetric_relations?(close_nodes))
           end
 
           def to_s
@@ -509,7 +509,8 @@ module VersatileDiamond
             relation = context.relation_between(*pair)
             relation.bond? &&
               pair.all? { |n| context.just_existed_bone_relations?(n) } &&
-              (relation != Concepts::Bond.amorph || checkable_neighbour_species?(*pair))
+              (relation != Concepts::Bond.amorph ||
+                                            checkable_neighbour_species?(*pair))
           end
 
           # @param [Nodes::BaseNode] node

@@ -22,11 +22,13 @@ module VersatileDiamond
 
           private
 
+            # If var or funciton name
             # @param [Expression] expr
             # @return [Boolean]
             def valid?(expr)
-              # if var or funciton name
-              expr.var? || !Statement::PREDICATES.any? { |pn| expr.public_send(pn) }
+              ![:const?, :type?, :op?, :cond?, :assign?].any? do |predicate_name|
+                expr.public_send(predicate_name)
+              end
             end
           end
 

@@ -59,7 +59,7 @@ module VersatileDiamond
             vars = using(@defined_vars)
             if vars.empty?
               Constant['']
-            elsif lists_are_identical?(vars, @defined_vars)
+            elsif lists_are_identical?(vars, @defined_vars.reject(&:item?).map(&:name))
               OpRef[]
             else
               OpSequence[*vars.sort_by(&:code).map(&OpRef.public_method(:[]))]

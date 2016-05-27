@@ -67,9 +67,9 @@ module VersatileDiamond
             it { expect(subject.neighbour?(nbr_unit)).to be_truthy }
           end
 
-          describe '#partially_symmetric?' do
+          describe '#symmetric?' do
             include_context :intermed_migr_dh_formation_context
-            it { expect(subject.partially_symmetric?).to be_falsey }
+            it { expect(subject.symmetric?).to be_falsey }
           end
         end
 

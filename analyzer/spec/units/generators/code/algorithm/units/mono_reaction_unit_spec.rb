@@ -53,15 +53,15 @@ module VersatileDiamond
             it { expect(subject.neighbour?(nbr_unit)).to be_truthy }
           end
 
-          describe '#partially_symmetric?' do
+          describe '#symmetric?' do
             describe 'unsymmetric reactant' do
               include_context :methyl_adsorbtion_context
-              it { expect(subject.partially_symmetric?).to be_falsey }
+              it { expect(subject.symmetric?).to be_falsey }
             end
 
-            describe 'not partially symmetric reactant' do
+            describe 'symmetric reactant' do
               include_context :sierpinski_drop_context
-              it { expect(subject.partially_symmetric?).to be_falsey }
+              it { expect(subject.symmetric?).to be_truthy }
             end
           end
         end

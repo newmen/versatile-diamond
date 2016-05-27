@@ -154,7 +154,7 @@ module VersatileDiamond
 
             it_behaves_like :many_similar_activated_bridges do
               let(:spec) { front_bridge }
-              let(:atoms_lists) { [cb] }
+              let(:atoms_lists) { [fb] }
 
               it_behaves_like :check_action_nodes do
                 let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }

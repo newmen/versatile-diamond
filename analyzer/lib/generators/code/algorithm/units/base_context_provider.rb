@@ -97,7 +97,7 @@ module VersatileDiamond
               raise ArgumentError, 'Empty nodes list passed'
             elsif !nodes.one?
               rels_lists = both_directions_bone_relations_of(nodes)
-              !similar_relations?(rels_lists)
+              similar_relations?(rels_lists)
             else
               false
             end
@@ -107,7 +107,7 @@ module VersatileDiamond
           # @return [Boolean]
           def similar_relations?(rels_lists)
             !rels_lists.any?(&:empty?) &&
-              same_relations?(rels_lists) && same_side_props?(rels_lists)
+              same_existing_relations?(rels_lists) && same_side_props?(rels_lists)
           end
 
           # @param [Array] target_nodes
@@ -365,7 +365,7 @@ module VersatileDiamond
 
           # @param [Array] rels_lists
           # @return [Boolean]
-          def same_relations?(rels_lists)
+          def same_existing_relations?(rels_lists)
             same_rels_when?(rels_lists) { |rels| rels.map(&:last).select(&:exist?) }
           end
 

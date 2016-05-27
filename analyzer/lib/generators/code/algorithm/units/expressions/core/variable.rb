@@ -48,7 +48,7 @@ module VersatileDiamond
           end
 
           def_delegator :full_name, :code
-          attr_reader :instance, :type
+          attr_reader :instance, :type, :name
 
           # @param [Object] instance
           # @param [ScalarType] type
@@ -105,9 +105,10 @@ module VersatileDiamond
           # @return [Array] list of using variables
           def using(vars)
             if vars.include?(self)
-              [name]
+              [name] + (@index ? @index.using(vars - [self]) : [])
             elsif @index # do not use #item? here
-              @index.using(vars) + vars.select { |v| v.parent_arr?(self) }
+              holders = vars.select { |v| v.parent_arr?(self) }
+              @index.using(vars - holders) + holders.map(&:name)
             else
               []
             end
@@ -147,7 +148,7 @@ module VersatileDiamond
 
         private
 
-          attr_reader :name, :value
+          attr_reader :value
 
           # @return [Constant] the same name by default
           def full_name

@@ -298,7 +298,7 @@ for (uint a = 0; a < 2; ++a)
 }
                 CODE
               end
-              it { expect(expr.code).to eq(code) }
+              it { expect(expr.code).to eq(code.rstrip) }
             end
 
             describe 'just one atom is defined' do
@@ -313,7 +313,7 @@ for (uint a = 0; a < 2; ++a)
 }
                 CODE
               end
-              it { expect(expr.code).to eq(code) }
+              it { expect(expr.code).to eq(code.rstrip) }
             end
 
             describe 'both atoms are separate defined' do
@@ -330,7 +330,7 @@ for (uint a = 0; a < 2; ++a)
 }
                 CODE
               end
-              it { expect(expr.code).to eq(code) }
+              it { expect(expr.code).to eq(code.rstrip) }
             end
 
             describe 'both atoms are defined as array' do
@@ -393,24 +393,12 @@ if (bridge1)
 }
                 CODE
               end
-              it { expect(expr.code).to eq(code) }
+              it { expect(expr.code).to eq(code.rstrip) }
             end
 
             describe 'specie already defined' do
               before { dict.make_specie_s(node_specie) }
               it { expect(expr.code).to eq('return 0') }
-            end
-          end
-
-          describe '#fully_symmetric?' do
-            describe 'realy symmetric' do
-              include_context :rab_context
-              it { expect(subject.fully_symmetric?).to be_truthy }
-            end
-
-            describe 'not symmetric' do
-              include_context :mob_context
-              it { expect(subject.fully_symmetric?).to be_falsey }
             end
           end
         end

@@ -126,9 +126,16 @@ module VersatileDiamond
             end
           end
 
-          describe '#partially_symmetric?' do
-            include_context :rab_context
-            it { expect(subject.partially_symmetric?).to be_falsey }
+          describe '#symmetric?' do
+            describe 'realy symmetric' do
+              include_context :rab_context
+              it { expect(subject.symmetric?).to be_truthy }
+            end
+
+            describe 'not symmetric' do
+              include_context :mob_context
+              it { expect(subject.symmetric?).to be_falsey }
+            end
           end
 
           describe '#check_different_atoms_roles' do
