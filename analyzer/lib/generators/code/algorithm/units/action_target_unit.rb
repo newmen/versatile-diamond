@@ -15,9 +15,8 @@ module VersatileDiamond
             @unit = unit
           end
 
-          # @param [TypicalReaction] reaction
-          def define_scope!(reaction)
-            dict.make_this(reaction)
+          def define_scope!
+            dict.make_this
             dict.make_chunks_next_item
           end
 

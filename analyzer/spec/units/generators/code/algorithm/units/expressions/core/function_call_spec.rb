@@ -10,6 +10,7 @@ module VersatileDiamond
 
           include_context :predefined_exprs
           let(:is_expr) { true }
+          let(:is_call) { true }
 
           describe '#self.[]' do
             it { expect(func1).to be_a(described_class) }

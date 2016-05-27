@@ -34,6 +34,7 @@ module VersatileDiamond
                 it { expect { OpRef[x, y] }.to raise_error }
                 it { expect { OpRef[type] }.to raise_error }
                 it { expect { OpRef[num] }.to raise_error }
+                it { expect { OpRef[func0] }.to raise_error }
                 it { expect { OpRef[small_cond] }.to raise_error }
                 it { expect { OpRef[func_args_seq] }.to raise_error }
               end

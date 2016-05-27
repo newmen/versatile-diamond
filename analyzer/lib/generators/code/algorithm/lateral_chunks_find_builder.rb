@@ -6,8 +6,12 @@ module VersatileDiamond
         # Contain logic for building lateral chunks algorithm
         # @abstract
         class LateralChunksFindBuilder < FindAlgorithmBuilder
-          def initialize(*)
-            super
+          # @param [LateralChunksBackbone] backbone
+          # @param [TypicalReaction]
+          def initialize(backbone, reaction)
+            super(backbone)
+            @reaction = reaction
+
             @_action_unit = nil
           end
 
@@ -16,7 +20,7 @@ module VersatileDiamond
           # @return [Units::Expressions::LateralExprsDictionary]
           # @override
           def make_dict
-            Units::Expressions::LateralExprsDictionary.new
+            Units::Expressions::LateralExprsDictionary.new(@reaction)
           end
 
           # @param [Array] ordered_graph

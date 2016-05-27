@@ -142,51 +142,52 @@ for (int i = 0; i < 3; ++i)
             end
           end
 
-          describe 'OpCall' do
-            it { expect { OpCall[x] }.to raise_error }
-            it { expect { OpCall[type] }.to raise_error }
-            it { expect { OpCall[type, func0] }.to raise_error }
-            it { expect { OpCall[small_cond, x] }.to raise_error }
-            it { expect { OpCall[var, num] }.to raise_error }
-            it { expect { OpCall[var, type] }.to raise_error }
-            it { expect { OpCall[var, small_cond] }.to raise_error }
-            it { expect { OpCall[var, OpAnd[x, y]] }.to raise_error }
+          describe 'call operator' do
+            shared_examples_for :check_errors_and_predicates do
+              it { expect { op_class[x] }.to raise_error }
+              it { expect { op_class[type] }.to raise_error }
+              it { expect { op_class[type, func0] }.to raise_error }
+              it { expect { op_class[small_cond, x] }.to raise_error }
+              it { expect { op_class[var, num] }.to raise_error }
+              it { expect { op_class[var, type] }.to raise_error }
+              it { expect { op_class[var, small_cond] }.to raise_error }
+              it { expect { op_class[var, OpAnd[x, y]] }.to raise_error }
 
-            subject { OpCall[var, OpCall[var, func2]] }
-            let(:is_expr) { true }
-            let(:is_op) { false }
+              let(:is_expr) { true }
+              let(:is_call) { true }
+              let(:is_op) { false }
 
-            it_behaves_like :check_predicates
-
-            describe '#code' do
-              it { expect(subject.code).to eq('obj->obj->many(x, y)') }
-              it { expect(OpCall[var, x].code).to eq('obj->x') }
-              it { expect(OpCall[var, var].code).to eq('obj->obj') }
-              it { expect(OpCall[var, tfunc0].code).to eq('obj->templ<Yo, 5>()') }
+              it_behaves_like :check_predicates
             end
-          end
 
-          describe 'OpDot' do
-            it { expect { OpDot[x] }.to raise_error }
-            it { expect { OpDot[type] }.to raise_error }
-            it { expect { OpDot[type, func0] }.to raise_error }
-            it { expect { OpDot[small_cond, x] }.to raise_error }
-            it { expect { OpDot[var, num] }.to raise_error }
-            it { expect { OpDot[var, type] }.to raise_error }
-            it { expect { OpDot[var, small_cond] }.to raise_error }
-            it { expect { OpDot[var, OpAnd[x, y]] }.to raise_error }
+            describe 'OpCall' do
+              subject { OpCall[var, OpCall[var, func2]] }
 
-            subject { OpDot[var, OpDot[var, func2]] }
-            let(:is_expr) { true }
-            let(:is_op) { false }
+              it_behaves_like :check_errors_and_predicates do
+                let(:op_class) { OpCall }
+              end
 
-            it_behaves_like :check_predicates
+              describe '#code' do
+                it { expect(subject.code).to eq('obj->obj->many(x, y)') }
+                it { expect(OpCall[var, x].code).to eq('obj->x') }
+                it { expect(OpCall[var, var].code).to eq('obj->obj') }
+                it { expect(OpCall[var, tfunc0].code).to eq('obj->templ<Yo, 5>()') }
+              end
+            end
 
-            describe '#code' do
-              it { expect(subject.code).to eq('obj.obj.many(x, y)') }
-              it { expect(OpDot[var, x].code).to eq('obj.x') }
-              it { expect(OpDot[var, var].code).to eq('obj.obj') }
-              it { expect(OpDot[var, tfunc0].code).to eq('obj.templ<Yo, 5>()') }
+            describe 'OpDot' do
+              subject { OpDot[var, OpDot[var, func2]] }
+
+              it_behaves_like :check_errors_and_predicates do
+                let(:op_class) { OpDot }
+              end
+
+              describe '#code' do
+                it { expect(subject.code).to eq('obj.obj.many(x, y)') }
+                it { expect(OpDot[var, x].code).to eq('obj.x') }
+                it { expect(OpDot[var, var].code).to eq('obj.obj') }
+                it { expect(OpDot[var, tfunc0].code).to eq('obj.templ<Yo, 5>()') }
+              end
             end
           end
 

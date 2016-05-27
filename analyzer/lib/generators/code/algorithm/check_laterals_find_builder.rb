@@ -12,7 +12,9 @@ module VersatileDiamond
           #   algorithm will be generated
           # @param [Specie] target_specie from which the algorithm will be built
           def initialize(generator, lateral_chunks, target_specie)
-            super(CheckLateralsBackbone.new(generator, lateral_chunks, target_specie))
+            backbone =
+              CheckLateralsBackbone.new(generator, lateral_chunks, target_specie)
+            super(backbone, lateral_chunks.reaction)
             @lateral_chunks = lateral_chunks
           end
 

@@ -9,6 +9,8 @@ module VersatileDiamond
           include_context :look_around_context
           include_context :small_activated_bridges_lateral_context
 
+          subject { described_class.new(lateral_chunks.reaction) }
+
           let(:species_arr) { action_nodes.map(&:uniq_specie) }
           let(:reactant1) { species_arr.first }
           let(:reactant2) { species_arr.last }
@@ -22,7 +24,8 @@ module VersatileDiamond
             let(:act_atoms) { action_nodes.map(&:atom) }
             let(:proxies12) { [proxy1, proxy2] }
             it 'expect sidepiece species' do
-              subject.make_this(lateral_chunks.reaction)
+              subject.make_this
+              subject.make_this # no effect
               subject.make_chunks_next_item
               subject.make_specie_s(reactant1)
               subject.make_specie_s(proxy1)
@@ -58,6 +61,21 @@ module VersatileDiamond
               it { expect(subject.var_of(species_arr)).to be_nil }
               it { expect(subject.var_of(reactant1).code).to eq('target(0)') }
               it { expect(subject.var_of(reactant2).code).to eq('target(1)') }
+            end
+          end
+
+          describe '#defined_vars' do
+            before { var }
+            let(:var) { subject.make_specie_s(reactant1) }
+
+            describe 'without targets' do
+              it { expect(subject.defined_vars).to eq([var]) }
+            end
+
+            describe 'with target' do
+              before { subject.make_target_s(reactant2) }
+              let(:vars) { [var, subject.make_this] }
+              it { expect(subject.defined_vars).to match_array(vars) }
             end
           end
         end

@@ -25,15 +25,47 @@ module VersatileDiamond
           it_behaves_like :check_predicates
 
           describe '#code' do
-            let(:code) do
-              <<-CODE
+            describe 'without predefined vars' do
+              let(:code) do
+                <<-CODE
 [](Yo *obj) {
     simple();
-    mono(x);
+    simple();
 }
-              CODE
+                CODE
+              end
+              it { expect(subject.code).to eq(code.rstrip) }
             end
-            it { expect(subject.code).to eq(code.rstrip) }
+
+            describe 'with predefined vars' do
+              subject { Lambda[defined_vars, var, body] }
+              let(:this) { This[:this, 'Some'] }
+              let(:body) { var.call('hello', this, inst) }
+
+              describe 'with not using variable' do
+                let(:defined_vars) { [inst, this, scv] }
+                let(:code) do
+                  <<-CODE
+[&this, &inst](Yo *obj) {
+    obj->hello(this, inst);
+}
+                  CODE
+                end
+                it { expect(subject.code).to eq(code.rstrip) }
+              end
+
+              describe 'all variables are used' do
+                let(:defined_vars) { [inst, this] }
+                let(:code) do
+                  <<-CODE
+[&](Yo *obj) {
+    obj->hello(this, inst);
+}
+                  CODE
+                end
+                it { expect(subject.code).to eq(code.rstrip) }
+              end
+            end
           end
         end
 

@@ -5,11 +5,16 @@ module VersatileDiamond
 
         # Provides addiitonal methods for lateral expression instances
         class LateralExprsDictionary < VarsDictionary
-          # @param [TypicalReaction]
+          # @param [TypicalReaction] reaction
+          def initialize(reaction)
+            super()
+            @reaction = reaction
+            @this = nil
+          end
+
           # @return [Core::Variable]
-          def make_this(reaction)
-            type = Core::ObjectType[reaction.class_name].ptr
-            store!(Core::Variable[:this, type, 'this'])
+          def make_this
+            @this ||= store!(Core::This[:this, @reaction.class_name])
           end
 
           # @return [Core::Variable]
@@ -54,9 +59,26 @@ module VersatileDiamond
             end
           end
 
+          # @return [Array]
+          # @override
+          def defined_vars
+            defined_exprs = super
+            if defined_exprs.any?(&:call?)
+              vars = defined_exprs.reject(&:call?)
+              this_defined? ? vars : vars + [make_this]
+            else
+              defined_exprs
+            end
+          end
+
         private
 
           CHUNKS_TYPE = ChunksType[].ptr.freeze
+
+          # @return [Boolean]
+          def this_defined?
+            !!@this
+          end
 
           # @override
           def reset!

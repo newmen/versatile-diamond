@@ -50,6 +50,12 @@ module VersatileDiamond
             @args.flat_map { |arg| arg.using(vars) }.uniq
           end
 
+          # @return [Boolean]
+          # @override
+          def call?
+            true
+          end
+
         private
 
           # @return [OpCombine]

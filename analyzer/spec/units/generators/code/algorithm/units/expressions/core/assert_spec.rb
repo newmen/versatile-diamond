@@ -10,6 +10,7 @@ module VersatileDiamond
 
           include_context :predefined_exprs
           let(:is_expr) { true }
+          let(:is_call) { true }
           let(:is_assign) { true }
 
           describe '#self.[]' do

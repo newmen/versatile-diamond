@@ -22,13 +22,14 @@ module VersatileDiamond
 
           private
 
+            INVALID_PREDICATES =
+              [:call?, :const?, :type?, :op?, :cond?, :assign?].freeze
+
             # If var or funciton name
             # @param [Expression] expr
             # @return [Boolean]
             def valid?(expr)
-              ![:const?, :type?, :op?, :cond?, :assign?].any? do |predicate_name|
-                expr.public_send(predicate_name)
-              end
+              !INVALID_PREDICATES.any? { |pn| expr.public_send(pn) }
             end
           end
 

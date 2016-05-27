@@ -6,6 +6,7 @@ module VersatileDiamond
         # Call member over pointer operator statement
         class OpCall < BinaryOperator
           include ThinSeparator
+          include Callable
 
           class << self
             # @param [Statement] first
@@ -43,6 +44,12 @@ module VersatileDiamond
           # @override
           def op?
             false
+          end
+
+          # @return [Boolean]
+          # @override
+          def call?
+            true
           end
 
         private

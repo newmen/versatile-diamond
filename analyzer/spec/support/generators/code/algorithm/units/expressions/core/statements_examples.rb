@@ -8,6 +8,7 @@ module VersatileDiamond
             shared_context :predicate_values do
               let(:is_expr) { false }
               let(:is_var) { false }
+              let(:is_call) { false }
               let(:is_const) { false }
               let(:is_scalar) { false }
               let(:is_type) { false }
@@ -40,7 +41,7 @@ module VersatileDiamond
                 Collection[[item1, item2], type.ptr, 'many', value: [x, y]]
               end
 
-              let(:lda) { Lambda[[], var, func0 + func1] }
+              let(:lda) { Lambda[[], var, func0 + func0] }
               let(:for_loop) do
                 ang = scv.define_var
                 For[ang, OpLess[scv, Constant[3]], OpLInc[scv], func0 + func1]
@@ -110,6 +111,7 @@ module VersatileDiamond
             shared_examples_for :check_predicates do
               it { expect(subject.expr?).to eq(is_expr) }
               it { expect(subject.var?).to eq(is_var) }
+              it { expect(subject.call?).to eq(is_call) }
               it { expect(subject.const?).to eq(is_const) }
               it { expect(subject.scalar?).to eq(is_scalar) }
               it { expect(subject.type?).to eq(is_type) }

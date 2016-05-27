@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm::Units::Expressions::Core
@@ -56,14 +58,34 @@ module VersatileDiamond
 
           # @return [Statement]
           def closure_vars
-            vars = using(@defined_vars)
-            if vars.empty?
+            names = using(@defined_vars)
+            if names.empty?
               Constant['']
-            elsif lists_are_identical?(vars, @defined_vars.reject(&:item?).map(&:name))
+            elsif same_as_defined?(names)
               OpRef[]
             else
-              OpSequence[*vars.sort_by(&:code).map(&OpRef.public_method(:[]))]
+              OpSequence[*references_of(names)]
             end
+          end
+
+          # @param [Array] names
+          # @return [Boolean]
+          def same_as_defined?(names)
+            lists_are_identical?(names, @defined_vars.reject(&:item?).map(&:name))
+          end
+
+          # @param [Array] names
+          # @return [Array]
+          def references_of(names)
+            reorder_vars(names).map(&OpRef.public_method(:[]))
+          end
+
+          # @param [Array] names
+          # @return [Array]
+          def reorder_vars(names)
+            sorted_names = names.sort_by(&:code)
+            this = sorted_names.delete_one { |name| name.code == This::NAME }
+            this ? [this] + sorted_names : sorted_names
           end
         end
 

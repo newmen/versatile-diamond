@@ -11,8 +11,8 @@ module VersatileDiamond
           # @param [LateralChunks] lateral_chunks the target object by which the
           #   algorithm will be generated
           def initialize(generator, lateral_chunks)
-            super(LookAroundBackbone.new(generator, lateral_chunks))
-            @reaction = lateral_chunks.reaction
+            backbone = LookAroundBackbone.new(generator, lateral_chunks)
+            super(backbone, lateral_chunks.reaction)
           end
 
         private
@@ -37,7 +37,7 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           # @override
           def complete_algorithm
-            action_unit.define_scope!(@reaction)
+            action_unit.define_scope!
             super
           end
         end
