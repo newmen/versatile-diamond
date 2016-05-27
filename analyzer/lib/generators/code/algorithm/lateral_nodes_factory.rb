@@ -50,8 +50,7 @@ module VersatileDiamond
           # @param [ReactantNode] node
           # @return [ReactantNode]
           def append_identity!(node)
-            identity =
-              @lateral_chunks.side_keys.find { |sa| same_key?(node, sa) }
+            identity = @lateral_chunks.side_keys.find { |sa| same_key?(node, sa) }
             if identity
               @identities[identity] = node
             else
@@ -60,13 +59,13 @@ module VersatileDiamond
           end
 
           # @param [ReactantNode] node
-          # @param [Array] sa
+          # @param [Array] identity_spec_atom
           # @return [Boolean]
-          def same_key?(node, sa)
-            if node.spec_atom.first == sa.first
-              node.spec_atom.last == sa.last
+          def same_key?(node, identity_spec_atom)
+            if node.spec_atom.first == identity_spec_atom.first
+              node.spec_atom.last == identity_spec_atom.last
             else
-              same_sa?(node.spec_atom, sa)
+              same_sa?(node.spec_atom, identity_spec_atom)
             end
           end
         end

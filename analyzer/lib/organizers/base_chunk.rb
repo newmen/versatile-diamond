@@ -20,7 +20,7 @@ module VersatileDiamond
       # Gets clean graph of relations between targets and sidepiece species
       # @return [Hash] the cleaned graph which contain just significant relations
       def clean_links
-        @_clean_links ||= links.each.each_with_object({}) do |(spec_atom, rels), acc|
+        @_clean_links ||= links.each_with_object({}) do |(spec_atom, rels), acc|
           spec = spec_atom.first
           new_rels = rels.reject { |(s, _), _| spec == s }
           acc[spec_atom] = new_rels unless new_rels.empty?

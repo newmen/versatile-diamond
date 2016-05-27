@@ -53,7 +53,7 @@ module VersatileDiamond
           # Gets list of nodes which were created under building final graph
           # @return [Array] the list of existed unique nodes
           def avail_nodes
-            @_avail_nodes ||= final_graph.flat_map(&:first).uniq
+            @_avail_nodes ||= overall_graph.keys
           end
 
           # Detects relation between passed nodes

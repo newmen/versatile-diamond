@@ -27,8 +27,8 @@ module VersatileDiamond
           @root_chunks = lateral_reactions.flat_map(&:internal_chunks).uniq
 
           @_total_chunk, @_overall_chunk, @_unconcrete_affixes = nil
-          @_root_times, @_affixes_num = nil
-          @_side_keys = nil
+          @_usages, @_root_times, @_affixes_num = nil
+          @_maximal_chunks, @_side_keys = nil
         end
 
         # The method for detection relations between
@@ -39,28 +39,19 @@ module VersatileDiamond
 
         # @return [Hash]
         def overall_links
-          overall_chunk.total_links
+          keys = overall_chunk.clean_links.keys
+          overall_chunk.total_links.each_with_object({}) do |(spec_atom, rels), acc|
+            if keys.include?(spec_atom)
+              new_rels = rels.select { |sa, _| keys.include?(sa) }
+              acc[spec_atom] = new_rels unless new_rels.empty?
+            end
+          end
         end
 
         # Gets number of how many times the root chunks contains in total chunk
         # @return [Integer] the number of times
         def root_times
-          return @_root_times if @_root_times
-
-          result = overall_chunk
-          @_root_times =
-            @root_chunks.reduce(0) do |acc, chunk|
-              num = 0
-              loop do
-                next_result = result - chunk
-                break unless next_result
-
-                num += 1
-                result = next_result
-              end
-
-              acc + num
-            end
+          @_root_times ||= usages.values.reduce(:+)
         end
 
         # Gets lateral reactoins grouped by number of internal chunks
@@ -74,7 +65,8 @@ module VersatileDiamond
         # Gets list of unique spec-atom pairs with sidepiece specs
         # @return [Array] the list of pairs
         def side_keys
-          @_side_keys ||= clean_links.keys.select { |s, _| sidepiece_spec?(s) }
+          @_side_keys ||=
+            overall_chunk.clean_links.keys.select { |s, _| sidepiece_spec?(s) }
         end
 
         # Gets the lateral reaction which uses passed spec and atom
@@ -152,19 +144,51 @@ module VersatileDiamond
           Organizers::TotalChunk.new(reaction, chunks)
         end
 
+        # @return [Hash]
+        def usages
+          return @_usages if @_usages
+          delta_chunk = overall_chunk
+          sorted_chunks = @root_chunks.sort { |a, b| b <=> a }
+          @_usages = sorted_chunks.each_with_object({}) do |root_chunk, acc|
+            delta_chunk, num = next_delta_with_usage(delta_chunk, root_chunk)
+            acc[root_chunk] = num
+          end
+        end
+
+        # @param [TotalChunk | ChunkResidual] big_chunk
+        # @param [BaseChunk] root_chunk
+        # @return [ChunkResidual, Integer]
+        def next_delta_with_usage(big_chunk, root_chunk)
+          delta_chunk = big_chunk
+          num = 0
+          loop do
+            next_delta = delta_chunk - root_chunk
+            if next_delta
+              delta_chunk = next_delta
+              num += 1
+            else
+              return [delta_chunk, num]
+            end
+          end
+        end
+
         # Selects chunks with maximal value of unique sidepiece species
         # @return [Array]
         def maximal_chunks
+          return @_maximal_chunks if @_maximal_chunks
+
           sorted_chunks = @all_chunks.sort do |a, b|
             b.sidepiece_specs.size <=> a.sidepiece_specs.size
           end
-          sorted_chunks.each_with_object([]) do |chunk, acc|
-            acc << chunk if acc.all? do |ch|
-              sss = [chunk, ch].map(&:sidepiece_specs)
-              names = sss.map { |specs| specs.map(&:name) }
-              names.reduce(:&).empty?
+
+          @_maximal_chunks =
+            sorted_chunks.each_with_object([]) do |chunk, acc|
+              acc << chunk if acc.all? do |ch|
+                sss = [chunk, ch].map(&:sidepiece_specs)
+                names = sss.map { |specs| specs.map(&:name) }
+                names.reduce(:&).empty?
+              end
             end
-          end
         end
 
         # Checks that passed reactions can be merged
