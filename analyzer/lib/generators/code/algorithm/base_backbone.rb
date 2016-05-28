@@ -6,6 +6,7 @@ module VersatileDiamond
         # Provides base logic for backbone instance
         # @abstract
         class BaseBackbone
+          include NodesCollector
           extend Forwardable
 
           def_delegator :grouped_nodes_graph, :big_graph
@@ -135,13 +136,6 @@ module VersatileDiamond
                   result[node] << nodes
                 end
               end
-          end
-
-          # Collects all nodes from final graph
-          # @return [Array] the sorted array of nodes lists
-          def collect_nodes(graph)
-            lists = graph.flat_map { |nodes, rels| [nodes] + rels.map(&:first) }
-            lists.uniq.sort_by(&:size)
           end
 
           # Removes reverse relations to passed nodes

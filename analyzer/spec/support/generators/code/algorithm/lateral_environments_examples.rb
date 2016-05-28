@@ -74,17 +74,15 @@ module VersatileDiamond
               let(:typical_reaction) { dept_methyl_incorporation }
               let(:lateral_reactions) { [dept_de_lateral_mi] }
 
+              let(:edge_dimer) { sidepiece_specs.first }
               let(:amob) { (target_specs - [admr]).first }
               let(:admr) do
                 target_specs.find { |s| s.name == :'dimer(cr: *)' }
               end
 
-              let(:tm) { amob.atom(:cb) }
-              let(:td) { admr.atom(:cl) }
-
-              let(:edge_dimer) { sidepiece_specs.first }
-
               let_atoms_of(:edge_dimer, [:cl, :cr], [:dm, :dd])
+              let_atoms_of(:amob, [:cb, :cm], [:tm, :ms])
+              let_atoms_of(:admr, [:cl, :cr], [:td, :ds])
             end
 
             shared_examples_for :methyl_incorporation_near_edge do

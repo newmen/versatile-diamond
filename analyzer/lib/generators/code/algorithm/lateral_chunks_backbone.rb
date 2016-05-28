@@ -9,6 +9,8 @@ module VersatileDiamond
         # @abstract
         class LateralChunksBackbone
           include Modules::GraphDupper
+          include BackboneExtender
+          include NodesCollector
           extend Forwardable
 
           # Initializes backbone by lateral chunks object
@@ -21,8 +23,9 @@ module VersatileDiamond
             @grouped_nodes_graph =
               LateralChunksGroupedNodes.new(generator, lateral_chunks)
 
+            @slices_cache = {}
+
             @_action_nodes, @_final_graph, @_big_graph = nil
-            @_target_key_nodes, @_grouped_ratio = nil
           end
 
           # Cleans grouped graph from unsignificant relations
@@ -30,7 +33,7 @@ module VersatileDiamond
           # TODO: must be private!
           def final_graph
             @_final_graph ||=
-              @grouped_nodes_graph.final_graph.select { |key, _| all_final_keys?(key) }
+              cut_and_extend_to_anchors(@grouped_nodes_graph.final_graph)
           end
 
           # Gets list of nodes from which find begins
@@ -50,8 +53,9 @@ module VersatileDiamond
           # @param [Array] nodes
           # @return [Array]
           def ordered_graph_from(nodes)
-            is_dk = grouped_ratio.any? { |key, _| key.equal?(nodes) }
-            grouped_ratio.select do |key, _|
+            recombined_graph = grouped_ratio(final_graph)
+            is_dk = recombined_graph.any? { |key, _| key.equal?(nodes) }
+            recombined_graph.select do |key, _|
               (is_dk && key.equal?(nodes)) ||
                 (!is_dk && key.all?(&nodes.public_method(:include?)))
             end
@@ -60,8 +64,7 @@ module VersatileDiamond
           # Gets big grouped graph with reverse relations
           # @return [Hash]
           def big_graph
-            @_big_graph ||=
-              dup_graph(@grouped_nodes_graph.overall_graph, &method(:lateral_node))
+            @_big_graph ||= dup_graph(big_ungrouped_graph, &method(:lateral_node))
           end
 
         private
@@ -69,22 +72,27 @@ module VersatileDiamond
           attr_reader :lateral_chunks, :lateral_nodes_factory
           def_delegator :lateral_nodes_factory, :otherside_node
 
+          # @return [Hash]
+          def big_ungrouped_graph
+            @grouped_nodes_graph.overall_graph
+          end
+
           # @param [Array] nodes
           # @return [Boolean]
-          def all_final_keys?(nodes)
-            nodes.all?(&method(:final_key?))
+          def own_key?(nodes)
+            nodes.all?(&method(:target_key?))
           end
 
           # @param [Nodes::ReactantNode] node
           # @return [Boolean]
-          def final_key?(node)
+          def target_key?(node)
             check_spec_of(node, target_predicate_name)
           end
 
           # @param [ReactantNode] node
           # @return [LateralNode]
           def lateral_node(node)
-            final_key?(node) ? target_node(node) : otherside_node(node)
+            target_key?(node) ? target_node(node) : otherside_node(node)
           end
 
           # @param [Array] nodes
@@ -93,36 +101,40 @@ module VersatileDiamond
             nodes.map(&method(:lateral_node))
           end
 
+          # @param [Hash] graph
           # @return [Array]
-          def mono_lateral_graph
-            final_graph.flat_map do |key, rels|
-              rels.map do |nbrs, rels|
-                # dup is significant here!
-                [replace_nodes(key).dup, [[replace_nodes(nbrs), rels]]]
+          def mono_graph(graph)
+            graph.flat_map do |key, rels|
+              rels.map do |nbrs, rp|
+                @slices_cache[[key, nbrs, rp]] ||=
+                  # dup is significant here!
+                  [replace_nodes(key).dup, [[replace_nodes(nbrs), rp]]]
               end
             end
           end
 
+          # @param [Hash] graph
           # @return [Array]
-          def ordered_mono_graph
-            mono_lateral_graph.sort_by do |key, rps|
+          def reorder_graph(graph)
+            mono_graph(graph).sort_by do |key, rps|
               indexes = key.map { |n| action_nodes.index(n) || action_nodes.size }
               rels = rps.flat_map { |nbrs, _| relations_between(key, nbrs) }.sort
               [indexes, rels]
             end
           end
 
+          # @param [Hash] graph
           # @return [Array]
-          def grouped_ratio
-            @_grouped_ratio ||=
-              ordered_mono_graph.groups(&method(:key_group_by_slice)).map do |group|
-                [group.first.first, group.map(&:last).reduce(:+)]
-              end
+          def grouped_ratio(graph)
+            reorder_graph(graph).groups(&method(:key_group_by_slice)).map do |group|
+              [group.first.first, group.map(&:last).reduce(:+)]
+            end
           end
 
           # @return [Array]
           def grouped_keys
-            group_by_reactions(grouped_ratio).map do |group|
+            cutten_final_graph = cut_own_branches(@grouped_nodes_graph.final_graph)
+            group_by_reactions(grouped_ratio(cutten_final_graph)).map do |group|
               group.one? ? group.first.first : group.flat_map(&:first)
             end
           end

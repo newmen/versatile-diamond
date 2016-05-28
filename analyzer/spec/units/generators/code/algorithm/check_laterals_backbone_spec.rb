@@ -70,7 +70,9 @@ module VersatileDiamond
                 let(:final_graph) do
                   {
                     [dm] => [[[tm], param_100_cross]],
-                    [dd] => [[[td], param_110_cross]]
+                    [dd] => [[[td], param_110_cross]],
+                    [td] => [[[ds], param_100_front]],
+                    [tm] => [[[ms], param_amorph]]
                   }
                 end
               end

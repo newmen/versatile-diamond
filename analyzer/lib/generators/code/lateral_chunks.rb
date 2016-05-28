@@ -39,13 +39,7 @@ module VersatileDiamond
 
         # @return [Hash]
         def overall_links
-          keys = overall_chunk.clean_links.keys
-          overall_chunk.total_links.each_with_object({}) do |(spec_atom, rels), acc|
-            if keys.include?(spec_atom)
-              new_rels = rels.select { |sa, _| keys.include?(sa) }
-              acc[spec_atom] = new_rels unless new_rels.empty?
-            end
-          end
+          overall_chunk.total_links
         end
 
         # Gets number of how many times the root chunks contains in total chunk
