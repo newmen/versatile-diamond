@@ -24,7 +24,6 @@ module VersatileDiamond
               LateralChunksGroupedNodes.new(generator, lateral_chunks)
 
             @slices_cache = {}
-
             @_action_nodes, @_final_graph, @_big_graph = nil
           end
 
@@ -56,8 +55,7 @@ module VersatileDiamond
             recombined_graph = grouped_ratio(final_graph)
             is_dk = recombined_graph.any? { |key, _| key.equal?(nodes) }
             recombined_graph.select do |key, _|
-              (is_dk && key.equal?(nodes)) ||
-                (!is_dk && key.all?(&nodes.public_method(:include?)))
+              !is_dk || (is_dk && key.equal?(nodes))
             end
           end
 
@@ -71,6 +69,7 @@ module VersatileDiamond
 
           attr_reader :lateral_chunks, :lateral_nodes_factory
           def_delegator :lateral_nodes_factory, :otherside_node
+          def_delegator :@grouped_nodes_graph, :relation_between
 
           # @return [Hash]
           def big_ungrouped_graph
@@ -116,10 +115,37 @@ module VersatileDiamond
           # @param [Hash] graph
           # @return [Array]
           def reorder_graph(graph)
-            mono_graph(graph).sort_by do |key, rps|
-              indexes = key.map { |n| action_nodes.index(n) || action_nodes.size }
+            nz = graph.size
+            max_n = nz ** 2
+            flatten_graph = mono_graph(graph)
+            back_mirror = invert_nbrs(flatten_graph)
+
+            flatten_graph.sort_by do |key, rps|
+              indexes = key.map do |n|
+                index = action_nodes.index(n)
+                if index
+                  index * nz
+                else
+                  back_index = action_nodes.index(back_mirror[n])
+                  back_index ? back_index * nz + 1 : max_n
+                end
+              end
+
               rels = rps.flat_map { |nbrs, _| relations_between(key, nbrs) }.sort
               [indexes, rels]
+            end
+          end
+
+          # @param [Array] graph
+          # @return [Hash]
+          def invert_nbrs(graph)
+            graph.each_with_object({}) do |(key, rps), acc|
+              key.each do |node|
+                rps.flat_map(&:first).each do |n, _|
+                  # TODO: there can be many to many in generic way
+                  acc[n] = node if relation_between(node, n)
+                end
+              end
             end
           end
 
@@ -156,7 +182,7 @@ module VersatileDiamond
           # @param [Array] node
           # @return [Proc]
           def relation_between_proc(node)
-            -> n { lateral_chunks.relation_between(node.spec_atom, n.spec_atom) }
+            -> n { relation_between(node, n) }
           end
         end
 

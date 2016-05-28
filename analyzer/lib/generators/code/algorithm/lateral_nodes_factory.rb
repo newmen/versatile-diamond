@@ -50,12 +50,7 @@ module VersatileDiamond
           # @param [ReactantNode] node
           # @return [ReactantNode]
           def append_identity!(node)
-            identity = @lateral_chunks.side_keys.find { |sa| same_key?(node, sa) }
-            if identity
-              @identities[identity] = node
-            else
-              raise ArgumentError, 'Node is not a sidepiece'
-            end
+            @identities[node.spec_atom] = node
           end
 
           # @param [ReactantNode] node

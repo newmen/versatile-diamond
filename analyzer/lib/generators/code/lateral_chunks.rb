@@ -10,8 +10,8 @@ module VersatileDiamond
         extend Forwardable
 
         attr_reader :reaction
-        def_delegators :total_chunk, :clean_links, :target_specs, :sidepiece_specs
-        def_delegators :overall_chunk, :targets
+        def_delegators :total_chunk, :clean_links, :target_specs
+        def_delegators :overall_chunk, :targets, :sidepiece_specs
 
         # Initializes meta object which provides useful methods for code generators
         # @param [EngineCode] generator of engine code
@@ -59,8 +59,7 @@ module VersatileDiamond
         # Gets list of unique spec-atom pairs with sidepiece specs
         # @return [Array] the list of pairs
         def side_keys
-          @_side_keys ||=
-            overall_chunk.clean_links.keys.select { |s, _| sidepiece_spec?(s) }
+          @_side_keys ||= clean_links.keys.select { |s, _| sidepiece_spec?(s) }
         end
 
         # Gets the lateral reaction which uses passed spec and atom

@@ -16,10 +16,10 @@ module VersatileDiamond
         let(:typical_reaction) { generator.reaction_class(target_reaction.name) }
         let(:sidepiece_specs) { subject.sidepiece_specs.to_a }
         let(:lateral_bridge) do
-          sidepiece_specs.select { |spec| spec.name == :bridge }.first
+          sidepiece_specs.find { |spec| spec.name == :bridge }
         end
         let(:lateral_dimer) do
-          sidepiece_specs.select { |spec| spec.name == :dimer }.first
+          sidepiece_specs.find { |spec| spec.name == :dimer }
         end
 
         describe '#total_chunk' do
@@ -86,8 +86,8 @@ module VersatileDiamond
             specs_atoms = subject.side_keys
             expect(specs_atoms.size).to eq(3)
 
-            uniq_sidepiece_specs = specs_atoms.map(&:first).uniq
-            expect(uniq_sidepiece_specs).to match_array(subject.sidepiece_specs)
+            uniq_side_specs = specs_atoms.map(&:first).uniq
+            expect(uniq_side_specs).to match_array([lateral_bridge, lateral_dimer])
 
             atoms = specs_atoms.map(&:last)
             expect(atoms.uniq).to match_array(atoms)

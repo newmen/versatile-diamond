@@ -7,6 +7,21 @@ module VersatileDiamond
         module BackboneExtender
         private
 
+          # Checks that passed graph do not contains unanchored nodes on other side
+          # @param [Hash] graph which will be checked
+          # @return [Boolean] closed by anchors or not
+          def totaly_closed?(graph)
+            grouped_side_nodes = other_side_nodes(graph)
+            flatten_site_nodes = grouped_side_nodes.reduce(:+)
+            grouped_side_nodes.all? do |nodes|
+              nodes.any? do |node|
+                node.anchor? || flatten_site_nodes.any? do |n|
+                  n.uniq_specie == node.uniq_specie && n.anchor?
+                end
+              end
+            end
+          end
+
           # @param [Hash] graph which extended instance will be gotten
           # @return [Hash] the extended graph with anchor nodes on sides
           def cut_and_extend_to_anchors(graph)
@@ -32,45 +47,65 @@ module VersatileDiamond
           # @return [Hash] the extended graph with anchor nodes on sides
           def extend_all_branches(extending_graph, grouped_final_graph)
             result = extending_graph
-            grouped_keys = grouped_final_graph.keys
-            grouped_nodes = nodes_set(grouped_final_graph)
+            final_keys = grouped_final_graph.keys
+            final_nodes = nodes_set(grouped_final_graph)
             loop do
               next_nodes = nil
               reached_nodes = nodes_set(result)
-              if reached_nodes.size < grouped_nodes.size
-                next_nodes = grouped_keys.find { |k| k.to_set == reached_nodes }
+              if reached_nodes.size < final_nodes.size
+                next_nodes = final_keys.find { |k| k.to_set == reached_nodes }
                 result = extend_graph(result, next_nodes) if next_nodes
               end
               return result unless next_nodes
             end
           end
 
+          # @param [Array] graphs
+          # @return [Hash]
+          def best_graph(graphs)
+            gwasz = graphs.map { |g| [g, nodes_set(g).select(&:anchor?).size] }
+            max_n = gwasz.map(&:last).max
+            maximal_anchored = gwasz.select { |_, n| n == max_n }.map(&:first)
+            maximal_anchored.sort_by { |g| g.values.reduce(:+).size }.first
+          end
+
           # Extends passed graph from passed nodes to nodes with anchor atom
           # @param [Hash] graph which extended instance will be gotten
           # @param [Array] nodes from which graph will be extended
-          # @return [Hash] the extended graph
+          # @return [Hash] the extended graph or nil if extending was not successful
           def extend_graph(graph, nodes)
             next_rels = next_ways(graph, nodes)
-            return nil if next_rels.empty? # go next iteration of recursive find
+            return graph if next_rels.empty? # stop recursive find for this graph
 
-            result = nil
-            next_rels.group_by(&:last).each do |rp, group|
+            vs = extending_ways(graph, next_rels)
+            anchored_vs = vs.select { |_, ns| ns.any?(&:anchor?) }
+            complete_vs = anchored_vs.select { |g, _| totaly_closed?(g) }
+
+            extended_graphs =
+              if complete_vs.empty?
+                resolving_vs = anchored_vs.empty? ? vs : anchored_vs
+                resolving_vs.map { |nwg| extend_graph(*nwg) }
+              else
+                complete_vs.map(&:first)
+              end
+
+            best_graph(extended_graphs.uniq) || graph
+          end
+
+          # Tries to extend passed graph in directions of next relations
+          # @param [Hash] graph the initial value for next extended graphs
+          # @param [Array] next_rels in which the expanding will be occured
+          # @return [Array] the list of extending results for each direaction
+          def extending_ways(graph, next_rels)
+            next_rels.group_by(&:last).map do |rp, group|
               from_nodes, next_nodes = group.map(&:first).transpose.map(&:uniq)
 
               ext_graph = graph.dup
               ext_graph[from_nodes] ||= []
               ext_graph[from_nodes] += [[next_nodes, rp]]
 
-              result =
-                if next_nodes.any?(&:anchor?)
-                  ext_graph
-                else
-                  extend_graph(ext_graph, next_nodes)
-                end
-              break if result
+              [ext_graph, next_nodes]
             end
-
-            result
           end
 
           # Gets the next ways by which the target graph could be extended
@@ -83,9 +118,11 @@ module VersatileDiamond
             prev_nodes = nodes_set(graph)
             nodes.flat_map do |node|
               all_rels = big_ungrouped_graph[node]
-              next_rels = all_rels.reject { |n, _| prev_nodes.include?(n) }
-              exist_rels = next_rels.select { |_, r| r.exist? }
-              exist_rels.map { |n, r| [[node, n], r.params] }
+              next_rels = all_rels.select do |n, r|
+                !prev_nodes.include?(n) &&
+                  r.exist? && n.uniq_specie == node.uniq_specie
+              end
+              next_rels.map { |n, r| [[node, n], r.params] }
             end
           end
 

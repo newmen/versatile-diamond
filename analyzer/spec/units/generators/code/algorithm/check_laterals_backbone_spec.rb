@@ -156,7 +156,7 @@ module VersatileDiamond
 
             it_behaves_like :many_similar_activated_bridges do
               let(:spec) { front_bridge }
-              let(:atoms_lists) { [fb] }
+              let(:atoms_lists) { [cb] }
 
               it_behaves_like :check_action_nodes do
                 let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
@@ -243,7 +243,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.first }
                 let(:ordered_graph) do
                   [
-                    [[cb], [[[t2], param_100_front]]]
+                    [[cb], [[[t2], param_100_cross]]]
                   ]
                 end
               end
@@ -253,7 +253,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.last }
                 let(:ordered_graph) do
                   [
-                    [[cb], [[[t2], param_100_cross]]]
+                    [[cb], [[[t2], param_100_front]]]
                   ]
                 end
               end
@@ -263,7 +263,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.first }
                 let(:ordered_graph) do
                   [
-                    [[cb], [[[t2], param_100_front]]]
+                    [[cb], [[[t2], param_100_cross]]]
                   ]
                 end
               end
@@ -273,7 +273,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.last }
                 let(:ordered_graph) do
                   [
-                    [[cb], [[[t2], param_100_cross]]]
+                    [[cb], [[[t2], param_100_front]]]
                   ]
                 end
               end
@@ -285,7 +285,9 @@ module VersatileDiamond
                 let(:ordered_graph) do
                   [
                     [[dd], [[[td], param_110_cross]]],
-                    [[dm], [[[tm], param_100_cross]]]
+                    [[td], [[[ds], param_100_front]]],
+                    [[dm], [[[tm], param_100_cross]]],
+                    [[tm], [[[ms], param_amorph]]]
                   ]
                 end
               end

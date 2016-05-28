@@ -41,6 +41,14 @@ module VersatileDiamond
             @_big_graph ||= transform_links(@lateral_chunks.links)
           end
 
+          # Detects relation between passed nodes
+          # @param [Array] nodes the array with two nodes between which the relation
+          #   will be detected
+          # @return [Concepts::Bond] the relation between atoms from passed nodes
+          def relation_between(*nodes)
+            @lateral_chunks.relation_between(*nodes.map(&:spec_atom))
+          end
+
         private
 
           # Makes the nodes graph from positions of chunks
@@ -59,14 +67,6 @@ module VersatileDiamond
           # @return [ReactantNode]
           def node_for(spec_atom)
             avail_nodes.find { |node| node.spec_atom == spec_atom }
-          end
-
-          # Detects relation between passed nodes
-          # @param [Array] nodes the array with two nodes between which the relation
-          #   will be detected
-          # @return [Concepts::Bond] the relation between atoms from passed nodes
-          def relation_between(*nodes)
-            @lateral_chunks.relation_between(*nodes.map(&:spec_atom))
           end
         end
 
