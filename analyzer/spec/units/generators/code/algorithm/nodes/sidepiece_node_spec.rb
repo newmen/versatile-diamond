@@ -85,15 +85,15 @@ module VersatileDiamond
 
           describe '#lateral_reaction' do
             describe 'many activated bridges' do
-              let(:cross_name) do
-                'CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs'
-              end
-              it { expect(subject.lateral_reaction.class_name).to eq(cross_name) }
-
               let(:front_name) do
                 'CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs'
               end
-              it { expect(other.lateral_reaction.class_name).to eq(front_name) }
+              it { expect(subject.lateral_reaction.class_name).to eq(front_name) }
+
+              let(:cross_name) do
+                'CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs'
+              end
+              it { expect(other.lateral_reaction.class_name).to eq(cross_name) }
             end
 
             describe 'different sidepieces' do

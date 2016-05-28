@@ -43,7 +43,7 @@ module VersatileDiamond
           # @param [Array] checking_nodes
           # @return [Boolean]
           def same_specie_in?(checking_nodes)
-            checking_nodes.map(&:uniq_specie).uniq.size < 2 &&
+            checking_nodes.map(&:uniq_specie).uniq.one? &&
               !checking_nodes.all?(&:lattice)
           end
 

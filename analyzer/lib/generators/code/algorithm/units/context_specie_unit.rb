@@ -307,7 +307,7 @@ module VersatileDiamond
               false
             else
               checking_species = checking_nodes.map(&:uniq_specie).uniq
-              checking_species.size < 2 && !checking_species.all?(&:none?)
+              checking_species.one? && !checking_species.all?(&:none?)
             end
           end
 

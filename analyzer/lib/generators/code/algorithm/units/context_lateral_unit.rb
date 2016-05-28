@@ -47,6 +47,13 @@ module VersatileDiamond
             symmetric_target? && super
           end
 
+          # @param [Array] checking_nodes
+          # @return [Boolean]
+          # @override
+          def same_specie_in?(checking_nodes)
+            !checking_nodes.all?(&:side?) || super(checking_nodes.map(&:original))
+          end
+
           # @return [Array]
           def sidepieces
             species.select(&:proxy?)

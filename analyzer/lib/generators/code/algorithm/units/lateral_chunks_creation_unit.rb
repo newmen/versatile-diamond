@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm::Units
@@ -29,8 +31,14 @@ module VersatileDiamond
 
           # @return [Array]
           def uniq_side_nodes
-            @_uniq_side_nodes ||=
-              context.side_nodes.uniq { |node| node.uniq_specie.original }
+            @_uniq_side_nodes ||= grouped_side_nodes.map do |group|
+              group.find { |node| dict.var_of(node.uniq_specie) }
+            end
+          end
+
+          # @return [Array]
+          def grouped_side_nodes
+            context.side_nodes.groups { |node| node.uniq_specie.original }
           end
 
           # @return [LateralReaction]

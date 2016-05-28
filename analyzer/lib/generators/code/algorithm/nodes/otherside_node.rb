@@ -5,7 +5,6 @@ module VersatileDiamond
 
         # Replaces internal unique specie
         class OthersideNode < LateralNode
-
           # @param [LateralChunks] _
           # @param [ReactantNode] _
           def initialize(*)

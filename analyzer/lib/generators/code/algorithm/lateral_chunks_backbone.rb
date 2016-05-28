@@ -24,7 +24,7 @@ module VersatileDiamond
               LateralChunksGroupedNodes.new(generator, lateral_chunks)
 
             @slices_cache = {}
-            @_action_nodes, @_final_graph, @_big_graph = nil
+            @_action_nodes, @_final_graph, @_big_graph, @_big_ungrouped_graph = nil
           end
 
           # Cleans grouped graph from unsignificant relations
@@ -69,11 +69,25 @@ module VersatileDiamond
 
           attr_reader :lateral_chunks, :lateral_nodes_factory
           def_delegator :lateral_nodes_factory, :otherside_node
-          def_delegator :@grouped_nodes_graph, :relation_between
+          def_delegators :@grouped_nodes_graph, :overall_graph, :relation_between
 
           # @return [Hash]
           def big_ungrouped_graph
-            @grouped_nodes_graph.overall_graph
+            @_big_ungrouped_graph ||=
+              overall_graph.each_with_object({}) do |(node, rels), acc|
+                unless drop_action?(node)
+                  clean_rels = rels.reject { |n, _| drop_action?(n) }
+                  acc[node] = clean_rels unless clean_rels.empty?
+                end
+              end
+          end
+
+          # @param [Nodes::ReactantNode] node
+          # @return [Boolean]
+          def drop_action?(node)
+            original_actions = action_nodes.map(&:original)
+            !original_actions.include?(node) &&
+              original_actions.any? { |n| n.uniq_specie == node.uniq_specie }
           end
 
           # @param [Array] nodes

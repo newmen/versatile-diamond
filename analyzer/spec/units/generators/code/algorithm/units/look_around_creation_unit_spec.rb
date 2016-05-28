@@ -33,7 +33,7 @@ module VersatileDiamond
               include_context :small_activated_bridges_lateral_context
               let(:code) do
                 <<-CODE
-#{ccdan} CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs(this, bridgeCTs1)
+#{ccdan} CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs(this, bridgeCTs1)
                 CODE
               end
               it { expect(subject.create.code).to eq(code.rstrip) }
