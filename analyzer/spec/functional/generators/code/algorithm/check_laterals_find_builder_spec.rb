@@ -329,30 +329,27 @@ module VersatileDiamond
 
                 let(:find_algorithm) do
                   <<-CODE
-    target->eachSymmetry([](LateralSpec *symmetricDimer1) {
-        Atom *atoms1[2] = { symmetricDimer1->atom(3), symmetricDimer1->atom(0) };
-        eachNeighbour(atoms1[0], &Diamond::cross_100, [&](Atom *neighbour1) {
-            if (neighbour1->is(#{amob_cb}))
+    sidepiece->eachSymmetry([](LateralSpec *symmetricDimer1) {
+        Atom *atoms1[2] = { symmetricDimer1->atom(0), symmetricDimer1->atom(3) };
+        eachNeighbour(atoms1[0], &Diamond::cross_110, [&atoms1, &symmetricDimer1](Atom *neighbour1) {
+            if (neighbour1->is(#{admr_cl}))
             {
-                MethylOnBridgeCMs *methylOnBridgeCMs1 = neighbour1->specByRole<MethylOnBridgeCMs>(#{amob_cb});
-                if (methylOnBridgeCMs1)
+                DimerCRs *dimerCRs1 = neighbour1->specByRole<DimerCRs>(#{admr_cl});
+                if (dimerCRs1)
                 {
-                    eachNeighbour(atoms1[1], &Diamond::cross_110, [&](Atom *neighbour1) {
-                        if (neighbour1->is(#{admr_cl}))
+                    eachNeighbour(atoms1[1], &Diamond::cross_100, [&atoms1, &dimerCRs1, &symmetricDimer1](Atom *neighbour1) {
+                        if (neighbour1->is(#{amob_cb}))
                         {
-                            if (atoms1[1]->hasBondWith(neighbour1))
+                            MethylOnBridgeCMs *methylOnBridgeCMs1 = neighbour1->specByRole<MethylOnBridgeCMs>(#{amob_cb});
+                            if (methylOnBridgeCMs1)
                             {
-                                DimerCRs *dimerCRs1 = neighbour1->specByRole<DimerCRs>(#{admr_cl});
-                                if (dimerCRs1)
-                                {
-                                    SpecificSpec *species1[2] = { methylOnBridgeCMs1, dimerCRs1 };
-                                    ChainFactory<
-                                        DuoLateralFactory,
-                                        ForwardMethylIncorporationMiEdgeLateral,
-                                        ForwardMethylIncorporation
-                                    > factory(symmetricDimer1, species1);
-                                    factory.checkoutReactions<ForwardMethylIncorporationMiEdgeLateral>();
-                                }
+                                SpecificSpec *species1[2] = { methylOnBridgeCMs1, dimerCRs1 };
+                                ChainFactory<
+                                    DuoLateralFactory,
+                                    ForwardMethylIncorporationMiEdgeLateral,
+                                    ForwardMethylIncorporation
+                                > factory(symmetricDimer1, species1);
+                                factory.checkoutReactions<ForwardMethylIncorporationMiEdgeLateral>();
                             }
                         }
                     });

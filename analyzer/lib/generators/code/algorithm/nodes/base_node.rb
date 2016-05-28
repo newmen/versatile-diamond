@@ -106,16 +106,14 @@ module VersatileDiamond
             lattice && generator.lattice_class(lattice)
           end
 
-          def inspect
-            "(#{uniq_specie.inspect} | #{keyname}:#{properties})"
-          end
-
-        protected
-
           # Just for inspect and rspec
           # @return [Symbol]
           def keyname
             (spec.instance_variable_get(:@child) || spec).spec.keyname(atom)
+          end
+
+          def inspect
+            "(#{uniq_specie.inspect} | #{keyname}:#{properties})"
           end
 
         private

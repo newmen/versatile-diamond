@@ -5,6 +5,11 @@ module VersatileDiamond
 
         # Decorates unit for bulding lateral dependent code on context
         class ContextLateralUnit < ContextReactionUnit
+          def initialize(*)
+            super
+            @_key_atoms = nil
+          end
+
         protected
 
           # @yield incorporating statement
@@ -15,10 +20,31 @@ module VersatileDiamond
 
         private
 
+          # @return [Array]
+          def key_atoms
+            @_key_atoms ||= context.key_nodes.map(&:atom)
+          end
+
+          # @return [Boolean]
+          def main_key?
+            lists_are_identical?(atoms, key_atoms)
+          end
+
+          # @return [Boolean]
+          def symmetric_key_atoms?
+            lists_are_identical?(symmetric_atoms, key_atoms) &&
+              !all_defined?(symmetric_atoms) # symmetries iteration is already underway
+          end
+
+          # @return [Boolean]
+          def symmetric_target?
+            main_key? && symmetric_key_atoms?
+          end
+
           # @return [Boolean]
           # @override
           def symmetric?
-            !nodes.any?(&:side?) && super
+            symmetric_target? && super
           end
 
           # @return [Array]
