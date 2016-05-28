@@ -300,8 +300,8 @@ module VersatileDiamond
                 let(:base_specs) { [dept_dimer_base, subject] }
                 let(:ordered_graph) do
                   [
-                    [[cr], [[[c1], param_amorph]]],
-                    [[cl], [[[c2], param_amorph]]]
+                    [[cl], [[[c2], param_amorph]]],
+                    [[cr], [[[c1], param_amorph]]]
                   ]
                 end
               end

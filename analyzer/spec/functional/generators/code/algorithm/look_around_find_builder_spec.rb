@@ -135,16 +135,6 @@ module VersatileDiamond
     Atom *atoms1[2] = { target(0)->atom(0), target(1)->atom(0) };
     for (uint a = 0; a < 2; ++a)
     {
-        eachNeighbour(atoms1[a], &Diamond::cross_100, [&this, &chunks, &index](Atom *neighbour1) {
-            if (neighbour1->is(#{ab_ct}))
-            {
-                BridgeCTs *bridgeCTs1 = neighbour1->specByRole<BridgeCTs>(#{ab_ct});
-                if (bridgeCTs1)
-                {
-                    chunks[index++] = new #{cross_cmb_name}(this, bridgeCTs1);
-                }
-            }
-        });
         eachNeighbour(atoms1[a], &Diamond::front_100, [&](Atom *neighbour1) {
             if (atoms1[1 - a] != neighbour1)
             {
@@ -155,6 +145,16 @@ module VersatileDiamond
                     {
                         chunks[index++] = new #{front_cmb_name}(this, bridgeCTs1);
                     }
+                }
+            }
+        });
+        eachNeighbour(atoms1[a], &Diamond::cross_100, [&this, &chunks, &index](Atom *neighbour1) {
+            if (neighbour1->is(#{ab_ct}))
+            {
+                BridgeCTs *bridgeCTs1 = neighbour1->specByRole<BridgeCTs>(#{ab_ct});
+                if (bridgeCTs1)
+                {
+                    chunks[index++] = new #{cross_cmb_name}(this, bridgeCTs1);
                 }
             }
         });
@@ -189,11 +189,11 @@ module VersatileDiamond
               it_behaves_like :check_code do
                 let(:find_algorithm) do
                   <<-CODE
-    Atom *atoms1[2] = { target(0)->atom(1), target(1)->atom(3) };
+    Atom *atoms1[2] = { target(0)->atom(3), target(1)->atom(1) };
     eachNeighbour(atoms1[0], &Diamond::front_110, [&](Atom *neighbour1) {
         if (neighbour1->is(#{edmr_cr}))
         {
-            if (atoms1[1]->hasBondWith(neighbour1))
+            if (atoms1[0]->hasBondWith(neighbour1))
             {
                 Dimer *dimer1 = neighbour1->specByRole<Dimer>(#{edmr_cr});
                 if (dimer1)

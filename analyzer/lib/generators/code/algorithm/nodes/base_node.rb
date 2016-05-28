@@ -47,7 +47,9 @@ module VersatileDiamond
           # @return [Integer] the comparing result
           def <=>(other)
             order(other, self, :properties) do
-              order(self, other, :uniq_specie)
+              order(self, other, :uniq_specie) do
+                order(self, other, :keyname)
+              end
             end
           end
 
@@ -105,12 +107,18 @@ module VersatileDiamond
           end
 
           def inspect
-            child = spec.instance_variable_get(:@child) || spec
-            keyname = child.spec.keyname(atom)
             "(#{uniq_specie.inspect} | #{keyname}:#{properties})"
           end
 
-        attr_reader
+        protected
+
+          # Just for inspect and rspec
+          # @return [Symbol]
+          def keyname
+            (spec.instance_variable_get(:@child) || spec).spec.keyname(atom)
+          end
+
+        private
 
           attr_reader :generator
 

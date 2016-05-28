@@ -65,10 +65,10 @@ module VersatileDiamond
 
               let(:grouped_graph) do
                 {
-                  [t1, t2] => [[[d1, d2], param_100_cross]],
-                  [d1, d2] => [[[t1, t2], param_100_cross]],
-                  [t1] => [[[b], param_100_front]],
-                  [b] => [[[t1], param_100_front]]
+                  [t2, t1] => [[[d1, d2], param_100_cross]],
+                  [d1, d2] => [[[t2, t1], param_100_cross]],
+                  [t2] => [[[b], param_100_front]],
+                  [b] => [[[t2], param_100_front]]
                 }
               end
 
@@ -96,12 +96,12 @@ module VersatileDiamond
 
           it_behaves_like :many_similar_activated_bridges do
             let(:flatten_face_grouped_atoms) do
-              [[t1], [fb], [cb]]
+              [[t2], [fb], [cb]]
             end
 
             let(:nodes_list) do
               [
-                [Instances::UniqueReactant, t1],
+                [Instances::UniqueReactant, t2],
                 [Instances::UniqueReactant, fb],
                 [Instances::UniqueReactant, cb]
               ]
@@ -109,9 +109,9 @@ module VersatileDiamond
 
             let(:grouped_graph) do
               {
-                [t1] => [[[fb], param_100_front], [[cb], param_100_cross]],
-                [fb] => [[[t1], param_100_front]],
-                [cb] => [[[t1], param_100_cross]]
+                [t2] => [[[fb], param_100_front], [[cb], param_100_cross]],
+                [fb] => [[[t2], param_100_front]],
+                [cb] => [[[t2], param_100_cross]]
               }
             end
 

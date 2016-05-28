@@ -5,11 +5,15 @@ module VersatileDiamond
 
         # Also contains the different dependent spec
         class ReactantNode < BaseNode
+          def initialize(*)
+            super
+            @_spec_atom = nil
+          end
 
           # Makes reaction links graph vertex from passed node
           # @return [Array] the reaction links graph vertex
           def spec_atom
-            [spec.spec, atom]
+            @_spec_atom ||= [spec.spec, atom]
           end
 
           def inspect

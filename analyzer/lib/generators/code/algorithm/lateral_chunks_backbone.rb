@@ -104,9 +104,18 @@ module VersatileDiamond
           end
 
           # @return [Array]
+          def ordered_mono_graph
+            mono_lateral_graph.sort_by do |key, rps|
+              indexes = key.map { |n| action_nodes.index(n) || action_nodes.size }
+              rels = rps.flat_map { |nbrs, _| relations_between(key, nbrs) }.sort
+              [indexes, rels]
+            end
+          end
+
+          # @return [Array]
           def grouped_ratio
             @_grouped_ratio ||=
-              mono_lateral_graph.groups(&method(:key_group_by_slice)).map do |group|
+              ordered_mono_graph.groups(&method(:key_group_by_slice)).map do |group|
                 [group.first.first, group.map(&:last).reduce(:+)]
               end
           end
@@ -123,6 +132,19 @@ module VersatileDiamond
           # @return [Boolean]
           def check_spec_of(node, method_name)
             lateral_chunks.public_send(method_name, node.spec.spec)
+          end
+
+          # @param [Array] key
+          # @param [Array] nbrs
+          # @return [Array]
+          def relations_between(key, nbrs)
+            key.flat_map { |node| nbrs.map(&relation_between_proc(node)) }.compact
+          end
+
+          # @param [Array] node
+          # @return [Proc]
+          def relation_between_proc(node)
+            -> n { lateral_chunks.relation_between(node.spec_atom, n.spec_atom) }
           end
         end
 

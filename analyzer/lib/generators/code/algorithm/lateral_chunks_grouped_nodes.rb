@@ -24,9 +24,8 @@ module VersatileDiamond
           # @param [Array] specs_atoms the list of pairs
           # @return [Array] the list of nodes
           def action_nodes(specs_atoms)
-            specs_atoms.map do |sa|
-              avail_nodes.find { |node| node.spec_atom == sa } || get_node(sa)
-            end
+            nodes = specs_atoms.map(&method(:node_for))
+            nodes.map(&:properties).uniq.one? ? nodes : nodes.sort
           end
 
           # @return [Hash] the most biggest total graph of nodes
@@ -54,6 +53,12 @@ module VersatileDiamond
           # @return [Array] the list of existed unique nodes
           def avail_nodes
             @_avail_nodes ||= overall_graph.keys
+          end
+
+          # @param [Array] spec_atom
+          # @return [ReactantNode]
+          def node_for(spec_atom)
+            avail_nodes.find { |node| node.spec_atom == spec_atom }
           end
 
           # Detects relation between passed nodes

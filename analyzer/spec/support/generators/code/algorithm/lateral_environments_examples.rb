@@ -16,6 +16,18 @@ module VersatileDiamond
               let(:reaction) { generator.reaction_class(typical_reaction.name) }
               let(:lateral_chunks) { reaction.lateral_chunks }
 
+              let(:targets) do
+                lateral_chunks.targets.to_a.sort_by do |sa|
+                  spec, atom = sa
+                  sub_links = lateral_chunks.links.select { |o, _| o == sa }
+                  all_rels = sub_links.map(&:last).flat_map { |rels| rels.map(&:last) }
+                  dept_spec = generator.specie_class(spec.name).spec
+                  dept_atom = dept_spec.spec.atom(spec.keyname(atom))
+                  prop = Organizers::AtomProperties.new(dept_spec, dept_atom)
+                  [spec.name, prop, all_rels.sort]
+                end
+              end
+
               let(:target_specs) { lateral_chunks.target_specs.to_a }
               let(:sidepiece_specs) { lateral_chunks.sidepiece_specs.to_a }
             end
@@ -24,8 +36,8 @@ module VersatileDiamond
               include_context :with_organized_lateral_chunks
 
               let(:typical_reaction) { dept_dimer_formation }
-              let(:t1) { target_specs.first.atom(:ct) }
-              let(:t2) { target_specs.last.atom(:ct) }
+              let(:t1) { targets.first.last }
+              let(:t2) { targets.last.last }
 
               let(:lateral_dimer) { sidepiece_spec_by_name(:dimer) }
               let_atoms_of(:lateral_dimer, [:cr, :cl], [:d1, :d2])
@@ -42,8 +54,8 @@ module VersatileDiamond
               include_context :with_organized_lateral_chunks
 
               let(:typical_reaction) { dept_symmetric_dimer_formation }
-              let(:t1) { target_specs.first.atom(:ct) }
-              let(:t2) { (lateral_chunks.targets.map(&:last) - [t1]).first }
+              let(:t1) { targets.first.last }
+              let(:t2) { targets.last.last }
 
               let(:front_bridge) { sidepiece_spec_related_by(position_100_front) }
               let(:cross_bridge) { sidepiece_spec_related_by(position_100_cross) }

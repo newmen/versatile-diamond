@@ -27,7 +27,7 @@ module VersatileDiamond
                   let(:lateral_reactions) { [dept_ewb_lateral_df] }
                   let(:final_graph) do
                     {
-                      [d1, d2] => [[[t1, t2], param_100_cross]]
+                      [d1, d2] => [[[t2, t1], param_100_cross]]
                     }
                   end
                 end
@@ -39,7 +39,7 @@ module VersatileDiamond
                   let(:spec) { lateral_bridge }
                   let(:final_graph) do
                     {
-                      [b] => [[[t1], param_100_front]]
+                      [b] => [[[t2], param_100_front]]
                     }
                   end
                 end
@@ -50,8 +50,8 @@ module VersatileDiamond
               let(:spec) { front_bridge }
               let(:final_graph) do
                 {
-                  [cb] => [[[t1], param_100_cross]],
-                  [fb] => [[[t1], param_100_front]]
+                  [cb] => [[[t2], param_100_cross]],
+                  [fb] => [[[t2], param_100_front]]
                 }
               end
 
@@ -123,7 +123,7 @@ module VersatileDiamond
             it_behaves_like :methyl_incorporation_near_edge do
               it_behaves_like :check_entry_nodes do
                 let(:spec) { edge_dimer }
-                let(:points_list) { [[dm, dd]] }
+                let(:points_list) { [[dd, dm]] }
               end
             end
           end
@@ -198,7 +198,7 @@ module VersatileDiamond
                   it_behaves_like :check_ordered_graph do
                     let(:ordered_graph) do
                       [
-                        [[d1, d2], [[[t1, t2], param_100_cross]]]
+                        [[d1, d2], [[[t2, t1], param_100_cross]]]
                       ]
                     end
 
@@ -211,7 +211,7 @@ module VersatileDiamond
                 let(:spec) { lateral_bridge }
                 let(:ordered_graph) do
                   [
-                    [[b], [[[t1], param_100_front]]]
+                    [[b], [[[t2], param_100_front]]]
                   ]
                 end
 
@@ -241,7 +241,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.first }
                 let(:ordered_graph) do
                   [
-                    [[cb], [[[t1], param_100_cross]]]
+                    [[cb], [[[t2], param_100_front]]]
                   ]
                 end
               end
@@ -251,7 +251,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.last }
                 let(:ordered_graph) do
                   [
-                    [[cb], [[[t1], param_100_front]]]
+                    [[cb], [[[t2], param_100_cross]]]
                   ]
                 end
               end
@@ -261,7 +261,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.first }
                 let(:ordered_graph) do
                   [
-                    [[cb], [[[t1], param_100_cross]]]
+                    [[cb], [[[t2], param_100_front]]]
                   ]
                 end
               end
@@ -271,7 +271,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.last }
                 let(:ordered_graph) do
                   [
-                    [[cb], [[[t1], param_100_front]]]
+                    [[cb], [[[t2], param_100_cross]]]
                   ]
                 end
               end
@@ -282,8 +282,8 @@ module VersatileDiamond
                 let(:spec) { edge_dimer }
                 let(:ordered_graph) do
                   [
-                    [[dm], [[[tm], param_100_cross]]],
-                    [[dd], [[[td], param_110_cross]]]
+                    [[dd], [[[td], param_110_cross]]],
+                    [[dm], [[[tm], param_100_cross]]]
                   ]
                 end
               end
