@@ -15,6 +15,12 @@ module VersatileDiamond
 
         private
 
+          # @return [Boolean]
+          # @override
+          def symmetric?
+            !nodes.any?(&:side?) && super
+          end
+
           # @return [Array]
           def sidepieces
             species.select(&:proxy?)

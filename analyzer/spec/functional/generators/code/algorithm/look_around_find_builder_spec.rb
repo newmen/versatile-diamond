@@ -193,22 +193,22 @@ module VersatileDiamond
     eachNeighbour(atoms1[0], &Diamond::front_110, [&](Atom *neighbour1) {
         if (neighbour1->is(#{edmr_cr}))
         {
-            if (atoms1[0]->hasBondWith(neighbour1))
+            Dimer *dimer1 = neighbour1->specByRole<Dimer>(#{edmr_cr});
+            if (dimer1)
             {
-                Dimer *dimer1 = neighbour1->specByRole<Dimer>(#{edmr_cr});
-                if (dimer1)
-                {
-                    eachNeighbour(atoms1[1], &Diamond::cross_100, [&this, &chunks, &dimer1, &index](Atom *neighbour2) {
-                        if (neighbour2->is(#{edmr_cr}))
+                eachNeighbour(atoms1[1], &Diamond::cross_100, [&this, &chunks, &dimer1, &index](Atom *neighbour2) {
+                    if (neighbour2->is(#{edmr_cr}))
+                    {
+                        Dimer *dimer2 = neighbour2->specByRole<Dimer>(#{edmr_cr});
+                        if (dimer2)
                         {
-                            Dimer *dimer2 = neighbour2->specByRole<Dimer>(#{edmr_cr});
                             if (dimer1 == dimer2)
                             {
                                 chunks[index++] = new ForwardMethylIncorporationMiEdgeLateral(this, dimer1);
                             }
                         }
-                    });
-                }
+                    }
+                });
             }
         }
     });
