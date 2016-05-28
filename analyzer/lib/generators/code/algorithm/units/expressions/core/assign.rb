@@ -48,8 +48,8 @@ module VersatileDiamond
           # @option [Expression] :value
           def initialize(var, type: nil, value: nil, constructor_args: nil)
             @var = var.freeze
-            @type = type.freeze
-            @value = value.freeze
+            @type = type && type.freeze
+            @value = value && value.freeze
 
             if constructor_args
               seq = OpSequence[*constructor_args]
@@ -74,10 +74,23 @@ module VersatileDiamond
           # @param [Array] vars
           # @return [Array] list of using variables
           def using(vars)
-            (@var.using(vars) + @value.using(vars)).uniq
+            used_vars = @var.using(vars)
+            used_vars + tail_using(vars - used_vars)
           end
 
         private
+
+          # @param [Array] vars
+          # @return [Array]
+          def tail_using(vars)
+            if @value
+              @value.using(vars)
+            elsif @constructor_tail
+              @constructor_tail.using(vars)
+            else
+              []
+            end
+          end
 
           # @return [String]
           def left_side

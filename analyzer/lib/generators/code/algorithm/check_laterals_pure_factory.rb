@@ -4,29 +4,31 @@ module VersatileDiamond
       module Algorithm
 
         # Creates pure units for check laterals find algorithm
-        class CheckLateralsPureUnitsFactory < BasePureUnitsFactory
+        class CheckLateralsPureUnitsFactory < LateralChunksPureUnitsFactory
         private
 
-          # @param [Units::Expressions::VarsDictionary] dict
-          # @param [Nodes::BaseNode] node
-          # @return [Units::MonoPureUnit]
-          def make_mono_unit(dict, node)
-            if node.side?
-              Units::MonoReactionUnit.new(dict, node)
-            else
-              Units::MonoSidepieceUnit.new(dict, node)
-            end
+          # @param [Array] args
+          # @return [Units::MonoSidepieceUnit]
+          def make_mono_target_unit(*args)
+            Units::MonoSidepieceUnit.new(*args)
           end
 
-          # @param [Units::Expressions::VarsDictionary] dict
-          # @param [Array] nodes
-          # @return [Units::ManyPureUnits]
-          def make_many_units(dict, nodes)
-            unless nodes.any?(&:side?)
-              Units::ManyReactionUnits.new(dict, nodes)
-            else
-              Units::ManySidepieceUnits.new(dict, nodes)
-            end
+          # @param [Array] args
+          # @return [Units::MonoReactionUnit]
+          def make_mono_side_unit(*args)
+            Units::MonoReactionUnit.new(*args)
+          end
+
+          # @param [Array] args
+          # @return [Units::ManySidepieceUnits]
+          def make_many_target_units(*args)
+            Units::ManySidepieceUnits.new(*args)
+          end
+
+          # @param [Array] args
+          # @return [Units::ManyReactionUnits]
+          def make_many_side_units(*args)
+            Units::ManyReactionUnits.new(*args)
           end
         end
 
