@@ -166,19 +166,29 @@ module VersatileDiamond
 
                 let(:find_algorithm) do
                   <<-CODE
-    Atom *atoms1[2] = { target->atom(0), target->atom(3) };
-    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&target](Atom **neighbours1) {
-        if (neighbours1[0]->is(#{id_cr}) && neighbours1[1]->is(#{id_cl}) && neighbours1[0]->hasBondWith(neighbours1[1]))
+    Atom *atoms1[2] = { sidepiece->atom(0), sidepiece->atom(3) };
+    eachNeighbours<2>(atoms1, &Diamond::cross_100, [&sidepiece](Atom **neighbours1) {
+        if (neighbours1[0]->is(#{id_cr}) && neighbours1[1]->is(#{id_cl}))
         {
-            DimerCLiCRi *dimerCLiCRis1[2] = { neighbours1[0]->specByRole<DimerCLiCRi>(#{id_cr}), neighbours1[1]->specByRole<DimerCLiCRi>(#{id_cl}) };
-            if (dimerCLiCRis1[0] && dimerCLiCRis1[0] == dimerCLiCRis1[1])
+            if (neighbours1[0]->hasBondWith(neighbours1[1]))
             {
-                ChainFactory<
-                    UnoLateralFactory,
-                    ForwardIncoherentDimerDropEndLateral,
-                    ForwardIncoherentDimerDrop
-                > factory(target, dimerCLiCRis1[0]);
-                factory.checkoutReactions<ForwardIncoherentDimerDropEndLateral>();
+                DimerCLiCRi *dimerCLiCRi1 = neighbours1[1]->specByRole<DimerCLiCRi>(#{id_cr});
+                if (dimerCLiCRi1)
+                {
+                    DimerCLiCRi *dimerCLiCRi2 = neighbours1[0]->specByRole<DimerCLiCRi>(#{id_cl});
+                    if (dimerCLiCRi2)
+                    {
+                        if (dimerCLiCRi1 == dimerCLiCRi2)
+                        {
+                            ChainFactory<
+                                UnoLateralFactory,
+                                ForwardIncoherentDimerDropEndLateral,
+                                ForwardIncoherentDimerDrop
+                            > factory(sidepiece, dimerCLiCRi2);
+                            factory.checkoutReactions<ForwardIncoherentDimerDropEndLateral>();
+                        }
+                    }
+                }
             }
         }
     });
