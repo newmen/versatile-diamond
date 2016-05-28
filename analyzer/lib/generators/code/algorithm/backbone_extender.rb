@@ -22,10 +22,40 @@ module VersatileDiamond
             end
           end
 
-          # @param [Hash] graph which extended instance will be gotten
+          # @param [Set] detected_scope
+          # @param [Nodes::ReactantNode] node
+          # @return [Boolean]
+          def anchor_at?(detected_scope, node)
+            node.anchor? && !detected_scope.include?(node.uniq_specie)
+          end
+
+          # @param [Set] detected_scope
+          # @param [Array] nodes
+          # @return [Boolean]
+          def anchors_in?(detected_scope, nodes)
+            !anchors_in(detected_scope, nodes).empty?
+          end
+
+          # @param [Set] detected_scope
+          # @param [Array] nodes
+          # @return [Array]
+          def anchors_in(detected_scope, nodes)
+            nodes.select { |node| anchor_at?(detected_scope, node) }
+          end
+
+          # @param [Hash] graph
+          # @return [Set]
+          def anchored_species_scope(graph)
+            nodes_set(graph).select(&:anchor?).map(&:uniq_specie).to_set
+          end
+
+          # @param [Hash] fn_graph which extended instance will be gotten
           # @return [Hash] the extended graph with anchor nodes on sides
-          def cut_and_extend_to_anchors(graph)
-            extend_all_branches(extend_own_branches(cut_own_branches(graph)), graph)
+          def cut_and_extend_to_anchors(fn_graph)
+            scope = anchored_species_scope(fn_graph)
+            first_step_graph = extend_own_branches(cut_own_branches(fn_graph), scope)
+            next_scope = scope + anchored_species_scope(first_step_graph)
+            extend_all_branches(first_step_graph, fn_graph, next_scope)
           end
 
           # @param [Hash] graph which will be cutten
@@ -35,17 +65,25 @@ module VersatileDiamond
           end
 
           # @param [Hash] graph which extended instance will be gotten
+          # @param [Set] scope of already defined anchored species
           # @return [Hash] the extended graph with anchor nodes on sides
-          def extend_own_branches(graph)
+          def extend_own_branches(graph, scope)
             other_side_nodes(graph).reduce(graph) do |acc, nodes|
-              nodes.any?(&:anchor?) ? acc : extend_graph(acc, nodes)
+              if nodes.any?(&:anchor?)
+                acc
+              else
+                next_graph = extend_graph(acc, nodes, scope)
+                scope += anchored_species_scope(next_graph)
+                next_graph
+              end
             end
           end
 
           # @param [Hash] extending_graph which extended instance will be gotten
           # @param [Hash] grouped_final_graph by which another nodes will be selected
+          # @param [Set] scope of already defined anchored species
           # @return [Hash] the extended graph with anchor nodes on sides
-          def extend_all_branches(extending_graph, grouped_final_graph)
+          def extend_all_branches(extending_graph, grouped_final_graph, scope)
             result = extending_graph
             final_keys = grouped_final_graph.keys
             final_nodes = nodes_set(grouped_final_graph)
@@ -54,16 +92,20 @@ module VersatileDiamond
               reached_nodes = nodes_set(result)
               if reached_nodes.size < final_nodes.size
                 next_nodes = final_keys.find { |k| k.to_set == reached_nodes }
-                result = extend_graph(result, next_nodes) if next_nodes
+                if next_nodes
+                  result = extend_graph(result, next_nodes, scope)
+                  scope += anchored_species_scope(result)
+                end
               end
               return result unless next_nodes
             end
           end
 
           # @param [Array] graphs
+          # @param [Set] scope
           # @return [Hash]
-          def best_graph(graphs)
-            gwasz = graphs.map { |g| [g, nodes_set(g).select(&:anchor?).size] }
+          def best_graph(graphs, scope)
+            gwasz = graphs.map { |g| [g, anchors_in(scope, nodes_set(g)).size] }
             max_n = gwasz.map(&:last).max
             maximal_anchored = gwasz.select { |_, n| n == max_n }.map(&:first)
             maximal_anchored.sort_by { |g| g.values.reduce(:+).size }.first
@@ -72,24 +114,27 @@ module VersatileDiamond
           # Extends passed graph from passed nodes to nodes with anchor atom
           # @param [Hash] graph which extended instance will be gotten
           # @param [Array] nodes from which graph will be extended
+          # @param [Set] scope of already defined anchored species
           # @return [Hash] the extended graph or nil if extending was not successful
-          def extend_graph(graph, nodes)
+          def extend_graph(graph, nodes, scope)
             next_rels = next_ways(graph, nodes)
             return graph if next_rels.empty? # stop recursive find for this graph
 
+            inter_scope = scope + anchored_species_scope(graph)
+
             vs = extending_ways(graph, next_rels)
-            anchored_vs = vs.select { |_, ns| ns.any?(&:anchor?) }
+            anchored_vs = vs.select { |_, ns| anchors_in?(inter_scope, ns) }
             complete_vs = anchored_vs.select { |g, _| totaly_closed?(g) }
 
             extended_graphs =
               if complete_vs.empty?
                 resolving_vs = anchored_vs.empty? ? vs : anchored_vs
-                resolving_vs.map { |nwg| extend_graph(*nwg) }
+                resolving_vs.map { |nwg| extend_graph(*nwg, inter_scope) }
               else
                 complete_vs.map(&:first)
               end
 
-            best_graph(extended_graphs.uniq) || graph
+            best_graph(extended_graphs.uniq, inter_scope) || graph
           end
 
           # Tries to extend passed graph in directions of next relations
@@ -119,8 +164,7 @@ module VersatileDiamond
             nodes.flat_map do |node|
               all_rels = big_ungrouped_graph[node]
               next_rels = all_rels.select do |n, r|
-                !prev_nodes.include?(n) &&
-                  r.exist? && n.uniq_specie == node.uniq_specie
+                !prev_nodes.include?(n) && r.exist? && !own_key?([n])
               end
               next_rels.map { |n, r| [[node, n], r.params] }
             end
