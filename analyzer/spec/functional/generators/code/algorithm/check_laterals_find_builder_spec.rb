@@ -208,18 +208,43 @@ module VersatileDiamond
 
               let(:find_algorithm) do
                 <<-CODE
-    Atom *atom1 = target->atom(0);
-    eachNeighbour(atom1, &Diamond::cross_100, [&target](Atom *neighbour1) {
+    Atom *atom1 = sidepiece->atom(0);
+    eachNeighbour(atom1, &Diamond::front_100, [&sidepiece](Atom *neighbour1) {
         if (neighbour1->is(2))
         {
-            BridgeCTs *BridgeCTs1 = neighbour1->specByRole<BridgeCTs>(2);
-            if (BridgeCTs1)
+            BridgeCTs *bridgeCTs1 = neighbour1->specByRole<BridgeCTs>(2);
+            if (bridgeCTs1)
+            {
+                ChainFactory<
+                    UnoLateralFactory,
+                    CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs,
+                    ForwardSymmetricDimerFormation
+                > factory(sidepiece, bridgeCTs1);
+                factory.checkoutReactions<
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTs,
+                    #{small_name},
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs,
+                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs
+                >();
+            }
+        }
+    });
+    eachNeighbour(atom1, &Diamond::cross_100, [&sidepiece](Atom *neighbour1) {
+        if (neighbour1->is(2))
+        {
+            BridgeCTs *bridgeCTs1 = neighbour1->specByRole<BridgeCTs>(2);
+            if (bridgeCTs1)
             {
                 ChainFactory<
                     UnoLateralFactory,
                     CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs,
                     ForwardSymmetricDimerFormation
-                > factory(target, BridgeCTs1);
+                > factory(sidepiece, bridgeCTs1);
                 factory.checkoutReactions<
                     CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs,
                     CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs,
@@ -232,31 +257,6 @@ module VersatileDiamond
                     CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs,
                     #{big_name},
                     CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs
-                >();
-            }
-        }
-    });
-    eachNeighbour(atom1, &Diamond::front_100, [&target](Atom *neighbour1) {
-        if (neighbour1->is(2))
-        {
-            BridgeCTs *bridgeCTs1 = neighbour1->specByRole<BridgeCTs>(2);
-            if (bridgeCTs1)
-            {
-                ChainFactory<
-                    UnoLateralFactory,
-                    CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs,
-                    ForwardSymmetricDimerFormation
-                > factory(target, bridgeCTs1);
-                factory.checkoutReactions<
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTs,
-                    CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTs,
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTs,
-                    #{small_name},
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs,
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs,
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs,
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs,
-                    CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs
                 >();
             }
         }
