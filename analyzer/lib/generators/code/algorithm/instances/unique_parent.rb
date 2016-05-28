@@ -7,8 +7,7 @@ module VersatileDiamond
         # builds, and parent atoms substitute instead passed atoms of original specie
         class UniqueParent < UniqueSpecie
 
-          attr_reader :actual # @override
-          attr_reader :spec
+          attr_reader :actual, :spec
 
           # Initializes unique parent specie
           # @param [EngineCode] generator the major code generator
@@ -18,15 +17,6 @@ module VersatileDiamond
             super(generator, proxy_parent.spec)
             @spec = proxy_parent
             @actual = specie_class(proxy_parent.child.spec)
-          end
-
-          # Gets the atom which uses in child specie
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   twin of proxy specie which reflection will be returned
-          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   the context atom
-          def context_atom(twin)
-            spec.atom_by(twin)
           end
 
           # Unique parent specie is not "no specie"
@@ -41,24 +31,27 @@ module VersatileDiamond
             false
           end
 
+        protected
+
+          # Gets the atom which uses in child specie
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   twin of proxy specie which reflection will be returned
+          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   the context atom
+          def self_atom(twin)
+            spec.atom_by(twin)
+          end
+
         private
 
-          # Gets the instance of atom which uses in actual specie
-          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom which corresponding instance from actual specie will be gotten
-          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   the atom from actual specie
-          # @override
-          def actual_atom(atom)
-            atom
-          end
+          define_itself_getter_by :actual_atom
 
           # Gets the atom which reflects passed atom of original specie
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   atom of original specie which reflection will be returned
           # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
           #   the reflected atom
-          def reflection_of(atom)
+          def original_atom(atom)
             spec.twin_of(atom)
           end
 

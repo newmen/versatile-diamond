@@ -149,7 +149,7 @@ module VersatileDiamond
             nas = nodes.uniq(&:atom)
             spops = nas.map(&:sub_properties).map(&:inspect)
             pkns = nas.map do |n|
-              n.spec.spec.keyname(n.uniq_specie.send(:reflection_of, n.atom))
+              n.spec.spec.keyname(n.uniq_specie.send(:original_atom, n.atom))
             end
             ppops = nas.map(&:properties).map(&:inspect)
             ckns = nas.map do |n|

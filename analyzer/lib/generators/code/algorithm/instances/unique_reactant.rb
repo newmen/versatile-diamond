@@ -7,9 +7,8 @@ module VersatileDiamond
         # builds
         class UniqueReactant < UniqueSpecie
 
+          alias_method :actual, :original
           attr_reader :spec
-
-          def_same_atom_method :context_atom
 
           # Initializes unique reactant specie
           # @param [EngineCode] generator the major code generator
@@ -18,6 +17,8 @@ module VersatileDiamond
           def initialize(generator, concept_spec)
             super
             @spec = original.spec.clone_with_replace(concept_spec)
+
+            @_original_mirror, @_inverted_original_mirror = nil
           end
 
           # Compares two unique specie that were initially high and then a small
@@ -33,10 +34,38 @@ module VersatileDiamond
             false
           end
 
+        protected
+
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          def self_atom(atom)
+            inverted_original_mirror[atom]
+          end
+
         private
 
-          def_same_atom_method :reflection_of
+          define_alias :actual_atom, :original_atom
 
+          # Gets the instance of atom which uses in original specie
+          # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   atom which corresponding instance from original specie will be gotten
+          # @return [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+          #   the atom from original specie
+          def original_atom(atom)
+            original_mirror[atom]
+          end
+
+          # Gets the mirror from proxy spec to original spec
+          # @return [Hash] the mirror from current spec to original spec
+          def original_mirror
+            @_original_mirror ||=
+              Mcs::SpeciesComparator.make_mirror(spec, original.spec).freeze
+          end
+
+          # @return [Hash]
+          def inverted_original_mirror
+            @_inverted_original_mirror ||= original_mirror.invert
+          end
         end
 
       end

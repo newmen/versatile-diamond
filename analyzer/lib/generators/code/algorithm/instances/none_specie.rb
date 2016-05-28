@@ -7,7 +7,7 @@ module VersatileDiamond
         class NoneSpecie < SpecialCase
           include SpecieInstance
 
-          def_same_atom_method :context_atom
+          define_alias :actual, :original
 
           # Intializes the none specie
           # @param [EngineCode] generator the major code generator
@@ -33,11 +33,15 @@ module VersatileDiamond
             "none:#{original.inspect}"
           end
 
+        protected
+
+          define_itself_getter_by :self_atom
+
         private
 
           attr_reader :generator
 
-          def_same_atom_method :original_atom, :reflection_of
+          define_itself_getter_by :actual_atom, :original_atom
 
         end
 

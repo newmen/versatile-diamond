@@ -29,9 +29,7 @@ module VersatileDiamond
       #   other_spec to which the current internal spec will be replaced
       # @return [DependentWrappedSpec] the clone of current instance
       def clone_with_replace(other_spec)
-        result = self.dup
-        result.replace_spec!(other_spec)
-        result
+        self.dup.replace_spec!(other_spec)
       end
 
       # Gets the links of residual specie
@@ -201,6 +199,7 @@ module VersatileDiamond
       #
       # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec]
       #   other_spec to which the internal reference will be changed
+      # @return [DependentWrappedSpec]
       def replace_spec!(other_spec)
         mirror = Mcs::SpeciesComparator.make_mirror(spec, other_spec)
 
@@ -213,6 +212,7 @@ module VersatileDiamond
         reset_caches!
         # directly setup the base class variable
         @spec = other_spec
+        self
       end
 
     private

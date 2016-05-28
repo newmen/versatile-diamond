@@ -264,7 +264,7 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *atoms1[2] = { parent->atom(0), parent->atom(3) };
+    Atom *atoms1[2] = { parent->atom(3), parent->atom(0) };
     if (atoms1[0]->is(#{role_cr}) && atoms1[1]->is(#{role_cl}))
     {
         if (!atoms1[0]->hasRole(TWO_METHYLS_ON_DIMER, #{role_cr}) || !atoms1[1]->hasRole(TWO_METHYLS_ON_DIMER, #{role_cl}))
@@ -275,7 +275,7 @@ module VersatileDiamond
                     atoms1[1]->eachAmorphNeighbour([&amorph1, &parent](Atom *amorph2) {
                         if (amorph2->is(#{role_c2}))
                         {
-                            Atom *additionalAtoms[2] = { amorph1, amorph2 };
+                            Atom *additionalAtoms[2] = { amorph2, amorph1 };
                             create<TwoMethylsOnDimer>(additionalAtoms, parent);
                         }
                     });
