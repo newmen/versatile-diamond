@@ -22,9 +22,9 @@ module VersatileDiamond
           # @return [Expressions::Core::Assign]
           def call_create(*exprs)
             this = dict.var_of(:this)
-            chunks_arr = dict.var_of(:chunks)
+            chunks_item = dict.var_of(:chunks_item)
             value = Expressions::Core::Allocate[lateral_reaction_type, this, *exprs]
-            Expressions::Core::Assign[chunks_arr, value: value].freeze
+            Expressions::Core::Assign[chunks_item, value: value].freeze
           end
         end
 

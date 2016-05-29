@@ -36,7 +36,7 @@ module VersatileDiamond
           def initialize(checking_expr, truth, otherwise = nil)
             @checking_expr = OpRoundBks[checking_expr].freeze
             @truth = OpBraces[truth, ext_new_lines: true]
-            @otherwise = otherwise && OpBraces[otherwise, ext_new_lines: true]
+            @otherwise = otherwise && fix_otherwise(otherwise)
           end
 
           # @return [String]
@@ -61,6 +61,16 @@ module VersatileDiamond
 
         private
 
+          # @param [Expression] otherwise
+          # @return [Expression]
+          def fix_otherwise(otherwise)
+            if otherwise.kind_of?(self.class)
+              otherwise
+            else
+              OpBraces[otherwise, ext_new_lines: true]
+            end
+          end
+
           # @return [String]
           def head
             "if #{@checking_expr.code}#{@truth.code}"
@@ -68,7 +78,12 @@ module VersatileDiamond
 
           # @return [String]
           def tail
-            @otherwise ? "else#{@otherwise.code}" : ''
+            if @otherwise
+              separator = @otherwise.op? ? '' : ' '
+              "else#{separator}#{@otherwise.code}"
+            else
+              ''
+            end
           end
         end
 

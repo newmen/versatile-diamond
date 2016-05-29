@@ -10,20 +10,12 @@ module VersatileDiamond
             # @param [Hash] kwargs
             # @return [ScalarType]
             def [](name, **kwargs)
-              if !class?(name)
-                arg_err!('Class type should be classified')
-              elsif !template_args?(kwargs)
+              if !template_args?(kwargs)
                 insp_args = kwargs[:template_args].inspect
-                msg = "Invalid template arguments #{insp_args} for #{name} type"
+                arg_err!("Invalid template arguments #{insp_args} for #{name} type")
               else
                 super
               end
-            end
-
-            # @param [String] name
-            # @return [Boolean] class type names any time are classified
-            def class?(name)
-              name =~ /^[A-Z]/
             end
           end
 

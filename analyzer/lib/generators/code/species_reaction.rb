@@ -11,6 +11,8 @@ module VersatileDiamond
 
         LATERAL_CHUNKS_NAME = 'chunks'.freeze
         CHUNKS_INDEX_NAME = 'index'.freeze
+        LIMITER_VAR_NAME = 'num'.freeze
+        COUNTER_VAR_NAME = 'counter'.freeze
 
         def_delegators :reaction, :links, :clean_links, :relation_between
 

@@ -7,6 +7,7 @@ module VersatileDiamond
         class ActionTargetUnit
           extend Forwardable
 
+          # @param [Expressions::VarsDictionary] dict
           # @param [BaseContextProvider] context
           # @param [BasePureUnit] unit
           def initialize(dict, context, unit)

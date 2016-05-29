@@ -7,6 +7,7 @@ module VersatileDiamond
       class LateralChunks
         include Modules::ListsComparer
         include Modules::RelationBetweenChecker
+        include ReactionsUser
         extend Forwardable
 
         attr_reader :reaction
@@ -68,8 +69,7 @@ module VersatileDiamond
         def select_reaction(spec_atom)
           chunks_users = @root_chunks.select { |ch| ch.links[spec_atom] }
           if chunks_users.one?
-            chunk = chunks_users.first
-            @generator.reaction_class(chunk.lateral_reaction.name)
+            reaction_class(chunks_users.first.lateral_reaction)
           elsif chunks_users.empty?
             raise ArgumentError, 'No reactions for passed spec_atom'
           else
@@ -117,6 +117,8 @@ module VersatileDiamond
         end
 
       private
+
+        attr_reader :generator
 
         # Gets total chunk which adsorbs root chunk in self
         # @return [Organizers::TotalChunk] the total chunk

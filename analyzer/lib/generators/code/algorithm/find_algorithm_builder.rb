@@ -52,14 +52,14 @@ module VersatileDiamond
             backbone.big_graph
           end
 
-          # @return [Expressions::Core::Statement]
+          # @return [Units::Expressions::Core::Statement]
           def complete_algorithm
             backbone.entry_nodes.map(&method(:body_for)).reduce(:+)
           end
 
           # Generates the body of code from passed nodes
           # @param [Array] nodes from which the code will be generated
-          # @return [Expressions::Core::Statement]
+          # @return [Units::Expressions::Core::Statement]
           def body_for(nodes)
             dict.rollback!
             pure_factory.unit(nodes).define! if define_each_entry_node?
@@ -70,7 +70,7 @@ module VersatileDiamond
           # backbone ordered graph from nodes
           #
           # @param [Array] nodes from which walking will occure
-          # @return [Expressions::Core::Statement]
+          # @return [Units::Expressions::Core::Statement]
           def combine_algorithm(nodes)
             ordered_graph = backbone.ordered_graph_from(nodes)
             factory = combine_context_factory(ordered_graph)
@@ -80,7 +80,7 @@ module VersatileDiamond
           end
 
           # @param [Array] ordered_graph
-          # @return [BaseContextUnitsFactory] 
+          # @return [BaseContextUnitsFactory]
           def combine_context_factory(ordered_graph)
             context = make_context_provider(ordered_graph)
             make_context_factory(context)

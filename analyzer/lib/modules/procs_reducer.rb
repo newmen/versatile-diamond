@@ -10,8 +10,10 @@ module VersatileDiamond
       # @yield returns heart of combination result
       # @return [Proc] the general function which contains calls of all other nested
       def reduce_procs(procs, &deepest_block)
-        procs.reverse.reduce(deepest_block) do |acc, block|
-          -> { block[&acc] }
+        copy_of_procs = procs.dup
+        block = block_given? ? deepest_block : copy_of_procs.pop
+        copy_of_procs.reverse.reduce(block) do |acc, prc|
+          -> { prc[&acc] }
         end
       end
 
