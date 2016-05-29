@@ -20,7 +20,8 @@ module VersatileDiamond
           describe '#define_scope!' do
             include_context :end_dimer_formation_lateral_context
             before { subject.define_scope! }
-            let(:vars) { [:this, :chunks, :index].map(&dict.public_method(:var_of)) }
+            let(:keys) { [:this, :chunks_item, :index] }
+            let(:vars) { keys.map(&dict.public_method(:var_of)) }
             it { expect(dict.defined_vars).to match_array(vars) }
           end
 

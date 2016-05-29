@@ -5,9 +5,18 @@ module VersatileDiamond
 
         # Provides the footer of chunks selector algorithm
         class LateralSelectorFooterUnit
+          # @param [Integer] affixes_num
+          def initialize(affixes_num)
+            @affixes_num = affixes_num
+          end
+
           # @return [Expressions::Core::Statement]
           def safe_footer
-            assert_line + return_line
+            if @affixes_num == 1
+              Expressions::Core::Constant[''].freeze
+            else
+              assert_line + return_line
+            end
           end
 
         private

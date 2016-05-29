@@ -33,41 +33,19 @@ module VersatileDiamond
             dict.make_chunks_counter.define_var + super
           end
 
-          # @param [Integer] quant the number of similar reactions
-          # @return [Expressions::Core::Statement]
-          # @override
-          def check_total_num(quant)
-            if quant == 1 && with_singular?
-              checking_exprs = check_root_chunks_exprs.sort_by(&:code)
-              additional_check = Expressions::Core::OpOr[*checking_exprs]
-              tail = Expressions::Core::OpRoundBks[additional_check]
-              Expressions::Core::OpAnd[super, tail]
-            else
-              super
-            end
-          end
-
-          # @return [Array]
-          def check_root_chunks_exprs
-            min_chunks = group.first.last
-            min_chunks.map { |reaction| check_chunks_num(1, reaction) }
-          end
-
           # @param [Integer] quant
           # @param [LateralReaction] reaction
-          # @return [Expressions::Core::OpEq]
-          def check_chunks_num(quant, reaction)
-            compare_nums(quant, dict.counter_item(reaction.enum_name))
+          # @return [Array]
+          def check_chunk_pair(quant, reaction)
+            compare_nums_pair(quant, dict.counter_item(reaction.enum_name))
           end
 
           # @param [LateralReaction] reaction
           # @return [Expressions::Core::OpAnd]
-          def check_chunks_of(reaction)
+          def check_chunks_pairs(reaction)
             gs = reaction.internal_chunks.groups
-            sub_group =
-              gs.map { |g| [g.size, reaction_class(g.first.lateral_reaction)] }
-            checks = sub_group.map { |q, r| check_chunks_num(q, r) }
-            Expressions::Core::OpAnd[*checks.sort_by(&:code)]
+            sub = gs.map { |g| [g.size, reaction_class(g.first.lateral_reaction)] }
+            sub.map { |q, r| check_chunk_pair(q, r) }
           end
 
           # @param [Integer] quant the number of similar reactions
@@ -96,7 +74,7 @@ module VersatileDiamond
           # @yield statement incorporating to else branch
           # @return [Expressions::Core::Condition]
           def sub_branch(reaction, &block)
-            make_branch(check_chunks_of(reaction), sub_body(reaction), &block)
+            make_branch(check_chunks_pairs(reaction), sub_body(reaction), &block)
           end
 
           # @param [LateralReaction] reaction

@@ -6,11 +6,11 @@ module VersatileDiamond
         # Compares that all pairs of expressions are equal
         class EqualsCondition < AndCondition
           class << self
-            # @param [Array] exprs_pairs
-            # @param [Core::Expression] body
+            # @param [Array] pairs
+            # @param [Array] exprs
             # @return [EqualsCondition]
-            def [](exprs_pairs, body)
-              super(exprs_pairs.map(&method(:resort)).map(&method(:op)), body)
+            def [](pairs, *exprs)
+              super(pairs.map(&method(:op)), *exprs)
             end
 
           private

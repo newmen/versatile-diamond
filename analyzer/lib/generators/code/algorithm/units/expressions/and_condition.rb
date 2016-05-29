@@ -6,25 +6,25 @@ module VersatileDiamond
         # Joins all checking expressions by && operation
         class AndCondition < Core::Condition
           class << self
+            # @param [Array] checks
             # @param [Array] exprs
-            # @param [Core::Expression] body
             # @return [EqualsCondition]
-            def [](exprs, body)
-              super(join(resort(exprs)), body)
+            def [](checks, *exprs)
+              super(join(resort(checks)), *exprs)
             end
 
           private
 
-            # @param [Array] exprs
+            # @param [Array] checks
             # @return [Array]
-            def resort(exprs)
-              exprs.sort_by(&:code)
+            def resort(checks)
+              checks.sort_by(&:code)
             end
 
-            # @param [Array] exprs
+            # @param [Array] checks
             # @return [Core::OpAnd]
-            def join(exprs)
-              Core::OpAnd[*exprs]
+            def join(checks)
+              Core::OpAnd[*checks]
             end
           end
         end

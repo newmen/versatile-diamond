@@ -69,18 +69,18 @@ module VersatileDiamond
               end
               let(:select_algorithm) do
                 <<-CODE
-    if (num == 6)
+    if (num == 1)
+    {
+        return chunks[0];
+    }
+    else if (num == 6)
     {
         return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs(chunks);
     }
     else
     {
         std::unordered_map<ushort, ushort> counter = countReactions(chunks, num);
-        if (num == 1 && (counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 1 || counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 1))
-        {
-            return chunks[0];
-        }
-        else if (num == 2)
+        if (num == 2)
         {
             if (counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 2)
             {

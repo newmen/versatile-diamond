@@ -48,32 +48,33 @@ module VersatileDiamond
           # @yield statement incorporating to else branch
           # @return [Expressions::Core::Condition]
           def case_branch(quant, reactions, &block)
-            make_branch(check_total_num(quant), branch_body(quant, reactions), &block)
+            codition_pairs = [check_total_pair(quant)]
+            make_branch(codition_pairs, branch_body(quant, reactions), &block)
           end
 
-          # @param [Array] check_and_body
+          # @param [Array] checks_and_body
           # @yield statement incorporating to else branch
           # @return [Expressions::Core::Condition]
-          def make_branch(*check_and_body, &block)
-            args = check_and_body.dup
+          def make_branch(*checks_and_body, &block)
+            args = checks_and_body.dup
             if block_given?
               block_result = block.call
               args << block_result unless block_result == TIN_CAP
             end
-            Expressions::Core::Condition[*args].freeze
+            Expressions::EqualsCondition[*args].freeze
           end
 
           # @param [Integer] quant the number of similar reactions
-          # @return [Expressions::Core::OpEq]
-          def check_total_num(quant)
-            compare_nums(quant, dict.var_of(:num))
+          # @return [Array]
+          def check_total_pair(quant)
+            compare_nums_pair(quant, dict.var_of(:num))
           end
 
           # @param [Integer] quant the number of similar reactions
           # @return [Expressions::Core::Variable] var
-          # @return [Expressions::Core::OpEq]
-          def compare_nums(quant, var)
-            Expressions::Core::OpEq[var, Expressions::Core::Constant[quant]].freeze
+          # @return [Array]
+          def compare_nums_pair(quant, var)
+            [var, Expressions::Core::Constant[quant]]
           end
 
           # @param [Integer] quant the number of similar reactions
