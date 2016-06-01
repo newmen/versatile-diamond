@@ -67,7 +67,7 @@ module VersatileDiamond
 
           # @return [Array]
           def defined_vars
-            @vars.flat_map(&:last).reject(&:item?)
+            all_defined_vars.reject(&:item?)
           end
 
         private
@@ -110,6 +110,11 @@ module VersatileDiamond
             vars.each_with_object({}) do |(k, vs), acc|
               acc[k] = vs.dup
             end
+          end
+
+          # @return [Array]
+          def all_defined_vars
+            @vars.flat_map(&:last)
           end
 
           # @param [Object] instance
