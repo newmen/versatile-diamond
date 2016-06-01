@@ -31,15 +31,6 @@ module VersatileDiamond
         def binary_operation?(operation)
           @binary_operations && @binary_operations.include?(operation)
         end
-
-        # Defines comparation method based on original values
-        def comparable
-          # @param [OtherSideSpecie] other
-          # @return [Integer]
-          define_method(:'<=>') do |other|
-            original <=> other.original
-          end
-        end
       end
 
       attr_reader :original
@@ -60,6 +51,13 @@ module VersatileDiamond
           end
 
         @original = original
+      end
+
+      # Default comparation method which compares the originals of tho proxies
+      # @param [OtherSideSpecie] other
+      # @return [Integer]
+      def <=>(other)
+        original <=> other.original
       end
 
       # Delegates all available another calls to original instance
