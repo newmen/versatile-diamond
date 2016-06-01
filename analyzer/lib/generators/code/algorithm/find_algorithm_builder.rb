@@ -5,7 +5,7 @@ module VersatileDiamond
 
         # Contain base logic for building find algorithms
         # @abstract
-        class FindAlgorithmBuilder
+        class FindAlgorithmBuilder < BaseAlgorithmBuilder
           include Modules::ProcsReducer
 
           # @param [BaseBackbone] backbone
@@ -13,12 +13,6 @@ module VersatileDiamond
             @backbone = backbone
 
             @_dict, @_pure_factory = nil
-          end
-
-          # Generates find algorithm cpp code
-          # @return [String] the string with cpp code of find algorithm
-          def build
-            complete_algorithm.shifted_code
           end
 
         private
@@ -52,7 +46,7 @@ module VersatileDiamond
             backbone.big_graph
           end
 
-          # @return [Units::Expressions::Core::Statement]
+          # @return [Units::Expressions::Core::OpCombine]
           def complete_algorithm
             backbone.entry_nodes.map(&method(:body_for)).reduce(:+)
           end

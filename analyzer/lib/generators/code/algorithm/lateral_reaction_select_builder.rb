@@ -5,19 +5,13 @@ module VersatileDiamond
 
         # Contain logic for building algorithm of selection (and creation) correct
         # lateral reaction from passed set of available chunks
-        class LateralReactionSelectBuilder
+        class LateralReactionSelectBuilder < BaseAlgorithmBuilder
 
           # @param [EngineCode] generator of engine code
           # @param [LateralChunks] lateral_chunks the target object by which the
           #   algorithm will be generated
           def initialize(generator, lateral_chunks)
             @factory = LateralSelectorUnitsFactory.new(generator, lateral_chunks)
-          end
-
-          # Builds algorithm
-          # @return [String] the cpp code with algorithm of selectFrom method body
-          def build
-            complete_algorithm.shifted_code
           end
 
         private

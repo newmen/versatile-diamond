@@ -15,6 +15,7 @@ module VersatileDiamond
             affixes_groups = lateral_chunks.affixes_nums.to_a
             singulars = split_chunks_with(affixes_groups, :select)
             multiples = split_chunks_with(affixes_groups, :reject)
+            
             @limited_group = singulars + multiples.select { |n, _| n == 1 }
             @coupled_group = multiples.reject { |n, _| n == 1 }
             @affixes_num = affixes_groups.size
