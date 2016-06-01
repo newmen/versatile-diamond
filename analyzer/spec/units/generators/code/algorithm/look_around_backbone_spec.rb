@@ -80,7 +80,7 @@ module VersatileDiamond
                 it 'same entry nodes are different' do
                   fst, snd = backbone.entry_nodes
                   expect(fst).to eq(snd)
-                  expect(fst.object_id).not_to eq(snd.object_id)
+                  expect(fst).not_to equal(snd)
                 end
               end
 

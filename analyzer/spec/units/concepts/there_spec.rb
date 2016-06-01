@@ -16,7 +16,7 @@ module VersatileDiamond
         subject { on_end.dup }
         it { should_not == on_end }
         it { expect(subject.links).not_to eq(on_end.links) }
-        it { expect(subject.links.object_id).not_to eq(on_end.links.object_id) }
+        it { expect(subject.links).not_to equal(on_end.links) }
 
         describe "target swapping doesn't change duplicate" do
           before { subject.swap_target(aib, aib_dup) }

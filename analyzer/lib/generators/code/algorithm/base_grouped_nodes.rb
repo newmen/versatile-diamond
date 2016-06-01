@@ -76,7 +76,7 @@ module VersatileDiamond
           # @param [Hash] links the original graph
           # @return [Hash] the graph with nodes
           def transform_links(links)
-            dup_graph(links) { |v| get_node(v) }
+            dup_graph(links, &method(:get_node))
           end
 
           # Combines final graph from small graph
