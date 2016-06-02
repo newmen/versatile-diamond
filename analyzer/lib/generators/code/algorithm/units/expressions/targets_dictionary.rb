@@ -33,18 +33,13 @@ module VersatileDiamond
             defined_exprs = super
             if defined_exprs.any?(&:call?)
               vars = defined_exprs.reject(&:call?)
-              this_defined? ? vars : vars + [make_this]
+              var_of(:this) ? vars : vars + [make_this]
             else
               defined_exprs
             end
           end
 
         private
-
-          # @return [Boolean]
-          def this_defined?
-            !!@this
-          end
 
           # @param [Instances::SpecieInstance] specie call of which will be maked
           # @param [Array] args
