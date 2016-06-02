@@ -101,8 +101,17 @@ module VersatileDiamond
 
           # @return [Array]
           def neighbours_difference
-            @_neighbours_difference ||= @sources.map do |node|
-              [node, both_differences(node).map { |prds| prds.map(&:source) }]
+            @_neighbours_difference ||= @sources.reduce([]) do |acc, node|
+              create, drop = both_differences(node)
+
+              new_create = create.reject do |nbr|
+                acc.any? { |n, df| n == nbr && df.first.include?(node) }
+              end
+              new_drop = drop.reject do |nbr|
+                acc.any? { |n, df| n == nbr && df.last.include?(node) }
+              end
+
+              acc << [node, [new_create, new_drop]]
             end
           end
 
@@ -110,7 +119,8 @@ module VersatileDiamond
           # @return [Array]
           def both_differences(node)
             reflected, related = two_way_products(node).map(&:to_set)
-            [reflected - related, related - reflected].map(&:to_a)
+            difference = [related - reflected, reflected - related].map(&:to_a)
+            difference.map { |prds| prds.map(&:source) }
           end
 
           # @param [Nodes::SourceNode] node
@@ -125,9 +135,8 @@ module VersatileDiamond
           # @return [Array]
           def create_bond_calls
             @_create_bond_calls ||=
-              neighbours_difference.flat_map do |node, (diff, _)|
+              neighbours_difference.flat_map do |node, (nbrs, _)|
                 var = @dict.var_of(node.atom)
-                nbrs = node.gas? && !node.product.gas? ? diff + [node] : diff
                 nbrs.map { |n| var.bond_with(@dict.var_of(n.atom)) }
               end
           end
@@ -151,40 +160,42 @@ module VersatileDiamond
           # @param [Nodes::SourceNode] node
           # @return [Expressions::Core::Statement]
           def change_role_of(node)
-            exprs = node.wrong_roles.empty? ? [] : [assert_wrong_roles(node)]
-            exprs << change_role_tree(node) unless node.transitions.empty?
+            exprs = []
+            exprs << assert_wrong_properties(node) unless node.wrong_properties.empty?
+            exprs << change_roles_tree(node) unless node.transitions.empty?
             exprs.reduce(:+)
           end
 
           # @param [Nodes::SourceNode] node
           # @return [Expressions::Core::Assert]
-          def assert_wrong_roles(node)
+          def assert_wrong_properties(node)
             var = @dict.var_of(node.atom)
-            calls = node.wrong_roles.map(&var.public_method(:role_as))
+            roles = node.roles_with(node.wrong_properties)
+            calls = roles.map(&var.public_method(:role_as))
             checks_not = calls.map(&Expressions::Core::OpNot.public_method(:[]))
             Expressions::Core::Assert[Expressions::Core::OpAnd[*checks_not]]
           end
 
           # @param [Nodes::SourceNode] node
           # @return [Expressions::Core::Statement]
-          def change_role_tree(node)
+          def change_roles_tree(node)
             call_procs(change_role_procs(node))
           end
 
           # @param [Nodes::SourceNode] node
           # @return [Array]
           def change_role_procs(node)
-            var = @dict.var_of(node.atom)
             node.transitions.map do |transition|
-              -> &block { change_role_branch(var, *transition, &block) }
+              -> &block { change_role_branch(node, transition, &block) }
             end
           end
 
-          # @param [Expressions::AtomVariable] var
-          # @param [Integer] from role index
-          # @param [Integer] to role index
+          # @param [Nodes::SourceNode] node
+          # @param [Array] transition
           # @yield statement incorporating to else branch
-          def change_role_branch(var, from, to, &block)
+          def change_role_branch(node, transition, &block)
+            var = @dict.var_of(node.atom)
+            from, to = node.roles_with(transition)
             from_call, to_call = var.role_as(from), var.change_role(to)
             if block_given?
               Expressions::Core::Condition[from_call, to_call, block.call]

@@ -47,6 +47,12 @@ module VersatileDiamond
               let(:"snd_role_#{keyname}") { role(second_spec, keyname) }
             end
 
+            let(:ct_ss) { raw_props_idx(dept_bridge_base, :ct, '**') }
+            let(:ct_is) { raw_props_idx(dept_bridge_base, :ct, 'i*') }
+            let(:ct_s) { raw_props_idx(dept_bridge_base, :ct, '*') }
+            let(:ct_i) { raw_props_idx(dept_bridge_base, :ct, 'i') }
+            let(:cb_s) { raw_props_idx(dept_methyl_on_bridge_base, :cb, '*') }
+            let(:cb_i) { raw_props_idx(dept_methyl_on_bridge_base, :cb, 'i') }
             let(:cm_sss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '***') }
             let(:cm_iss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'i**') }
             let(:cm_ss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '**') }
@@ -105,6 +111,32 @@ module VersatileDiamond
         amorph1->changeType(#{cm_ss});
     }
     Finder::findAll(&amorph1, 1);
+                CODE
+              end
+            end
+
+            it_behaves_like :check_do_it do
+              let(:typical_reaction) { dept_methyl_adsorption }
+              let(:first_spec) { dept_activated_bridge }
+              let(:do_it_algorithm) do
+                <<-CODE
+    SpecificSpec *bridgeCTs1 = target();
+    assert(bridgeCTs1->type() == BRIDGE_CTs);
+    AtomBuilder builder;
+    Atom *atoms1[2] = { bridgeCTs1->atom(0), builder.buildC(#{cm_i}, 1) };
+    assert(atoms1[0]->is(#{ct_s}));
+    atoms1[0]->bondWith(atoms1[1]);
+    assert(!atoms1[0]->is(#{ct_i}));
+    if (atoms1[0]->is(#{ct_is}))
+    {
+        atoms1[0]->changeType(#{cb_i});
+    }
+    else
+    {
+        assert(atoms1[0]->is(#{ct_ss}));
+        atoms1[0]->changeType(#{cb_s});
+    }
+    Finder::findAll(atoms1, 2);
                 CODE
               end
             end

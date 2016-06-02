@@ -23,14 +23,19 @@ module VersatileDiamond
 
           # @return [Array]
           def transitions
-            @_transitions ||=
-              props_groups[true] ? props_groups[true].map(&method(:roles_for)) : []
+            @_transitions ||= props_groups[true].sort_by(&:first) || []
           end
 
           # @return [Array]
-          def wrong_roles
+          def wrong_properties
             @_wrong_roles ||=
-              props_groups[false] ? roles_for(props_groups[false].map(&:first)) : []
+              props_groups[false] ? props_groups[false].map(&:first) : []
+          end
+
+          # @param [Array] list
+          # @return [Array]
+          def roles_with(list)
+            list.map(&@classifier.public_method(:index))
           end
 
         private
@@ -46,13 +51,9 @@ module VersatileDiamond
             prd_news = src_diffs.map { |diff| diff + prd_current }
 
             @_props_groups =
-              src_children.zip(prd_news).group_by { |_, prd_new| !prd_new.nil? }
-          end
-
-          # @param [Array] list
-          # @return [Array]
-          def roles_for(list)
-            list.map(&@classifier.public_method(:index))
+              src_children.zip(prd_news).group_by do |_, prd_new|
+                !!(prd_new && @classifier.index(prd_new))
+              end
           end
         end
 
