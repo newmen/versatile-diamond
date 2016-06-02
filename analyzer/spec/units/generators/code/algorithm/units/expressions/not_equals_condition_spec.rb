@@ -29,7 +29,7 @@ if (atoms1[0] != atoms1[1])
           describe 'two pairs' do
             let(:specie_var) { dict.make_specie_s(uniq_parent_inst) }
             let(:exprs_pairs) do
-              [[specie_var.atom_value(cb), arr.items.first], arr.items]
+              [[arr.items.first, specie_var.atom_value(cb)], arr.items]
             end
             let(:code) do
               <<-CODE

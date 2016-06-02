@@ -17,10 +17,16 @@ module VersatileDiamond
 
             describe 'one line' do
               it_behaves_like :check_predicates
-              subject { OpCombine[x, num] }
+              subject { OpCombine[x, y] }
 
               describe '#code' do
-                it { expect(subject.code).to eq('x5') }
+                let(:code) do
+                  <<-CODE
+x;
+y;
+                  CODE
+                end
+                it { expect(subject.code).to eq(code.rstrip) }
               end
             end
 
@@ -197,16 +203,17 @@ for (int i = 0; i < 3; ++i)
             it { expect { OpNs[x, y] }.to raise_error }
             it { expect { OpNs[num, y] }.to raise_error }
             it { expect { OpNs[var, x] }.to raise_error }
-            it { expect { OpNs[type, num] }.to raise_error }
             it { expect { OpNs[type, small_cond] }.to raise_error }
             it { expect { OpNs[type, OpOr[x, y]] }.to raise_error }
 
-            subject { OpNs[type, func1] }
+            subject { OpNs[type, func1.name] }
             let(:is_op) { false }
+            let(:is_expr) { true }
 
             it_behaves_like :check_predicates
             it_behaves_like :check_predicates do
               subject { OpNs[type, type] }
+              let(:is_expr) { false }
               let(:is_type) { true }
             end
 

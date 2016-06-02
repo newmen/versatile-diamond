@@ -53,7 +53,7 @@ module VersatileDiamond
               let(:tfunc0) { FunctionCall['templ', template_args: [type, num]] }
               let(:method) { var.call('foo', x, x) }
 
-              let(:member) { OpNs[type, func0] }
+              let(:member) { OpNs[type, func0.name] }
 
               let(:assert) { Assert[func0] }
               let(:assign) { Assign[x, type: type.ptr, value: y] }

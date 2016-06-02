@@ -48,7 +48,7 @@ module VersatileDiamond
           # @param [FunctionCall] expr
           # @return [OpRef] the name of type with reference to member
           def member_ref(expr)
-            OpRef[OpNs[self, expr]]
+            OpRef[OpNs[self, expr.call? ? expr.name : expr]]
           end
 
         private

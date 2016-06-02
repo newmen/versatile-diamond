@@ -31,7 +31,9 @@ module VersatileDiamond
             # @param [Array] exprs
             # @return [Boolean]
             def valid?(*exprs)
-              exprs.all? { |expr| self == expr.class || !expr.op? }
+              !exprs.any? do |expr|
+                self != expr.class && (expr.op? || expr.cond? || expr.assign?)
+              end
             end
           end
 
