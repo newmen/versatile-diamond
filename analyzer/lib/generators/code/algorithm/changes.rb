@@ -14,27 +14,17 @@ module VersatileDiamond
             @reaction = reaction
             @factory = ChangesNodesFactory.new(generator)
 
-            @_main, @_sources = nil
+            @_main = nil
           end
 
-          # @return [Array] the list of nodes pairs which represents the main changes
+          # @return [Array] the list of nodes which represents the changes
           def main
-            @_main ||= apply_nodes(@reaction.changes).sort_by(&:first)
-          end
-
-          # @return [Array] the list of source nodes
-          def sources
-            @_sources ||= main.map(&:first)
-          end
-
-          # @return [Array] the list of nodes with adsorption atoms
-          def come
-            sources.select(&:gas?)
+            @_main ||= apply_nodes(@reaction.changes).sort
           end
 
           # @return [Array] the list of nodes with desorption atoms
           def away
-            main.select { |_, prd| prd.gas? }.map(&:first)
+            main.select { |node| node.product.gas? }
           end
 
         private
@@ -42,9 +32,7 @@ module VersatileDiamond
           # @param [Array] changes
           # @return [Array]
           def apply_nodes(changes)
-            changes.map do |src_to_prd|
-              [@factory.source_node(*src_to_prd), @factory.product_node(*src_to_prd)]
-            end
+            changes.map { |src_to_prd| @factory.source_node(*src_to_prd) }
           end
         end
 

@@ -4,9 +4,6 @@ module VersatileDiamond
 
       # Creates AtomBuilder class
       class AtomBuilder < CppClassWithGen
-
-        VAR_NAME = 'builder'.freeze
-
         class << self
           # Gets method name for passed atom
           # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
@@ -14,7 +11,7 @@ module VersatileDiamond
           # @return [String] the name of method which will build the atom under
           #   simulation
           def method_for(atom)
-            method_name(atom.name, atom.lattice)
+            method_name(Atom.new(atom), atom.lattice)
           end
 
           # Build method name
@@ -32,16 +29,11 @@ module VersatileDiamond
         # @override
         def initialize(generator)
           super
-          @atoms_mirror = Hash[pure_atoms.map(&:name).zip(pure_atoms)]
+          @pure_atoms = generator.unique_pure_atoms
+          @atoms_mirror = Hash[@pure_atoms.map(&:name).zip(@pure_atoms)]
         end
 
       private
-
-        # Delegates getting collection of unique pure atoms
-        # @return [Array] the uniq pure atoms
-        def pure_atoms
-          generator.unique_pure_atoms
-        end
 
         # Collects all possible combinations of atom name and lattice
         # @return [Array] the list of all combinations
@@ -66,7 +58,7 @@ module VersatileDiamond
         # @return [Array] the list of including objects
         # @override
         def head_include_objects
-          pure_atoms
+          @pure_atoms
         end
 
         # Atoms stored in atoms directory
