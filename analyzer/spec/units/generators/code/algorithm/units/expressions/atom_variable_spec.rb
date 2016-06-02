@@ -44,6 +44,12 @@ module VersatileDiamond
             end
           end
 
+          describe '#role_as' do
+            include_context :unique_reactant_context
+            let(:atom) { cb }
+            it { expect(var.role_as(555).code).to eq('atom1->is(555)') }
+          end
+
           describe '#not_found' do
             let(:code) { "!atom1->hasRole(#{enum_name}, #{actual_role})" }
 
@@ -223,6 +229,99 @@ allNeighbours(atom1, &Diamond::cross_110, [](Atom **atoms1) {
               atom_var.all_crystal_nbrs([], nbrs_arr, lattice, rel_params, body)
             end
             it { expect(expr.code).to eq(code.rstrip) }
+          end
+
+          describe '#crystal' do
+            include_context :unique_reactant_context
+            let(:atom) { cb }
+            it { expect(var.crystal.code).to eq('crystalBy(atom1)') }
+          end
+
+          describe '#coords_with' do
+            include_context :bridge_context
+            let(:atom) { dict.make_atom_s(cr) }
+            let(:other) { dict.make_atom_s(cl) }
+            let(:coords) { atom.coords_with(other, lattice, param_110_front) }
+            let(:code) { 'Diamond::front_110_at(atom1, atom2)' }
+            it { expect(coords.code).to eq(code) }
+          end
+
+          describe '#insert_to_amorph' do
+            include_context :unique_reactant_context
+            let(:atom) { cb }
+            let(:code) { 'Handbook::amorph().insert(atom1)' }
+            it { expect(var.insert_to_amorph.code).to eq(code) }
+          end
+
+          describe '#insert_to_crystal' do
+            include_context :bridge_context
+            let(:atom) { dict.make_atom_s(cr) }
+            let(:other) { dict.make_atom_s(cl) }
+            let(:crystal) { atom.crystal }
+            let(:coords) { atom.coords_with(other, lattice, param_110_front) }
+            let(:code) do
+              'crystalBy(atom1)->insert(atom1, Diamond::front_110_at(atom1, atom2))'
+            end
+            it { expect(atom.insert_to_crystal(crystal, coords).code).to eq(code) }
+          end
+
+          describe '#erase_from_amorph' do
+            include_context :unique_reactant_context
+            let(:atom) { cm }
+            let(:code) { 'Handbook::amorph().erase(atom1)' }
+            it { expect(var.erase_from_amorph.code).to eq(code) }
+          end
+
+          describe '#erase_from_crystal' do
+            include_context :unique_reactant_context
+            let(:atom) { cb }
+            let(:code) { 'atom1->lattice()->crystal()->erase(atom1)' }
+            it { expect(var.erase_from_crystal.code).to eq(code) }
+          end
+
+          describe '#recharge' do
+            include_context :unique_reactant_context
+            let(:atom) { cm }
+            it { expect(var.recharge(1).code).to eq('atom1->activate()') }
+            it { expect(var.recharge(-1).code).to eq('atom1->deactivate()') }
+
+            let(:many_code) do
+              <<-CODE
+atom1->activate();
+atom1->activate();
+atom1->activate();
+              CODE
+            end
+            it { expect(var.recharge(3).code).to eq(many_code.rstrip) }
+          end
+
+          describe '#bond_with' do
+            include_context :bridge_context
+            let(:atom) { dict.make_atom_s(cr) }
+            let(:other) { dict.make_atom_s(cl) }
+            let(:code) { 'atom1->bondWith(atom2)' }
+            it { expect(atom.bond_with(other).code).to eq(code) }
+          end
+
+          describe '#unbond_from' do
+            include_context :bridge_context
+            let(:atom) { dict.make_atom_s(cr) }
+            let(:other) { dict.make_atom_s(cl) }
+            let(:code) { 'atom1->unbondFrom(atom2)' }
+            it { expect(atom.unbond_from(other).code).to eq(code) }
+          end
+
+          describe '#change_role' do
+            include_context :unique_reactant_context
+            let(:atom) { cb }
+            it { expect(var.change_role(777).code).to eq('atom1->changeType(777)') }
+          end
+
+          describe '#mark_to_remove' do
+            include_context :unique_reactant_context
+            let(:atom) { cm }
+            let(:code) { 'Handbook::scavenger().markAtom(atom1)' }
+            it { expect(var.mark_to_remove.code).to eq(code) }
           end
         end
 

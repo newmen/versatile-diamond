@@ -55,6 +55,7 @@ module VersatileDiamond
       end
 
       # Creates atom classifier and analyse each surface spec
+      # @return [Organizers::AtomClassifier]
       def classifier
         return @_classifier if classified?
 

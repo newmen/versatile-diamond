@@ -42,7 +42,7 @@ module VersatileDiamond
 
           # @return [Boolean]
           def oneline?
-            inner_exprs.any?(&:op?) || inner_exprs.all?(&:expr?)
+            inner_exprs.any?(&:op?)
           end
 
           # @return [Array]

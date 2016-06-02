@@ -6,6 +6,7 @@ module VersatileDiamond
         # Namespace operator statement
         class OpNs < BinaryOperator
           include ThinSeparator
+          include Callable
 
           class << self
             # @param [Statement] first
@@ -30,26 +31,16 @@ module VersatileDiamond
             # @param [Array] exprs
             # @return [Boolean]
             def valid?(*exprs)
-              exprs.all? do |expr|
-                self == expr.class ||
-                  (!expr.op? && (expr.var? || expr.type? ||
-                    (expr.expr? && !expr.const?)))
-              end
+              exprs.all? { |expr| self == expr.class || !expr.op? }
             end
           end
 
-          def_delegators :'inner_exprs.last', :var?, :type?
+          def_delegators :'inner_exprs.last', :expr?, :type?
 
           # @return [String] joins the argument by operation
           # @override
           def code
-            fixed_exprs.map(&:code).join(separator)
-          end
-
-          # @return [Boolean] false
-          # @override
-          def expr?
-            var?
+            inner_exprs.map(&:code).join(separator)
           end
 
           # @return [Boolean] false
@@ -63,11 +54,6 @@ module VersatileDiamond
           # @return [Symbol]
           def mark
             :'::'
-          end
-
-          # @return [Array]
-          def fixed_exprs
-            inner_exprs.map { |expr| expr.expr? && !expr.var? ? expr.name : expr }
           end
         end
 

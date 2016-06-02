@@ -65,13 +65,8 @@ module VersatileDiamond
           # @param [Array] reactions
           # @return [Array]
           def sub_procs(reactions)
-            last = reactions.last
-            reactions.map.with_index do |reaction|
-              if reaction.equal?(last)
-                -> { last_branch(reaction) }
-              else
-                -> &block { sub_branch(reaction, &block) }
-              end
+            reactions.map do |reaction|
+              -> &block { sub_branch(reaction, &block) }
             end
           end
 
@@ -79,7 +74,11 @@ module VersatileDiamond
           # @yield statement incorporating to else branch
           # @return [Expressions::Core::Condition]
           def sub_branch(reaction, &block)
-            make_branch(check_chunks_pairs(reaction), sub_body(reaction), &block)
+            if block_given?
+              make_branch(check_chunks_pairs(reaction), sub_body(reaction), &block)
+            else
+              last_branch(reaction)
+            end
           end
 
           # @param [LateralReaction] reaction

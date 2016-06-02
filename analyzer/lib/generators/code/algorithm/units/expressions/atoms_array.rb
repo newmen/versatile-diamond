@@ -30,21 +30,6 @@ module VersatileDiamond
             iter_lambda = Core::Lambda[defined_vars, nbr_var, body]
             Core::FunctionCall['neighbourFrom', self, ref, iter_lambda]
           end
-
-        private
-
-          # @param [Core::ObjectType] lattice
-          # @param [Hash] rel_params
-          # @return [Core::OpRef]
-          def ref_rel_at(lattice, rel_params)
-            ref_to(lattice, rel_name_at(rel_params))
-          end
-
-          # @param [Hash] rel_params
-          # @return [String]
-          def rel_name_at(rel_params)
-            "#{rel_name(rel_params)}_at"
-          end
         end
 
       end

@@ -11,7 +11,7 @@ module VersatileDiamond
           # @param [Array] sources
           def initialize(dict, sources)
             @dict = dict
-            @sources = sources
+            @sources = sources.sort
 
             @surface_nodes = @sources.reject(&:gas?)
             @species = @surface_nodes.map(&:uniq_specie).uniq.sort
@@ -33,6 +33,8 @@ module VersatileDiamond
             @sources.any?(&:gas?)
           end
 
+          ### --------------------------------------------------------------------- ###
+
           # @return [Expressions::Core::OpCombine]
           def define_species
             assign_species + assert_species
@@ -53,10 +55,14 @@ module VersatileDiamond
             assert(types.zip(enums).map { |te| Expressions::Core::OpEq[*te] })
           end
 
+          ### --------------------------------------------------------------------- ###
+
           # @return [Expressions::Core::Assign]
           def define_builder
             @dict.make_atoms_builder.define_var
           end
+
+          ### --------------------------------------------------------------------- ###
 
           # @return [Expressions::Core::OpCombine]
           def define_atoms
@@ -86,6 +92,8 @@ module VersatileDiamond
               @surface_nodes.map { |n| @dict.var_of(n.atom).role_in(n.uniq_specie) }
             assert(checks)
           end
+
+          ### --------------------------------------------------------------------- ###
 
           # @param [Array] exprs
           # @return [Expressions::Core::Statement]

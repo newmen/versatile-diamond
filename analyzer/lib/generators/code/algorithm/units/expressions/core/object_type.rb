@@ -38,6 +38,13 @@ module VersatileDiamond
             false
           end
 
+          # @param [Array] args
+          # @param [Hash] kwargs
+          # @return [OpNs]
+          def call(*args, **kwargs)
+            OpNs[self, FunctionCall[*args, **kwargs]]
+          end
+
           # @param [FunctionCall] expr
           # @return [OpRef] the name of type with reference to member
           def member_ref(expr)

@@ -17,9 +17,14 @@ module VersatileDiamond
             @_main = nil
           end
 
-          # @return [Array] the list of nodes which represents the changes
+          # @return [Array] the list of nodes which represents the full changes
+          def full
+            apply_nodes(@reaction.full_mapping)
+          end
+
+          # @return [Array] the list of nodes pairs which represents the main changes
           def main
-            @_main ||= apply_nodes(@reaction.changes).sort
+            @_main ||= apply_nodes(@reaction.changes)
           end
 
           # @return [Array] the list of nodes with desorption atoms

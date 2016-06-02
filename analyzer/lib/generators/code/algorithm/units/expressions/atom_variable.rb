@@ -13,6 +13,12 @@ module VersatileDiamond
             call('is', actual_role_in(specie))
           end
 
+          # @param [Integer] index
+          # @return [Core::OpCall]
+          def role_as(index)
+            call('is', Core::Constant[index])
+          end
+
           # @param [Instances::SpecieInstance] specie
           # @return [Core::OpNot]
           def not_found(specie)
@@ -91,9 +97,13 @@ module VersatileDiamond
           # @param [Hash] rel_params
           # @return [Core::FunctionCall]
           def iterate_over_lattice(defined_vars, nbr_var, lattice, rel_params, body)
-            ref = ref_rel(lattice, rel_params)
-            iter_lambda = Core::Lambda[defined_vars, nbr_var, body]
-            Core::FunctionCall['eachNeighbour', self, ref, iter_lambda]
+            if instance.lattice
+              ref = ref_rel(lattice, rel_params)
+              iter_lambda = Core::Lambda[defined_vars, nbr_var, body]
+              Core::FunctionCall['eachNeighbour', self, ref, iter_lambda]
+            else
+              raise NoMethodError, "Atom haven't lattice"
+            end
           end
 
           # @param [Array] defined_vars
@@ -105,6 +115,85 @@ module VersatileDiamond
             ref = ref_rel(lattice, rel_params)
             iter_lambda = Core::Lambda[defined_vars, nbrs_arr, body]
             Core::FunctionCall['allNeighbours', self, ref, iter_lambda]
+          end
+
+          # @return [Core::FunctionCall]
+          def crystal
+            if instance.lattice
+              Core::FunctionCall['crystalBy', self]
+            else
+              raise NoMethodError, 'Atom not belongs to crystal'
+            end
+          end
+
+          # @param [AtomVariable] other
+          # @param [Core::ObjectType] lattice
+          # @param [Hash] rel_params
+          # @return [Core::FunctionCall]
+          def coords_with(other, lattice, rel_params)
+            lattice_call_at(lattice, rel_params, self, other)
+          end
+
+          # @return [Core::FunctionCall]
+          def insert_to_amorph
+            HandbookClass[].insert_amorph_atom(self)
+          end
+
+          # @param [Core::FunctionCall] crystal_call
+          # @param [Core::FunctionCall] coords_call
+          # @return [Core::FunctionCall]
+          def insert_to_crystal(crystal_call, coords_call)
+            crystal_call.call('insert', self, coords_call)
+          end
+
+          # @return [Core::FunctionCall]
+          def erase_from_amorph
+            HandbookClass[].erase_amorph_atom(self)
+          end
+
+          # @return [Core::FunctionCall]
+          def erase_from_crystal
+            if instance.lattice
+              call('lattice').call('crystal').call('erase', self)
+            else
+              raise NoMethodError, 'Atom without lattice cannot be erased from crystal'
+            end
+          end
+
+          # @param [Integer] delta
+          # @return [Core::Statement]
+          def recharge(delta)
+            if delta == 0
+              raise ArgumentError, 'Cannot recharge with 0 delta'
+            elsif delta.abs > instance.valence
+              raise ArgumentError, 'Too large delta for atom recharging'
+            else
+              method_name = delta > 0 ? 'activate' : 'deactivate'
+              ([call(method_name)] * delta.abs).reduce(:+)
+            end
+          end
+
+          # @param [AtomVariable] other
+          # @return [Core::FunctionCall]
+          def bond_with(other)
+            call('bondWith', other)
+          end
+
+          # @param [AtomVariable] other
+          # @return [Core::FunctionCall]
+          def unbond_from(other)
+            call('unbondFrom', other)
+          end
+
+          # @param [Integer] index
+          # @return [Core::OpCall]
+          def change_role(index)
+            call('changeType', Core::Constant[index])
+          end
+
+          # @return [Core::FunctionCall]
+          def mark_to_remove
+            HandbookClass[].mark_removing_atom(self)
           end
 
         private

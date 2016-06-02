@@ -60,22 +60,22 @@ module VersatileDiamond
               let(:specific_specs) { [dept_activated_methyl_on_bridge] }
               let(:do_it_algorithm) do
                 <<-CODE
-    SpecificSpec *specie1 = target();
-    assert(specie1->type() == METHYL_ON_BRIDGE);
-    Atom *atom = specie1->atom(0);
-    assert(atom->is(#{role_cm}));
-    atom->activate();
-    assert(!atom->is(#{cm_iss}) && !atom->is(#{cm_sss}));
-    if (atom->is(#{cm_i}))
+    SpecificSpec *methylOnBridge1 = target();
+    assert(methylOnBridge1->type() == METHYL_ON_BRIDGE);
+    Atom *amorph1 = methylOnBridge1->atom(0);
+    assert(amorph1->is(#{role_cm}));
+    amorph1->activate();
+    assert(!amorph1->is(#{cm_iss}) && !amorph1->is(#{cm_sss}));
+    if (amorph1->is(#{cm_i}))
     {
-        atom->changeType(#{cm_is})
+        amorph1->changeType(#{cm_is});
     }
     else
     {
-        assert(atom->is(#{cm_is}));
-        atom->changeType(#{cm_iss})
+        assert(amorph1->is(#{cm_is}));
+        amorph1->changeType(#{cm_iss});
     }
-    Finder::findAll(&atom, 1);
+    Finder::findAll(&amorph1, 1);
                 CODE
               end
             end
@@ -86,25 +86,25 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
               let(:do_it_algorithm) do
                 <<-CODE
-    SpecificSpec *specie1 = target();
-    assert(specie1->type() == METHYL_ON_BRIDGE_CMs);
-    Atom *atom = specie1->atom(0);
-    assert(atom->is(#{role_cm}));
-    atom->deactivate();
-    if (atom->is(#{cm_is}))
+    SpecificSpec *methylOnBridgeCMs1 = target();
+    assert(methylOnBridgeCMs1->type() == METHYL_ON_BRIDGE_CMs);
+    Atom *amorph1 = methylOnBridgeCMs1->atom(0);
+    assert(amorph1->is(#{role_cm}));
+    amorph1->deactivate();
+    if (amorph1->is(#{cm_is}))
     {
-        atom->changeType(#{cm_i})
+        amorph1->changeType(#{cm_i});
     }
-    else if (atom->is(#{cm_iss}))
+    else if (amorph1->is(#{cm_iss}))
     {
-        atom->changeType(#{cm_is})
+        amorph1->changeType(#{cm_is});
     }
     else
     {
-        assert(atom->is(#{cm_sss}));
-        atom->changeType(#{cm_ss})
+        assert(amorph1->is(#{cm_sss}));
+        amorph1->changeType(#{cm_ss});
     }
-    Finder::findAll(&atom, 1);
+    Finder::findAll(&amorph1, 1);
                 CODE
               end
             end

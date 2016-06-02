@@ -9,8 +9,15 @@ module VersatileDiamond
           # @param [EngineCode] generator the major code generator
           def initialize(generator)
             @reactants_factory = ReactionNodesFactory.new(generator)
+            @classifier = generator.classifier
             @sources = {}
             @products = {}
+          end
+
+          # @param [Array] source spec-atom pair
+          # @return [Nodes::SourceNode] the created source node or nil
+          def find(source)
+            @sources[reactant(source)]
           end
 
           # @param [Array] source spec-atom pair
@@ -19,7 +26,9 @@ module VersatileDiamond
           def source_node(source, product)
             original = reactant_node(source)
             @sources[original] ||=
-              Nodes::SourceNode.new(original) { product_node(source, product) }
+              Nodes::SourceNode.new(@classifier, original) do
+                product_node(source, product)
+              end
           end
 
           # @param [Array] source spec-atom pair

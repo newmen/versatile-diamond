@@ -6,6 +6,7 @@ module VersatileDiamond
         # Contains two reactant nodes
         # @abstract
         class ChangeNode < Tools::TransparentProxy
+
           # @param [ReactantNode] original
           # @yield lazy other node
           def initialize(original, &other)
