@@ -65,8 +65,13 @@ module VersatileDiamond
           # @param [Array] reactions
           # @return [Array]
           def sub_procs(reactions)
-            reactions.map do |reaction|
-              -> &block { sub_branch(reaction, &block) }
+            last = reactions.last
+            reactions.map.with_index do |reaction|
+              if reaction.equal?(last)
+                -> { last_branch(reaction) }
+              else
+                -> &block { sub_branch(reaction, &block) }
+              end
             end
           end
 
@@ -75,6 +80,15 @@ module VersatileDiamond
           # @return [Expressions::Core::Condition]
           def sub_branch(reaction, &block)
             make_branch(check_chunks_pairs(reaction), sub_body(reaction), &block)
+          end
+
+          # @param [LateralReaction] reaction
+          # @return [Expressions::Core::OpCombine]
+          def last_branch(reaction)
+            pairs = check_chunks_pairs(reaction)
+            eqs = pairs.map { |pair| Expressions::Core::OpEq[*pair] }
+            check = Expressions::Core::OpAnd[*eqs.sort_by(&:code)]
+            Expressions::Core::Assert[check] + sub_body(reaction)
           end
 
           # @param [LateralReaction] reaction

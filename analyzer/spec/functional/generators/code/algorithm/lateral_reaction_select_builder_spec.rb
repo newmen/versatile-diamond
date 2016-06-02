@@ -90,8 +90,9 @@ module VersatileDiamond
             {
                 return new ForwardSymmetricDimerFormationSmall(chunks);
             }
-            else if (counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 2)
+            else
             {
+                assert(counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 2);
                 return new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTsAnd100FrontBridgeCTs(chunks);
             }
         }
@@ -105,8 +106,9 @@ module VersatileDiamond
             {
                 return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs(chunks);
             }
-            else if (counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 1 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 2)
+            else
             {
+                assert(counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 1 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 2);
                 return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs(chunks);
             }
         }
@@ -120,8 +122,9 @@ module VersatileDiamond
             {
                 return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs(chunks);
             }
-            else if (counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 2 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 2)
+            else
             {
+                assert(counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 2 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 2);
                 return new ForwardSymmetricDimerFormationBig(chunks);
             }
         }
@@ -131,8 +134,9 @@ module VersatileDiamond
             {
                 return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs(chunks);
             }
-            else if (counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 3 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 2)
+            else
             {
+                assert(counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 3 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 2);
                 return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs(chunks);
             }
         }
