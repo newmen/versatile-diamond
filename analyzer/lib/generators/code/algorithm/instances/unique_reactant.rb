@@ -21,14 +21,6 @@ module VersatileDiamond
             @_original_mirror, @_inverted_original_mirror = nil
           end
 
-          # Compares two unique specie that were initially high and then a small
-          # @param [UniqueReactant] other comparable specie
-          # @return [Integer] the comparing result
-          # @override
-          def <=>(other)
-            comparing_core(other)
-          end
-
           # @return [Boolean]
           def proxy?
             false

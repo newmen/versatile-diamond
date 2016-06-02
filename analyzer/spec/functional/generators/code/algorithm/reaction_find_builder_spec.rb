@@ -91,7 +91,7 @@ module VersatileDiamond
                     MethylOnBridgeCMs *methylOnBridgeCMs1 = amorph1->specByRole<MethylOnBridgeCMs>(#{other_role_cm});
                     if (methylOnBridgeCMs1)
                     {
-                        SpecificSpec *targets[2] = { methylOnBridgeCMs1, target };
+                        SpecificSpec *targets[2] = { target, methylOnBridgeCMs1 };
                         create<ReverseSierpinskiDrop>(targets);
                     }
                 }
@@ -115,7 +115,7 @@ module VersatileDiamond
             BridgeCTs *bridgeCTs1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
             if (bridgeCTs1)
             {
-                SpecificSpec *targets[2] = { target, bridgeCTs1 };
+                SpecificSpec *targets[2] = { bridgeCTs1, target };
                 create<ReverseSierpinskiDrop>(targets);
             }
         }
@@ -147,7 +147,7 @@ module VersatileDiamond
             BridgeCTs *bridgeCTs1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
             if (bridgeCTs1)
             {
-                SpecificSpec *targets[2] = { target, bridgeCTs1 };
+                SpecificSpec *targets[2] = { bridgeCTs1, target };
                 create<ForwardDimerFormation>(targets);
             }
         }
@@ -169,7 +169,7 @@ module VersatileDiamond
             BridgeCTsi *bridgeCTsi1 = neighbour1->specByRole<BridgeCTsi>(#{other_role_ct});
             if (bridgeCTsi1)
             {
-                SpecificSpec *targets[2] = { bridgeCTsi1, target };
+                SpecificSpec *targets[2] = { target, bridgeCTsi1 };
                 create<ForwardDimerFormation>(targets);
             }
         }
@@ -196,7 +196,7 @@ module VersatileDiamond
                         MethylOnDimerCMs *methylOnDimerCMs1 = amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm});
                         if (methylOnDimerCMs1)
                         {
-                            SpecificSpec *targets[2] = { methylOnDimerCMs1, symmetricBridgeCTs1 };
+                            SpecificSpec *targets[2] = { symmetricBridgeCTs1, methylOnDimerCMs1 };
                             create<ForwardIntermedMigrDcFormation>(targets);
                         }
                     }
@@ -230,7 +230,7 @@ module VersatileDiamond
                             bridgeCTs1->eachSymmetry([&neighbour1, &target](SpecificSpec *symmetricBridgeCTs1) {
                                 if (neighbour1 == symmetricBridgeCTs1->atom(2))
                                 {
-                                    SpecificSpec *targets[2] = { target, symmetricBridgeCTs1 };
+                                    SpecificSpec *targets[2] = { symmetricBridgeCTs1, target };
                                     create<ForwardIntermedMigrDcFormation>(targets);
                                 }
                             });
@@ -264,7 +264,7 @@ module VersatileDiamond
                         {
                             if (neighbours1[1] != methylOnDimerCMs1->atom(4))
                             {
-                                SpecificSpec *targets[2] = { methylOnDimerCMs1, symmetricBridgeCTs1 };
+                                SpecificSpec *targets[2] = { symmetricBridgeCTs1, methylOnDimerCMs1 };
                                 create<ForwardIntermedMigrDhFormation>(targets);
                             }
                         }
@@ -301,7 +301,7 @@ module VersatileDiamond
                                 {
                                     if (neighbours1[0] == symmetricBridgeCTs1->atom(2))
                                     {
-                                        SpecificSpec *targets[2] = { target, symmetricBridgeCTs1 };
+                                        SpecificSpec *targets[2] = { symmetricBridgeCTs1, target };
                                         create<ForwardIntermedMigrDhFormation>(targets);
                                     }
                                 }
@@ -336,7 +336,7 @@ module VersatileDiamond
                             MethylOnDimerCMs *methylOnDimerCMs1 = amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm});
                             if (methylOnDimerCMs1)
                             {
-                                SpecificSpec *targets[2] = { methylOnDimerCMs1, symmetricBridgeCTs1 };
+                                SpecificSpec *targets[2] = { symmetricBridgeCTs1, methylOnDimerCMs1 };
                                 create<ForwardIntermedMigrDfFormation>(targets);
                             }
                         }
@@ -371,7 +371,7 @@ module VersatileDiamond
                             bridgeCTs1->eachSymmetry([&neighbours1, &target](SpecificSpec *symmetricBridgeCTs1) {
                                 if (neighbours1[0] == symmetricBridgeCTs1->atom(2) && neighbours1[1] == symmetricBridgeCTs1->atom(1))
                                 {
-                                    SpecificSpec *targets[2] = { target, symmetricBridgeCTs1 };
+                                    SpecificSpec *targets[2] = { symmetricBridgeCTs1, target };
                                     create<ForwardIntermedMigrDfFormation>(targets);
                                 }
                             });
@@ -402,7 +402,7 @@ module VersatileDiamond
                     DimerCRs *dimerCRs1 = neighbours1[1]->specByRole<DimerCRs>(#{other_role_cr});
                     if (dimerCRs1)
                     {
-                        SpecificSpec *targets[2] = { dimerCRs1, symmetricMethylOnBridgeCMs1 };
+                        SpecificSpec *targets[2] = { symmetricMethylOnBridgeCMs1, dimerCRs1 };
                         create<ForwardMethylIncorporation>(targets);
                     }
                 }
@@ -438,7 +438,7 @@ module VersatileDiamond
                                     methylOnBridgeCMs1->eachSymmetry([&neighbours1, &target](SpecificSpec *symmetricMethylOnBridgeCMs1) {
                                         if (neighbours1[0] == symmetricMethylOnBridgeCMs1->atom(3) && neighbours1[1] == symmetricMethylOnBridgeCMs1->atom(2))
                                         {
-                                            SpecificSpec *targets[2] = { target, symmetricMethylOnBridgeCMs1 };
+                                            SpecificSpec *targets[2] = { symmetricMethylOnBridgeCMs1, target };
                                             create<ForwardMethylIncorporation>(targets);
                                         }
                                     });
@@ -475,7 +475,7 @@ module VersatileDiamond
                     {
                         if (neighbours1[1] != bridgeCRs2->atom(1))
                         {
-                            SpecificSpec *targets[3] = { target, bridgeCRs2, bridgeCRs1 };
+                            SpecificSpec *targets[3] = { bridgeCRs1, bridgeCRs2, target };
                             create<ForwardMethylToGap>(targets);
                         }
                     }
@@ -520,7 +520,7 @@ module VersatileDiamond
                                                     MethylOnBridgeCMss *methylOnBridgeCMss1 = amorph1->specByRole<MethylOnBridgeCMss>(#{other_role_cm});
                                                     if (methylOnBridgeCMss1)
                                                     {
-                                                        SpecificSpec *targets[3] = { methylOnBridgeCMss1, bridgeCRs1, target };
+                                                        SpecificSpec *targets[3] = { bridgeCRs1, target, methylOnBridgeCMss1 };
                                                         create<ForwardMethylToGap>(targets);
                                                     }
                                                 }
@@ -580,7 +580,7 @@ module VersatileDiamond
                                                 methylOnBridgeCMss1->eachSymmetry([&dimerCLsCRi1, &neighbours1, &target](SpecificSpec *symmetricMethylOnBridgeCMss1) {
                                                     if (neighbours1[0] == symmetricMethylOnBridgeCMss1->atom(2) && neighbours1[1] == symmetricMethylOnBridgeCMss1->atom(3))
                                                     {
-                                                        SpecificSpec *targets[3] = { dimerCLsCRi1, symmetricMethylOnBridgeCMss1, target };
+                                                        SpecificSpec *targets[3] = { target, symmetricMethylOnBridgeCMss1, dimerCLsCRi1 };
                                                         create<ForwardTwoSideDimersForm>(targets);
                                                     }
                                                 });
@@ -630,7 +630,7 @@ module VersatileDiamond
                                                 methylOnBridgeCMss1->eachSymmetry([&bridgeCRs1, &neighbours1, &target](SpecificSpec *symmetricMethylOnBridgeCMss1) {
                                                     if (neighbours1[0] == symmetricMethylOnBridgeCMss1->atom(2) && neighbours1[1] == symmetricMethylOnBridgeCMss1->atom(3))
                                                     {
-                                                        SpecificSpec *targets[3] = { target, symmetricMethylOnBridgeCMss1, bridgeCRs1 };
+                                                        SpecificSpec *targets[3] = { bridgeCRs1, symmetricMethylOnBridgeCMss1, target };
                                                         create<ForwardTwoSideDimersForm>(targets);
                                                     }
                                                 });
@@ -666,7 +666,7 @@ module VersatileDiamond
                     BridgeCRs *bridgeCRs1 = neighbours1[1]->specByRole<BridgeCRs>(#{thrid_role_cr});
                     if (bridgeCRs1)
                     {
-                        SpecificSpec *targets[3] = { dimerCLsCRi1, symmetricMethylOnBridgeCMss1, bridgeCRs1 };
+                        SpecificSpec *targets[3] = { bridgeCRs1, symmetricMethylOnBridgeCMss1, dimerCLsCRi1 };
                         create<ForwardTwoSideDimersForm>(targets);
                     }
                 }
@@ -695,7 +695,7 @@ module VersatileDiamond
                 {
                     if (atom1 != bridgeCRH1->atom(1))
                     {
-                        SpecificSpec *targets[2] = { target, bridgeCRH1 };
+                        SpecificSpec *targets[2] = { bridgeCRH1, target };
                         create<ForwardHydrogenAbsFromGap>(targets);
                     }
                 }

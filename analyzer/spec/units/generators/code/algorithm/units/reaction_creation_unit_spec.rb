@@ -27,7 +27,7 @@ module VersatileDiamond
               before { reactants.map(&dict.public_method(:make_specie_s)) }
               let(:code) do
                 <<-CODE
-SpecificSpec *targets[2] = { bridgeCTsi1, bridgeCTs1 };
+SpecificSpec *targets[2] = { bridgeCTs1, bridgeCTsi1 };
 create<ForwardDimerFormation>(targets);
                 CODE
               end

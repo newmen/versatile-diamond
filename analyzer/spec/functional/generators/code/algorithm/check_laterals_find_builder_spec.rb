@@ -56,7 +56,7 @@ module VersatileDiamond
                     BridgeCTs *bridgeCTs1 = neighbours1[1]->specByRole<BridgeCTs>(#{ab_ct});
                     if (bridgeCTs1)
                     {
-                        SpecificSpec *targets[2] = { bridgeCTsi1, bridgeCTs1 };
+                        SpecificSpec *targets[2] = { bridgeCTs1, bridgeCTsi1 };
                         ChainFactory<
                             DuoLateralFactory,
                             #{class_name},
@@ -103,7 +103,7 @@ module VersatileDiamond
                     BridgeCTs *bridgeCTs1 = neighbours1[1]->specByRole<BridgeCTs>(#{ab_ct});
                     if (bridgeCTs1)
                     {
-                        SpecificSpec *targets[2] = { bridgeCTsi1, bridgeCTs1 };
+                        SpecificSpec *targets[2] = { bridgeCTs1, bridgeCTsi1 };
                         ChainFactory<
                             DuoLateralFactory,
                             #{class_name_with_dimer},
@@ -353,7 +353,7 @@ module VersatileDiamond
                                                 MethylOnBridgeCMs *methylOnBridgeCMs1 = amorph1->specByRole<MethylOnBridgeCMs>(#{amob_cm});
                                                 if (methylOnBridgeCMs1)
                                                 {
-                                                    SpecificSpec *targets[2] = { dimerCRs1, methylOnBridgeCMs1 };
+                                                    SpecificSpec *targets[2] = { methylOnBridgeCMs1, dimerCRs1 };
                                                     ChainFactory<
                                                         DuoLateralFactory,
                                                         ForwardMethylIncorporationMiEdgeLateral,

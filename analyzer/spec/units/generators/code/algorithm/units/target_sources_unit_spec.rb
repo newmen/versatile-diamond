@@ -34,9 +34,9 @@ assert(atoms1[0]->is(#{ct_role}));
               let(:code) do
                 <<-CODE
 SpecificSpec *species1[2] = { target(0), target(1) };
-assert(species1[0]->type() == BRIDGE_CTsi);
-assert(species1[1]->type() == BRIDGE_CTs);
-Atom *atoms1[2] = { species1[0]->atom(0), species1[1]->atom(0) };
+assert(species1[0]->type() == BRIDGE_CTs);
+assert(species1[1]->type() == BRIDGE_CTsi);
+Atom *atoms1[2] = { species1[1]->atom(0), species1[0]->atom(0) };
 assert(atoms1[0]->is(3));
 assert(atoms1[1]->is(2));
                 CODE

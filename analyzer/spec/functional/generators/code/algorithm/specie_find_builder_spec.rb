@@ -498,7 +498,7 @@ module VersatileDiamond
                                             crossBridgeOnBridges1->eachSymmetry([&bridge1, &bridge2, &neighbours1](ParentSpec *symmetricCrossBridgeOnBridges1) {
                                                 if (neighbours1[0] == symmetricCrossBridgeOnBridges1->atom(1) && neighbours1[1] == symmetricCrossBridgeOnBridges1->atom(5))
                                                 {
-                                                    ParentSpec *parents[3] = { symmetricCrossBridgeOnBridges1, bridge2, bridge1 };
+                                                    ParentSpec *parents[3] = { symmetricCrossBridgeOnBridges1, bridge1, bridge2 };
                                                     create<CrossBridgeOnDimers>(parents);
                                                 }
                                             });
@@ -782,7 +782,7 @@ module VersatileDiamond
                         eachNeighbour(atoms1[0], &Diamond::cross_100, [&atoms1, &s, &species1, &symmetricMethylOnBridge1](Atom *neighbour1) {
                             if (neighbour1 == atoms1[1])
                             {
-                                ParentSpec *parents[2] = { symmetricMethylOnBridge1, species1[1 - s] };
+                                ParentSpec *parents[2] = { species1[1 - s], symmetricMethylOnBridge1 };
                                 create<IntermedMigrDownBridge>(parents);
                             }
                         });

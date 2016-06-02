@@ -16,7 +16,11 @@ module VersatileDiamond
 
           # @return [Array]
           def source_species
-            @_source_species ||= grep_context_species.sort
+            @_source_species ||=
+              grep_context_species.sort do |a, b|
+                cmp = (a <=> b)
+                cmp == 0 ? (dict.var_of(a).code <=> dict.var_of(b).code) : cmp
+              end
           end
 
           # @yield incorporating statement

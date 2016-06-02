@@ -54,14 +54,6 @@ module VersatileDiamond
           def original_atom(atom)
             spec.twin_of(atom)
           end
-
-          # Compares two unique specie that were initially high and then a small
-          # @param [UniqueParent] other comparable specie
-          # @return [Integer] the comparing result
-          # @override
-          def comparing_core(other)
-            other.spec.original <=> spec.original
-          end
         end
 
       end

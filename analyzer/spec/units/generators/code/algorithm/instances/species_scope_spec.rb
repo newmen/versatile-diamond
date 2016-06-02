@@ -53,10 +53,10 @@ module VersatileDiamond
               make_scope(original, original.spec.parents)
             end
 
-            it { expect(subject <=> other).to eq(-1) }
-            it { expect(other <=> subject).to eq(1) }
+            it { expect(subject <=> other).to eq(1) }
+            it { expect(other <=> subject).to eq(-1) }
 
-            it { expect([subject, other].shuffle.sort).to eq([subject, other]) }
+            it { expect([subject, other].shuffle.sort).to eq([other, subject]) }
           end
 
           describe '#anchor?' do

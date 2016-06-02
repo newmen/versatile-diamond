@@ -119,9 +119,7 @@ module VersatileDiamond
       # @return [Integer] the result of comparation
       def comparing_core(other)
         order(self, other, :parents, :size) do
-          order(self, other, :name) do
-            order(self, other, :object_id)
-          end
+          order(self, other, :name)
         end
       end
 

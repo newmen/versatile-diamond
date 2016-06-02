@@ -43,10 +43,10 @@ module VersatileDiamond
           describe '#<=>' do
             include_context :with_other_proxy
 
-            it { expect(subject <=> other).to eq(1) }
-            it { expect(other <=> subject).to eq(-1) }
+            it { expect(subject <=> other).to eq(-1) }
+            it { expect(other <=> subject).to eq(1) }
 
-            it { expect([subject, other].shuffle.sort).to eq([other, subject]) }
+            it { expect([subject, other].shuffle.sort).to eq([subject, other]) }
           end
 
           describe 'methods dependent from atom of complex specie' do
