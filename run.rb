@@ -20,7 +20,7 @@ Options:
   --code             Generate code for engine
 
   --name=NAME        Set the name of output generation file or another entity
-  --out=PATH         Setup output path into which results will placed [default: results]
+  --out=PATH         Setup output path into which results will be placed [default: results]
   --cache-dir=PATH   No check cache when parse config [default: cache]
 
   --base-specs       Generate some info about base specs

@@ -180,7 +180,7 @@ module VersatileDiamond
       # @return [Boolean] is significant or not
       # @override
       def significant?
-        super || children.any?(&:significant?)
+        super || children.select(&:significant?).any?(&:lateral?)
       end
 
       # Checks that all atoms belongs to lattice
