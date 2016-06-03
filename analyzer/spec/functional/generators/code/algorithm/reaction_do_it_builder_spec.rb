@@ -348,6 +348,63 @@ module VersatileDiamond
                 CODE
               end
             end
+
+            describe 'intermediate migration down formation' do
+              let(:first_spec) { dept_activated_bridge }
+              let(:second_spec) { dept_activated_methyl_on_dimer }
+              let(:do_it_algorithm) do
+                <<-CODE
+    SpecificSpec *species1[2] = { target(0), target(1) };
+    assert(species1[0]->type() == BRIDGE_CTs);
+    assert(species1[1]->type() == METHYL_ON_DIMER_CMs);
+    Atom *atoms1[2] = { species1[0]->atom(0), species1[1]->atom(0) };
+    assert(atoms1[0]->is(#{role_ct}));
+    assert(atoms1[1]->is(#{snd_role_cm}));
+    atoms1[0]->bondWith(atoms1[1]);
+    assert(!atoms1[0]->is(#{br_s}) && !atoms1[0]->is(#{cb_s}));
+    if (atoms1[0]->is(#{cd_s}))
+    {
+        atoms1[0]->changeType(#{snd_role_cr});
+    }
+    else if (atoms1[0]->is(#{ct_ss}))
+    {
+        atoms1[0]->changeType(#{cb_s});
+    }
+    else
+    {
+        assert(atoms1[0]->is(#{ct_is}));
+        atoms1[0]->changeType(#{cb_i});
+    }
+    assert(!atoms1[1]->is(#{sm_is}) && !atoms1[1]->is(#{sm_ss}));
+    if (atoms1[1]->is(#{cm_sss}))
+    {
+        atoms1[1]->changeType(#{sm_ss});
+    }
+    else if (atoms1[1]->is(#{cm_iss}))
+    {
+        atoms1[1]->changeType(#{sm_is});
+    }
+    else
+    {
+        assert(atoms1[1]->is(#{cm_is}));
+        atoms1[1]->changeType(#{sm_i});
+    }
+    Finder::findAll(atoms1, 2);
+                CODE
+              end
+
+              it_behaves_like :check_do_it do
+                let(:typical_reaction) { dept_intermed_migr_dc_formation }
+              end
+
+              it_behaves_like :check_do_it do
+                let(:typical_reaction) { dept_intermed_migr_dh_formation }
+              end
+
+              it_behaves_like :check_do_it do
+                let(:typical_reaction) { dept_intermed_migr_df_formation }
+              end
+            end
           end
         end
 
