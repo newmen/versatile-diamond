@@ -31,7 +31,7 @@ module VersatileDiamond
 
             def define_code_instances(get_class_method_name, key, concept_names, &proc)
               concept_names.each do |name|
-                set(:"code_#{name}") do
+                stub(:"code_#{name}") do
                   dept_spec = send(:"dept_#{name}")
                   generator = stub_generator({ key => [dept_spec] })
                   result = generator.public_send(get_class_method_name, dept_spec.name)
@@ -42,7 +42,7 @@ module VersatileDiamond
             end
           end
 
-          set(:empty_generator) { stub_generator({}) }
+          stub(:empty_generator) { stub_generator({}) }
 
           define_code_simple_species([
             :hydrogen_ion,

@@ -21,7 +21,7 @@ module VersatileDiamond
         end
 
         # Specific atoms:
-        %w(h n c c0 cd).each do |name|
+        %w(h n c cd).each do |name|
           set(:"activated_#{name}") do
             SpecificAtom.new(send(name), options: [active_bond])
           end
