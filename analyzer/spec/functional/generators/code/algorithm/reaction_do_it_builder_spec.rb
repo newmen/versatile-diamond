@@ -301,6 +301,22 @@ module VersatileDiamond
                 CODE
               end
             end
+
+            it_behaves_like :check_do_it do
+              let(:typical_reaction) { dept_incoherent_dimer_drop }
+              let(:first_spec) { dept_twise_incoherent_dimer }
+              let(:do_it_algorithm) do
+                <<-CODE
+    SpecificSpec *dimerCLiCRi1 = target();
+    assert(dimerCLiCRi1->type() == DIMER_CLi_CRi);
+    Atom *atoms1[2] = { dimerCLiCRi1->atom(3), dimerCLiCRi1->atom(0) };
+    assert(atoms1[0]->is(#{role_cr}));
+    assert(atoms1[1]->is(#{role_cr}));
+    atoms1[0]->unbondFrom(atoms1[1]);
+    Finder::findAll(atoms1, 2);
+                CODE
+              end
+            end
           end
         end
 

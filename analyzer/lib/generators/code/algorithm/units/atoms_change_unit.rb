@@ -29,7 +29,7 @@ module VersatileDiamond
             exprs << recharge unless recharges.empty?
             exprs << create_bond_calls.reduce(:+) unless create_bond_calls.empty?
             exprs << drop_bond_calls.reduce(:+) unless drop_bond_calls.empty?
-            exprs << change_roles
+            exprs << change_roles if change?
             exprs.reduce(:+)
           end
 
@@ -161,6 +161,13 @@ module VersatileDiamond
           end
 
           ### --------------------------------------------------------------------- ###
+
+          # @return [Boolean]
+          def change?
+            !@surface_nodes.all? do |node|
+              node.transitions.empty? && node.wrong_properties.empty?
+            end
+          end
 
           # @return [Expressions::Core::Statement]
           def change_roles
