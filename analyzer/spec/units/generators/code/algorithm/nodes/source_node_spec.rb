@@ -42,6 +42,42 @@ module VersatileDiamond
             end
           end
 
+          describe '#switch?' do
+            describe 'gas' do
+              include_context :with_gas
+              it { expect(subject.switch?).to be_truthy }
+            end
+
+            describe 'surface' do
+              include_context :without_gas
+              it { expect(subject.switch?).to be_falsey }
+            end
+          end
+
+          describe '#transit?' do
+            describe 'gas' do
+              include_context :with_gas
+              it { expect(subject.transit?).to be_falsey }
+            end
+
+            describe 'surface' do
+              include_context :without_gas
+              it { expect(subject.transit?).to be_falsey }
+            end
+          end
+
+          describe '#different?' do
+            describe 'gas' do
+              include_context :with_gas
+              it { expect(subject.different?).to be_truthy }
+            end
+
+            describe 'surface' do
+              include_context :without_gas
+              it { expect(subject.different?).to be_falsey }
+            end
+          end
+
           describe '#transitions' do
             describe 'gas' do
               include_context :with_gas

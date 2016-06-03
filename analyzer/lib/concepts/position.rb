@@ -31,6 +31,12 @@ module VersatileDiamond
         end
       end
 
+      # @return [Integer]
+      # @override
+      def arity
+        0
+      end
+
       # Approximate compares two instances. If their face and direction is
       # correspond then instances is the same.
       #

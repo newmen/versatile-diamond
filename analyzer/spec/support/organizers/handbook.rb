@@ -114,6 +114,7 @@ module VersatileDiamond
           :methyl_activation,
           :methyl_deactivation,
           :methyl_adsorption,
+          :vinyl_adsorption,
           :methyl_desorption,
           :methyl_incorporation,
           :methyl_to_gap,

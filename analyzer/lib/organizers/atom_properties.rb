@@ -644,7 +644,7 @@ module VersatileDiamond
           limits = lattice.instance.relations_limit
           rels.group_by(&:params).all? { |pr, rs| limits[pr] >= rs.size }
         else
-          rels.all? { |r| r == undirected_bond }
+          rels.all?(&UNDIRECTED_BONDS.public_method(:include?))
         end
       end
 

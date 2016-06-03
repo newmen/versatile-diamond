@@ -20,6 +20,21 @@ module VersatileDiamond
             original.spec.spec.gas?
           end
 
+          # @return [Boolean]
+          def transit?
+            lattice != other.lattice
+          end
+
+          # @return [Boolean]
+          def switch?
+            gas? || other.gas?
+          end
+
+          # @return [Boolean]
+          def different?
+            (gas? && !other.gas?) || (!gas? && other.gas?)
+          end
+
         private
 
           # @return [ReactantNode]

@@ -101,7 +101,7 @@ module VersatileDiamond
           elsif args.size == 2
             AtomProperties.new(*args)
           else
-            raise ArgumentError
+            raise ArgumentError, "Wrong number of arguments: #{args.inspect}"
           end
         props_hash.key(prop)
       end

@@ -16,7 +16,7 @@ module VersatileDiamond
             @sources = sources
 
             @phase_changes = @context.phase_changes
-            @surface_nodes = @sources.reject { |src| src.gas? || src.product.gas? }
+            @surface_nodes = @sources.reject(&:switch?)
 
             @_recharges, @_neighbours_difference = nil
             @_create_bond_calls, @_drop_bond_calls = nil
@@ -120,8 +120,9 @@ module VersatileDiamond
           # @return [Array]
           def both_differences(node)
             reflected, related = two_way_products(node).map(&:to_set)
-            difference = [related - reflected, reflected - related].map(&:to_a)
-            difference.map { |prds| prds.map(&:source) }
+            create = node.different? ? related : related - reflected
+            drop = (reflected - related).reject(&:gas?)
+            [create, drop].map(&:to_a).map { |prds| prds.map(&:source) }
           end
 
           # @param [Nodes::SourceNode] node
@@ -138,7 +139,10 @@ module VersatileDiamond
             @_create_bond_calls ||=
               neighbours_difference.flat_map do |node, (nbrs, _)|
                 var = @dict.var_of(node.atom)
-                nbrs.map { |n| var.bond_with(@dict.var_of(n.atom)) }
+                nbrs.flat_map do |nbr|
+                  arity = @context.relation_between_products(node, nbr).arity
+                  [var.bond_with(@dict.var_of(nbr.atom))] * arity
+                end
               end
           end
 
@@ -147,7 +151,10 @@ module VersatileDiamond
             @_drop_bond_calls ||=
               neighbours_difference.flat_map do |node, (_, nbrs)|
                 var = @dict.var_of(node.atom)
-                nbrs.map { |n| var.unbond_from(@dict.var_of(n.atom)) }
+                nbrs.flat_map do |nbr|
+                  arity = @context.relation_between_sources(node, nbr).arity
+                  [var.unbond_from(@dict.var_of(nbr.atom))] * arity
+                end
               end
           end
 

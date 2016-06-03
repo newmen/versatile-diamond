@@ -11,10 +11,8 @@ module VersatileDiamond
 
             reaction = changes.reaction
             @dict = Units::Expressions::ReactionApplyingDictionary.new(reaction)
-
-            links = reaction.links
             @context =
-              Units::ChangesContextProvider.new(links, changes.main, changes.full)
+              Units::ChangesContextProvider.new(reaction, changes.main, changes.full)
           end
 
           # @return [Units::TargetSourcesUnit]

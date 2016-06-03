@@ -60,6 +60,14 @@ module VersatileDiamond
             let(:cm_ss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '**') }
             let(:cm_is) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'i*') }
             let(:cm_i) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'i') }
+            let(:hm_ss) { raw_props_idx(dept_high_bridge_base, :cm, '**') }
+            let(:hm_is) { raw_props_idx(dept_high_bridge_base, :cm, 'i*') }
+            let(:hm_i) { raw_props_idx(dept_high_bridge_base, :cm, 'i') }
+            let(:cv_s) { raw_props_idx(dept_vinyl_on_bridge_base, :c1, '*') }
+            let(:cv_i) { raw_props_idx(dept_vinyl_on_bridge_base, :c1, 'i') }
+            let(:cw_ss) { raw_props_idx(dept_vinyl_on_bridge_base, :c2, '**') }
+            let(:cw_is) { raw_props_idx(dept_vinyl_on_bridge_base, :c2, 'i*') }
+            let(:cw_i) { raw_props_idx(dept_vinyl_on_bridge_base, :c2, 'i') }
 
             it_behaves_like :check_do_it do
               let(:typical_reaction) { dept_methyl_activation }
@@ -145,6 +153,36 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_do_it do
+              let(:typical_reaction) { dept_vinyl_adsorption }
+              let(:first_spec) { dept_activated_bridge }
+              let(:do_it_algorithm) do
+                <<-CODE
+    SpecificSpec *bridgeCTs1 = target();
+    assert(bridgeCTs1->type() == BRIDGE_CTs);
+    AtomBuilder builder;
+    Atom *atoms1[3] = { bridgeCTs1->atom(0), builder.buildC(#{cv_i}, 3), builder.buildC(#{cw_i}, 2) };
+    assert(atoms1[0]->is(#{ct_s}));
+    Handbook::amorph().insert(atoms1[1]);
+    Handbook::amorph().insert(atoms1[2]);
+    atoms1[0]->bondWith(atoms1[1]);
+    atoms1[1]->bondWith(atoms1[2]);
+    atoms1[1]->bondWith(atoms1[2]);
+    assert(!atoms1[0]->is(#{br_s}) && !atoms1[0]->is(#{cb_s}));
+    if (atoms1[0]->is(#{ct_ss}))
+    {
+        atoms1[0]->changeType(#{cb_s});
+    }
+    else
+    {
+        assert(atoms1[0]->is(#{ct_is}));
+        atoms1[0]->changeType(#{cb_i});
+    }
+    Finder::findAll(atoms1, 3);
+                CODE
+              end
+            end
+
+            it_behaves_like :check_do_it do
               let(:typical_reaction) { dept_methyl_desorption }
               let(:first_spec) { dept_incoherent_methyl_on_bridge }
               let(:do_it_algorithm) do
@@ -155,7 +193,7 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{role_cb}));
     assert(atoms1[1]->is(#{cm_i}));
     Handbook::amorph().erase(atoms1[1]);
-    atoms1[0]->unbondFrom(atoms1[1]);
+    atoms1[1]->unbondFrom(atoms1[0]);
     if (atoms1[0]->is(#{cb_s}))
     {
         atoms1[0]->changeType(#{ct_ss});
@@ -182,7 +220,6 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{role_ctr}));
     assert(atoms1[1]->is(#{role_ctr}));
     assert(atoms1[2]->is(#{role_cm}));
-    atoms1[0]->unbondFrom(atoms1[1]);
     atoms1[2]->unbondFrom(atoms1[1]);
     atoms1[0]->changeType(#{cb_i});
     atoms1[2]->changeType(#{cm_is});

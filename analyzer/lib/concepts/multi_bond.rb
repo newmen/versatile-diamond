@@ -19,8 +19,11 @@ module VersatileDiamond
       # Creates a multibond instance by arity
       # @param [Integer] arity of creating bond
       def initialize(arity)
-        raise 'Wrong arity' if arity < 2 || arity > 3
-        @arity = arity
+        if arity < 2 || arity > 3
+          raise 'Wrong arity'
+        else
+          @arity = arity
+        end
       end
 
       # Compares two instances
@@ -52,6 +55,10 @@ module VersatileDiamond
       # @return [Boolean] true
       def exist?
         true
+      end
+
+      def inspect
+        arity == 2 ? '==' : '≡≡'
       end
 
     private

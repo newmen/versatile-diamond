@@ -46,6 +46,14 @@ module VersatileDiamond
         it { expect(subject == position_110_front).to be_falsey }
       end
 
+      describe '#arity' do
+        it { expect(free_bond.arity).to eq(1) }
+        it { expect(bond_100_front.arity).to eq(1) }
+        it { expect(bond_100_cross.arity).to eq(1) }
+        it { expect(bond_110_front.arity).to eq(1) }
+        it { expect(bond_110_cross.arity).to eq(1) }
+      end
+
       describe '#<=>' do
         it { expect(bond_100_front <=> position_110_front).to eq(-1) }
         it { expect(position_110_front <=> bond_100_front).to eq(1) }

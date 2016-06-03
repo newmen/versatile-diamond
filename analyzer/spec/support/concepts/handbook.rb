@@ -265,6 +265,7 @@ module VersatileDiamond
           s.adsorb(ethane_on_bridge_base)
           s.link(s.atom(:c1), s.atom(:c2), free_bond); s
         end
+        set(:vinyl_on_bridge) { SpecificSpec.new(vinyl_on_bridge_base) }
 
         set(:high_bridge_base) do
           s = SurfaceSpec.new(:high_bridge)
@@ -618,6 +619,20 @@ module VersatileDiamond
         set(:methyl_adsorption) do
           Reaction.new(
             :forward, 'methyl adsorption', am_source, am_products, am_atom_map)
+        end
+
+        set(:av_source) { [vinyl, activated_bridge.dup] }
+        set(:av_products) { [vinyl_on_bridge.dup] }
+        set(:av_naves_to_specs) do {
+          source: [[:v, vinyl], [:b, av_source.last]],
+          products: [[:vob, av_products.first]]
+        } end
+        set(:av_atom_map) do
+          Mcs::AtomMapper.map(av_source, av_products, av_naves_to_specs)
+        end
+        set(:vinyl_adsorption) do
+          Reaction.new(
+            :forward, 'vinyl adsorption', av_source, av_products, av_atom_map)
         end
 
         set(:md_source) { [methyl_on_bridge.dup, hydrogen_ion] }

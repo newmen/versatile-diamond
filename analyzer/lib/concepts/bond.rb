@@ -49,6 +49,11 @@ module VersatileDiamond
         self.class == other.class && other.it?(params)
       end
 
+      # @return [Integer]
+      def arity
+        1
+      end
+
       # Makes cross instance of current
       # @return [Bond] the instance with cross direction
       def cross

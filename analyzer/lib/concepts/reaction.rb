@@ -27,6 +27,8 @@ module VersatileDiamond
         @children = []
 
         @mapping.find_positions_for(self)
+
+        @_full_mapping, @_changes = nil
       end
 
       def_delegator :mapping, :complex_source_spec_and_atom
@@ -195,14 +197,15 @@ module VersatileDiamond
       # @return [Hash] the hash of changes where keys are spec-atom of source and
       #   values are spec-atom of products
       def full_mapping
-        Hash[MappingResult.rezip(mapping.full)]
+        @_full_mapping ||= MappingResult.rezip(mapping.full).to_h
       end
 
       # Gets atom changes list
       # @return [Hash] the hash of changes where keys are spec-atom of source and
       #   values are spec-atom of products
       def changes
-        Hash[MappingResult.rezip(mapping.changes)]
+        @_changes ||=
+          (MappingResult.rezip(mapping.changes) + gas_mapping.to_a).uniq.to_h
       end
 
       # Gets number of changed atoms
@@ -246,6 +249,13 @@ module VersatileDiamond
     private
 
       attr_reader :mapping
+
+      # @return [Hash]
+      def gas_mapping
+        full_mapping.select do |(s, _), (p, _)|
+          (s.gas? && !p.gas?) || (!s.gas? && p.gas?)
+        end
+      end
 
       # Makes the mirror of current specs to specs of child
       # @param [Reaction] child to which specs the map will built

@@ -24,6 +24,18 @@ module VersatileDiamond
           describe '#gas?' do
             it { expect(subject.gas?).to be_falsey }
           end
+
+          describe '#transit?' do
+            it { expect(subject.transit?).to be_falsey }
+          end
+
+          describe '#switch?' do
+            it { expect(subject.switch?).to be_truthy }
+          end
+
+          describe '#different?' do
+            it { expect(subject.different?).to be_truthy }
+          end
         end
 
       end
