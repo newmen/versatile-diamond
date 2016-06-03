@@ -27,11 +27,6 @@ module VersatileDiamond
             @_main ||= apply_nodes(@reaction.changes).select(&:change?)
           end
 
-          # @return [Array] the list of nodes with desorption atoms
-          def away
-            main.select { |node| node.product.gas? }
-          end
-
         private
 
           # @param [Array] changes
