@@ -116,6 +116,7 @@ module VersatileDiamond
           :methyl_adsorption,
           :vinyl_adsorption,
           :methyl_desorption,
+          :vinyl_desorption,
           :methyl_incorporation,
           :methyl_to_gap,
           :two_next_dimers_formation,

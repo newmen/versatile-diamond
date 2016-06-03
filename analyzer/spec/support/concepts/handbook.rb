@@ -649,6 +649,20 @@ module VersatileDiamond
             :forward, 'methyl desorption', md_source, md_products, md_atom_map)
         end
 
+        set(:vd_source) { [vinyl_on_bridge.dup, hydrogen_ion] }
+        set(:vd_products) { [vinyl, activated_bridge.dup] }
+        set(:vd_names_to_specs) do {
+          source: [[:mob, vd_source.first]],
+          products: [[:v, vinyl], [:b, vd_products.last]]
+        } end
+        set(:vd_atom_map) do
+          Mcs::AtomMapper.map(vd_source, vd_products, vd_names_to_specs)
+        end
+        set(:vinyl_desorption) do
+          Reaction.new(
+            :forward, 'vinyl desorption', vd_source, vd_products, vd_atom_map)
+        end
+
         set(:hm_source) { [methyl_on_dimer.dup, activated_dimer.dup] }
         set(:hm_products) { [activated_methyl_on_dimer.dup, dimer.dup] }
         set(:hm_names_to_specs) do {

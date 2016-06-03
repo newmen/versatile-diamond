@@ -140,7 +140,8 @@ module VersatileDiamond
               neighbours_difference.flat_map do |node, (nbrs, _)|
                 var = @dict.var_of(node.atom)
                 nbrs.flat_map do |nbr|
-                  arity = @context.relation_between_products(node, nbr).arity
+                  relation = @context.relation_between_products(node, nbr)
+                  arity = relation ? relation.arity : 0
                   [var.bond_with(@dict.var_of(nbr.atom))] * arity
                 end
               end
@@ -152,7 +153,8 @@ module VersatileDiamond
               neighbours_difference.flat_map do |node, (_, nbrs)|
                 var = @dict.var_of(node.atom)
                 nbrs.flat_map do |nbr|
-                  arity = @context.relation_between_sources(node, nbr).arity
+                  relation = @context.relation_between_sources(node, nbr)
+                  arity = relation ? relation.arity : 0
                   [var.unbond_from(@dict.var_of(nbr.atom))] * arity
                 end
               end
