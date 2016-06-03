@@ -252,9 +252,9 @@ module VersatileDiamond
     Atom *atoms1[2] = { crossBridgeOnBridges1->atom(5), crossBridgeOnBridges1->atom(0) };
     assert(atoms1[0]->is(#{role_ctr}));
     assert(atoms1[1]->is(#{role_cm}));
-    atoms1[1]->unbondFrom(atoms1[0]);
-    atoms1[1]->changeType(#{cm_is});
+    atoms1[0]->unbondFrom(atoms1[1]);
     atoms1[0]->changeType(#{ct_is});
+    atoms1[1]->changeType(#{cm_is});
     Finder::findAll(atoms1, 2);
                 CODE
               end
@@ -272,7 +272,17 @@ module VersatileDiamond
     Atom *atoms1[2] = { species1[0]->atom(0), species1[1]->atom(0) };
     assert(atoms1[0]->is(#{snd_role_ct}));
     assert(atoms1[1]->is(#{role_cm}));
-    atoms1[1]->bondWith(atoms1[0]);
+    atoms1[0]->bondWith(atoms1[1]);
+    assert(!atoms1[0]->is(#{br_s}) && !atoms1[0]->is(#{cb_s}));
+    if (atoms1[0]->is(#{ct_ss}))
+    {
+        atoms1[0]->changeType(#{cb_s});
+    }
+    else
+    {
+        assert(atoms1[0]->is(#{ct_is}));
+        atoms1[0]->changeType(#{cb_i});
+    }
     assert(!atoms1[1]->is(#{sm_is}) && !atoms1[1]->is(#{sm_ss}));
     if (atoms1[1]->is(#{cm_sss}))
     {
@@ -286,16 +296,6 @@ module VersatileDiamond
     {
         assert(atoms1[1]->is(#{cm_is}));
         atoms1[1]->changeType(#{sm_i});
-    }
-    assert(!atoms1[0]->is(#{br_s}) && !atoms1[0]->is(#{cb_s}));
-    if (atoms1[0]->is(#{ct_ss}))
-    {
-        atoms1[0]->changeType(#{cb_s});
-    }
-    else
-    {
-        assert(atoms1[0]->is(#{ct_is}));
-        atoms1[0]->changeType(#{cb_i});
     }
     Finder::findAll(atoms1, 2);
                 CODE

@@ -24,7 +24,7 @@ module VersatileDiamond
 
           # @return [Array] the list of nodes pairs which represents the main changes
           def main
-            @_main ||= apply_nodes(@reaction.changes).select(&:change?)
+            @_main ||= apply_nodes(@reaction.changes).select(&:change?).sort
           end
 
         private
