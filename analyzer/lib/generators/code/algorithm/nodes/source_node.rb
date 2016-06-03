@@ -23,7 +23,7 @@ module VersatileDiamond
 
           # @return [Array]
           def transitions
-            @_transitions ||= props_groups[true].sort_by(&:first) || []
+            @_transitions ||= props_groups[true].sort_by(&:first).reverse || []
           end
 
           # @return [Array]

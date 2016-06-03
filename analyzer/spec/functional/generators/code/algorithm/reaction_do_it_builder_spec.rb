@@ -51,6 +51,8 @@ module VersatileDiamond
             let(:ct_is) { raw_props_idx(dept_bridge_base, :ct, 'i*') }
             let(:ct_s) { raw_props_idx(dept_bridge_base, :ct, '*') }
             let(:ct_i) { raw_props_idx(dept_bridge_base, :ct, 'i') }
+            let(:br_s) { raw_props_idx(dept_bridge_base, :cr, '*') }
+            let(:br_i) { raw_props_idx(dept_bridge_base, :cr, 'i') }
             let(:cb_s) { raw_props_idx(dept_methyl_on_bridge_base, :cb, '*') }
             let(:cb_i) { raw_props_idx(dept_methyl_on_bridge_base, :cb, 'i') }
             let(:cm_sss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '***') }
@@ -72,14 +74,14 @@ module VersatileDiamond
     assert(amorph1->is(#{role_cm}));
     amorph1->activate();
     assert(!amorph1->is(#{cm_iss}) && !amorph1->is(#{cm_sss}));
-    if (amorph1->is(#{cm_i}))
+    if (amorph1->is(#{cm_is}))
     {
-        amorph1->changeType(#{cm_is});
+        amorph1->changeType(#{cm_iss});
     }
     else
     {
-        assert(amorph1->is(#{cm_is}));
-        amorph1->changeType(#{cm_iss});
+        assert(amorph1->is(#{cm_i}));
+        amorph1->changeType(#{cm_is});
     }
     Finder::findAll(&amorph1, 1);
                 CODE
@@ -97,9 +99,9 @@ module VersatileDiamond
     Atom *amorph1 = methylOnBridgeCMs1->atom(0);
     assert(amorph1->is(#{role_cm}));
     amorph1->deactivate();
-    if (amorph1->is(#{cm_is}))
+    if (amorph1->is(#{cm_sss}))
     {
-        amorph1->changeType(#{cm_i});
+        amorph1->changeType(#{cm_ss});
     }
     else if (amorph1->is(#{cm_iss}))
     {
@@ -107,8 +109,8 @@ module VersatileDiamond
     }
     else
     {
-        assert(amorph1->is(#{cm_sss}));
-        amorph1->changeType(#{cm_ss});
+        assert(amorph1->is(#{cm_is}));
+        amorph1->changeType(#{cm_i});
     }
     Finder::findAll(&amorph1, 1);
                 CODE
@@ -126,15 +128,15 @@ module VersatileDiamond
     Atom *atoms1[2] = { bridgeCTs1->atom(0), builder.buildC(#{cm_i}, 1) };
     assert(atoms1[0]->is(#{ct_s}));
     atoms1[0]->bondWith(atoms1[1]);
-    assert(!atoms1[0]->is(#{ct_i}));
-    if (atoms1[0]->is(#{ct_is}))
+    assert(!atoms1[0]->is(#{br_s}) && !atoms1[0]->is(#{cb_s}));
+    if (atoms1[0]->is(#{ct_ss}))
     {
-        atoms1[0]->changeType(#{cb_i});
+        atoms1[0]->changeType(#{cb_s});
     }
     else
     {
-        assert(atoms1[0]->is(#{ct_ss}));
-        atoms1[0]->changeType(#{cb_s});
+        assert(atoms1[0]->is(#{ct_is}));
+        atoms1[0]->changeType(#{cb_i});
     }
     Finder::findAll(atoms1, 2);
                 CODE
