@@ -10,13 +10,19 @@ module VersatileDiamond
           # @param [Array] sources
           def initialize(dict, sources)
             @dict = dict
-            @sources = sources
-            @removing = @sources.select { |node| node.product.gas? }
+            filter_proc = -> src { src.product.gas? }
+            @sources = sources.reject(&filter_proc)
+            @removing = sources.select(&filter_proc)
+            @atoms = @sources.map(&:atom)
           end
 
           # @return [Expressions::Core::Statement]
           def finish
-            ((@removing.empty? ? [] : [remove_atoms]) + [finder_call]).reduce(:+)
+            exprs = []
+            exprs << remove_atoms unless @removing.empty?
+            exprs << redefine_atoms unless @dict.var_of(@atoms)
+            exprs << finder_call
+            exprs.reduce(:+)
           end
 
         private
@@ -27,10 +33,14 @@ module VersatileDiamond
             vars.map(&:mark_to_remove).reduce(:+)
           end
 
+          # @return [Expressions::Core::Variable]
+          def redefine_atoms
+            @dict.make_atom_s(@atoms).define_var
+          end
+
           # @return [Expressions::Core::FunctionCall]
           def finder_call
-            var = @dict.var_of(@sources.map(&:atom))
-            Expressions::FinderClass[].find_all(var)
+            Expressions::FinderClass[].find_all(@dict.var_of(@atoms))
           end
         end
 

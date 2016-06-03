@@ -16,6 +16,7 @@ module VersatileDiamond
             @sources = sources
 
             @phase_changes = @context.phase_changes
+            @surface_nodes = @sources.reject { |src| src.gas? || src.product.gas? }
 
             @_recharges, @_neighbours_difference = nil
             @_create_bond_calls, @_drop_bond_calls = nil
@@ -91,7 +92,7 @@ module VersatileDiamond
 
           # @return [Array]
           def sources_with_deltas
-            @sources.map do |src|
+            @surface_nodes.map do |src|
               a, b = [src, src.product].map(&:properties).map(&:unbonded_actives_num)
               [src, b - a]
             end
@@ -154,7 +155,7 @@ module VersatileDiamond
 
           # @return [Expressions::Core::Statement]
           def change_roles
-            @sources.reject(&:gas?).map(&method(:change_role_of)).reduce(:+)
+            @surface_nodes.map(&method(:change_role_of)).reduce(:+)
           end
 
           # @param [Nodes::SourceNode] node

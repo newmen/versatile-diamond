@@ -127,6 +127,7 @@ module VersatileDiamond
     AtomBuilder builder;
     Atom *atoms1[2] = { bridgeCTs1->atom(0), builder.buildC(#{cm_i}, 1) };
     assert(atoms1[0]->is(#{ct_s}));
+    Handbook::amorph().insert(atoms1[1]);
     atoms1[0]->bondWith(atoms1[1]);
     assert(!atoms1[0]->is(#{br_s}) && !atoms1[0]->is(#{cb_s}));
     if (atoms1[0]->is(#{ct_ss}))
@@ -139,6 +140,33 @@ module VersatileDiamond
         atoms1[0]->changeType(#{cb_i});
     }
     Finder::findAll(atoms1, 2);
+                CODE
+              end
+            end
+
+            it_behaves_like :check_do_it do
+              let(:typical_reaction) { dept_methyl_desorption }
+              let(:first_spec) { dept_incoherent_methyl_on_bridge }
+              let(:do_it_algorithm) do
+                <<-CODE
+    SpecificSpec *methylOnBridgeCMi1 = target();
+    assert(methylOnBridgeCMi1->type() == METHYL_ON_BRIDGE_CMi);
+    Atom *atoms1[2] = { methylOnBridgeCMi1->atom(1), methylOnBridgeCMi1->atom(0) };
+    assert(atoms1[0]->is(#{role_cb}));
+    assert(atoms1[1]->is(#{cm_i}));
+    Handbook::amorph().erase(atoms1[1]);
+    atoms1[0]->unbondFrom(atoms1[1]);
+    if (atoms1[0]->is(#{cb_s}))
+    {
+        atoms1[0]->changeType(#{ct_ss});
+    }
+    else
+    {
+        assert(atoms1[0]->is(#{cb_i}));
+        atoms1[0]->changeType(#{ct_is});
+    }
+    Handbook::scavenger().markAtom(atoms1[1]);
+    Finder::findAll(&atoms1[0], 1);
                 CODE
               end
             end

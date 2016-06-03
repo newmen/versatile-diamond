@@ -17,35 +17,32 @@ module VersatileDiamond
             @src_mirror = @full.map { |src| [src.spec_atom, src] }.to_h
             @prd_mirror = @full.map { |src| [src.product.spec_atom, src.product] }.to_h
 
-            @cache = {}
+            @_significant_neighbours = {}
             @_phase_changes = nil
           end
 
           # @return [Array]
           def phase_changes
             @_phase_changes ||=
-              @main.reject { |src| src.lattice == src.product.lattice }
+              @main.select do |src|
+                src.lattice != src.product.lattice || src.gas? || src.product.gas?
+              end
           end
 
           # @return [Array]
           def significant
-            neighbours = phase_changes.flat_map { |node| neighbours_of(node).first }
-            neighbours.reject(&method(:main?)).uniq
+            significant_neighbours.reject(&method(:main?)).uniq
           end
 
           # @param [Nodes::SourceNode] node
           # @return [Array]
           def latticed_neighbours_of(node)
-            return @cache[node] if @cache[node]
-            latticed_nrps = latticed_relation_params_of(node)
-            main_nrps = latticed_nrps.select { |nbr, _| main?(nbr) }
-            neighbours = best_neighbours(main_nrps)
-            neighbours = best_neighbours(latticed_nrps) if neighbours.size < 2
+            neighbours = significant_neighbours_of(node)
             # TODO: logic of neighbours selection depends from diamond crystal lattice!
             if neighbours.size < 2
               raise ArgumentError, "Cannot find neighbours for node #{node.inspect}"
             else
-              @cache[node] = neighbours
+              neighbours
             end
           end
 
@@ -64,12 +61,33 @@ module VersatileDiamond
             @main.include?(node)
           end
 
+          # @return [Array]
+          def significant_neighbours
+            phase_changes.reduce([]) do |acc, node|
+              acc + significant_neighbours_of(node)
+            end
+          end
+
+          # @return [Array]
+          def significant_neighbours_of(node)
+            return @_significant_neighbours[node] if @_significant_neighbours[node]
+            latticed_nrps = latticed_relation_params_of(node)
+            main_nrps = latticed_nrps.select { |nbr, _| main?(nbr) }
+            neighbours = best_neighbours(main_nrps)
+            neighbours = best_neighbours(latticed_nrps) if neighbours.size < 2
+            @_significant_neighbours[node] = neighbours.size < 2 ? neighbours : []
+          end
+
           # @param [Array] relations
           # @return [Array]
           def best_neighbours(relations)
-            groups = relations.group_by(&:last)
-            max_group = groups.max_by { |_, group| group.size }
-            [max_group.last.map(&:first), max_group.first]
+            if relations.empty?
+              []
+            else
+              groups = relations.group_by(&:last)
+              max_group = groups.max_by { |_, group| group.size }
+              [max_group.last.map(&:first), max_group.first]
+            end
           end
 
           # @param [Nodes::ChangeNode] node
@@ -95,8 +113,12 @@ module VersatileDiamond
           # @return [Concept::Bond]
           def relation_between(*nodes)
             a, b = nodes.map(&:spec_atom)
-            result = @links[a].find { |sa, _| sa == b }
-            result && result.last
+            if @links[a]
+              result = @links[a].find { |sa, _| sa == b }
+              result && result.last
+            else
+              nil
+            end
           end
         end
 
