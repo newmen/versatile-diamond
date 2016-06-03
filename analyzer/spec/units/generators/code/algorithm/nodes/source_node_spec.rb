@@ -78,6 +78,18 @@ module VersatileDiamond
             end
           end
 
+          describe '#change?' do
+            describe 'gas' do
+              include_context :with_gas
+              it { expect(subject.change?).to be_truthy }
+            end
+
+            describe 'surface' do
+              include_context :without_gas
+              it { expect(subject.change?).to be_truthy }
+            end
+          end
+
           describe '#transitions' do
             describe 'gas' do
               include_context :with_gas

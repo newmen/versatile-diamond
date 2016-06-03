@@ -36,6 +36,10 @@ module VersatileDiamond
           describe '#different?' do
             it { expect(subject.different?).to be_truthy }
           end
+
+          describe '#change?' do
+            it { expect(subject.change?).to be_truthy }
+          end
         end
 
       end

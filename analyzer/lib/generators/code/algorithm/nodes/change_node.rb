@@ -35,6 +35,11 @@ module VersatileDiamond
             (gas? && !other.gas?) || (!gas? && other.gas?)
           end
 
+          # @return [Boolean]
+          def change?
+            properties != other.properties || different?
+          end
+
         private
 
           # @return [ReactantNode]

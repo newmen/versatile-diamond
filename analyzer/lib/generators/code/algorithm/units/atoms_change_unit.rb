@@ -142,7 +142,7 @@ module VersatileDiamond
                 nbrs.flat_map do |nbr|
                   relation = @context.relation_between_products(node, nbr)
                   arity = relation ? relation.arity : 0
-                  [var.bond_with(@dict.var_of(nbr.atom))] * arity
+                  arity == 0 ? [] : [var.bond_with(@dict.var_of(nbr.atom))] * arity
                 end
               end
           end
@@ -155,7 +155,7 @@ module VersatileDiamond
                 nbrs.flat_map do |nbr|
                   relation = @context.relation_between_sources(node, nbr)
                   arity = relation ? relation.arity : 0
-                  [var.unbond_from(@dict.var_of(nbr.atom))] * arity
+                  arity == 0 ? [] : [var.unbond_from(@dict.var_of(nbr.atom))] * arity
                 end
               end
           end

@@ -68,6 +68,9 @@ module VersatileDiamond
             let(:cw_ss) { raw_props_idx(dept_vinyl_on_bridge_base, :c2, '**') }
             let(:cw_is) { raw_props_idx(dept_vinyl_on_bridge_base, :c2, 'i*') }
             let(:cw_i) { raw_props_idx(dept_vinyl_on_bridge_base, :c2, 'i') }
+            let(:sm_ss) { raw_props_idx(dept_cross_bridge_on_bridges_base, :cm, '**') }
+            let(:sm_is) { raw_props_idx(dept_cross_bridge_on_bridges_base, :cm, 'i*') }
+            let(:sm_i) { raw_props_idx(dept_cross_bridge_on_bridges_base, :cm, 'i') }
 
             it_behaves_like :check_do_it do
               let(:typical_reaction) { dept_methyl_activation }
@@ -246,15 +249,55 @@ module VersatileDiamond
                 <<-CODE
     SpecificSpec *crossBridgeOnBridges1 = target();
     assert(crossBridgeOnBridges1->type() == CROSS_BRIDGE_ON_BRIDGES);
-    Atom *atoms1[3] = { crossBridgeOnBridges1->atom(1), crossBridgeOnBridges1->atom(5), crossBridgeOnBridges1->atom(0) };
+    Atom *atoms1[2] = { crossBridgeOnBridges1->atom(5), crossBridgeOnBridges1->atom(0) };
     assert(atoms1[0]->is(#{role_ctr}));
-    assert(atoms1[1]->is(#{role_ctr}));
-    assert(atoms1[2]->is(#{role_cm}));
-    atoms1[2]->unbondFrom(atoms1[1]);
-    atoms1[0]->changeType(#{cb_i});
-    atoms1[2]->changeType(#{cm_is});
-    atoms1[1]->changeType(#{ct_is});
-    Finder::findAll(atoms1, 3);
+    assert(atoms1[1]->is(#{role_cm}));
+    atoms1[1]->unbondFrom(atoms1[0]);
+    atoms1[1]->changeType(#{cm_is});
+    atoms1[0]->changeType(#{ct_is});
+    Finder::findAll(atoms1, 2);
+                CODE
+              end
+            end
+
+            it_behaves_like :check_do_it do
+              let(:typical_reaction) { dept_sierpinski_formation }
+              let(:first_spec) { dept_activated_methyl_on_bridge }
+              let(:second_spec) { dept_activated_bridge }
+              let(:do_it_algorithm) do
+                <<-CODE
+    SpecificSpec *species1[2] = { target(0), target(1) };
+    assert(species1[0]->type() == BRIDGE_CTs);
+    assert(species1[1]->type() == METHYL_ON_BRIDGE_CMs);
+    Atom *atoms1[2] = { species1[0]->atom(0), species1[1]->atom(0) };
+    assert(atoms1[0]->is(#{snd_role_ct}));
+    assert(atoms1[1]->is(#{role_cm}));
+    atoms1[1]->bondWith(atoms1[0]);
+    assert(!atoms1[1]->is(#{sm_is}) && !atoms1[1]->is(#{sm_ss}));
+    if (atoms1[1]->is(#{cm_sss}))
+    {
+        atoms1[1]->changeType(#{sm_ss});
+    }
+    else if (atoms1[1]->is(#{cm_iss}))
+    {
+        atoms1[1]->changeType(#{sm_is});
+    }
+    else
+    {
+        assert(atoms1[1]->is(#{cm_is}));
+        atoms1[1]->changeType(#{sm_i});
+    }
+    assert(!atoms1[0]->is(#{br_s}) && !atoms1[0]->is(#{cb_s}));
+    if (atoms1[0]->is(#{ct_ss}))
+    {
+        atoms1[0]->changeType(#{cb_s});
+    }
+    else
+    {
+        assert(atoms1[0]->is(#{ct_is}));
+        atoms1[0]->changeType(#{cb_i});
+    }
+    Finder::findAll(atoms1, 2);
                 CODE
               end
             end
