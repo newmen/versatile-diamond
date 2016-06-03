@@ -170,6 +170,27 @@ module VersatileDiamond
                 CODE
               end
             end
+
+            it_behaves_like :check_do_it do
+              let(:typical_reaction) { dept_sierpinski_drop }
+              let(:first_spec) { dept_cross_bridge_on_bridges_base }
+              let(:do_it_algorithm) do
+                <<-CODE
+    SpecificSpec *crossBridgeOnBridges1 = target();
+    assert(crossBridgeOnBridges1->type() == CROSS_BRIDGE_ON_BRIDGES);
+    Atom *atoms1[3] = { crossBridgeOnBridges1->atom(1), crossBridgeOnBridges1->atom(5), crossBridgeOnBridges1->atom(0) };
+    assert(atoms1[0]->is(#{role_ctr}));
+    assert(atoms1[1]->is(#{role_ctr}));
+    assert(atoms1[2]->is(#{role_cm}));
+    atoms1[0]->unbondFrom(atoms1[1]);
+    atoms1[2]->unbondFrom(atoms1[1]);
+    atoms1[0]->changeType(#{cb_i});
+    atoms1[2]->changeType(#{cm_is});
+    atoms1[1]->changeType(#{ct_is});
+    Finder::findAll(atoms1, 3);
+                CODE
+              end
+            end
           end
         end
 

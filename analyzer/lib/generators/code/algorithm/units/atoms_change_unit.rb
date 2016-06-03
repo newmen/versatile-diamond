@@ -201,7 +201,10 @@ module VersatileDiamond
             if block_given?
               Expressions::Core::Condition[from_call, to_call, block.call]
             else
-              Expressions::Core::Assert[from_call] + to_call
+              exprs = []
+              exprs << Expressions::Core::Assert[from_call] if !node.transitions.one?
+              exprs << to_call
+              exprs.reduce(:+)
             end
           end
         end
