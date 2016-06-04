@@ -122,14 +122,14 @@ module VersatileDiamond
       # @return [AtomProperties] the extended instance of atom properties or nil
       def +(other)
         result = nil
-        total_props = merge_props(other, :+)
+        total_props = merge_props(other, &:+)
         if total_props
-          num =
-            estab_bonds_num_in(total_props[:relations]) + total_props[:danglings].size
+          bonds_num = estab_bonds_num_in(total_props[:relations])
+          ext_num = bonds_num + total_props[:danglings].size
           are_correct_props =
             valid_relations?(total_props[:relations]) &&
-              ((num < valence && valid_relevants?(total_props[:relevants])) ||
-                (num == valence && total_props[:relevants].empty?))
+              ((ext_num < valence && valid_relevants?(total_props[:relevants])) ||
+                (ext_num == valence && total_props[:relevants].empty?))
 
           result = self.class.new(state_values(total_props)) if are_correct_props
         end
@@ -140,8 +140,16 @@ module VersatileDiamond
       # @param [AtomProperties] other atom properties which will be erased from current
       # @return [AtomProperties] the difference result or nil
       def -(other)
-        diff_props = merge_props(other, :accurate_diff)
-        diff_props ? self.class.new(state_values(diff_props)) : nil
+        diff_props = merge_props(other) do |self_state, other_state|
+          other_state.all?(&self_state.public_method(:include?)) &&
+            self_state.accurate_diff(other_state)
+        end
+
+        if diff_props && DYNAMIC_STATES.all? { |state_name| diff_props[state_name] }
+          self.class.new(state_values(diff_props))
+        else
+          nil
+        end
       end
 
       # Accurate combines two atom properties
@@ -480,33 +488,30 @@ module VersatileDiamond
 
       # Makes merged props hash with other instance by passed operation
       # @param [AtomProperties] other provider of properties
-      # @param [Symbol] op the binary operation which applies the dynamic states of
-      #   both instances
+      # @yield binary operation which applies the dynamic states of both instances
       # @return [Hash] the merged properties hash
-      def produce_props(other, op)
+      def produce_props(other, &block)
         static_props = Hash[STATIC_STATES.zip(static_states)]
         DYNAMIC_STATES.each_with_object(static_props) do |state_name, acc|
           self_state, other_state = [self, other].map { |x| x.send(state_name) }
-          acc[state_name] = eval("self_state.#{op}(other_state)") # using directive
+          acc[state_name] = block[self_state, other_state]
         end
       end
 
       # Merges own properties with properties of an other passed instance
       # @param [AtomProperties] other provider of properties
-      # @param [Symbol] binary_op the operation which applies the dynamic states of
-      #   both instances
+      # @yield binary operation which applies the dynamic states of both instances
       # @return [Hash] the merged properties hash or nil if properties cannot be merged
-      def merge_props(other, binary_op)
-        result = nil # I want monades here!
+      def merge_props(other, &block)
         if same_basic_values?(other)
-          merged_props = produce_props(other, binary_op)
-          merged_props[:relevants].uniq!
-          undir_bonds_num = UNDIRECTED_BONDS.reduce(0) do |acc, bond_type|
-            acc + merged_props[:relations].count(bond_type)
-          end
-          result = merged_props if merged_props[:nbr_lattices].size == undir_bonds_num
+          mps = produce_props(other, &block)
+          mps[:relevants] &&= mps[:relevants].uniq
+          nbr_lattices_num = mps[:nbr_lattices] ? mps[:nbr_lattices].size : 0
+          undir_bonds_num = mps[:relations] ? undir_bonds_num_in(mps[:relations]) : 0
+          undir_bonds_num == nbr_lattices_num && mps
+        else
+          nil
         end
-        result
       end
 
       # Compares with other properties by some method which returns list
@@ -668,6 +673,13 @@ module VersatileDiamond
         wr = props.dup
         wr[-1] = [] if relevant?
         wr
+      end
+
+      # Gets number of undirected bonds
+      # @param [Array] relations where bonds will be counted
+      # @return [Integer] the number of undirected bond relations
+      def undir_bonds_num_in(relations)
+        UNDIRECTED_BONDS.map { |bond| relations.count(bond) * bond.arity }.reduce(:+)
       end
 
       # Gets number of established bond relations

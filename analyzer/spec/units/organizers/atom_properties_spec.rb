@@ -163,6 +163,9 @@ module VersatileDiamond
         it { expect(subject.send(:danglings)).to eq([active_bond]) }
         it { expect(subject.send(:nbr_lattices)).to be_empty }
         it { expect(subject.send(:relevants)).to be_empty }
+
+        it { expect(bridge_cr - dimer_cr).to be_nil }
+        it { expect(dimer_cr - bridge_cr).to be_nil }
       end
 
       describe '#safe_plus' do
