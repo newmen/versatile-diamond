@@ -102,15 +102,15 @@ module VersatileDiamond
             end
           end
 
-          describe '#wrong_roles' do
+          describe '#wrong_properties' do
             describe 'gas' do
               include_context :with_gas
-              it { expect(subject.wrong_roles).to eq([]) }
+              it { expect(subject.wrong_properties).to eq([]) }
             end
 
             describe 'surface' do
               include_context :without_gas
-              it { expect(subject.wrong_roles.size).to eq(1) }
+              it { expect(subject.wrong_properties.size).to eq(1) }
             end
           end
         end

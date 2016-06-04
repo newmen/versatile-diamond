@@ -145,7 +145,7 @@ module VersatileDiamond
 
           describe 'child with not zero rate' do
             before { setup_rate_for(child) }
-            it { expect(subject.significant?).to be_truthy }
+            it { expect(subject.significant?).to be_falsey }
           end
         end
       end

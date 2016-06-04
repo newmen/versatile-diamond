@@ -42,7 +42,7 @@ module VersatileDiamond
 
           # @param [Nodes::SourceNode] node
           # @return [Array]
-          def latticed_neighbours_of(node)
+          def latticed_neighbours_with_params(node)
             neighbours = significant_neighbours_of(node)
             # TODO: logic of neighbours selection depends from diamond crystal lattice!
             if neighbours.size < 2
@@ -82,7 +82,7 @@ module VersatileDiamond
           # @return [Array]
           def significant_neighbours
             phase_changes.reduce([]) do |acc, node|
-              acc + significant_neighbours_of(node)
+              acc + significant_neighbours_of(node).first
             end
           end
 
@@ -93,7 +93,7 @@ module VersatileDiamond
             main_nrps = latticed_nrps.select { |nbr, _| main?(nbr) }
             neighbours = best_neighbours(main_nrps)
             neighbours = best_neighbours(latticed_nrps) if neighbours.size < 2
-            @_significant_neighbours[node] = neighbours.size < 2 ? neighbours : []
+            @_significant_neighbours[node] = neighbours.size < 2 ? [] : neighbours
           end
 
           # @param [Array] relations
@@ -114,8 +114,13 @@ module VersatileDiamond
             neighbour_spec_atoms(node.product).each_with_object([]) do |sa, acc|
               nbr = @prd_to_src_mirror[sa]
               if nbr.lattice
-                rel = relation_between_sources(node, nbr)
-                acc << [nbr, rel.params] if rel && rel.exist?
+                src_rel = relation_between_sources(nbr, node)
+                if src_rel
+                  acc << [nbr, src_rel.params] if src_rel.exist?
+                else
+                  prd_rel = relation_between_products(nbr, node)
+                  acc << [nbr, prd_rel.params] if prd_rel && prd_rel.exist?
+                end
               end
             end
           end

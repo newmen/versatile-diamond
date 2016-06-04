@@ -63,7 +63,7 @@ module VersatileDiamond
           # @param [Nodes::SourceNode] node
           # @return [Array]
           def insertion_args_of(node)
-            nbrs, rel_params = @context.latticed_neighbours_of(node)
+            nbrs, rel_params = @context.latticed_neighbours_with_params(node)
             [@dict.var_of(nbrs.first.atom).crystal, coords_call(nbrs, rel_params)]
           end
 
@@ -171,7 +171,7 @@ module VersatileDiamond
 
           # @return [Expressions::Core::Statement]
           def change_roles
-            @surface_nodes.map(&method(:change_role_of)).reduce(:+)
+            @surface_nodes.flat_map(&method(:change_role_of)).reduce(:+)
           end
 
           # @param [Nodes::SourceNode] node
@@ -180,7 +180,7 @@ module VersatileDiamond
             exprs = []
             exprs << assert_wrong_properties(node) unless node.wrong_properties.empty?
             exprs << change_roles_tree(node) unless node.transitions.empty?
-            exprs.reduce(:+)
+            exprs
           end
 
           # @param [Nodes::SourceNode] node

@@ -405,6 +405,55 @@ module VersatileDiamond
                 let(:typical_reaction) { dept_intermed_migr_df_formation }
               end
             end
+
+            it_behaves_like :check_do_it do
+              let(:typical_reaction) { dept_methyl_incorporation }
+              let(:first_spec) { dept_activated_methyl_on_bridge }
+              let(:second_spec) { dept_activated_dimer }
+              let(:base_specs) { [dept_bridge_base] }
+              let(:do_it_algorithm) do
+                <<-CODE
+    SpecificSpec *species1[2] = { target(0), target(1) };
+    assert(species1[0]->type() == METHYL_ON_BRIDGE_CMs);
+    assert(species1[1]->type() == DIMER_CRs);
+    Atom *atoms1[4] = { species1[1]->atom(0), species1[1]->atom(3), species1[0]->atom(1), species1[0]->atom(0) };
+    assert(atoms1[0]->is(#{snd_role_cr}));
+    assert(atoms1[1]->is(#{snd_role_cl}));
+    assert(atoms1[2]->is(#{role_cb}));
+    assert(atoms1[3]->is(#{role_cm}));
+    Handbook::amorph().erase(atoms1[3]);
+    crystalBy(atoms1[1])->insert(atoms1[3], Diamond::front_110_at(atoms1[1], atoms1[0]));
+    atoms1[0]->deactivate();
+    atoms1[3]->activate();
+    atoms1[0]->unbondFrom(atoms1[1]);
+    atoms1[0]->bondWith(atoms1[3]);
+    atoms1[1]->bondWith(atoms1[3]);
+    assert(!atoms1[1]->is(#{cd_s}));
+    atoms1[0]->changeType(#{br_i});
+    atoms1[1]->changeType(#{br_i});
+    if (atoms1[2]->is(#{br_s}))
+    {
+        atoms1[2]->changeType(#{cd_s});
+    }
+    else
+    {
+        assert(atoms1[2]->is(#{br_i}));
+        atoms1[2]->changeType(#{cd_i});
+    }
+    assert(!atoms1[3]->is(#{ct_ss}));
+    if (atoms1[3]->is(#{cm_iss}))
+    {
+        atoms1[3]->changeType(#{cd_s});
+    }
+    else
+    {
+        assert(atoms1[3]->is(#{cm_is}));
+        atoms1[3]->changeType(#{cd_i});
+    }
+    Finder::findAll(atoms1, 4);
+                CODE
+              end
+            end
           end
         end
 
