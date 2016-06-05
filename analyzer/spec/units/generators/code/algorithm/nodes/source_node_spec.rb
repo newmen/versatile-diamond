@@ -98,7 +98,7 @@ module VersatileDiamond
 
             describe 'surface' do
               include_context :without_gas
-              it { expect(subject.transitions.size).to eq(3) }
+              it { expect(subject.transitions.size).to eq(1) }
             end
           end
 
@@ -110,7 +110,7 @@ module VersatileDiamond
 
             describe 'surface' do
               include_context :without_gas
-              it { expect(subject.wrong_properties.size).to eq(1) }
+              it { expect(subject.wrong_properties.size).to eq(0) }
             end
           end
         end

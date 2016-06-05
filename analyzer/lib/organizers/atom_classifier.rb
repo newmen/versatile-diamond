@@ -18,7 +18,6 @@ module VersatileDiamond
         @unrelevanted_props = Set.new
 
         @_default_latticed_atoms = nil
-        @_props_with_indexes = nil
         reset_caches!
       end
 
@@ -36,16 +35,13 @@ module VersatileDiamond
 
       # Analyze spec and store all uniq properties
       # @param [DependentBaseSpec | DependentSpecificSpec] spec the analyzing spec
-      # @option [Boolean] :with_ions is flag which identify that there are reactions
-      #   with analyzing spec and ions of gase phase
-      def analyze(spec, with_ions: true)
+      def analyze!(spec)
         raise 'Cache of properties already created' if @_props_with_indexes
 
-        store_all_ioned = @is_ions_presented || with_ions
         avail_props = spec.links.map { |atom, _| AtomProperties.new(spec, atom) }
         avail_props.each do |prop|
           store_prop(@described_props, prop)
-          if store_all_ioned
+          if @is_ions_presented
             store_all(:activated, prop)
             store_all(:deactivated, prop)
           end
@@ -57,6 +53,21 @@ module VersatileDiamond
         add_default_latticed_atoms
         organize_by_inclusion!(props)
         organize_by_relatives!(props)
+      end
+
+      # Reorganizes dependencies between properties extended by new produced from raw
+      # @param [Array] raw_props the pair of raw source and product atom properties
+      # @return [Boolean] reorganization has been occurred?
+      def reorganize_with!(raw_props)
+        news = produce_news(raw_props)
+        if news.empty?
+          false
+        else
+          news.each { |prop| store_prop(@described_props, prop) }
+          organize_by_inclusion!(props)
+          organize_by_relatives!(props)
+          true
+        end
       end
 
       # Classify spec and return the hash where keys are order numbers of properties
@@ -200,7 +211,7 @@ module VersatileDiamond
 
       # @return [Set]
       def all_props
-        @_app_props ||= @described_props + @unrelevanted_props +
+        @_all_props ||= @described_props + @unrelevanted_props +
           @over_danglings_props + @over_relevants_props
       end
 
@@ -213,8 +224,7 @@ module VersatileDiamond
       # @param [Array] props_list the observing atom properties
       def organize_by_inclusion!(props_list)
         iterate_props_list(props_list) do |first, internal|
-          next unless internal.contained_in?(first)
-          first.add_smallest(internal)
+          first.add_smallest(internal) if internal.contained_in?(first)
         end
       end
 
@@ -230,6 +240,22 @@ module VersatileDiamond
             end
           elsif first.same_unfixed?(internal)
             first.add_same(internal)
+          end
+        end
+      end
+
+      # Produces new atom properties
+      # @param [Array] raw_props
+      # @return [Array]
+      def produce_news(raw_props)
+        src, prd = raw_props.map(&method(:detect_prop))
+        if src == prd
+          []
+        else
+          diffs = children_of(src).map { |child| child - src }
+          news = diffs.map { |df| df && (df + prd) }.select(&:itself)
+          news.reject do |prop|
+            all_props.any? { |ap| ap == prop }
           end
         end
       end
@@ -320,7 +346,8 @@ module VersatileDiamond
       end
 
       def reset_caches!
-        @_app_props, @_props, @_props_hash = nil
+        @_all_props, @_props, @_props_with_indexes, @_props_hash = nil
+        @_tmatrix, @_st_matrix = nil
       end
     end
 

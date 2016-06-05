@@ -333,7 +333,7 @@ module VersatileDiamond
 
         describe '#role' do
           let(:classifier) { generator.classifier }
-          before { classifier.analyze(subject.spec) }
+          before { classifier.analyze!(subject.spec) }
 
           subject { code_bridge_base }
           it { expect(subject.role(bridge_base.atom(:ct))).to eq(0) }

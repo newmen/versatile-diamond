@@ -25,7 +25,7 @@ module VersatileDiamond
 
           before do
             organize(dependent_specific_species)
-            classifier.analyze(target)
+            classifier.analyze!(target)
           end
 
           describe 'activated_methyl_on_dimer' do
@@ -87,7 +87,7 @@ module VersatileDiamond
         let(:classifier) { AtomClassifier.new(false) }
 
         before do
-          dependent_specs.each { |spec| classifier.analyze(spec, with_ions: false) }
+          dependent_specs.each(&classifier.public_method(:analyze!))
           classifier.organize_properties!
         end
 

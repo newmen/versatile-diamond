@@ -30,7 +30,7 @@ module VersatileDiamond
           # @return [Array]
           def wrong_properties
             @_wrong_roles ||=
-              props_groups[false] ? props_groups[false].map(&:first) : []
+              props_groups[false] ? props_groups[false].map(&:first).sort : []
           end
 
           # @param [Array] list
@@ -47,7 +47,7 @@ module VersatileDiamond
             return @_props_groups = {} if gas?
 
             src_current, prd_current = [self, product].map(&:properties)
-            src_children = @classifier.children_of(src_current).sort
+            src_children = @classifier.children_of(src_current)
             src_diffs = src_children.map { |child| child - src_current }
             prd_news = src_diffs.map { |diff| diff + prd_current }
 

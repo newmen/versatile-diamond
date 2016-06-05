@@ -86,7 +86,7 @@ module VersatileDiamond
     Atom *amorph1 = methylOnBridge1->atom(0);
     assert(amorph1->is(#{role_cm}));
     amorph1->activate();
-    assert(!amorph1->is(#{cm_iss}) && !amorph1->is(#{cm_sss}));
+    assert(!amorph1->is(#{cm_iss}));
     if (amorph1->is(#{cm_is}))
     {
         amorph1->changeType(#{cm_iss});

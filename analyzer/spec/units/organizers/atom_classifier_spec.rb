@@ -6,7 +6,7 @@ module VersatileDiamond
     describe AtomClassifier, type: :organizer, use: :atom_properties do
       subject { described_class.new }
 
-      describe '#analyze' do
+      describe '#analyze!' do
         before do
           [
             dept_activated_bridge,
@@ -19,7 +19,7 @@ module VersatileDiamond
             dept_methyl_on_incoherent_bridge,
             dept_high_bridge,
           ].each do |spec|
-            subject.analyze(spec)
+            subject.analyze!(spec)
           end
         end
 

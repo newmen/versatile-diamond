@@ -59,55 +59,24 @@ module VersatileDiamond
       def classifier
         return @_classifier if classified?
 
-        analyzed_specs = Set.new
-        specs_with_ions = {}
-        typical_reactions.each do |reaction|
-          reaction.surface_source.each do |spec|
-            next if analyzed_specs.include?(spec)
-            analyzed_specs << spec
-            specs_with_ions[spec.name] ||= []
-            specs_with_ions[spec.name] << exchange_ions?(reaction, spec)
+        raw_clf = Organizers::AtomClassifier.new(!ubiquitous_reactions.empty?)
+        surface_specs.each { |spec| raw_clf.analyze!(spec) }
+        raw_clf.organize_properties!
+
+        loop do
+          there_is_new = false
+          typical_reactions.each do |reaction|
+            reaction.changes.each do |src_to_prd|
+              unless src_to_prd.map(&:first).any?(&:gas?)
+                raw_props = atom_properties_list(src_to_prd)
+                there_is_new ||= raw_clf.reorganize_with!(raw_props)
+              end
+            end
           end
+          break unless there_is_new
         end
 
-        is_ions_presented =
-          !ubiquitous_reactions.empty? || specs_with_ions.values.flatten.any?
-
-        raw_classifier = Organizers::AtomClassifier.new(is_ions_presented)
-        surface_specs.each do |spec|
-          cached_value = specs_with_ions[spec.name]
-          raw_classifier.analyze(spec, with_ions: cached_value && cached_value.any?)
-        end
-
-        raw_classifier.organize_properties!
-        @_classifier = raw_classifier
-      end
-
-      # Is there the exchange of some ions on specie in reaction?
-      # @param [Organizers::DependentSpecReaction] reaction where the interactions
-      #   will be checked
-      # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] spec
-      #   which ions changes will be checked
-      # @return [Boolean] is there exchanges or not?
-      def exchange_ions?(reaction, spec)
-        reaction.each(:source).any?(&:simple?) ||
-          reaction.changes.any? do |src_to_prd|
-            s, a = src_to_prd.first
-            next false unless spec == s
-            diff = (:-).to_proc[*atom_properties_list(src_to_prd)]
-            diff && just_activated_props(a).any? { |props| props == diff }
-          end
-      end
-
-      # Makes possible raw atom properties from passed atom
-      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom] atom
-      #   for which the raw properties will be constructed
-      # @return [Array] the list of raw properties
-      def just_activated_props(atom)
-        atom.valence.times.map do |i|
-          danglings = [Concepts::ActiveBond.property] * (i + 1)
-          Organizers::AtomProperties.raw(atom, danglings: danglings)
-        end
+        @_classifier = raw_clf
       end
 
       # Makes atom properties from passed list of specs and atoms
