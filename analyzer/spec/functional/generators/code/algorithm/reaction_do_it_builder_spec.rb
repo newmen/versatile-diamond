@@ -8,6 +8,7 @@ module VersatileDiamond
         describe ReactionDoItBuilder, type: :algorithm, use: :atom_properties do
           let(:base_specs) { [] }
           let(:specific_specs) { [] }
+          let(:other_reactions) { [] }
           let(:generator) do
             bases = base_specs.dup
             specifics = specific_specs.dup
@@ -19,7 +20,7 @@ module VersatileDiamond
             stub_generator(
               base_specs: bases.uniq(&:name),
               specific_specs: specifics.uniq(&:name),
-              typical_reactions: [typical_reaction])
+              typical_reactions: [typical_reaction] + other_reactions)
           end
 
           let(:classifier) { generator.classifier }
@@ -30,10 +31,7 @@ module VersatileDiamond
           end
 
           def raw_props_idx(spec, keyname, str_opts)
-            opts = convert_str_prop(str_opts)
-            prop = Organizers::AtomProperties.new(spec, spec.spec.atom(keyname)) +
-              Organizers::AtomProperties.raw(spec.spec.atom(keyname), **opts)
-            classifier.index(prop)
+            classifier.index(raw_prop(spec, keyname, str_opts))
           end
 
           shared_examples_for :check_do_it do
@@ -86,8 +84,12 @@ module VersatileDiamond
     Atom *amorph1 = methylOnBridge1->atom(0);
     assert(amorph1->is(#{role_cm}));
     amorph1->activate();
-    assert(!amorph1->is(#{cm_iss}));
-    if (amorph1->is(#{cm_is}))
+    assert(!amorph1->is(#{cm_sss}));
+    if (amorph1->is(#{cm_iss}))
+    {
+        amorph1->changeType(#{cm_sss});
+    }
+    else if (amorph1->is(#{cm_is}))
     {
         amorph1->changeType(#{cm_iss});
     }
@@ -104,7 +106,23 @@ module VersatileDiamond
             it_behaves_like :check_do_it do
               let(:typical_reaction) { dept_methyl_deactivation }
               let(:first_spec) { dept_activated_methyl_on_bridge }
-              let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+              let(:do_it_algorithm) do
+                <<-CODE
+    SpecificSpec *methylOnBridgeCMs1 = target();
+    assert(methylOnBridgeCMs1->type() == METHYL_ON_BRIDGE_CMs);
+    Atom *amorph1 = methylOnBridgeCMs1->atom(0);
+    assert(amorph1->is(#{role_cm}));
+    amorph1->deactivate();
+    amorph1->changeType(#{cm_i});
+    Finder::findAll(&amorph1, 1);
+                CODE
+              end
+            end
+
+            it_behaves_like :check_do_it do
+              let(:typical_reaction) { dept_methyl_deactivation }
+              let(:other_reactions) { [dept_methyl_activation] }
+              let(:first_spec) { dept_activated_methyl_on_bridge }
               let(:do_it_algorithm) do
                 <<-CODE
     SpecificSpec *methylOnBridgeCMs1 = target();

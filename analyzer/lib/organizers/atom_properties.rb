@@ -126,10 +126,12 @@ module VersatileDiamond
         if total_props
           bonds_num = estab_bonds_num_in(total_props[:relations])
           ext_num = bonds_num + total_props[:danglings].size
-          are_correct_props =
-            valid_relations?(total_props[:relations]) &&
-              ((ext_num < valence && valid_relevants?(total_props[:relevants])) ||
-                (ext_num == valence && total_props[:relevants].empty?))
+
+          total_props[:relevants] = [] if ext_num == valence
+          are_correct_props = valid_relations?(total_props[:relations]) &&
+              (ext_num == valence ||
+                (ext_num < valence && valid_relevants?(total_props[:relevants])))
+
 
           result = self.class.new(state_values(total_props)) if are_correct_props
         end

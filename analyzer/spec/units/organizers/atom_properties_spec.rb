@@ -141,17 +141,32 @@ module VersatileDiamond
       end
 
       describe '#+' do
-        let(:ad_diff) { ad_cr - bridge_ct }
-        it { expect(bridge_ct + ad_diff).to eq(ad_cr) }
-        it { expect(ab_ct + ad_diff).to be_nil }
-        it { expect(bridge_cr + ad_diff).to be_nil }
+        describe 'ad' do
+          let(:ad_diff) { ad_cr - bridge_ct }
+          it { expect(bridge_ct + ad_diff).to eq(ad_cr) }
+          it { expect(ab_ct + ad_diff).to be_nil }
+          it { expect(bridge_cr + ad_diff).to be_nil }
+        end
 
-        let(:i_diff) { ib_cr - bridge_cr }
-        it { expect(ab_ct + i_diff).to eq(aib_ct) }
-        it { expect(hib_ct + i_diff).to eq(hib_ct) }
-        it { expect(dimer_cr + i_diff).to eq(id_cr) }
-        it { expect(tb_cc + i_diff).to be_nil }
-        it { expect(ucm + i_diff).to be_nil }
+        describe 'i' do
+          let(:i_diff) { ib_cr - bridge_cr }
+          it { expect(ab_ct + i_diff).to eq(aib_ct) }
+          it { expect(hib_ct + i_diff).to eq(hib_ct) }
+          it { expect(dimer_cr + i_diff).to eq(id_cr) }
+          it { expect(tb_cc + i_diff).to eq(tb_cc) }
+          it { expect(ucm + i_diff).to be_nil }
+        end
+
+        describe 'methyl activation' do
+          let(:a_diff) { amob - cm }
+          let(:ai_diff) { iamob - cm }
+          let(:cm_ss) { raw_prop(dept_methyl_on_bridge_base, :cm, '**') }
+          let(:cm_iss) { raw_prop(dept_methyl_on_bridge_base, :cm, 'i**') }
+          let(:cm_sss) { raw_prop(dept_methyl_on_bridge_base, :cm, '***') }
+          it { expect(amob + a_diff).to eq(cm_ss) }
+          it { expect(amob + ai_diff).to eq(cm_iss) }
+          it { expect(amob + ai_diff + a_diff).to eq(cm_sss) }
+        end
       end
 
       describe '#-' do

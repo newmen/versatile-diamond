@@ -62,6 +62,16 @@ module VersatileDiamond
           end
         end
 
+        # @param [DependentWrappedSpec] spec
+        # @param [Symbol] keyname
+        # @param [String] str_opts
+        # @return [AtomProperties]
+        def raw_prop(spec, keyname, str_opts)
+          atom = spec.spec.atom(keyname)
+          AtomProperties.new(spec, atom) +
+            AtomProperties.raw(atom, **convert_str_prop(str_opts))
+        end
+
         # Gets atoms property by original specie and atom and additional options which
         # describes by string
         #
@@ -108,6 +118,7 @@ module VersatileDiamond
         prop(:high_cm, :high_bridge, :cm)
         prop(:cm, :methyl_on_bridge_base, :cm)
         prop(:ucm, :unfixed_methyl_on_bridge, :cm)
+        prop(:amob, :activated_methyl_on_bridge, :cm)
         prop(:imob, :incoherent_methyl_on_bridge, :cm)
         prop(:iamob, :incoherent_activated_methyl_on_bridge, :cm)
         prop(:ihmob, :incoherent_hydrogenated_methyl_on_bridge, :cm)
