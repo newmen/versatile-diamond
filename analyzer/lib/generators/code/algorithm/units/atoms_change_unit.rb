@@ -26,9 +26,9 @@ module VersatileDiamond
           def apply
             exprs = []
             exprs << change_phases unless @phase_changes.empty?
+            exprs << drop_bond_calls.reduce(:+) unless drop_bond_calls.empty?
             exprs << recharge unless recharges.empty?
             exprs << create_bond_calls.reduce(:+) unless create_bond_calls.empty?
-            exprs << drop_bond_calls.reduce(:+) unless drop_bond_calls.empty?
             exprs << change_roles if change?
             exprs.reduce(:+)
           end

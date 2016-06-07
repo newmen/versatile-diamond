@@ -129,7 +129,7 @@ module VersatileDiamond
           # @return [Array]
           def neighbour_spec_atoms(node)
             spec, atom = node.spec_atom
-            spec.links[atom].map { |a, _| [spec, a] }
+            spec.links[atom].select { |_, r| r.bond? }.map { |a, _| [spec, a] }
           end
 
           # @param [Hash] links

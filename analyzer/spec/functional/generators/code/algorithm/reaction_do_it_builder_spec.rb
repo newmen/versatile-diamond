@@ -423,9 +423,9 @@ module VersatileDiamond
     assert(atoms1[3]->is(#{role_cm}));
     Handbook::amorph().erase(atoms1[3]);
     crystalBy(atoms1[1])->insert(atoms1[3], Diamond::front_110_at(atoms1[1], atoms1[0]));
+    atoms1[0]->unbondFrom(atoms1[1]);
     atoms1[0]->deactivate();
     atoms1[3]->activate();
-    atoms1[0]->unbondFrom(atoms1[1]);
     atoms1[0]->bondWith(atoms1[3]);
     atoms1[1]->bondWith(atoms1[3]);
     assert(!atoms1[1]->is(#{cd_s}));
