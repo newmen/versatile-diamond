@@ -380,11 +380,13 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_do_it do
+            describe 'sierpinski drop' do
               let(:typical_reaction) { dept_sierpinski_drop }
               let(:first_spec) { dept_cross_bridge_on_bridges_base }
-              let(:do_it_algorithm) do
-                <<-CODE
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
     SpecificSpec *crossBridgeOnBridges1 = target();
     assert(crossBridgeOnBridges1->type() == CROSS_BRIDGE_ON_BRIDGES);
     Atom *atoms1[2] = { crossBridgeOnBridges1->atom(5), crossBridgeOnBridges1->atom(0) };
@@ -394,16 +396,57 @@ module VersatileDiamond
     atoms1[0]->changeType(#{ct_is});
     atoms1[1]->changeType(#{cm_is});
     Finder::findAll(atoms1, 2);
-                CODE
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *crossBridgeOnBridges1 = target();
+    assert(crossBridgeOnBridges1->type() == CROSS_BRIDGE_ON_BRIDGES);
+    Atom *atoms1[2] = { crossBridgeOnBridges1->atom(5), crossBridgeOnBridges1->atom(0) };
+    assert(atoms1[0]->is(#{role_ctr}));
+    assert(atoms1[1]->is(#{role_cm}));
+    atoms1[0]->unbondFrom(atoms1[1]);
+    if (atoms1[0]->is(#{cb_s}))
+    {
+        atoms1[0]->changeType(#{ct_ss});
+    }
+    else
+    {
+        assert(atoms1[0]->is(#{cb_i}));
+        atoms1[0]->changeType(#{ct_is});
+    }
+    if (atoms1[1]->is(#{sm_ss}))
+    {
+        atoms1[1]->changeType(#{cm_sss});
+    }
+    else if (atoms1[1]->is(#{sm_is}))
+    {
+        atoms1[1]->changeType(#{cm_iss});
+    }
+    else
+    {
+        assert(atoms1[1]->is(#{sm_i}));
+        atoms1[1]->changeType(#{cm_is});
+    }
+    Finder::findAll(atoms1, 2);
+                  CODE
+                end
               end
             end
 
-            it_behaves_like :check_do_it do
-              let(:typical_reaction) { dept_sierpinski_formation }
+            describe 'sierpinski formation' do
+              let(:typical_reaction) { dept_sierpinski_drop }
               let(:first_spec) { dept_activated_methyl_on_bridge }
               let(:second_spec) { dept_activated_bridge }
-              let(:do_it_algorithm) do
-                <<-CODE
+
+              it_behaves_like :check_do_it do
+                let(:second_spec) { dept_activated_bridge }
+                let(:do_it_algorithm) do
+                  <<-CODE
     SpecificSpec *species1[2] = { target(0), target(1) };
     assert(species1[0]->type() == BRIDGE_CTs);
     assert(species1[1]->type() == METHYL_ON_BRIDGE_CMs);
@@ -436,7 +479,8 @@ module VersatileDiamond
         atoms1[1]->changeType(#{sm_i});
     }
     Finder::findAll(atoms1, 2);
-                CODE
+                  CODE
+                end
               end
             end
 
