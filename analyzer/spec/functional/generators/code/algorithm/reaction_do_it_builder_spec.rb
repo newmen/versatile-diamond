@@ -221,11 +221,13 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_do_it do
+            describe 'vinyl adsorption' do
               let(:typical_reaction) { dept_vinyl_adsorption }
               let(:first_spec) { dept_activated_bridge }
-              let(:do_it_algorithm) do
-                <<-CODE
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
     SpecificSpec *bridgeCTs1 = target();
     assert(bridgeCTs1->type() == BRIDGE_CTs);
     AtomBuilder builder;
@@ -236,8 +238,32 @@ module VersatileDiamond
     atoms1[0]->bondWith(atoms1[1]);
     atoms1[1]->bondWith(atoms1[2]);
     atoms1[1]->bondWith(atoms1[2]);
-    assert(!atoms1[0]->is(#{br_s}) && !atoms1[0]->is(#{cb_s}));
-    if (atoms1[0]->is(#{ct_ss}))
+    atoms1[0]->changeType(#{cb_i});
+    Finder::findAll(atoms1, 3);
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *bridgeCTs1 = target();
+    assert(bridgeCTs1->type() == BRIDGE_CTs);
+    AtomBuilder builder;
+    Atom *atoms1[3] = { bridgeCTs1->atom(0), builder.buildC(#{cv_i}, 3), builder.buildC(#{cw_i}, 2) };
+    assert(atoms1[0]->is(#{ct_s}));
+    Handbook::amorph().insert(atoms1[1]);
+    Handbook::amorph().insert(atoms1[2]);
+    atoms1[0]->bondWith(atoms1[1]);
+    atoms1[1]->bondWith(atoms1[2]);
+    atoms1[1]->bondWith(atoms1[2]);
+    assert(!atoms1[0]->is(#{cb_s}));
+    if (atoms1[0]->is(#{br_s}))
+    {
+        atoms1[0]->changeType(#{br_m});
+    }
+    else if (atoms1[0]->is(#{ct_ss}))
     {
         atoms1[0]->changeType(#{cb_s});
     }
@@ -247,7 +273,8 @@ module VersatileDiamond
         atoms1[0]->changeType(#{cb_i});
     }
     Finder::findAll(atoms1, 3);
-                CODE
+                  CODE
+                end
               end
             end
 
