@@ -93,7 +93,8 @@ module VersatileDiamond
             main_nrps = latticed_nrps.select { |nbr, _| main?(nbr) }
             neighbours = best_neighbours(main_nrps)
             neighbours = best_neighbours(latticed_nrps) if neighbours.size < 2
-            @_significant_neighbours[node] = neighbours.size < 2 ? [] : neighbours
+            @_significant_neighbours[node] =
+              neighbours.size < 2 ? [[], []] : neighbours
           end
 
           # @param [Array] relations

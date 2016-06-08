@@ -167,6 +167,12 @@ module VersatileDiamond
           it { expect(amob + ai_diff).to eq(cm_iss) }
           it { expect(amob + ai_diff + a_diff).to eq(cm_sss) }
         end
+
+        describe 'vinyl c1' do
+          let(:i_diff) { imob - cm }
+          let(:ivob) { raw_prop(dept_vinyl_on_bridge_base, :c1, 'i') }
+          it { expect(vob + i_diff).to eq(ivob) }
+        end
       end
 
       describe '#-' do

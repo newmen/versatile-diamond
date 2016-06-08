@@ -68,8 +68,10 @@ module VersatileDiamond
         # @return [AtomProperties]
         def raw_prop(spec, keyname, str_opts)
           atom = spec.spec.atom(keyname)
-          AtomProperties.new(spec, atom) +
+          result = AtomProperties.new(spec, atom) +
             AtomProperties.raw(atom, **convert_str_prop(str_opts))
+          result ||
+            raise("Incorrect aproperties for #{spec.name}(#{keyname}: #{str_opts})")
         end
 
         # Gets atoms property by original specie and atom and additional options which

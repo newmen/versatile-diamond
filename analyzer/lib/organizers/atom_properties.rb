@@ -506,11 +506,9 @@ module VersatileDiamond
       # @return [Hash] the merged properties hash or nil if properties cannot be merged
       def merge_props(other, &block)
         if same_basic_values?(other)
-          mps = produce_props(other, &block)
-          mps[:relevants] &&= mps[:relevants].uniq
-          nbr_lattices_num = mps[:nbr_lattices] ? mps[:nbr_lattices].size : 0
-          undir_bonds_num = mps[:relations] ? undir_bonds_num_in(mps[:relations]) : 0
-          undir_bonds_num == nbr_lattices_num && mps
+          result = produce_props(other, &block)
+          result[:relevants] &&= result[:relevants].uniq
+          result
         else
           nil
         end
