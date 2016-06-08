@@ -59,6 +59,7 @@ module VersatileDiamond
             let(:ct_i) { raw_props_idx(dept_bridge_base, :ct, 'i') }
             let(:br_s) { raw_props_idx(dept_bridge_base, :cr, '*') }
             let(:br_i) { raw_props_idx(dept_bridge_base, :cr, 'i') }
+            let(:br_m) { raw_props_idx(dept_methyl_on_right_bridge_base, :cr, '') }
             let(:cb_s) { raw_props_idx(dept_methyl_on_bridge_base, :cb, '*') }
             let(:cb_i) { raw_props_idx(dept_methyl_on_bridge_base, :cb, 'i') }
             let(:cd_s) { raw_props_idx(dept_dimer_base, :cr, '*') }
@@ -169,11 +170,13 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_do_it do
+            describe 'methyl adsorption' do
               let(:typical_reaction) { dept_methyl_adsorption }
               let(:first_spec) { dept_activated_bridge }
-              let(:do_it_algorithm) do
-                <<-CODE
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
     SpecificSpec *bridgeCTs1 = target();
     assert(bridgeCTs1->type() == BRIDGE_CTs);
     AtomBuilder builder;
@@ -181,8 +184,29 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{ct_s}));
     Handbook::amorph().insert(atoms1[1]);
     atoms1[0]->bondWith(atoms1[1]);
-    assert(!atoms1[0]->is(#{br_s}) && !atoms1[0]->is(#{cb_s}));
-    if (atoms1[0]->is(#{ct_ss}))
+    atoms1[0]->changeType(#{cb_i});
+    Finder::findAll(atoms1, 2);
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *bridgeCTs1 = target();
+    assert(bridgeCTs1->type() == BRIDGE_CTs);
+    AtomBuilder builder;
+    Atom *atoms1[2] = { bridgeCTs1->atom(0), builder.buildC(#{cm_i}, 1) };
+    assert(atoms1[0]->is(#{ct_s}));
+    Handbook::amorph().insert(atoms1[1]);
+    atoms1[0]->bondWith(atoms1[1]);
+    assert(!atoms1[0]->is(#{cb_s}));
+    if (atoms1[0]->is(#{br_s}))
+    {
+        atoms1[0]->changeType(#{br_m});
+    }
+    else if (atoms1[0]->is(#{ct_ss}))
     {
         atoms1[0]->changeType(#{cb_s});
     }
@@ -192,7 +216,8 @@ module VersatileDiamond
         atoms1[0]->changeType(#{cb_i});
     }
     Finder::findAll(atoms1, 2);
-                CODE
+                  CODE
+                end
               end
             end
 
