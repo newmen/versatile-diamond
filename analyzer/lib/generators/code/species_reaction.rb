@@ -7,14 +7,12 @@ module VersatileDiamond
       class SpeciesReaction < BaseReaction
         include Modules::ListsComparer
         include SpeciesUser
-        extend Forwardable
+        include ReactionWithComplexSpecies
 
         LATERAL_CHUNKS_NAME = 'chunks'.freeze
         CHUNKS_INDEX_NAME = 'index'.freeze
         LIMITER_VAR_NAME = 'num'.freeze
         COUNTER_VAR_NAME = 'counter'.freeze
-
-        def_delegators :reaction, :links, :clean_links, :relation_between
 
         # Initializes additional caches
         def initialize(*)
@@ -37,10 +35,6 @@ module VersatileDiamond
           check_all_source!(species.map(&:proxy_spec).map(&:spec))
           species.sort { |*ss| ordering_rule(*ss.map(&:spec)) }
         end
-
-      protected
-
-        def_delegator :reaction, :lateral?
 
       private
 

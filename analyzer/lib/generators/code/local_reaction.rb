@@ -6,6 +6,7 @@ module VersatileDiamond
       class LocalReaction < BaseReaction
         include SpeciesUser
         include ReactionWithSimpleGas
+        include ReactionWithComplexSpecies
 
         # Gets the name of base class
         # @return [String] the parent type name

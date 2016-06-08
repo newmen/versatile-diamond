@@ -5,8 +5,6 @@ module VersatileDiamond
       # Contains logic for generation typical reation
       class TypicalReaction < SpeciesReaction
 
-        def_delegators :reaction, :changes, :full_mapping
-
         # Initializes typical reaction class code generator
         def initialize(*)
           super

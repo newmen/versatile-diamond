@@ -8,6 +8,7 @@ module VersatileDiamond
         describe ReactionDoItBuilder, type: :algorithm, use: :atom_properties do
           let(:base_specs) { [] }
           let(:specific_specs) { [] }
+          let(:ubiquitous_reactions) { [] }
           let(:other_reactions) { [] }
           let(:generator) do
             bases = base_specs.dup
@@ -20,7 +21,14 @@ module VersatileDiamond
             stub_generator(
               base_specs: bases.uniq(&:name),
               specific_specs: specifics.uniq(&:name),
+              ubiquitous_reactions: ubiquitous_reactions,
               typical_reactions: [typical_reaction] + other_reactions)
+          end
+
+          shared_context :with_ubiquitous do
+            let(:ubiquitous_reactions) do
+              [dept_surface_activation, dept_surface_deactivation]
+            end
           end
 
           let(:classifier) { generator.classifier }
@@ -72,7 +80,7 @@ module VersatileDiamond
             let(:sm_is) { raw_props_idx(dept_cross_bridge_on_bridges_base, :cm, 'i*') }
             let(:sm_i) { raw_props_idx(dept_cross_bridge_on_bridges_base, :cm, 'i') }
 
-            it_behaves_like :check_do_it do
+            describe 'methyl activation' do
               let(:typical_reaction) { dept_methyl_activation }
               let(:first_spec) { dept_methyl_on_bridge_base }
               let(:base_specs) { [dept_bridge_base] }
@@ -101,13 +109,20 @@ module VersatileDiamond
     Finder::findAll(&amorph1, 1);
                 CODE
               end
+
+              it_behaves_like :check_do_it
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+              end
             end
 
-            it_behaves_like :check_do_it do
+            describe 'methyl deactivation' do
               let(:typical_reaction) { dept_methyl_deactivation }
               let(:first_spec) { dept_activated_methyl_on_bridge }
-              let(:do_it_algorithm) do
-                <<-CODE
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
     SpecificSpec *methylOnBridgeCMs1 = target();
     assert(methylOnBridgeCMs1->type() == METHYL_ON_BRIDGE_CMs);
     Atom *amorph1 = methylOnBridgeCMs1->atom(0);
@@ -115,16 +130,13 @@ module VersatileDiamond
     amorph1->deactivate();
     amorph1->changeType(#{cm_i});
     Finder::findAll(&amorph1, 1);
-                CODE
+                  CODE
+                end
               end
-            end
 
-            it_behaves_like :check_do_it do
-              let(:typical_reaction) { dept_methyl_deactivation }
-              let(:other_reactions) { [dept_methyl_activation] }
-              let(:first_spec) { dept_activated_methyl_on_bridge }
-              let(:do_it_algorithm) do
-                <<-CODE
+              describe 'all states' do
+                let(:do_it_algorithm) do
+                  <<-CODE
     SpecificSpec *methylOnBridgeCMs1 = target();
     assert(methylOnBridgeCMs1->type() == METHYL_ON_BRIDGE_CMs);
     Atom *amorph1 = methylOnBridgeCMs1->atom(0);
@@ -144,7 +156,16 @@ module VersatileDiamond
         amorph1->changeType(#{cm_i});
     }
     Finder::findAll(&amorph1, 1);
-                CODE
+                  CODE
+                end
+
+                it_behaves_like :check_do_it do
+                  include_context :with_ubiquitous
+                end
+
+                it_behaves_like :check_do_it do
+                  let(:other_reactions) { [dept_methyl_activation] }
+                end
               end
             end
 

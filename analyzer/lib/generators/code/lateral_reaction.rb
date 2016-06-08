@@ -6,6 +6,7 @@ module VersatileDiamond
 
       # Contains logic for generation lateal reation
       class LateralReaction < SpeciesReaction
+        extend Forwardable
 
         def_delegator :reaction, :chunk
         def_delegator :chunk, :internal_chunks
