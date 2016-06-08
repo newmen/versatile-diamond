@@ -278,11 +278,31 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_do_it do
+            describe 'methyl desorption' do
               let(:typical_reaction) { dept_methyl_desorption }
               let(:first_spec) { dept_incoherent_methyl_on_bridge }
-              let(:do_it_algorithm) do
-                <<-CODE
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *methylOnBridgeCMi1 = target();
+    assert(methylOnBridgeCMi1->type() == METHYL_ON_BRIDGE_CMi);
+    Atom *atoms1[2] = { methylOnBridgeCMi1->atom(1), methylOnBridgeCMi1->atom(0) };
+    assert(atoms1[0]->is(#{role_cb}));
+    assert(atoms1[1]->is(#{cm_i}));
+    Handbook::amorph().erase(atoms1[1]);
+    atoms1[1]->unbondFrom(atoms1[0]);
+    atoms1[0]->changeType(#{ct_is});
+    Handbook::scavenger().markAtom(atoms1[1]);
+    Finder::findAll(&atoms1[0], 1);
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
     SpecificSpec *methylOnBridgeCMi1 = target();
     assert(methylOnBridgeCMi1->type() == METHYL_ON_BRIDGE_CMi);
     Atom *atoms1[2] = { methylOnBridgeCMi1->atom(1), methylOnBridgeCMi1->atom(0) };
@@ -301,15 +321,39 @@ module VersatileDiamond
     }
     Handbook::scavenger().markAtom(atoms1[1]);
     Finder::findAll(&atoms1[0], 1);
-                CODE
+                  CODE
+                end
               end
             end
 
-            it_behaves_like :check_do_it do
+            describe 'vinyl desorption' do
               let(:typical_reaction) { dept_vinyl_desorption }
               let(:first_spec) { dept_vinyl_on_bridge_base }
-              let(:do_it_algorithm) do
-                <<-CODE
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *vinylOnBridgeC1iC2i1 = target();
+    assert(vinylOnBridgeC1iC2i1->type() == VINYL_ON_BRIDGE_C1i_C2i);
+    Atom *atoms1[3] = { vinylOnBridgeC1iC2i1->atom(2), vinylOnBridgeC1iC2i1->atom(0), vinylOnBridgeC1iC2i1->atom(1) };
+    assert(atoms1[0]->is(#{role_cb}));
+    assert(atoms1[1]->is(#{cv_i}));
+    assert(atoms1[2]->is(#{cw_i}));
+    Handbook::amorph().erase(atoms1[1]);
+    Handbook::amorph().erase(atoms1[2]);
+    atoms1[1]->unbondFrom(atoms1[0]);
+    atoms1[0]->changeType(#{ct_is});
+    Handbook::scavenger().markAtom(atoms1[1]);
+    Handbook::scavenger().markAtom(atoms1[2]);
+    Finder::findAll(&atoms1[0], 1);
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
     SpecificSpec *vinylOnBridgeC1iC2i1 = target();
     assert(vinylOnBridgeC1iC2i1->type() == VINYL_ON_BRIDGE_C1i_C2i);
     Atom *atoms1[3] = { vinylOnBridgeC1iC2i1->atom(2), vinylOnBridgeC1iC2i1->atom(0), vinylOnBridgeC1iC2i1->atom(1) };
@@ -331,7 +375,8 @@ module VersatileDiamond
     Handbook::scavenger().markAtom(atoms1[1]);
     Handbook::scavenger().markAtom(atoms1[2]);
     Finder::findAll(&atoms1[0], 1);
-                CODE
+                  CODE
+                end
               end
             end
 
