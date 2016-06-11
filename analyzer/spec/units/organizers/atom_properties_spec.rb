@@ -153,7 +153,7 @@ module VersatileDiamond
           it { expect(ab_ct + i_diff).to eq(aib_ct) }
           it { expect(hib_ct + i_diff).to eq(hib_ct) }
           it { expect(dimer_cr + i_diff).to eq(id_cr) }
-          it { expect(tb_cc + i_diff).to eq(tb_cc) }
+          it { expect(tb_cc + i_diff).to be_nil }
           it { expect(ucm + i_diff).to be_nil }
         end
 
@@ -172,6 +172,11 @@ module VersatileDiamond
           let(:i_diff) { imob - cm }
           let(:ivob) { raw_prop(dept_vinyl_on_bridge_base, :c1, 'i') }
           it { expect(vob + i_diff).to eq(ivob) }
+        end
+
+        describe 'limited plus' do
+          it { expect(cm + cm).to eq(bob) }
+          it { expect(cm.+(cm, limit: 1)).to eq(nil) }
         end
       end
 
@@ -665,6 +670,12 @@ module VersatileDiamond
         it { expect(ab_cr.unbonded_actives_num).to eq(4) }
         it { expect(hb_cr.unbonded_actives_num).to eq(3) }
         it { expect(ad_cr.unbonded_actives_num).to eq(4) }
+      end
+
+      describe '#nbr_lattices_num' do
+        it { expect(bridge_ct.nbr_lattices_num).to eq(0) }
+        it { expect(cm.nbr_lattices_num).to eq(1) }
+        it { expect(bob.nbr_lattices_num).to eq(2) }
       end
 
       describe '#has_free_bonds?' do

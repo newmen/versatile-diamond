@@ -39,6 +39,12 @@ module VersatileDiamond
         true
       end
 
+      # Checks that current multibond is really multi
+      # @return [Boolean] true
+      def multi?
+        true
+      end
+
       # Checks that current instance is really relation
       # @return [Boolean] true
       def relation?

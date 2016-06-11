@@ -12,8 +12,9 @@ module VersatileDiamond
 
       extend Lattices::BasicRelations::Amorph
       UNDIRECTED_BONDS = [undirected_bond, double_bond, triple_bond].freeze
-      RELATIVE_PROPERTIES =
-        [Concepts::Unfixed, Concepts::Incoherent].map(&:property).freeze
+      INCOHERENT = Concepts::Incoherent.property.freeze
+      UNFIXED = Concepts::Unfixed.property.freeze
+      RELATIVE_PROPERTIES = [UNFIXED, INCOHERENT]
 
       STATIC_STATES = %i(atom_name valence lattice).freeze
       DYNAMIC_STATES = %i(relations danglings nbr_lattices relevants).freeze
@@ -119,19 +120,37 @@ module VersatileDiamond
 
       # Gets new atom properties instance from two instances
       # @param [AtomProperties] other adding atom properties
+      # @option [Integer] :limit the number of maximal nbr_lattcies
       # @return [AtomProperties] the extended instance of atom properties or nil
-      def +(other)
+      def +(other, limit: nil)
         result = nil
         total_props = merge_props(other, &:+)
         if total_props
           bonds_num = estab_bonds_num_in(total_props[:relations])
-          ext_num = bonds_num + total_props[:danglings].size
+          dang_num = total_props[:danglings].size
+          lattices_num = total_props[:nbr_lattices].size
+          ext_num = bonds_num + dang_num
 
-          total_props[:relevants] = [] if ext_num == valence
-          are_correct_props = valid_relations?(total_props[:relations]) &&
-              (ext_num == valence ||
-                (ext_num < valence && valid_relevants?(total_props[:relevants])))
+          is_valid_lattices = !limit || lattices_num <= limit
 
+          any_without_bonds = [self, other].any? { |x| x.relations.empty? }
+          is_incoherent = bonds_num < valence && any_without_bonds &&
+            total_props[:relevants].include?(INCOHERENT)
+
+          any_without_lattices = [self, other].any? { |x| x.nbr_lattices.empty? }
+          is_unfixed = lattices_num == 1 && any_without_lattices &&
+            total_props[:relevants].include?(UNFIXED)
+
+          is_complete = (ext_num == valence)
+          is_relevant = is_incoherent || is_unfixed
+          is_unrelevanted = is_complete && is_relevant
+
+          total_props[:relevants] = [] if is_unrelevanted
+
+          are_correct_props =
+            is_valid_lattices && valid_relations?(total_props[:relations]) &&
+              (is_unrelevanted || ext_num < valence ||
+                (is_complete && total_props[:relevants].empty?))
 
           result = self.class.new(state_values(total_props)) if are_correct_props
         end
@@ -283,7 +302,7 @@ module VersatileDiamond
       # @return [Boolean] contain or not
       def incoherent?
         return @_is_incoherent unless @_is_incoherent.nil?
-        @_is_incoherent = relevants.include?(Concepts::Incoherent.property)
+        @_is_incoherent = relevants.include?(INCOHERENT)
       end
 
       # Makes incoherent copy of self
@@ -291,7 +310,7 @@ module VersatileDiamond
       def incoherent
         if valence > bonds_num && !incoherent?
           props = without_relevants
-          props[-1] = [Concepts::Incoherent.property]
+          props[-1] = [INCOHERENT]
           self.class.new(props)
         else
           nil
@@ -359,6 +378,12 @@ module VersatileDiamond
       # @return [Integer] the number of total number of hydrogen atoms
       def total_hydrogens_num
         valence - bonds_num + dangling_hydrogens_num
+      end
+
+      # Gets the number of neighbour lattices of current atom properties
+      # @return [Integer]
+      def nbr_lattices_num
+        nbr_lattices.size
       end
 
       # Checks has or not free bonds?
@@ -456,7 +481,7 @@ module VersatileDiamond
       # @return [Boolean] contain or not
       def unfixed?
         return @_is_unfixed unless @_is_unfixed.nil?
-        result = relevants.include?(Concepts::Unfixed.property)
+        result = relevants.include?(UNFIXED)
         raise 'Atom could not be unfixed!' if result && !unfixed_by_nbrs?
         @_is_unfixed = result
       end
@@ -506,9 +531,13 @@ module VersatileDiamond
       # @return [Hash] the merged properties hash or nil if properties cannot be merged
       def merge_props(other, &block)
         if same_basic_values?(other)
-          result = produce_props(other, &block)
-          result[:relevants] &&= result[:relevants].uniq
-          result
+          mps = produce_props(other, &block)
+          mps[:relevants] &&= mps[:relevants].uniq
+          lattices_num = mps[:nbr_lattices] ? mps[:nbr_lattices].size : 0
+          undir_bonds_num = mps[:relations] ? undir_bonds_num_in(mps[:relations]) : 0
+          (undir_bonds_num == lattices_num ||
+            (mps[:relations] && mps[:relations].any?(&:multi?))) &&
+              mps
         else
           nil
         end

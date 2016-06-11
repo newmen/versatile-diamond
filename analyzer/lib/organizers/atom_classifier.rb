@@ -194,6 +194,14 @@ module VersatileDiamond
         end
       end
 
+      def to_s
+        props.map.with_index.to_a.map(&:reverse).to_h.to_s
+      end
+
+      def inspect
+        to_s
+      end
+
     private
 
       # Checks that passed atom properties haven't most bigger
@@ -252,9 +260,10 @@ module VersatileDiamond
         if src == prd
           []
         else
+          max_lattices_num = props.map(&:nbr_lattices_num).max
           diffs = children_of(src).map { |child| child - src }
-          news = diffs.map { |df| df && (df + prd) }.select(&:itself)
-          news.reject do |prop|
+          news = diffs.map { |df| df && df.+(prd, limit: max_lattices_num) }
+          news.select(&:itself).reject do |prop|
             all_props.any? { |ap| ap == prop }
           end
         end

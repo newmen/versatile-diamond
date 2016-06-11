@@ -95,6 +95,12 @@ module VersatileDiamond
         true
       end
 
+      # Checks that current bond is really multi
+      # @return [Boolean] false
+      def multi?
+        false
+      end
+
       # Checks that current instance is really relation
       # @return [Boolean] true
       def relation?
