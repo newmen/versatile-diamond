@@ -5,7 +5,7 @@ module VersatileDiamond
     module Code
       module Algorithm::Nodes
 
-        describe SourceNode, type: :algorithm do
+        describe SourceNode, type: :algorithm, use: :atom_properties do
           include_context :methyl_adsorbtion_context
 
           let(:factory) { Algorithm::ChangesNodesFactory.new(generator) }
@@ -42,15 +42,15 @@ module VersatileDiamond
             end
           end
 
-          describe '#switch?' do
+          describe '#open?' do
             describe 'gas' do
               include_context :with_gas
-              it { expect(subject.switch?).to be_truthy }
+              it { expect(subject.open?).to be_truthy }
             end
 
             describe 'surface' do
               include_context :without_gas
-              it { expect(subject.switch?).to be_falsey }
+              it { expect(subject.open?).to be_falsey }
             end
           end
 
@@ -93,24 +93,25 @@ module VersatileDiamond
           describe '#transitions' do
             describe 'gas' do
               include_context :with_gas
-              it { expect(subject.transitions).to eq([]) }
+              it { expect(subject.transitions).to be_empty }
             end
 
             describe 'surface' do
               include_context :without_gas
-              it { expect(subject.transitions.size).to eq(1) }
+              it { expect(subject.transitions).to eq([[aib_ct, ib_cb]]) }
             end
           end
 
           describe '#wrong_properties' do
             describe 'gas' do
               include_context :with_gas
-              it { expect(subject.wrong_properties).to eq([]) }
+              it { expect(subject.wrong_properties).to be_empty }
             end
 
             describe 'surface' do
               include_context :without_gas
-              it { expect(subject.wrong_properties.size).to eq(0) }
+              # because generator without ubiquitous reactions
+              it { expect(subject.wrong_properties).to be_empty }
             end
           end
         end

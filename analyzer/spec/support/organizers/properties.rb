@@ -91,6 +91,7 @@ module VersatileDiamond
         end
 
         prop(:bridge_ct, :bridge, :ct)
+        prop(:ib_ct, :incoherent_bridge, :ct)
         prop(:ab_ct, :activated_bridge, :ct)
         prop(:eab_ct, :extra_activated_bridge, :ct)
         prop(:aib_ct, :activated_incoherent_bridge, :ct)
@@ -99,6 +100,7 @@ module VersatileDiamond
         prop(:hib_ct, :hydrogenated_incoherent_bridge, :ct)
         prop(:ahb_ct, :activated_hydrogenated_bridge, :ct)
         prop(:ab_cb, :methyl_on_activated_bridge, :cb)
+        prop(:ib_cb, :methyl_on_incoherent_bridge, :cb)
 
         prop(:bridge_cr, :bridge, :cr)
         prop(:ab_cr, :right_activated_bridge, :cr)

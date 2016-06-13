@@ -166,7 +166,8 @@ module VersatileDiamond
             self_state.accurate_diff(other_state)
         end
 
-        diff_props && self.class.new(state_values(diff_props))
+        is_good = (diff_props && DYNAMIC_STATES.all? { |sn| diff_props[sn] }) || nil
+        diff_props && is_good && self.class.new(state_values(diff_props))
       end
 
       # Accurate combines two atom properties

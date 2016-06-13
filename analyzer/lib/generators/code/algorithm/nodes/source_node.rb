@@ -24,7 +24,13 @@ module VersatileDiamond
           # @return [Array]
           def transitions
             @_transitions ||=
-              props_groups[true] ? props_groups[true].sort_by(&:first).reverse : []
+              if props_groups[true]
+                props_groups[true].sort_by(&:first).reverse
+              elsif open?
+                []
+              else
+                [props_transit]
+              end
           end
 
           # @return [Array]
@@ -39,14 +45,23 @@ module VersatileDiamond
             list.map(&@classifier.public_method(:index))
           end
 
+          def inspect
+            "#{original.inspect} -> #{product.original.inspect}"
+          end
+
         private
+
+          # @return [Array]
+          def props_transit
+            [self, product].map(&:properties)
+          end
 
           # @return [Hash]
           def props_groups
             return @_props_groups if @_props_groups
             return @_props_groups = {} if gas?
 
-            src_current, prd_current = [self, product].map(&:properties)
+            src_current, prd_current = props_transit
             src_children = @classifier.children_of(src_current)
             src_diffs = src_children.map { |child| child - src_current }
             prd_news = src_diffs.map { |diff| diff && (diff + prd_current) }

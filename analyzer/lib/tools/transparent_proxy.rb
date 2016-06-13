@@ -73,7 +73,7 @@ module VersatileDiamond
       end
 
       def inspect
-        "proxy_#{i}:#{original.inspect}"
+        "px_#{i}:#{original.inspect}"
       end
 
     private

@@ -16,7 +16,7 @@ module VersatileDiamond
             @sources = sources
 
             @phase_changes = @context.phase_changes
-            @surface_nodes = @sources.reject(&:switch?)
+            @surface_nodes = @sources.reject(&:open?)
 
             @_recharges, @_neighbours_difference = nil
             @_create_bond_calls, @_drop_bond_calls = nil
@@ -31,6 +31,11 @@ module VersatileDiamond
             exprs << create_bond_calls.reduce(:+) unless create_bond_calls.empty?
             exprs << change_roles if change?
             exprs.reduce(:+)
+          end
+
+          def inspect
+            items = @sources.map(&:inspect).map { |s| "  #{s}\n" }
+            "[\n#{items.join}]"
           end
 
         private
@@ -64,7 +69,7 @@ module VersatileDiamond
           # @return [Array]
           def insertion_args_of(node)
             nbrs, rel_params = @context.latticed_neighbours_with_params(node)
-            [@dict.var_of(nbrs.first.atom).crystal, coords_call(nbrs, rel_params)]
+            [@dict.var_of(nbrs.sort.first.atom).crystal, coords_call(nbrs, rel_params)]
           end
 
           # @param [Array] nodes
@@ -175,7 +180,7 @@ module VersatileDiamond
           end
 
           # @param [Nodes::SourceNode] node
-          # @return [Expressions::Core::Statement]
+          # @return [Array]
           def change_role_of(node)
             exprs = []
             exprs << assert_wrong_properties(node) unless node.wrong_properties.empty?

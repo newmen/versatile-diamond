@@ -195,12 +195,10 @@ module VersatileDiamond
         end
       end
 
-      def to_s
-        props.map.with_index.to_a.map(&:reverse).to_h.to_s
-      end
-
       def inspect
-        to_s
+        props_with_index = props.map.with_index
+        items = props_with_index.map { |pr, i| "#{i.to_s.rjust(7)}:  #{pr}\n" }
+        "{\n#{items.join}}"
       end
 
     private

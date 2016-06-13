@@ -32,7 +32,7 @@ module VersatileDiamond
 
           # @return [Array]
           def phase_changes
-            @_phase_changes ||= @main.select { |src| src.transit? || src.switch? }
+            @_phase_changes ||= @main.select { |src| src.transit? || src.different? }
           end
 
           # @return [Array]

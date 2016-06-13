@@ -120,6 +120,7 @@ module VersatileDiamond
         end
 
         set(:bridge) { SpecificSpec.new(bridge_base) }
+        set(:incoherent_bridge) { SpecificSpec.new(bridge_base, ct: incoherent_cd) }
         set(:activated_bridge) { SpecificSpec.new(bridge_base, ct: activated_cd) }
         set(:hydrogenated_bridge) { SpecificSpec.new(bridge_base, ct: cd_hydride) }
         set(:activated_hydrogenated_bridge) do

@@ -26,7 +26,7 @@ module VersatileDiamond
           end
 
           # @return [Boolean]
-          def switch?
+          def open?
             gas? || other.gas?
           end
 

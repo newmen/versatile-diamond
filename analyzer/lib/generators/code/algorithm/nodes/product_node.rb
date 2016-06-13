@@ -9,6 +9,10 @@ module VersatileDiamond
           def source
             other
           end
+
+          def inspect
+            "#{source.original.inspect} <- #{original.inspect}"
+          end
         end
 
       end
