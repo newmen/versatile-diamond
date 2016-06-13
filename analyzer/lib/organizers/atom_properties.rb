@@ -166,11 +166,7 @@ module VersatileDiamond
             self_state.accurate_diff(other_state)
         end
 
-        if diff_props && DYNAMIC_STATES.all? { |state_name| diff_props[state_name] }
-          self.class.new(state_values(diff_props))
-        else
-          nil
-        end
+        diff_props && self.class.new(state_values(diff_props))
       end
 
       # Accurate combines two atom properties
@@ -296,6 +292,12 @@ module VersatileDiamond
       # @return [AtomProperties] unrelevanted atom properties
       def unrelevanted
         self.class.new(without_relevants)
+      end
+
+      # Has any relevant state or not
+      # @return [Boolean]
+      def relevant?
+        incoherent? || unfixed?
       end
 
       # Has incoherent state or not
@@ -532,7 +534,7 @@ module VersatileDiamond
       def merge_props(other, &block)
         if same_basic_values?(other)
           mps = produce_props(other, &block)
-          mps[:relevants] &&= mps[:relevants].uniq
+          mps[:relevants] = mps[:relevants] ? mps[:relevants].uniq : []
           lattices_num = mps[:nbr_lattices] ? mps[:nbr_lattices].size : 0
           undir_bonds_num = mps[:relations] ? undir_bonds_num_in(mps[:relations]) : 0
           (undir_bonds_num == lattices_num ||

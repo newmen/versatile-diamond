@@ -539,19 +539,57 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_do_it do
+            describe 'incoherent dimer drop' do
               let(:typical_reaction) { dept_incoherent_dimer_drop }
               let(:first_spec) { dept_twise_incoherent_dimer }
-              let(:do_it_algorithm) do
-                <<-CODE
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
     SpecificSpec *dimerCLiCRi1 = target();
     assert(dimerCLiCRi1->type() == DIMER_CLi_CRi);
     Atom *atoms1[2] = { dimerCLiCRi1->atom(3), dimerCLiCRi1->atom(0) };
     assert(atoms1[0]->is(#{role_cr}));
     assert(atoms1[1]->is(#{role_cr}));
     atoms1[0]->unbondFrom(atoms1[1]);
+    atoms1[0]->changeType(#{ct_is});
+    atoms1[1]->changeType(#{ct_is});
     Finder::findAll(atoms1, 2);
-                CODE
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *dimerCLiCRi1 = target();
+    assert(dimerCLiCRi1->type() == DIMER_CLi_CRi);
+    Atom *atoms1[2] = { dimerCLiCRi1->atom(3), dimerCLiCRi1->atom(0) };
+    assert(atoms1[0]->is(#{role_cr}));
+    assert(atoms1[1]->is(#{role_cr}));
+    atoms1[0]->unbondFrom(atoms1[1]);
+    if (atoms1[0]->is(#{cd_s}))
+    {
+        atoms1[0]->changeType(#{ct_ss});
+    }
+    else
+    {
+        assert(atoms1[0]->is(#{cd_i}));
+        atoms1[0]->changeType(#{ct_is});
+    }
+    if (atoms1[1]->is(#{cd_s}))
+    {
+        atoms1[1]->changeType(#{ct_ss});
+    }
+    else
+    {
+        assert(atoms1[1]->is(#{cd_i}));
+        atoms1[1]->changeType(#{ct_is});
+    }
+    Finder::findAll(atoms1, 2);
+                  CODE
+                end
               end
             end
 

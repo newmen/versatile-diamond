@@ -151,7 +151,11 @@ module VersatileDiamond
               ]) }
 
             it { expect(subject.children_of(bridge_cr)).to match_array([
-                ab_cr, hb_cr, tb_cc, raw_props(dept_bridge_base, :cr, 'i')
+                ab_cr, hb_cr, tb_cc, ib_cr
+              ]) }
+
+            it { expect(subject.children_of(ib_cr)).to match_array([
+                ab_cr, hb_cr, ib_cr
               ]) }
 
             it { expect(subject.children_of(eab_ct)).to be_empty }

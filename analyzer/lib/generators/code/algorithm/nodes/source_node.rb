@@ -49,7 +49,7 @@ module VersatileDiamond
             src_current, prd_current = [self, product].map(&:properties)
             src_children = @classifier.children_of(src_current)
             src_diffs = src_children.map { |child| child - src_current }
-            prd_news = src_diffs.map { |diff| diff + prd_current }
+            prd_news = src_diffs.map { |diff| diff && (diff + prd_current) }
 
             @_props_groups =
               src_children.zip(prd_news).group_by do |_, prd_new|
