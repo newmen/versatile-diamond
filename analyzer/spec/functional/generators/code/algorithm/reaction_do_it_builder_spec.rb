@@ -66,6 +66,7 @@ module VersatileDiamond
             let(:cd_i) { raw_props_idx(dept_dimer_base, :cr, 'i') }
             let(:bd_c) { raw_props_idx(dept_bridge_with_dimer_base, :cr, '') }
             let(:tm_c) { raw_props_idx(dept_trimer_base, :cr, '') }
+            let(:tb_c) { raw_props_idx(dept_three_bridges_base, :cc, '') }
             let(:cm_sss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '***') }
             let(:cm_iss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'i**') }
             let(:cm_ss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '**') }
@@ -865,6 +866,80 @@ module VersatileDiamond
     else
     {
         assert(atoms1[3]->is(#{cm_is}));
+        atoms1[3]->changeType(#{cd_i});
+    }
+    Finder::findAll(atoms1, 4);
+                  CODE
+                end
+              end
+            end
+
+            describe 'methyl to gap' do
+              let(:typical_reaction) { dept_methyl_to_gap }
+              let(:first_spec) { dept_extra_activated_methyl_on_bridge }
+              let(:second_spec) { dept_right_activated_bridge }
+              let(:base_specs) { [dept_bridge_base] }
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *species1[3] = { target(0), target(1), target(2) };
+    assert(species1[0]->type() == BRIDGE_CRs);
+    assert(species1[1]->type() == BRIDGE_CRs);
+    assert(species1[2]->type() == METHYL_ON_BRIDGE_CMss);
+    Atom *atoms1[4] = { species1[2]->atom(1), species1[1]->atom(2), species1[0]->atom(2), species1[2]->atom(0) };
+    assert(atoms1[0]->is(#{role_cb}));
+    assert(atoms1[1]->is(#{snd_role_cr}));
+    assert(atoms1[2]->is(#{snd_role_cr}));
+    assert(atoms1[3]->is(#{role_cm}));
+    Handbook::amorph().erase(atoms1[3]);
+    crystalBy(atoms1[1])->insert(atoms1[3], Diamond::front_110_at(atoms1[1], atoms1[2]));
+    atoms1[1]->bondWith(atoms1[3]);
+    atoms1[2]->bondWith(atoms1[3]);
+    atoms1[0]->changeType(#{cd_i});
+    atoms1[1]->changeType(#{tb_c});
+    atoms1[2]->changeType(#{tb_c});
+    atoms1[3]->changeType(#{cd_i});
+    Finder::findAll(atoms1, 4);
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *species1[3] = { target(0), target(1), target(2) };
+    assert(species1[0]->type() == BRIDGE_CRs);
+    assert(species1[1]->type() == BRIDGE_CRs);
+    assert(species1[2]->type() == METHYL_ON_BRIDGE_CMss);
+    Atom *atoms1[4] = { species1[2]->atom(1), species1[1]->atom(2), species1[0]->atom(2), species1[2]->atom(0) };
+    assert(atoms1[0]->is(#{role_cb}));
+    assert(atoms1[1]->is(#{snd_role_cr}));
+    assert(atoms1[2]->is(#{snd_role_cr}));
+    assert(atoms1[3]->is(#{role_cm}));
+    Handbook::amorph().erase(atoms1[3]);
+    crystalBy(atoms1[1])->insert(atoms1[3], Diamond::front_110_at(atoms1[1], atoms1[2]));
+    atoms1[1]->bondWith(atoms1[3]);
+    atoms1[2]->bondWith(atoms1[3]);
+    if (atoms1[0]->is(#{cb_s}))
+    {
+        atoms1[0]->changeType(#{cd_s});
+    }
+    else
+    {
+        assert(atoms1[0]->is(#{cb_i}));
+        atoms1[0]->changeType(#{cd_i});
+    }
+    atoms1[1]->changeType(#{tb_c});
+    atoms1[2]->changeType(#{tb_c});
+    if (atoms1[3]->is(#{cm_sss}))
+    {
+        atoms1[3]->changeType(#{cd_s});
+    }
+    else
+    {
+        assert(atoms1[3]->is(#{cm_iss}));
         atoms1[3]->changeType(#{cd_i});
     }
     Finder::findAll(atoms1, 4);
