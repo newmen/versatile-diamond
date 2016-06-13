@@ -118,15 +118,30 @@ module VersatileDiamond
           end
 
           describe '#specification' do
-            it { expect(subject.specification).to eq([1, 1, 3, 3, 5, 5, 6, 8, 8, 10, 10, 11, 20, 20, 19, 19, 16, 20, 20, 19, 20, 24, 24, 23, 24, 26, 26, 27, 29, 29, 30, 31, 32]) }
+            it { expect(subject.specification).to eq([
+                1, 1, 3, 3, 5, 5, 6, 8, 8, 10,
+                10, 11, 20, 20, 19, 19, 16, 20, 20, 19,
+                20, 24, 24, 23, 24, 26, 26, 27, 29, 29,
+                30, 31, 32
+              ]) }
           end
 
           describe '#actives_to_deactives' do
-            it { expect(subject.actives_to_deactives).to eq([0, 1, 0, 1, 2, 3, 4, 7, 8, 7, 8, 9, 12, 13, 12, 13, 14, 17, 18, 17, 20, 21, 22, 21, 24, 25, 26, 25, 28, 29, 28, 31, 32]) }
+            it { expect(subject.actives_to_deactives).to eq([
+                0, 1, 0, 1, 2, 3, 4, 7, 8, 7,
+                8, 9, 12, 13, 12, 13, 14, 17, 18, 17,
+                20, 21, 22, 21, 24, 25, 26, 25, 28, 29,
+                28, 31, 32
+              ]) }
           end
 
           describe '#deactives_to_actives' do
-            it { expect(subject.deactives_to_actives).to eq([2, 3, 4, 5, 6, 6, 6, 9, 10, 11, 11, 11, 14, 15, 16, 16, 16, 19, 19, 19, 20, 23, 23, 23, 24, 27, 27, 27, 30, 30, 30, 31, 32]) }
+            it { expect(subject.deactives_to_actives).to eq([
+                2, 3, 4, 5, 6, 6, 6, 9, 10, 11,
+                11, 11, 14, 15, 16, 16, 16, 19, 19, 19,
+                20, 23, 23, 23, 24, 27, 27, 27, 30, 30,
+                30, 31, 32
+              ]) }
           end
 
           describe '#is?' do
