@@ -16,7 +16,8 @@ module VersatileDiamond
       UNFIXED = Concepts::Unfixed.property.freeze
       RELATIVE_PROPERTIES = [UNFIXED, INCOHERENT]
 
-      STATIC_STATES = %i(atom_name valence lattice).freeze
+      UNIT_STATES = %i(atom_name valence).freeze
+      STATIC_STATES = (UNIT_STATES + [:lattice]).freeze
       DYNAMIC_STATES = %i(relations danglings nbr_lattices relevants).freeze
       ALL_STATES = (STATIC_STATES + DYNAMIC_STATES).freeze
 
@@ -47,7 +48,6 @@ module VersatileDiamond
         if args.one?
           arg = args.first
           if arg.is_a?(Array)
-            check_relevants(arg.last)
             @props = arg
           elsif arg.is_a?(Hash)
             @props = [
@@ -57,7 +57,7 @@ module VersatileDiamond
               arg[:relations] || raise('Undefined relations'),
               arg[:danglings] || [],
               arg[:nbr_lattices] || [],
-              check_relevants(arg[:relevants] || [])
+              arg[:relevants] || []
             ]
           else
             raise ArgumentError, 'Wrong type of argument'
@@ -71,7 +71,7 @@ module VersatileDiamond
             relations_for(spec, atom),
             danglings_for(spec, atom),
             nbr_lattices_for(spec, atom),
-            check_relevants(atom.relevants.dup)
+            atom.relevants.dup
           ]
         else
           raise ArgumentError, 'Wrong number of arguments'
@@ -148,7 +148,8 @@ module VersatileDiamond
           total_props[:relevants] = [] if is_unrelevanted
 
           are_correct_props =
-            is_valid_lattices && valid_relations?(total_props[:relations]) &&
+            is_valid_lattices &&
+              (valid_relations?(total_props[:lattice], total_props[:relations])) &&
               (is_unrelevanted || ext_num < valence ||
                 (is_complete && total_props[:relevants].empty?))
 
@@ -299,6 +300,13 @@ module VersatileDiamond
       # @return [Boolean]
       def relevant?
         incoherent? || unfixed?
+      end
+
+      # Has unfixed state or not
+      # @return [Boolean] contain or not
+      def unfixed?
+        return @_is_unfixed unless @_is_unfixed.nil?
+        @_is_unfixed = relevants.include?(UNFIXED)
       end
 
       # Has incoherent state or not
@@ -481,15 +489,6 @@ module VersatileDiamond
         STATIC_STATES.map(&method(:send))
       end
 
-      # Has unfixed state or not
-      # @return [Boolean] contain or not
-      def unfixed?
-        return @_is_unfixed unless @_is_unfixed.nil?
-        result = relevants.include?(UNFIXED)
-        raise 'Atom could not be unfixed!' if result && !unfixed_by_nbrs?
-        @_is_unfixed = result
-      end
-
       # Checks that properties have unfixed state by neighbour lattices set
       # @return [Boolean] unfixed or not?
       def unfixed_by_nbrs?
@@ -520,12 +519,20 @@ module VersatileDiamond
       # Makes merged props hash with other instance by passed operation
       # @param [AtomProperties] other provider of properties
       # @yield binary operation which applies the dynamic states of both instances
-      # @return [Hash] the merged properties hash
+      # @return [Array] the list of the merged properties hash
       def produce_props(other, &block)
-        static_props = Hash[STATIC_STATES.zip(static_states)]
-        DYNAMIC_STATES.each_with_object(static_props) do |state_name, acc|
-          self_state, other_state = [self, other].map { |x| x.send(state_name) }
-          acc[state_name] = block[self_state, other_state]
+        unit_props = UNIT_STATES.zip(static_states).to_h
+        all_lattices = [self, other].map(&:lattice).uniq
+        any_unfixed = [self, other].any?(&:unfixed?)
+        iterating_lattices =
+          all_lattices == [nil] || any_unfixed ? [nil] : all_lattices.select(&:itself)
+
+        iterating_lattices.each_with_object(unit_props) do |lts, result|
+          result[:lattice] = lts
+          DYNAMIC_STATES.each do |state_name|
+            self_state, other_state = [self, other].map { |x| x.send(state_name) }
+            result[state_name] = block[self_state, other_state]
+          end
         end
       end
 
@@ -534,7 +541,11 @@ module VersatileDiamond
       # @yield binary operation which applies the dynamic states of both instances
       # @return [Hash] the merged properties hash or nil if properties cannot be merged
       def merge_props(other, &block)
-        if same_basic_values?(other)
+        same_unit_states = UNIT_STATES.all? { |mn| send(mn) == other.send(mn) }
+        is_valid_lts = lattice == other.lattice ||
+                  (!lattice && other.lattice) || (lattice && !other.lattice)
+
+        if same_unit_states && is_valid_lts
           mps = produce_props(other, &block)
           mps[:relevants] = mps[:relevants] ? mps[:relevants].uniq : []
           lattices_num = mps[:nbr_lattices] ? mps[:nbr_lattices].size : 0
@@ -675,29 +686,16 @@ module VersatileDiamond
       end
 
       # Checks that numbers of passed relations is correct
+      # @param [Concepts::Lattice] lts
       # @param [Array] rels the array of relation states
       # @return [Boolean] is valid or not
-      def valid_relations?(rels)
-        if lattice
-          limits = lattice.instance.relations_limit
+      def valid_relations?(lts, rels)
+        if lts
+          limits = lts.instance.relations_limit
           rels.group_by(&:params).all? { |pr, rs| limits[pr] >= rs.size }
         else
           rels.all?(&UNDIRECTED_BONDS.public_method(:include?))
         end
-      end
-
-      # Checks that passed set of relevants is correct
-      # @param [Array] rels the array of relevant states
-      # @return [Boolean] is valid or not
-      def valid_relevants?(rels)
-        !RELATIVE_PROPERTIES.all? { |prop| rels.include?(prop) }
-      end
-
-      # Checks that list of relevants is not include both values in same time
-      # @param [Array] rels the array of relevant states
-      # @return [Array] the original relevant states
-      def check_relevants(rels)
-        valid_relevants?(rels) ? rels : raise('Unfixed atom already incoherent')
       end
 
       # Drops relevants properties if it exists

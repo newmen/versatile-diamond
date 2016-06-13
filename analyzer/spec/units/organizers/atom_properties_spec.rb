@@ -154,7 +154,9 @@ module VersatileDiamond
           it { expect(hib_ct + i_diff).to eq(hib_ct) }
           it { expect(dimer_cr + i_diff).to eq(id_cr) }
           it { expect(tb_cc + i_diff).to be_nil }
-          it { expect(ucm + i_diff).to be_nil }
+
+          let(:uicm) { raw_prop(dept_methyl_on_bridge_base, :cm, 'ui') }
+          it { expect(ucm + i_diff).to eq(uicm) }
         end
 
         describe 'methyl activation' do
@@ -238,11 +240,11 @@ module VersatileDiamond
           it { expect(zero.include?(bridge_ct)).to be_falsey }
         end
 
-        describe 'different basic values' do
+        describe 'different lattices' do
           let(:zero) { ucm.zero }
           it { expect(zero).not_to eq(bridge_ct.zero) }
-          it { expect(bridge_ct + zero).to be_nil }
-          it { expect(bridge_ct - zero).to be_nil }
+          it { expect(bridge_ct + zero).to eq(bridge_ct) }
+          it { expect(bridge_ct - zero).to eq(bridge_ct) }
           it { expect(bridge_ct.include?(zero)).to be_falsey }
           it { expect(bridge_ct.contained_in?(zero)).to be_falsey }
           it { expect(zero.contained_in?(bridge_ct)).to be_falsey }

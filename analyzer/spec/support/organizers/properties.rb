@@ -47,6 +47,8 @@ module VersatileDiamond
             [:danglings, Concepts::ActiveBond.property]
           elsif char == 'i'
             [:relevants, Concepts::Incoherent.property]
+          elsif char == 'u'
+            [:relevants, Concepts::Unfixed.property]
           end
         end
 
