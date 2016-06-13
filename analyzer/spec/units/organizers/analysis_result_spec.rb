@@ -211,7 +211,7 @@ module VersatileDiamond
 
                 before { subject }
                 it { expect(hydrogen_migration.reverse.source.map(&:name)).
-                  to match_array([:dimer, :'methyl_on_dimer(cm: *)']) }
+                  to match_array([:'dimer(cr: i)', :'methyl_on_dimer(cm: *)']) }
               end
 
               describe '#store_concept_to' do
@@ -220,9 +220,7 @@ module VersatileDiamond
                 end
 
                 it { expect(reactions_for(:bridge)).to be_empty }
-
-                it { expect(reactions_for(:dimer).map(&:reaction)).
-                  to eq([hydrogen_migration.reverse]) }
+                it { expect(reactions_for(:dimer)).to be_empty }
 
                 it { expect(reactions_for(:methyl_on_bridge)).not_to be_empty }
                 it { expect(reactions_for(:methyl_on_dimer)).not_to be_empty }
@@ -249,9 +247,10 @@ module VersatileDiamond
                   :'bridge(ct: *)',
                   :'bridge(ct: *, ct: i)',
                   # :'dimer()', # purged
-                  :'dimer(cl: i)',
+                  :'dimer(cr: i)', # replace dimer(cl: i)
                   :'dimer(cr: *)',
                   # :'extended_methyl_on_bridge(cm: *)', # purged
+                  :"extended_dimer(_cr0: i)", # added by methyl incorporation (product)
                   # :'methyl_on_bridge()', # purged
                   :'methyl_on_bridge(cm: *)',
                   :'methyl_on_bridge(cm: i)',
@@ -272,8 +271,8 @@ module VersatileDiamond
                   get(name).reactions
                 end
 
-                it { expect(reactions_for(:'dimer(cl: i)').map(&:reaction)).
-                  to eq([dimer_formation.reverse]) }
+                it { expect(reactions_for(:'dimer(cr: i)').map(&:reaction)).
+                  to eq([hydrogen_migration.reverse, dimer_formation.reverse]) }
               end
             end
           end
@@ -451,12 +450,7 @@ module VersatileDiamond
 
             let(:wrapped_base) { subject.base_spec(:dimer) }
             let(:parent) { subject.base_spec(:bridge) }
-            let(:children) do
-              [
-                subject.specific_spec(:'dimer(cr: *)'),
-                subject.specific_spec(:'dimer(cl: i)')
-              ]
-            end
+            let(:children) { [subject.specific_spec(:'dimer(cr: i)')] }
 
             it { expect(wrapped_base.children).to match_array(children) }
             it { expect(wrapped_base.parents.map(&:original)).to eq([parent, parent]) }

@@ -59,7 +59,7 @@ module VersatileDiamond
       # @override
       def mirror_to(other)
         Mcs::SpeciesComparator.make_mirror(spec, other.spec) do |_, _, a1, a2|
-          a1.original_same?(a2)
+          a1.original_same?(a2) # TODO: same as in SpecAtomSwapper
         end
       end
 

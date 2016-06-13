@@ -126,7 +126,9 @@ module VersatileDiamond
 
                 cached_dept_spec = cached_spec(cache, spec)
                 if cached_dept_spec
-                  swap_carefully(target, concept, spec, cached_dept_spec.spec)
+                  cached_conc_spec = cached_dept_spec.spec
+                  swap_carefully(target, concept, spec, cached_conc_spec)
+                  name = cached_conc_spec.name
                 else
                   cache[name] = create_dept_specific_spec(spec)
                 end

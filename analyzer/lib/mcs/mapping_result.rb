@@ -349,9 +349,9 @@ module VersatileDiamond
 
         extb = target.external_bonds_for(original_own)
         if extb > 0
-          if !own.incoherent? && (other.gas? || diff.include?(Incoherent.property))
-            own.incoherent!
-          end
+          own.incoherent! if !own.incoherent? && !own.unfixed? &&
+                    (other.gas? || diff.include?(Incoherent.property) ||
+                      (other.links[foreign] && other.external_bonds_for(foreign) == 0))
         elsif extb == 0
           own.not_incoherent! if own.incoherent?
         end

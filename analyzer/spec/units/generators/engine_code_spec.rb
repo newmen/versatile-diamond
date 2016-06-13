@@ -84,7 +84,7 @@ module VersatileDiamond
               :bridge, :dimer, # basic species
               :'bridge(ct: *)', :'bridge(ct: *, ct: i)', # dimer formation
               :methyl_on_bridge, # methyl activation
-              :methyl_on_dimer, :'dimer(cr: *)', # hydrogen migration
+              :methyl_on_dimer, :'dimer(cr: *)', :'dimer(cr: i)', # hydrogen migration
             ]
           end
           it { expect(subject.surface_reactants).to match_array(target_species) }
