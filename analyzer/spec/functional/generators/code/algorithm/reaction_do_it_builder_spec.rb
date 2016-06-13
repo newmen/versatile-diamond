@@ -689,8 +689,10 @@ module VersatileDiamond
             describe 'intermediate migration down formation' do
               let(:first_spec) { dept_activated_bridge }
               let(:second_spec) { dept_activated_methyl_on_dimer }
-              let(:do_it_algorithm) do
-                <<-CODE
+
+              shared_context :just_one_code do
+                let(:do_it_algorithm) do
+                  <<-CODE
     SpecificSpec *species1[2] = { target(0), target(1) };
     assert(species1[0]->type() == BRIDGE_CTs);
     assert(species1[1]->type() == METHYL_ON_DIMER_CMs);
@@ -698,10 +700,32 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{role_ct}));
     assert(atoms1[1]->is(#{snd_role_cm}));
     atoms1[0]->bondWith(atoms1[1]);
-    assert(!atoms1[0]->is(#{br_s}) && !atoms1[0]->is(#{cb_s}));
+    atoms1[0]->changeType(#{cb_i});
+    atoms1[1]->changeType(#{sm_i});
+    Finder::findAll(atoms1, 2);
+                  CODE
+                end
+              end
+
+              shared_context :with_ubiquitous_code do
+                include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *species1[2] = { target(0), target(1) };
+    assert(species1[0]->type() == BRIDGE_CTs);
+    assert(species1[1]->type() == METHYL_ON_DIMER_CMs);
+    Atom *atoms1[2] = { species1[0]->atom(0), species1[1]->atom(0) };
+    assert(atoms1[0]->is(#{role_ct}));
+    assert(atoms1[1]->is(#{snd_role_cm}));
+    atoms1[0]->bondWith(atoms1[1]);
+    assert(!atoms1[0]->is(#{cb_s}));
     if (atoms1[0]->is(#{cd_s}))
     {
         atoms1[0]->changeType(#{snd_role_cr});
+    }
+    else if (atoms1[0]->is(#{br_s}))
+    {
+        atoms1[0]->changeType(#{br_m});
     }
     else if (atoms1[0]->is(#{ct_ss}))
     {
@@ -727,18 +751,29 @@ module VersatileDiamond
         atoms1[1]->changeType(#{sm_i});
     }
     Finder::findAll(atoms1, 2);
-                CODE
+                  CODE
+                end
               end
 
-              it_behaves_like :check_do_it do
+              shared_examples_for :both_cases do
+                it_behaves_like :check_do_it do
+                  include_context :just_one_code
+                end
+
+                it_behaves_like :check_do_it do
+                  include_context :with_ubiquitous_code
+                end
+              end
+
+              it_behaves_like :both_cases do
                 let(:typical_reaction) { dept_intermed_migr_dc_formation }
               end
 
-              it_behaves_like :check_do_it do
+              it_behaves_like :both_cases do
                 let(:typical_reaction) { dept_intermed_migr_dh_formation }
               end
 
-              it_behaves_like :check_do_it do
+              it_behaves_like :both_cases do
                 let(:typical_reaction) { dept_intermed_migr_df_formation }
               end
             end
