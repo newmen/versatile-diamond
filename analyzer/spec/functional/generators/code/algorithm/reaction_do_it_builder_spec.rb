@@ -947,6 +947,82 @@ module VersatileDiamond
                 end
               end
             end
+
+            describe 'two side dimers formation' do
+              let(:typical_reaction) { dept_two_side_dimers_formation }
+              let(:first_spec) { dept_activated_incoherent_dimer }
+              let(:second_spec) { dept_extra_activated_methyl_on_bridge }
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
+              end
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *species1[3] = { target(0), target(1), target(2) };
+    assert(species1[0]->type() == BRIDGE_CRs);
+    assert(species1[1]->type() == METHYL_ON_BRIDGE_CMss);
+    assert(species1[2]->type() == DIMER_CLs_CRi);
+    Atom *atoms1[4] = { species1[2]->atom(3), species1[1]->atom(1), species1[0]->atom(2), species1[1]->atom(0) };
+    assert(atoms1[0]->is(#{role_cl}));
+    assert(atoms1[1]->is(#{snd_role_cb}));
+    assert(atoms1[2]->is(#{br_s}));
+    assert(atoms1[3]->is(#{snd_role_cm}));
+    Handbook::amorph().erase(atoms1[3]);
+    crystalBy(atoms1[0])->insert(atoms1[3], Diamond::front_110_at(atoms1[0], atoms1[2]));
+    atoms1[0]->bondWith(atoms1[3]);
+    atoms1[2]->bondWith(atoms1[3]);
+    atoms1[0]->changeType(#{bd_c});
+    atoms1[1]->changeType(#{cd_i});
+    atoms1[2]->changeType(#{tb_c});
+    atoms1[3]->changeType(#{cd_i});
+    Finder::findAll(atoms1, 4);
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *species1[3] = { target(0), target(1), target(2) };
+    assert(species1[0]->type() == BRIDGE_CRs);
+    assert(species1[1]->type() == METHYL_ON_BRIDGE_CMss);
+    assert(species1[2]->type() == DIMER_CLs_CRi);
+    Atom *atoms1[4] = { species1[2]->atom(3), species1[1]->atom(1), species1[0]->atom(2), species1[1]->atom(0) };
+    assert(atoms1[0]->is(#{role_cl}));
+    assert(atoms1[1]->is(#{snd_role_cb}));
+    assert(atoms1[2]->is(#{br_s}));
+    assert(atoms1[3]->is(#{snd_role_cm}));
+    Handbook::amorph().erase(atoms1[3]);
+    crystalBy(atoms1[0])->insert(atoms1[3], Diamond::front_110_at(atoms1[0], atoms1[2]));
+    atoms1[0]->bondWith(atoms1[3]);
+    atoms1[2]->bondWith(atoms1[3]);
+    atoms1[0]->changeType(#{bd_c});
+    if (atoms1[1]->is(#{cb_s}))
+    {
+        atoms1[1]->changeType(#{cd_s});
+    }
+    else
+    {
+        assert(atoms1[1]->is(#{cb_i}));
+        atoms1[1]->changeType(#{cd_i});
+    }
+    atoms1[2]->changeType(#{tb_c});
+    if (atoms1[3]->is(#{cm_sss}))
+    {
+        atoms1[3]->changeType(#{cd_s});
+    }
+    else
+    {
+        assert(atoms1[3]->is(#{cm_iss}));
+        atoms1[3]->changeType(#{cd_i});
+    }
+    Finder::findAll(atoms1, 4);
+                  CODE
+                end
+              end
+            end
           end
         end
 
