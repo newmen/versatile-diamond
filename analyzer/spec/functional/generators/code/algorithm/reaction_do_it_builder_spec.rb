@@ -1023,6 +1023,31 @@ module VersatileDiamond
                 end
               end
             end
+
+            describe 'hydrogen abstraction from gap' do
+              let(:typical_reaction) { dept_hydrogen_abs_from_gap }
+              let(:first_spec) { dept_right_hydrogenated_bridge }
+              let(:do_it_algorithm) do
+                <<-CODE
+    SpecificSpec *species1[2] = { target(0), target(1) };
+    assert(species1[0]->type() == BRIDGE_CRH);
+    assert(species1[1]->type() == BRIDGE_CRH);
+    Atom *atoms1[2] = { species1[0]->atom(2), species1[1]->atom(2) };
+    assert(atoms1[0]->is(#{role_cr}));
+    assert(atoms1[1]->is(#{role_cr}));
+    atoms1[0]->activate();
+    atoms1[1]->activate();
+    atoms1[0]->changeType(#{br_s});
+    atoms1[1]->changeType(#{br_s});
+    Finder::findAll(atoms1, 2);
+                CODE
+              end
+
+              it_behaves_like :check_do_it
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+              end
+            end
           end
         end
 
