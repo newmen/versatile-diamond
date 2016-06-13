@@ -3,7 +3,7 @@ require 'spec_helper'
 
 describe 'graphs generation' do
   ROOT_PATH = (Pathname.new(Dir.pwd) + '..').freeze
-  ANALYZE_SCRIPT = (ROOT_PATH + 'analyze.rb')
+  ANALYZE_SCRIPT = (ROOT_PATH + 'run.rb')
 
   raise "Incorrect ANALYZE_SCRIPT: #{ANALYZE_SCRIPT}" unless ANALYZE_SCRIPT.file?
 
