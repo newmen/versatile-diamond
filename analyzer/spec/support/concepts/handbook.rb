@@ -400,6 +400,13 @@ module VersatileDiamond
           s.link(r, l, bond_100_front); s
         end
 
+        set(:trimer_base) do
+          s = SurfaceSpec.new(:trimer)
+          s.adsorb(dimer_base)
+          s.adsorb(bridge_base)
+          s.link(s.atom(:ct), s.atom(:cr), bond_100_front); s
+        end
+
         set(:methyl_on_dimer_base) do
           s = SurfaceSpec.new(:methyl_on_dimer, cm: c)
           s.adsorb(dimer_base)

@@ -452,6 +452,7 @@ module VersatileDiamond
         end
 
         name = "-#{name}" if rl.delete_one(bond_front_100)
+        name = "#{name}-" if rl.delete_one(bond_front_100)
         while rl.delete_one(undirected_bond)
           name = "#{lattice_symbol[undirected_bond]}~#{name}"
         end

@@ -64,6 +64,8 @@ module VersatileDiamond
             let(:cb_i) { raw_props_idx(dept_methyl_on_bridge_base, :cb, 'i') }
             let(:cd_s) { raw_props_idx(dept_dimer_base, :cr, '*') }
             let(:cd_i) { raw_props_idx(dept_dimer_base, :cr, 'i') }
+            let(:bd_c) { raw_props_idx(dept_bridge_with_dimer_base, :cr, '') }
+            let(:tm_c) { raw_props_idx(dept_trimer_base, :cr, '') }
             let(:cm_sss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '***') }
             let(:cm_iss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'i**') }
             let(:cm_ss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '**') }
@@ -593,12 +595,14 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_do_it do
+            describe 'dimer formation' do
               let(:typical_reaction) { dept_dimer_formation }
               let(:first_spec) { dept_activated_incoherent_bridge }
               let(:second_spec) { dept_activated_bridge }
-              let(:do_it_algorithm) do
-                <<-CODE
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
     SpecificSpec *species1[2] = { target(0), target(1) };
     assert(species1[0]->type() == BRIDGE_CTs);
     assert(species1[1]->type() == BRIDGE_CTsi);
@@ -606,9 +610,68 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{role_ct}));
     assert(atoms1[1]->is(#{snd_role_ct}));
     atoms1[0]->bondWith(atoms1[1]);
-    assert(!atoms1[0]->is(#{ct_ss}));
-    assert(!atoms1[1]->is(#{br_s}) && !atoms1[1]->is(#{cd_s}));
-    if (atoms1[1]->is(#{ct_ss}))
+    atoms1[0]->changeType(#{cd_i});
+    atoms1[1]->changeType(#{cd_i});
+    Finder::findAll(atoms1, 2);
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                let(:other_reactions) { [dept_hydrogen_abs_from_gap] }
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *species1[2] = { target(0), target(1) };
+    assert(species1[0]->type() == BRIDGE_CTs);
+    assert(species1[1]->type() == BRIDGE_CTsi);
+    Atom *atoms1[2] = { species1[1]->atom(0), species1[0]->atom(0) };
+    assert(atoms1[0]->is(#{role_ct}));
+    assert(atoms1[1]->is(#{snd_role_ct}));
+    atoms1[0]->bondWith(atoms1[1]);
+    atoms1[0]->changeType(#{cd_i});
+    if (atoms1[1]->is(#{br_s}))
+    {
+        atoms1[1]->changeType(#{bd_c});
+    }
+    else
+    {
+        assert(atoms1[1]->is(#{ct_is}));
+        atoms1[1]->changeType(#{cd_i});
+    }
+    Finder::findAll(atoms1, 2);
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *species1[2] = { target(0), target(1) };
+    assert(species1[0]->type() == BRIDGE_CTs);
+    assert(species1[1]->type() == BRIDGE_CTsi);
+    Atom *atoms1[2] = { species1[1]->atom(0), species1[0]->atom(0) };
+    assert(atoms1[0]->is(#{role_ct}));
+    assert(atoms1[1]->is(#{snd_role_ct}));
+    atoms1[0]->bondWith(atoms1[1]);
+    if (atoms1[0]->is(#{ct_ss}))
+    {
+        atoms1[0]->changeType(#{cd_s});
+    }
+    else
+    {
+        assert(atoms1[0]->is(#{ct_is}));
+        atoms1[0]->changeType(#{cd_i});
+    }
+    if (atoms1[1]->is(#{cd_s}))
+    {
+        atoms1[1]->changeType(#{tm_c});
+    }
+    else if (atoms1[1]->is(#{br_s}))
+    {
+        atoms1[1]->changeType(#{bd_c});
+    }
+    else if (atoms1[1]->is(#{ct_ss}))
     {
         atoms1[1]->changeType(#{cd_s});
     }
@@ -618,7 +681,8 @@ module VersatileDiamond
         atoms1[1]->changeType(#{cd_i});
     }
     Finder::findAll(atoms1, 2);
-                CODE
+                  CODE
+                end
               end
             end
 

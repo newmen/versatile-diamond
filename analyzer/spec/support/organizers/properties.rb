@@ -115,6 +115,8 @@ module VersatileDiamond
         prop(:mob_cr, :methyl_on_right_bridge_base, :cr)
         prop(:mob_cb, :methyl_on_bridge_base, :cb)
 
+        prop(:trimer_cc, :trimer_base, :cr)
+
         prop(:pseudo_dimer_cr, :pseudo_dimer_base, :cr)
 
         prop(:high_cm, :high_bridge, :cm)

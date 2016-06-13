@@ -733,6 +733,8 @@ module VersatileDiamond
         it { expect(bridge_cr.to_s).to eq('^C%d<') }
         it { expect(dimer_cr.to_s).to eq('-C%d<') }
 
+        it { expect(trimer_cc.to_s).to eq('-C%d<-') }
+
         it { expect(ad_cr.to_s).to eq('-*C%d<') }
         it { expect(ab_ct.to_s).to eq('*C%d<') }
         it { expect(aib_ct.to_s).to eq('*C:i%d<') }
