@@ -36,10 +36,10 @@ module VersatileDiamond
       # @param [Array] products the array of product species
       # @option [Hash] :result the value of result variable by default
       # @raise [AtomMapper::CannotMap] if number of source or products is wrong
-      def initialize(source, proructs, result: { change: [], conformity: [] })
+      def initialize(source, proructs, result: { change: [], conformity: [] }, rv: nil)
         @source, @products = source, proructs
         @result = result
-        @reverse = nil
+        @reverse = rv
 
         size_wo_simple = -> specs { specs.reject(&:simple?).size }
         source_size_wo_simple = size_wo_simple[source]
@@ -122,13 +122,15 @@ module VersatileDiamond
       # @return [Array] reversed atom mapping result
       def reverse
         return @reverse if @reverse
-        reversed_result = Hash[@result.map do |key, mapping|
+        reversed_result = @result.map do |key, mapping|
           reversed_mapping = mapping.map do |specs, atoms|
             [specs.reverse, atoms.map(&:reverse)]
           end
           [key, reversed_mapping]
-        end]
-        @reverse = self.class.new(@products, @source, result: reversed_result)
+        end
+
+        opts = { result: reversed_result.to_h, rv: self }
+        @reverse = self.class.new(@products, @source, **opts)
       end
 
       # Duplicates atom mapping result with exchange of original specs to specs
@@ -160,7 +162,8 @@ module VersatileDiamond
       # @param [Symbol] target the type of swapping species
       # @param [SpecificSpec] from which spec will be deleted
       # @param [SpecificSpec] to which spec will be added
-      def swap(target, from, to)
+      # @option [Boolean] :reverse_too
+      def swap(target, from, to, reverse_too: true)
         mirror = SpeciesComparator.make_mirror(from, to)
         instance_variable_get(:"@#{target}").map! { |spec| spec == from ? to : spec }
 
@@ -178,7 +181,10 @@ module VersatileDiamond
           end
         end
 
-        @reverse.swap(target == :source ? :products : :source, to, from) if @reverse
+        if @reverse && reverse_too
+          reverse_target = (target == :source) ? :products : :source
+          @reverse.swap(reverse_target, to, from, reverse_too: false)
+        end
       end
 
       # Swaps atoms in result
@@ -186,8 +192,9 @@ module VersatileDiamond
       #   exchanged
       # @param [Atom] from the old atom
       # @param [Atom] to the new atom
+      # @option [Boolean] :reverse_too
       # @todo must be protected but checking by test
-      def swap_atom(spec, from, to)
+      def swap_atom(spec, from, to, reverse_too: true)
         is_source = @source.include?(spec)
 
         @result.each do |_, mapping|
@@ -195,13 +202,18 @@ module VersatileDiamond
             next unless spec == (is_source ? specs.first : specs.last)
 
             atoms.each do |pair|
-              atom_index = is_source ? 0 : 1
-              pair[atom_index] = to if from == pair[atom_index]
+              index = is_source ? 0 : 1
+              if from == pair[index]
+                specs[index].swap_atom(from, to)
+                pair[index] = to
+              end
             end
           end
         end
 
-        @reverse.swap_atom(spec, from, to) if @reverse
+        if @reverse && reverse_too
+          @reverse.swap_atom(spec, from, to, reverse_too: false)
+        end
       end
 
       # Applies relevant states form new atom instead old atom

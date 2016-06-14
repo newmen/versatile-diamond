@@ -28,7 +28,7 @@ module VersatileDiamond
 
         @mapping.find_positions_for(self)
 
-        @_full_mapping, @_changes = nil
+        reset_changes_caches!
       end
 
       def_delegator :mapping, :complex_source_spec_and_atom
@@ -120,6 +120,7 @@ module VersatileDiamond
         super
         @links = swap_in_links(:swap, @links, from, to) if target == :source
         mapping.swap(target, from, to)
+        reset_changes_caches!
       end
 
       # Swaps using atoms of passed spec
@@ -130,6 +131,7 @@ module VersatileDiamond
       def swap_atom(spec, from, to)
         swap_atom_in_positions(spec, from, to)
         mapping.swap_atom(spec, from, to)
+        reset_changes_caches!
       end
 
       # Applies relevant states for other side atom
@@ -182,7 +184,9 @@ module VersatileDiamond
       # @return [Boolean] is significant or not
       # @override
       def significant?
-        super || children.select(&:significant?).any?(&:lateral?)
+        return true if super
+        significant_children = children.select(&:significant?)
+        !significant_children.empty? && significant_children.all?(&:lateral?)
       end
 
       # Checks that all atoms belongs to lattice
@@ -387,6 +391,10 @@ module VersatileDiamond
       def swap_atom_in_positions(spec, from, to)
         return if from == to
         @links = swap_in_links(:swap_only_atoms, @links, spec, from, to)
+      end
+
+      def reset_changes_caches!
+        @_full_mapping, @_changes = nil
       end
     end
 

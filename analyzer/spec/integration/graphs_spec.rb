@@ -61,7 +61,6 @@ describe 'graphs generation' do
   Dir["#{EXAMPLES_PATH}/*.rb"].each do |full_file_path|
     example_name = "#{EXAMPLES_DIR}/#{File.basename(full_file_path)}"
     describe "for #{example_name}" do
-
       OPTIONS.each do |option|
         describe option do
           it_behaves_like :check_run do

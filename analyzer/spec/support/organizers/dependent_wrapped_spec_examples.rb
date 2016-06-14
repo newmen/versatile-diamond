@@ -52,11 +52,13 @@ module VersatileDiamond
             bases = all.reject(&:specific?)
             specifics = all - bases
 
-            organize_base_specs_dependencies!(bases) unless bases.empty?
-
+            cache = make_cache(bases)
             unless specifics.empty?
-              organize_specific_specs_dependencies!(make_cache(bases), specifics.uniq)
+              organize_specific_specs_dependencies!(cache, specifics.uniq)
             end
+
+            cached_bases = cache.values
+            organize_base_specs_dependencies!(cached_bases) unless cached_bases.empty?
           end
 
           it 'parents are always unique' do

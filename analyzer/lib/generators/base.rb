@@ -95,9 +95,25 @@ module VersatileDiamond
       # @return [Organizers::DependentWrappedSpec] the corresponding specie which was
       #   combined under analysis of interpretation results
       def dept_spec(spec)
-        ANALYS_SPEC_METHODS.reduce(nil) do |acc, method_name|
+        result = ANALYS_SPEC_METHODS.reduce(nil) do |acc, method_name|
           acc || @analysis_result.public_send(method_name, spec.name)
         end
+
+        result || @analysis_result.base_spec(spec.spec.name) ||
+          if spec.class == Concepts::SpecificSpec
+            dept_spec_spec = Organizers::DependentSpecificSpec.new(spec)
+            dept_spec_spec.specific? ? dept_spec_spec : make_dept_base_spec(spec.spec)
+          else
+            make_dept_base_spec(spec)
+          end
+      end
+
+      # Wraps passed concept spec and creates new dependent base spec
+      # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] spec
+      #   the concept for which dependent base spec will be gotten
+      # @return [Organizers::DependentBaseSpec] new combined dependent base spec
+      def make_dept_base_spec(spec)
+        Organizers::DependentBaseSpec.new(spec)
       end
 
       # Collects all uniq used surface species

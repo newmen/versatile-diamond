@@ -116,24 +116,24 @@ module VersatileDiamond
       #   full names of each specific spec
       def collect_specific_specs
         cache = {}
-        (all_reactions + [theres]).each do |concepts|
-          concepts.each do |concept|
-            is_ubiquitous = ubiquitous_reactions.include?(concept)
+        (all_reactions + [theres]).each do |dept_concepts|
+          dept_concepts.each do |dept_concept|
+            is_ubiquitous = ubiquitous_reactions.include?(dept_concept)
             [:source, :products].each do |target|
-              concept.each(target) do |spec|
+              dept_concept.each(target) do |spec|
                 next if is_ubiquitous && !spec.simple?
                 name = spec.name
 
                 cached_dept_spec = cached_spec(cache, spec)
                 if cached_dept_spec
                   cached_conc_spec = cached_dept_spec.spec
-                  swap_carefully(target, concept, spec, cached_conc_spec)
                   name = cached_conc_spec.name
+                  swap_carefully(target, dept_concept, spec, cached_conc_spec)
                 else
                   cache[name] = create_dept_specific_spec(spec)
                 end
 
-                store_concept_to(concept, cache[name]) if target == :source
+                store_concept_to(dept_concept, cache[name]) if target == :source
               end
             end
           end

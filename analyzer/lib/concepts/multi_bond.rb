@@ -33,6 +33,12 @@ module VersatileDiamond
         self.class == other.class && self.arity == other.arity
       end
 
+      # Gets parameters of relation
+      # @return [Hash] the hash of relation perameters
+      def params
+        Bond::AMORPH_PARAMS
+      end
+
       # Checks that current multibond is really bond
       # @return [Boolean] true
       def bond?

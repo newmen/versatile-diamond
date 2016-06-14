@@ -61,6 +61,14 @@ module VersatileDiamond
         @is_simple = (@atoms.one? && atom_instances.first.valence == 1)
       end
 
+      # Swaps from own to new
+      # @param [Atom | AtomReference] from
+      # @param [Atom | AtomReference] to
+      def swap_atom(from, to)
+        raise ArgumentError, 'Incorrect swapping' if @links[from] && @links[to]
+        swap_atoms_in!(@links, from, to) if @links[from] && !@links[to]
+      end
+
       # Renames the atom from some keyname to some new keyname (used only in
       #   interpreter for handle spec aliasing case)
       #
@@ -117,16 +125,16 @@ module VersatileDiamond
       # Returns links container with replacing atoms by passed hash of atoms and
       # their keynames
       #
-      # @param [Hash] keynames_to_new_atoms the hash which contain keyname
+      # @param [Hash] kns_to_new_atoms the hash which contain keyname
       #   Symbol of atom key and specific atom as value
       # @return [Hash] links container with replacing atoms
-      def links_with_replace_by(keynames_to_new_atoms)
+      def links_with_replace_by(kns_to_new_atoms)
         # deep dup @links
-        chainging_links = Hash[@links.map { |atom, links| [atom, links.dup] }]
-        keynames_to_new_atoms.each do |keyname, new_atom|
-          swap_atoms_in!(chainging_links, @atoms[keyname], new_atom)
+        chg_links = @links.map { |atom, rels| [atom, rels.map(&:dup)] }.to_h
+        kns_to_new_atoms.each_with_object(chg_links) do |(kn, to), acc|
+          from = @atoms[kn]
+          swap_atoms_in!(acc, from, to) if from && !acc[to]
         end
-        chainging_links
       end
 
       # Summarizes external bonds of all internal atoms
