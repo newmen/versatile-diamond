@@ -202,7 +202,7 @@ module VersatileDiamond
                   {
                     [ctl] => [[[cm], param_amorph]],
                     [ctr] => [[[cm], param_amorph]],
-                    [csr, ctr] => [[[csl, ctl], param_100_cross]]
+                    [csl, ctl] => [[[csr, ctr], param_100_cross]]
                   }
                 end
               end
@@ -214,7 +214,7 @@ module VersatileDiamond
                 let(:final_graph) do
                   {
                     [cm] => [],
-                    [csr, ctr] => [[[csl, ctl], param_100_cross]]
+                    [csl, ctl] => [[[csr, ctr], param_100_cross]]
                   }
                 end
               end
@@ -480,7 +480,7 @@ module VersatileDiamond
                 let(:ordered_graph) do
                   [
                     [[ctr], [[[cm], param_amorph]]],
-                    [[ctr, csr], [[[ctl, csl], param_100_cross]]],
+                    [[ctl, csl], [[[ctr, csr], param_100_cross]]],
                     [[ctl], [[[cm], param_amorph]]]
                   ]
                 end

@@ -131,7 +131,7 @@ module VersatileDiamond
 
             it_behaves_like :check_entry_nodes do
               let(:base_specs) { [dept_dimer_base, subject] }
-              let(:points_list) { [[ctr]] }
+              let(:points_list) { [[ctl]] }
             end
 
             it_behaves_like :check_entry_nodes do

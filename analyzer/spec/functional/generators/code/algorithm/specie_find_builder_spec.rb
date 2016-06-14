@@ -441,7 +441,7 @@ module VersatileDiamond
         if (!anchor->hasRole(CROSS_BRIDGE_ON_DIMERS, #{role_cm}))
         {
             anchor->eachSpecsPortionByRole<MethylOnDimer>(#{mod_cm}, 2, [](MethylOnDimer **species1) {
-                Atom *atoms1[4] = { species1[1]->atom(1), species1[1]->atom(4), species1[0]->atom(1), species1[0]->atom(4) };
+                Atom *atoms1[4] = { species1[0]->atom(1), species1[0]->atom(4), species1[1]->atom(1), species1[1]->atom(4) };
                 Atom *atoms2[2] = { atoms1[0], atoms1[1] };
                 Atom *atoms3[2] = { atoms1[2], atoms1[3] };
                 eachNeighbours<2>(atoms2, &Diamond::cross_100, [&atoms3, &species1](Atom **neighbours1) {
