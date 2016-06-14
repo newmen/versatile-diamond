@@ -74,7 +74,10 @@ props_to_ops = Hash[props_to_ops.compact]
 
 doit = -> generator { generator.generate(props_to_ops) }
 define_generator = -> key, generator_class, *args do
-  doit[generator_class.new(analysis_result, *args)] if opt[key]
+  if opt[key]
+    kwargs = { config_path: opt['<path_to_config>'] }
+    doit[generator_class.new(analysis_result, *args, **kwargs)]
+  end
 end
 
 out = -> filename { (Pathname.new(opt['--out']) + (opt['--name'] || filename)).to_s }

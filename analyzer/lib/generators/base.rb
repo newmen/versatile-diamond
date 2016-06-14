@@ -9,8 +9,11 @@ module VersatileDiamond
       # Initializes generator by analysis result
       # @param [Organizers::AnalysisResult] analysis_result the result of
       #   interpretation and analysis
-      def initialize(analysis_result)
+      # @option [String] :config_path if passed then the cached data will be checked
+      def initialize(analysis_result, config_path: nil)
         @analysis_result = analysis_result
+        @config_path = config_path
+
         @_spec_reactions, @_classifier, @_surface_specs = nil
       end
 
@@ -29,11 +32,30 @@ module VersatileDiamond
         (classified? && classifier.props.find { |x| x == props }) || props
       end
 
+      # Tries to load state from cache file
+      # @param [String] suffix of loading file
+      def load(suffix)
+        Tools::Serializer.load(@config_path, suffix: suffix)
+      end
+
+      # Saves state to cache file
+      # @param [String] suffix of saving file
+      # @param [Object] data which will be cached to file
+      # @return [Object] the saving data
+      def save(suffix, data)
+        if @config_path
+          Tools::Serializer.save(@config_path, data, suffix: suffix)
+        else
+          data
+        end
+      end
+
     private
 
       def_delegators :@analysis_result, :base_specs, :specific_specs, :term_specs,
         :ubiquitous_reactions, :typical_reactions, :lateral_reactions
 
+      CLASSIFIER_CACHE_SUFFIX = 'classifier'.freeze
       ANALYS_SPEC_METHODS = %i(base_spec specific_spec).freeze
 
       # Collects all chunks
@@ -57,12 +79,20 @@ module VersatileDiamond
       # Creates atom classifier and analyse each surface spec
       # @return [Organizers::AtomClassifier]
       def classifier
-        return @_classifier if classified?
+        @_classifier ||= !classified? && @config_path && load(CLASSIFIER_CACHE_SUFFIX)
+        return @_classifier if @_classifier
 
         raw_clf = Organizers::AtomClassifier.new(!ubiquitous_reactions.empty?)
         surface_specs.each { |spec| raw_clf.analyze!(spec) }
         raw_clf.organize_properties!
+        extend!(raw_clf)
 
+        @_classifier = save(CLASSIFIER_CACHE_SUFFIX, raw_clf)
+      end
+
+      # Extends passed classifier by production new atom properties
+      # @param [Organizers::AtomClassifier] raw_clf will be extended!
+      def extend!(raw_clf)
         loop do
           there_is_new = false
           typical_reactions.each do |reaction|
@@ -75,8 +105,6 @@ module VersatileDiamond
           end
           break unless there_is_new
         end
-
-        @_classifier = raw_clf
       end
 
       # Makes atom properties from passed list of specs and atoms

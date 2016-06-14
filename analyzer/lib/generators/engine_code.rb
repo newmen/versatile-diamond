@@ -14,8 +14,9 @@ module VersatileDiamond
       # Initializes code generator
       # @param [Organizers::AnalysisResult] analysis_result see at super same argument
       # @param [String] out_path the path where result files will be placed
-      def initialize(analysis_result, out_path)
-        super(analysis_result)
+      # @param [Hash] opts
+      def initialize(analysis_result, out_path, **opts)
+        super(analysis_result, **opts)
         @out_path = out_path
 
         @sequences_cacher = Code::SequencesCacher.new

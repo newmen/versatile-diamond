@@ -22,9 +22,9 @@ module VersatileDiamond
           # проверяем, что есть файл с суммой
           #   есть: сверяем сумму
           #     она же: грузим дамп
-
           if checksum(config_path) == stored_checksum(config_path)
-            Marshal.load(read_dump(config_path, suffix))
+            dump = read_dump(config_path, suffix)
+            dump && Marshal.load(dump)
           end
         end
 
@@ -33,10 +33,11 @@ module VersatileDiamond
         #
         # @param [String] config_path to config file path
         # @option [String] :suffix to result file name
-        # @return [Object] the loaded object or nil
+        # @return [Object] the saving data
         def save(config_path, data, suffix: nil)
           save_checksum(config_path) unless suffix
           save_dump(config_path, Marshal.dump(data), suffix)
+          data
         end
 
       private
@@ -59,7 +60,8 @@ module VersatileDiamond
         # @param [String] path to config file
         # @param [String] suffix of result file
         def read_dump(path, suffix)
-          File.read(dump_path(path, suffix))
+          dmpath = dump_path(path, suffix)
+          File.exist?(dmpath) && File.read(dmpath)
         end
 
         # Calculates the checksum of file
