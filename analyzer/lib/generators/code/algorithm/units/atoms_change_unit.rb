@@ -78,8 +78,8 @@ module VersatileDiamond
           # @return [Expressions::Core::FunctionCall]
           def coords_call(nodes, rel_params)
             a1, a2 = atom_vars_from(nodes)
-            lattice =
-              Expressions::Core::ObjectType[nodes.first.lattice_class.class_name]
+            node = nodes.first
+            lattice = Expressions::Core::ObjectType[node.lattice_class.class_name]
             a1.coords_with(a2, lattice, rel_params)
           end
 
