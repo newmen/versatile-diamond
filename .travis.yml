@@ -1,10 +1,11 @@
 language: ruby
 rvm:
+  - 2.2.4
   - 2.3.0
-script:
-  - cd analyzer
-  - rspec
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install graphviz libffi-dev
   - make
+script:
+  - cd analyzer
+  - parallel_rspec spec/
