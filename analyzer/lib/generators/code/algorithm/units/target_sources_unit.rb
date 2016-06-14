@@ -71,7 +71,12 @@ module VersatileDiamond
 
           # @return [Expressions::Core::Assign]
           def assign_atoms
-            @dict.make_atom_s(@atoms, value: atoms_calls).define_var
+            inst_call_pairs = @sources.zip(atoms_calls).sort do |(an, ac), (bn, bc)|
+              cmp = an <=> bn
+              cmp == 0 ? ac.code <=> bc.code : cmp
+            end
+            nodes, calls = inst_call_pairs.transpose
+            @dict.make_atom_s(nodes.map(&:atom), value: calls).define_var
           end
 
           # @return [Array]
@@ -88,8 +93,8 @@ module VersatileDiamond
 
           # @return [Expressions::Core::Statement]
           def assert_atoms
-            checks =
-              @surface_nodes.map { |n| @dict.var_of(n.atom).role_in(n.uniq_specie) }
+            nodes = @surface_nodes.sort_by { |n| [n, @dict.var_of(n.atom).code] }
+            checks = nodes.map { |n| @dict.var_of(n.atom).role_in(n.uniq_specie) }
             assert(checks)
           end
 

@@ -797,7 +797,7 @@ module VersatileDiamond
     assert(atoms1[2]->is(#{role_cb}));
     assert(atoms1[3]->is(#{role_cm}));
     Handbook::amorph().erase(atoms1[3]);
-    crystalBy(atoms1[0])->insert(atoms1[3], Diamond::front_110_at(atoms1[1], atoms1[0]));
+    crystalBy(atoms1[0])->insert(atoms1[3], Diamond::front_110_at(atoms1[0], atoms1[1]));
     atoms1[0]->unbondFrom(atoms1[1]);
     atoms1[0]->deactivate();
     atoms1[3]->activate();
@@ -833,7 +833,7 @@ module VersatileDiamond
     assert(atoms1[2]->is(#{role_cb}));
     assert(atoms1[3]->is(#{role_cm}));
     Handbook::amorph().erase(atoms1[3]);
-    crystalBy(atoms1[0])->insert(atoms1[3], Diamond::front_110_at(atoms1[1], atoms1[0]));
+    crystalBy(atoms1[0])->insert(atoms1[3], Diamond::front_110_at(atoms1[0], atoms1[1]));
     atoms1[0]->unbondFrom(atoms1[1]);
     atoms1[0]->deactivate();
     atoms1[3]->activate();
@@ -887,7 +887,7 @@ module VersatileDiamond
     assert(species1[0]->type() == BRIDGE_CRs);
     assert(species1[1]->type() == BRIDGE_CRs);
     assert(species1[2]->type() == METHYL_ON_BRIDGE_CMss);
-    Atom *atoms1[4] = { species1[2]->atom(1), species1[1]->atom(2), species1[0]->atom(2), species1[2]->atom(0) };
+    Atom *atoms1[4] = { species1[2]->atom(1), species1[0]->atom(2), species1[1]->atom(2), species1[2]->atom(0) };
     assert(atoms1[0]->is(#{role_cb}));
     assert(atoms1[1]->is(#{snd_role_cr}));
     assert(atoms1[2]->is(#{snd_role_cr}));
@@ -913,7 +913,7 @@ module VersatileDiamond
     assert(species1[0]->type() == BRIDGE_CRs);
     assert(species1[1]->type() == BRIDGE_CRs);
     assert(species1[2]->type() == METHYL_ON_BRIDGE_CMss);
-    Atom *atoms1[4] = { species1[2]->atom(1), species1[1]->atom(2), species1[0]->atom(2), species1[2]->atom(0) };
+    Atom *atoms1[4] = { species1[2]->atom(1), species1[0]->atom(2), species1[1]->atom(2), species1[2]->atom(0) };
     assert(atoms1[0]->is(#{role_cb}));
     assert(atoms1[1]->is(#{snd_role_cr}));
     assert(atoms1[2]->is(#{snd_role_cr}));

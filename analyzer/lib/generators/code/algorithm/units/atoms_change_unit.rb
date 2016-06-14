@@ -13,7 +13,7 @@ module VersatileDiamond
           def initialize(dict, context, sources)
             @dict = dict
             @context = context
-            @sources = sources
+            @sources = sources.sort_by { |node| [node, dict.var_of(node.atom).code] }
 
             @phase_changes = @context.phase_changes
             @surface_nodes = @sources.reject(&:open?)
@@ -69,17 +69,24 @@ module VersatileDiamond
           # @return [Array]
           def insertion_args_of(node)
             nbrs, rel_params = @context.latticed_neighbours_with_params(node)
-            [@dict.var_of(nbrs.sort.first.atom).crystal, coords_call(nbrs, rel_params)]
+            atom_var = atom_vars_from(nbrs).first
+            [atom_var.crystal, coords_call(nbrs, rel_params)]
           end
 
           # @param [Array] nodes
           # @param [Hash] rel_params
           # @return [Expressions::Core::FunctionCall]
           def coords_call(nodes, rel_params)
-            a1, a2 = nodes.map { |node| @dict.var_of(node.atom) }
+            a1, a2 = atom_vars_from(nodes)
             lattice =
               Expressions::Core::ObjectType[nodes.first.lattice_class.class_name]
             a1.coords_with(a2, lattice, rel_params)
+          end
+
+          # @param [Array] nodes
+          # @return [Array]
+          def atom_vars_from(nodes)
+            nodes.map { |node| @dict.var_of(node.atom) }.sort_by(&:code)
           end
 
           ### --------------------------------------------------------------------- ###
