@@ -1,8 +1,7 @@
 NAME		:= libhanser
 
-GCC_PATH	:= /usr/local/Cellar/gcc/5.3.0
-CC_BIN		:= g++-5
-CXX		:= $(GCC_PATH)/bin/$(CC_BIN)
+GCC_PATH	:= /usr
+CXX		:= $(GCC_PATH)/bin/g++
 CXXFLAGS	:= -Wall -fPIC -std=c++0x -O3 -DNDEBUG
 
 SRC_DIR		:= cpp

@@ -3,10 +3,9 @@ NAME		:= libengine
 ARKSFLAGS	:= -DNDEBUG
 STANDART	:= -std=c++11
 
-GCC_PATH	:= /usr/local/Cellar/gcc/5.3.0
-CC_BIN		:= g++-5
-CXX		:= $(GCC_PATH)/bin/$(CC_BIN)
-CFLAGS		:= $(STANDART) $(ARKSFLAGS) -Wall -O2 -I$(GCC_PATH)/include/c++/5.3.0
+GCC_PATH	:= /usr
+CXX		:= $(GCC_PATH)/bin/g++
+CFLAGS		:= $(STANDART) $(ARKSFLAGS) -O2 -I$(GCC_PATH)/include
 
 SRC_DIR		:= cpp
 OBJS_DIR	:= obj
