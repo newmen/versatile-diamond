@@ -71,92 +71,103 @@ module VersatileDiamond
 
       describe '#-' do
         shared_examples_for :check_subtract do
+          let(:raw_kn_graph) do
+            raw_k_proc = -> sa { [sa.first, sa.first.keyname(sa.last)] }
+            chunk_residual.links.each_with_object({}) do |(key, rels), acc|
+              acc[raw_k_proc[key]] = rels.map { |sa, r| [raw_k_proc[sa], r] }
+            end
+          end
+
+          let(:good_kn_graph) do
+            specs_to_i = {}
+            max_index_for = -> spec do
+              i = specs_to_i.select { |s, _| s.name == spec.name }.map(&:last).max
+              i ? i + 1 : 0
+            end
+
+            keys = raw_kn_graph.keys +
+              raw_kn_graph.values.flat_map { |rels| rels.map(&:first) }
+
+            other_keys = -> sk { keys.reject { |x| x == sk } }
+            has_keyname_same = -> sk { other_keys[sk].any? { |_, k| k == sk.last } }
+            has_spec_same = -> sk do
+              spec = sk.first
+              other_keys[sk].any? { |s, _| s != spec && s.name == spec.name }
+            end
+
+            alias_proc = -> sk do
+              spec, keyname = sk
+              if has_spec_same[sk]
+                specs_to_i[spec] ||= max_index_for[spec]
+                :"#{spec.name}__#{specs_to_i[spec]}__#{keyname}"
+              elsif has_keyname_same[sk]
+                :"#{spec.name}__#{keyname}"
+              else
+                keyname
+              end
+            end
+
+            raw_kn_graph.each_with_object({}) do |(spec_keyname, rels), acc|
+              acc[alias_proc[spec_keyname]] = rels.map { |sk, r| [alias_proc[sk], r] }
+            end
+          end
+
+          it { expect(good_kn_graph).to match_graph(rest_links) }
           it { expect(chunk_residual).to be_a(ChunkResidual) }
-          it { expect(chunk_residual.links).to match_graph(rest_links) }
         end
 
         it_behaves_like :check_subtract do
           let(:chunk_residual) { residual }
-          let(:ab) { middle_lateral_df.source.first }
-          let(:aib) { middle_lateral_df.source.last }
 
-          let(:env_specs) { middle_lateral_df.theres.flat_map(&:env_specs).uniq }
-          let(:dmr1) { env_specs.first }
-          let(:dmr2) { env_specs.last }
-
+          let(:ab) { :'bridge(ct: *)__ct' }
+          let(:aib) { :'bridge(ct: *, ct: i)__ct' }
+          let(:d1l) { :'dimer()__0__cl' }
+          let(:d1r) { :'dimer()__0__cr' }
+          let(:d11) { :'dimer()__0__clb' }
+          let(:d12) { :'dimer()__0___cr1' }
+          let(:d13) { :'dimer()__0__crb' }
+          let(:d14) { :'dimer()__0___cr0' }
+          let(:d2l) { :'dimer()__1__cl' }
+          let(:d2r) { :'dimer()__1__cr' }
           let(:rest_links) do
             {
-              [ab, ab.atom(:ct)] => [
-                [[dmr1, dmr1.atom(:cl)], position_100_cross],
-                [[dmr2, dmr2.atom(:cl)], position_100_cross],
+              ab => [[d1l, position_100_cross], [d2l, position_100_cross]],
+              aib => [[d1r, position_100_cross], [d2r, position_100_cross]],
+              d1l => [
+                [ab, position_100_cross],
+                [d1r, bond_100_front], [d11, bond_110_cross], [d12, bond_110_cross]
               ],
-              [aib, aib.atom(:ct)] => [
-                [[dmr1, dmr1.atom(:cr)], position_100_cross],
-                [[dmr2, dmr2.atom(:cr)], position_100_cross],
+              d11 => [[d1l, bond_110_front], [d12, position_100_front]],
+              d12 => [[d1l, bond_110_front], [d11, position_100_front]],
+              d1r => [
+                [aib, position_100_cross],
+                [d1l, bond_100_front], [d13, bond_110_cross], [d14, bond_110_cross]
               ],
-              [dmr1, dmr1.atom(:cr)] => [
-                [[aib, aib.atom(:ct)], position_100_cross],
-                [[dmr1, dmr1.atom(:cl)], bond_100_front],
-                [[dmr1, dmr1.atom(:crb)], bond_110_cross],
-                [[dmr1, dmr1.atom(:_cr0)], bond_110_cross]
-              ],
-              [dmr1, dmr1.atom(:crb)] => [
-                [[dmr1, dmr1.atom(:cr)], bond_110_front],
-                [[dmr1, dmr1.atom(:_cr0)], position_100_front]
-              ],
-              [dmr1, dmr1.atom(:_cr0)] => [
-                [[dmr1, dmr1.atom(:cr)], bond_110_front],
-                [[dmr1, dmr1.atom(:crb)], position_100_front]
-              ],
-              [dmr1, dmr1.atom(:cl)] => [
-                [[ab, ab.atom(:ct)], position_100_cross],
-                [[dmr1, dmr1.atom(:cr)], bond_100_front],
-                [[dmr1, dmr1.atom(:clb)], bond_110_cross],
-                [[dmr1, dmr1.atom(:_cr1)], bond_110_cross]
-              ],
-              [dmr1, dmr1.atom(:clb)] => [
-                [[dmr1, dmr1.atom(:cl)], bond_110_front],
-                [[dmr1, dmr1.atom(:_cr1)], position_100_front]
-              ],
-              [dmr1, dmr1.atom(:_cr1)] => [
-                [[dmr1, dmr1.atom(:cl)], bond_110_front],
-                [[dmr1, dmr1.atom(:clb)], position_100_front],
-              ],
+              d13 => [[d1r, bond_110_front], [d14, position_100_front]],
+              d14 => [[d1r, bond_110_front], [d13, position_100_front]]
             }
           end
         end
 
         it_behaves_like :check_subtract do
           let(:chunk_residual) { ewb_chunk - end_chunk }
-          let(:ab) { ewb_lateral_df.source.first }
-          let(:aib) { ewb_lateral_df.source.last }
 
-          let(:env_specs) { ewb_lateral_df.theres.flat_map(&:env_specs).uniq }
-          let(:br) { env_specs.first }
-          let(:dmr) { env_specs.last }
-
+          let(:aib) { :'bridge(ct: *, ct: i)__ct' }
+          let(:ab) { :'bridge(ct: *)__ct' }
+          let(:bt) { :'bridge()__ct' }
+          let(:bl) { :'bridge()__cl' }
+          let(:br) { :'bridge()__cr' }
+          let(:dl) { :'dimer()__cl' }
+          let(:dr) { :'dimer()__cr' }
           let(:rest_links) do
             {
-              [ab, ab.atom(:ct)] => [
-                [[dmr, dmr.atom(:cl)], position_100_cross],
+              ab => [[dl, position_100_cross]],
+              aib => [[dr, position_100_cross], [bt, position_100_front]],
+              bt => [
+                [aib, position_100_front], [br, bond_110_cross], [bl, bond_110_cross]
               ],
-              [aib, aib.atom(:ct)] => [
-                [[dmr, dmr.atom(:cr)], position_100_cross],
-                [[br, br.atom(:ct)], position_100_front],
-              ],
-              [br, br.atom(:ct)] => [
-                [[aib, aib.atom(:ct)], position_100_front],
-                [[br, br.atom(:cr)], bond_110_cross],
-                [[br, br.atom(:cl)], bond_110_cross],
-              ],
-              [br, br.atom(:cr)] => [
-                [[br, br.atom(:ct)], bond_110_front],
-                [[br, br.atom(:cl)], position_100_front],
-              ],
-              [br, br.atom(:cl)] => [
-                [[br, br.atom(:ct)], bond_110_front],
-                [[br, br.atom(:cr)], position_100_front],
-              ]
+              br => [[bt, bond_110_front], [bl, position_100_front]],
+              bl => [[bt, bond_110_front], [br, position_100_front]]
             }
           end
         end
