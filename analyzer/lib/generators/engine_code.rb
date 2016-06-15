@@ -80,7 +80,7 @@ module VersatileDiamond
       # @param [Concepts::Lattice] lattice by which code generator will be got
       # @return [Code::Lattice] the lattice code generator
       def lattice_class(lattice)
-        @lattices[lattice]
+        @lattices[lattice.name]
       end
 
       # Gets specie source files generator by some specie name
@@ -173,7 +173,7 @@ module VersatileDiamond
       # @return [Hash] the mirror of lattices to code generator
       def collect_code_lattices
         classifier.used_lattices.each_with_object({}) do |concept, acc|
-          acc[concept] = concept && Code::Lattice.new(self, concept)
+          acc[concept.name] = Code::Lattice.new(self, concept) if concept
         end
       end
 
