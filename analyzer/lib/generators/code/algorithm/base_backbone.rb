@@ -6,6 +6,7 @@ module VersatileDiamond
         # Provides base logic for backbone instance
         # @abstract
         class BaseBackbone
+          include Modules::ListsComparer
           include NodesCollector
           extend Forwardable
 
@@ -45,7 +46,9 @@ module VersatileDiamond
 
             until nodes_queue.empty?
               node = nodes_queue.shift
-              node_to_nodes[node].each do |next_nodes|
+              groups = node_to_nodes[node]
+              ogs = groups.sort_by { |ns| lists_are_identical?(nodes, ns) ? -1 : 0 }
+              ogs.each do |next_nodes|
                 next_nodes_set = next_nodes.to_set
                 next if visited.include?(next_nodes_set)
 
@@ -129,13 +132,27 @@ module VersatileDiamond
           # Makes mirror from each node to correspond nodes of grouped graph
           # @return [Hash] the mirror from each node to grouped graph nodes
           def node_to_nodes
-            @_node_to_nodes ||=
+            return @_node_to_nodes if @_node_to_nodes
+
+            result =
               collect_nodes(final_graph).each_with_object({}) do |nodes, result|
                 nodes.each do |node|
                   result[node] ||= Set.new
                   result[node] << nodes
                 end
               end
+
+            cmp_proc = method(:cmp_nodes_lists)
+            @_node_to_nodes =
+              result.map { |n, nss| [n, nss.to_a.sort(&cmp_proc)] }.to_h
+          end
+
+          # @param [Array] ns1 list 1
+          # @param [Array] ns2 list 2
+          # @return [Integer] the result of comparation
+          def cmp_nodes_lists(ns1, ns2)
+            cmp = (ns1.size <=> ns2.size)
+            cmp == 0 ? ns1 <=> ns2 : cmp
           end
 
           # Removes reverse relations to passed nodes
@@ -155,7 +172,15 @@ module VersatileDiamond
           # @param [Array] neighbours the reverse relations from which will be excepted
           # @return [Hash] the graph without multi reverse relations
           def except_multi_reverse_relations(graph, nodes, neighbours)
-            except_relations(graph, nodes, &neighbours.public_method(:include?))
+            except_relations(graph, nodes, &include_proc(neighbours))
+          end
+
+          # @param [Array] nodes_lists
+          # @return [Proc]
+          def include_proc(nodes_lists)
+            -> key do
+              nodes_lists.any? { |ns| lists_are_identical?(key, ns) }
+            end
           end
 
           # Removes single reverse relations to passed nodes

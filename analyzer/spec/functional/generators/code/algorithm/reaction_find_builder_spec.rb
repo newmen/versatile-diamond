@@ -225,7 +225,7 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *atom1 = target->atom(1);
+    Atom *atom1 = target->atom(4);
     eachNeighbour(atom1, &Diamond::cross_100, [&target](Atom *neighbour1) {
         if (neighbour1->is(#{other_role_cr}))
         {
@@ -262,17 +262,17 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     target->eachSymmetry([](SpecificSpec *symmetricBridgeCTs1) {
-        Atom *atoms1[2] = { symmetricBridgeCTs1->atom(2), symmetricBridgeCTs1->atom(1) };
+        Atom *atoms1[2] = { symmetricBridgeCTs1->atom(1), symmetricBridgeCTs1->atom(2) };
         eachNeighbours<2>(atoms1, &Diamond::cross_100, [&symmetricBridgeCTs1](Atom **neighbours1) {
-            if (neighbours1[0]->is(#{other_role_cr}))
+            if (neighbours1[1]->is(#{other_role_cr}))
             {
-                neighbours1[0]->eachAmorphNeighbour([&neighbours1, &symmetricBridgeCTs1](Atom *amorph1) {
+                neighbours1[1]->eachAmorphNeighbour([&neighbours1, &symmetricBridgeCTs1](Atom *amorph1) {
                     if (amorph1->is(#{other_role_cm}))
                     {
                         MethylOnDimerCMs *methylOnDimerCMs1 = amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm});
                         if (methylOnDimerCMs1)
                         {
-                            if (neighbours1[1] != methylOnDimerCMs1->atom(4))
+                            if (neighbours1[0] != methylOnDimerCMs1->atom(1))
                             {
                                 SpecificSpec *targets[2] = { symmetricBridgeCTs1, methylOnDimerCMs1 };
                                 create<ForwardIntermedMigrDhFormation>(targets);
@@ -294,7 +294,7 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *atoms1[2] = { target->atom(1), target->atom(4) };
+    Atom *atoms1[2] = { target->atom(4), target->atom(1) };
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [&target](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}))
         {
@@ -334,13 +334,13 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     target->eachSymmetry([](SpecificSpec *symmetricBridgeCTs1) {
-        Atom *atoms1[2] = { symmetricBridgeCTs1->atom(2), symmetricBridgeCTs1->atom(1) };
+        Atom *atoms1[2] = { symmetricBridgeCTs1->atom(1), symmetricBridgeCTs1->atom(2) };
         eachNeighbours<2>(atoms1, &Diamond::cross_100, [&symmetricBridgeCTs1](Atom **neighbours1) {
-            if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cl}))
+            if (neighbours1[0]->is(#{other_role_cl}) && neighbours1[1]->is(#{other_role_cr}))
             {
                 if (neighbours1[0]->hasBondWith(neighbours1[1]))
                 {
-                    neighbours1[0]->eachAmorphNeighbour([&symmetricBridgeCTs1](Atom *amorph1) {
+                    neighbours1[1]->eachAmorphNeighbour([&symmetricBridgeCTs1](Atom *amorph1) {
                         if (amorph1->is(#{other_role_cm}))
                         {
                             MethylOnDimerCMs *methylOnDimerCMs1 = amorph1->specByRole<MethylOnDimerCMs>(#{other_role_cm});
@@ -366,7 +366,7 @@ module VersatileDiamond
               let(:other_spec) { dept_activated_bridge }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *atoms1[2] = { target->atom(1), target->atom(4) };
+    Atom *atoms1[2] = { target->atom(4), target->atom(1) };
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [&target](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
         {
@@ -403,13 +403,13 @@ module VersatileDiamond
               let(:find_algorithm) do
                 <<-CODE
     target->eachSymmetry([](SpecificSpec *symmetricMethylOnBridgeCMs1) {
-        Atom *atoms1[2] = { symmetricMethylOnBridgeCMs1->atom(3), symmetricMethylOnBridgeCMs1->atom(2) };
+        Atom *atoms1[2] = { symmetricMethylOnBridgeCMs1->atom(2), symmetricMethylOnBridgeCMs1->atom(3) };
         eachNeighbours<2>(atoms1, &Diamond::cross_100, [&symmetricMethylOnBridgeCMs1](Atom **neighbours1) {
-            if (neighbours1[0]->is(#{other_role_cl}) && neighbours1[1]->is(#{other_role_cr}))
+            if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cl}))
             {
                 if (neighbours1[0]->hasBondWith(neighbours1[1]))
                 {
-                    DimerCRs *dimerCRs1 = neighbours1[1]->specByRole<DimerCRs>(#{other_role_cr});
+                    DimerCRs *dimerCRs1 = neighbours1[0]->specByRole<DimerCRs>(#{other_role_cr});
                     if (dimerCRs1)
                     {
                         SpecificSpec *targets[2] = { symmetricMethylOnBridgeCMs1, dimerCRs1 };
@@ -446,7 +446,7 @@ module VersatileDiamond
                                 if (methylOnBridgeCMs1)
                                 {
                                     methylOnBridgeCMs1->eachSymmetry([&neighbours1, &target](SpecificSpec *symmetricMethylOnBridgeCMs1) {
-                                        if (neighbours1[0] == symmetricMethylOnBridgeCMs1->atom(3) && neighbours1[1] == symmetricMethylOnBridgeCMs1->atom(2))
+                                        if (neighbours1[0] == symmetricMethylOnBridgeCMs1->atom(2) && neighbours1[1] == symmetricMethylOnBridgeCMs1->atom(3))
                                         {
                                             SpecificSpec *targets[2] = { symmetricMethylOnBridgeCMs1, target };
                                             create<ForwardMethylIncorporation>(targets);
@@ -615,7 +615,7 @@ module VersatileDiamond
                 let(:thrid_spec) { dept_extra_activated_methyl_on_bridge }
                 let(:find_algorithm) do
                   <<-CODE
-    Atom *atom1 = target->atom(3);
+    Atom *atom1 = target->atom(0);
     eachNeighbour(atom1, &Diamond::front_100, [&](Atom *neighbour1) {
         if (neighbour1->is(#{other_role_cr}))
         {

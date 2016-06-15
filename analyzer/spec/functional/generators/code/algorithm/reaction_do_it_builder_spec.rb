@@ -338,7 +338,7 @@ module VersatileDiamond
                   <<-CODE
     SpecificSpec *vinylOnBridgeC1iC2i1 = target();
     assert(vinylOnBridgeC1iC2i1->type() == VINYL_ON_BRIDGE_C1i_C2i);
-    Atom *atoms1[3] = { vinylOnBridgeC1iC2i1->atom(2), vinylOnBridgeC1iC2i1->atom(0), vinylOnBridgeC1iC2i1->atom(1) };
+    Atom *atoms1[3] = { vinylOnBridgeC1iC2i1->atom(2), vinylOnBridgeC1iC2i1->atom(1), vinylOnBridgeC1iC2i1->atom(0) };
     assert(atoms1[0]->is(#{role_cb}));
     assert(atoms1[1]->is(#{cv_i}));
     assert(atoms1[2]->is(#{cw_i}));
@@ -359,7 +359,7 @@ module VersatileDiamond
                   <<-CODE
     SpecificSpec *vinylOnBridgeC1iC2i1 = target();
     assert(vinylOnBridgeC1iC2i1->type() == VINYL_ON_BRIDGE_C1i_C2i);
-    Atom *atoms1[3] = { vinylOnBridgeC1iC2i1->atom(2), vinylOnBridgeC1iC2i1->atom(0), vinylOnBridgeC1iC2i1->atom(1) };
+    Atom *atoms1[3] = { vinylOnBridgeC1iC2i1->atom(2), vinylOnBridgeC1iC2i1->atom(1), vinylOnBridgeC1iC2i1->atom(0) };
     assert(atoms1[0]->is(#{role_cb}));
     assert(atoms1[1]->is(#{cv_i}));
     assert(atoms1[2]->is(#{cw_i}));
@@ -551,7 +551,7 @@ module VersatileDiamond
                   <<-CODE
     SpecificSpec *dimerCLiCRi1 = target();
     assert(dimerCLiCRi1->type() == DIMER_CLi_CRi);
-    Atom *atoms1[2] = { dimerCLiCRi1->atom(3), dimerCLiCRi1->atom(0) };
+    Atom *atoms1[2] = { dimerCLiCRi1->atom(0), dimerCLiCRi1->atom(3) };
     assert(atoms1[0]->is(#{role_cr}));
     assert(atoms1[1]->is(#{role_cr}));
     atoms1[0]->unbondFrom(atoms1[1]);
@@ -568,7 +568,7 @@ module VersatileDiamond
                   <<-CODE
     SpecificSpec *dimerCLiCRi1 = target();
     assert(dimerCLiCRi1->type() == DIMER_CLi_CRi);
-    Atom *atoms1[2] = { dimerCLiCRi1->atom(3), dimerCLiCRi1->atom(0) };
+    Atom *atoms1[2] = { dimerCLiCRi1->atom(0), dimerCLiCRi1->atom(3) };
     assert(atoms1[0]->is(#{role_cr}));
     assert(atoms1[1]->is(#{role_cr}));
     atoms1[0]->unbondFrom(atoms1[1]);
@@ -791,7 +791,7 @@ module VersatileDiamond
     SpecificSpec *species1[2] = { target(0), target(1) };
     assert(species1[0]->type() == METHYL_ON_BRIDGE_CMs);
     assert(species1[1]->type() == DIMER_CRs);
-    Atom *atoms1[4] = { species1[1]->atom(0), species1[1]->atom(3), species1[0]->atom(1), species1[0]->atom(0) };
+    Atom *atoms1[4] = { species1[1]->atom(3), species1[1]->atom(0), species1[0]->atom(1), species1[0]->atom(0) };
     assert(atoms1[0]->is(#{snd_role_cr}));
     assert(atoms1[1]->is(#{snd_role_cl}));
     assert(atoms1[2]->is(#{role_cb}));
@@ -827,7 +827,7 @@ module VersatileDiamond
     SpecificSpec *species1[2] = { target(0), target(1) };
     assert(species1[0]->type() == METHYL_ON_BRIDGE_CMs);
     assert(species1[1]->type() == DIMER_CRs);
-    Atom *atoms1[4] = { species1[1]->atom(0), species1[1]->atom(3), species1[0]->atom(1), species1[0]->atom(0) };
+    Atom *atoms1[4] = { species1[1]->atom(3), species1[1]->atom(0), species1[0]->atom(1), species1[0]->atom(0) };
     assert(atoms1[0]->is(#{snd_role_cr}));
     assert(atoms1[1]->is(#{snd_role_cl}));
     assert(atoms1[2]->is(#{role_cb}));
@@ -963,7 +963,7 @@ module VersatileDiamond
     assert(species1[0]->type() == BRIDGE_CRs);
     assert(species1[1]->type() == METHYL_ON_BRIDGE_CMss);
     assert(species1[2]->type() == DIMER_CLs_CRi);
-    Atom *atoms1[4] = { species1[2]->atom(3), species1[1]->atom(1), species1[0]->atom(2), species1[1]->atom(0) };
+    Atom *atoms1[4] = { species1[2]->atom(0), species1[1]->atom(1), species1[0]->atom(2), species1[1]->atom(0) };
     assert(atoms1[0]->is(#{role_cl}));
     assert(atoms1[1]->is(#{snd_role_cb}));
     assert(atoms1[2]->is(#{br_s}));
@@ -989,7 +989,7 @@ module VersatileDiamond
     assert(species1[0]->type() == BRIDGE_CRs);
     assert(species1[1]->type() == METHYL_ON_BRIDGE_CMss);
     assert(species1[2]->type() == DIMER_CLs_CRi);
-    Atom *atoms1[4] = { species1[2]->atom(3), species1[1]->atom(1), species1[0]->atom(2), species1[1]->atom(0) };
+    Atom *atoms1[4] = { species1[2]->atom(0), species1[1]->atom(1), species1[0]->atom(2), species1[1]->atom(0) };
     assert(atoms1[0]->is(#{role_cl}));
     assert(atoms1[1]->is(#{snd_role_cb}));
     assert(atoms1[2]->is(#{br_s}));

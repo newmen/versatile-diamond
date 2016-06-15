@@ -11,7 +11,11 @@ module VersatileDiamond
           # @return [Array] the sorted array of nodes lists
           def collect_nodes(graph)
             lists = graph.flat_map { |nodes, rels| [nodes] + rels.map(&:first) }
-            lists.uniq.sort_by(&:size)
+            uniq_lists = lists.uniq.reject do |ns|
+              (!graph[ns] || graph[ns].empty?) &&
+                ns.permutation.any? { |nk| graph[nk] && !graph[nk].empty? }
+            end
+            uniq_lists.sort
           end
         end
 

@@ -39,15 +39,15 @@ module VersatileDiamond
         let(:links) do
           {
             [ab, ab.atom(:ct)] => [
-              [[dimer_base, dimer_base.atom(:cl)], position_100_cross],
-              [[veiled_dimer, veiled_dimer.atom(:cl)], position_100_cross],
-            ],
-            [aib, aib.atom(:ct)] => [
               [[dimer_base, dimer_base.atom(:cr)], position_100_cross],
               [[veiled_dimer, veiled_dimer.atom(:cr)], position_100_cross],
             ],
+            [aib, aib.atom(:ct)] => [
+              [[dimer_base, dimer_base.atom(:cl)], position_100_cross],
+              [[veiled_dimer, veiled_dimer.atom(:cl)], position_100_cross],
+            ],
             [dimer_base, dimer_base.atom(:cr)] => [
-              [[aib, aib.atom(:ct)], position_100_cross],
+              [[ab, ab.atom(:ct)], position_100_cross],
               [[dimer_base, dimer_base.atom(:cl)], bond_100_front],
               [[dimer_base, dimer_base.atom(:crb)], bond_110_cross],
               [[dimer_base, dimer_base.atom(:_cr0)], bond_110_cross]
@@ -61,7 +61,7 @@ module VersatileDiamond
               [[dimer_base, dimer_base.atom(:crb)], position_100_front]
             ],
             [dimer_base, dimer_base.atom(:cl)] => [
-              [[ab, ab.atom(:ct)], position_100_cross],
+              [[aib, aib.atom(:ct)], position_100_cross],
               [[dimer_base, dimer_base.atom(:cr)], bond_100_front],
               [[dimer_base, dimer_base.atom(:clb)], bond_110_cross],
               [[dimer_base, dimer_base.atom(:_cr1)], bond_110_cross]
@@ -75,7 +75,7 @@ module VersatileDiamond
               [[dimer_base, dimer_base.atom(:clb)], position_100_front],
             ],
             [veiled_dimer, veiled_dimer.atom(:cr)] => [
-              [[aib, aib.atom(:ct)], position_100_cross],
+              [[ab, ab.atom(:ct)], position_100_cross],
               [[veiled_dimer, veiled_dimer.atom(:cl)], bond_100_front],
               [[veiled_dimer, veiled_dimer.atom(:crb)], bond_110_cross],
               [[veiled_dimer, veiled_dimer.atom(:_cr0)], bond_110_cross]
@@ -89,7 +89,7 @@ module VersatileDiamond
               [[veiled_dimer, veiled_dimer.atom(:crb)], position_100_front]
             ],
             [veiled_dimer, veiled_dimer.atom(:cl)] => [
-              [[ab, ab.atom(:ct)], position_100_cross],
+              [[aib, aib.atom(:ct)], position_100_cross],
               [[veiled_dimer, veiled_dimer.atom(:cr)], bond_100_front],
               [[veiled_dimer, veiled_dimer.atom(:clb)], bond_110_cross],
               [[veiled_dimer, veiled_dimer.atom(:_cr1)], bond_110_cross]

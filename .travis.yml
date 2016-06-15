@@ -8,4 +8,4 @@ before_install:
   - make
 script:
   - cd analyzer
-  - parallel_rspec spec/
+  - rspec

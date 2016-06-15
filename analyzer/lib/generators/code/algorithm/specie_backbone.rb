@@ -6,7 +6,6 @@ module VersatileDiamond
         # Cleans the specie grouped nodes graph from not significant relations and
         # gets the ordered graph by which the find specie algorithm will be built
         class SpecieBackbone < BaseBackbone
-          include Modules::ListsComparer
           extend Forwardable
 
           # Initializes backbone by specie and grouped nodes of it

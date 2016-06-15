@@ -16,20 +16,20 @@ module VersatileDiamond
           let(:big_links_method) { :links }
           it_behaves_like :dimer_formation_in_different_envs do
             describe 'just cross neighbours' do
-              let(:flatten_face_grouped_atoms) { [[t1, t2], [d1, d2]] }
+              let(:flatten_face_grouped_atoms) { [[:ct, :ct], [:cl, :cr]] }
               let(:nodes_list) do
                 [
-                  [Instances::UniqueReactant, t1],
-                  [Instances::UniqueReactant, t2],
-                  [Instances::UniqueReactant, d1],
-                  [Instances::UniqueReactant, d2]
+                  [Instances::UniqueReactant, :ct],
+                  [Instances::UniqueReactant, :ct],
+                  [Instances::UniqueReactant, :cl],
+                  [Instances::UniqueReactant, :cr]
                 ]
               end
 
               let(:grouped_graph) do
                 {
-                  [t1, t2] => [[[d2, d1], param_100_cross]],
-                  [d1, d2] => [[[t2, t1], param_100_cross]]
+                  [t1, t2] => [[[:cl, :cr], param_100_cross]],
+                  [:cl, :cr] => [[[t1, t2], param_100_cross]]
                 }
               end
 
@@ -49,26 +49,26 @@ module VersatileDiamond
             end
 
             describe 'not only cross neighbours' do
-              let(:nodes_list) do
-                [
-                  [Instances::UniqueReactant, t1],
-                  [Instances::UniqueReactant, t2],
-                  [Instances::UniqueReactant, d1],
-                  [Instances::UniqueReactant, d2],
-                  [Instances::UniqueReactant, b]
-                ]
+              let(:flatten_face_grouped_atoms) do
+                [[:ct, :ct], [:cl, :cr], [:ct]]
               end
 
-              let(:flatten_face_grouped_atoms) do
-                [[t1, t2], [d1, d2], [b]]
+              let(:nodes_list) do
+                [
+                  [Instances::UniqueReactant, :ct],
+                  [Instances::UniqueReactant, :ct],
+                  [Instances::UniqueReactant, :cl],
+                  [Instances::UniqueReactant, :cr],
+                  [Instances::UniqueReactant, :ct]
+                ]
               end
 
               let(:grouped_graph) do
                 {
-                  [t2, t1] => [[[d1, d2], param_100_cross]],
-                  [d1, d2] => [[[t2, t1], param_100_cross]],
-                  [t2] => [[[b], param_100_front]],
-                  [b] => [[[t2], param_100_front]]
+                  [t1, t2] => [[[:cl, :cr], param_100_cross]],
+                  [:cl, :cr] => [[[t1, t2], param_100_cross]],
+                  [t1] => [[[b], param_100_front]],
+                  [b] => [[[t1], param_100_front]]
                 }
               end
 
@@ -96,22 +96,22 @@ module VersatileDiamond
 
           it_behaves_like :many_similar_activated_bridges do
             let(:flatten_face_grouped_atoms) do
-              [[t2], [fb], [cb]]
+              [[:ct], [:ct], [:ct]]
             end
 
             let(:nodes_list) do
               [
-                [Instances::UniqueReactant, t2],
-                [Instances::UniqueReactant, fb],
-                [Instances::UniqueReactant, cb]
+                [Instances::UniqueReactant, :ct],
+                [Instances::UniqueReactant, :ct],
+                [Instances::UniqueReactant, :ct]
               ]
             end
 
             let(:grouped_graph) do
               {
-                [t2] => [[[fb], param_100_front], [[cb], param_100_cross]],
-                [fb] => [[[t2], param_100_front]],
-                [cb] => [[[t2], param_100_cross]]
+                [t] => [[[cb1], param_100_cross], [[fb2], param_100_front]],
+                [cb1] => [[[t], param_100_cross]],
+                [fb2] => [[[t], param_100_front]]
               }
             end
 
@@ -133,24 +133,24 @@ module VersatileDiamond
           it_behaves_like :methyl_incorporation_near_edge do
             it_behaves_like :check_grouped_nodes_graph do
               let(:flatten_face_grouped_atoms) do
-                [[tm], [td], [dm, dd]]
+                [[:cb], [:cl], [:cr, :cl]]
               end
 
               let(:nodes_list) do
                 [
-                  [Instances::UniqueReactant, tm],
-                  [Instances::UniqueReactant, td],
-                  [Instances::UniqueReactant, dm],
-                  [Instances::UniqueReactant, dd]
+                  [Instances::UniqueReactant, :cb],
+                  [Instances::UniqueReactant, :cl],
+                  [Instances::UniqueReactant, :cr],
+                  [Instances::UniqueReactant, :cl]
                 ]
               end
 
               let(:grouped_graph) do
                 {
-                  [tm] => [[[dm], param_100_cross]],
-                  [dm] => [[[tm], param_100_cross]],
-                  [td] => [[[dd], param_110_front]],
-                  [dd] => [[[td], param_110_cross]]
+                  [tdl] => [[[:cr], param_110_front]],
+                  [:cr] => [[[tdl], param_110_cross]],
+                  [:cb] => [[[sdl], param_100_cross]],
+                  [sdl] => [[[:cb], param_100_cross]]
                 }
               end
             end

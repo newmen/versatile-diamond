@@ -30,7 +30,7 @@ module VersatileDiamond
       describe '#replace_base_spec' do
         before { activated_dimer.replace_base_spec(dimer_base_dup) }
         it { expect(activated_dimer.spec).to eq(dimer_base_dup) }
-        it { expect(activated_dimer.name).to eq(:'dimer(r: *)') }
+        it { expect(activated_dimer.name).to eq(:'dimer(l: *)') }
 
         describe 'intersec is not full' do
           let(:spec) { activated_methyl_on_bridge }

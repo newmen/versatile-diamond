@@ -13,23 +13,18 @@ module VersatileDiamond
             it_behaves_like :dimer_formation_in_different_envs do
               describe 'dimer sidepiece' do
                 let(:spec) { lateral_dimer }
+                let(:final_graph) do
+                  {
+                    [:cl, :cr] => [[[t1, t2], param_100_cross]]
+                  }
+                end
 
                 it_behaves_like :check_finite_graph do
                   let(:lateral_reactions) { [dept_end_lateral_df] }
-                  let(:final_graph) do
-                    {
-                      [d1, d2] => [[[t2, t1], param_100_cross]]
-                    }
-                  end
                 end
 
                 it_behaves_like :check_finite_graph do
                   let(:lateral_reactions) { [dept_ewb_lateral_df] }
-                  let(:final_graph) do
-                    {
-                      [d1, d2] => [[[t2, t1], param_100_cross]]
-                    }
-                  end
                 end
               end
 
@@ -39,7 +34,7 @@ module VersatileDiamond
                   let(:spec) { lateral_bridge }
                   let(:final_graph) do
                     {
-                      [b] => [[[t2], param_100_front]]
+                      [b] => [[[t1], param_100_front]]
                     }
                   end
                 end
@@ -50,8 +45,8 @@ module VersatileDiamond
               let(:spec) { front_bridge }
               let(:final_graph) do
                 {
-                  [cb] => [[[t2], param_100_cross]],
-                  [fb] => [[[t2], param_100_front]]
+                  [cb0] => [[[ts], param_100_cross]],
+                  [fb2] => [[[ts], param_100_front]]
                 }
               end
 
@@ -69,10 +64,10 @@ module VersatileDiamond
                 let(:spec) { edge_dimer }
                 let(:final_graph) do
                   {
-                    [dm] => [[[tm], param_100_cross]],
-                    [dd] => [[[td], param_110_cross]],
-                    [td] => [[[ds], param_100_front]],
-                    [tm] => [[[ms], param_amorph]]
+                    [sdl] => [[[:cb], param_100_cross]],
+                    [sdr] => [[[tdl], param_110_cross]],
+                    [tdl] => [[[tdr], param_100_front]],
+                    [:cb] => [[[:cm], param_amorph]]
                   }
                 end
               end
@@ -83,7 +78,7 @@ module VersatileDiamond
             it_behaves_like :dimer_formation_in_different_envs do
               describe 'dimer sidepiece' do
                 let(:spec) { lateral_dimer }
-                let(:points_list) { [[d1, d2]] }
+                let(:points_list) { [[:cl, :cr]] }
 
                 it_behaves_like :check_entry_nodes do
                   let(:lateral_reactions) { [dept_end_lateral_df] }
@@ -98,14 +93,14 @@ module VersatileDiamond
                 it_behaves_like :check_entry_nodes do
                   let(:lateral_reactions) { [dept_ewb_lateral_df] }
                   let(:spec) { lateral_bridge }
-                  let(:points_list) { [[b]] }
+                  let(:points_list) { [[:ct]] }
                 end
               end
             end
 
             it_behaves_like :many_similar_activated_bridges do
               let(:spec) { front_bridge }
-              let(:points_list) { [[cb], [cb]] }
+              let(:points_list) { [[:ct], [:ct]] }
 
               it_behaves_like :check_entry_nodes do
                 let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
@@ -125,7 +120,7 @@ module VersatileDiamond
             it_behaves_like :methyl_incorporation_near_edge do
               it_behaves_like :check_entry_nodes do
                 let(:spec) { edge_dimer }
-                let(:points_list) { [[dd, dm]] }
+                let(:points_list) { [[:cr, :cl]] }
               end
             end
           end
@@ -134,7 +129,7 @@ module VersatileDiamond
             it_behaves_like :dimer_formation_in_different_envs do
               describe 'dimer sidepiece' do
                 let(:spec) { lateral_dimer }
-                let(:atoms_lists) { [d1, d2] }
+                let(:atoms_lists) { [:cr, :cl] }
 
                 it_behaves_like :check_action_nodes do
                   let(:lateral_reactions) { [dept_end_lateral_df] }
@@ -149,14 +144,14 @@ module VersatileDiamond
                 it_behaves_like :check_action_nodes do
                   let(:lateral_reactions) { [dept_ewb_lateral_df] }
                   let(:spec) { lateral_bridge }
-                  let(:atoms_lists) { [b] }
+                  let(:atoms_lists) { [:ct] }
                 end
               end
             end
 
             it_behaves_like :many_similar_activated_bridges do
               let(:spec) { front_bridge }
-              let(:atoms_lists) { [cb] }
+              let(:atoms_lists) { [:ct] }
 
               it_behaves_like :check_action_nodes do
                 let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
@@ -170,7 +165,7 @@ module VersatileDiamond
             it_behaves_like :methyl_incorporation_near_edge do
               it_behaves_like :check_action_nodes do
                 let(:spec) { edge_dimer }
-                let(:atoms_lists) { [dd, dm] }
+                let(:atoms_lists) { [:cr, :cl] }
               end
             end
           end
@@ -179,14 +174,13 @@ module VersatileDiamond
             it_behaves_like :dimer_formation_in_different_envs do
               describe 'dimer sidepiece' do
                 let(:spec) { lateral_dimer }
+                let(:ordered_graph) do
+                  [
+                    [[:cl, :cr], [[[t1, t2], param_100_cross]]]
+                  ]
+                end
 
                 describe 'just cross' do
-                  let(:ordered_graph) do
-                    [
-                      [[d1, d2], [[[t2, t1], param_100_cross]]]
-                    ]
-                  end
-
                   it_behaves_like :check_ordered_graph do
                     let(:lateral_reactions) { [dept_end_lateral_df] }
                   end
@@ -198,12 +192,6 @@ module VersatileDiamond
 
                 describe 'many sides' do
                   it_behaves_like :check_ordered_graph do
-                    let(:ordered_graph) do
-                      [
-                        [[d1, d2], [[[t2, t1], param_100_cross]]]
-                      ]
-                    end
-
                     let(:lateral_reactions) { [dept_ewb_lateral_df] }
                   end
                 end
@@ -213,7 +201,7 @@ module VersatileDiamond
                 let(:spec) { lateral_bridge }
                 let(:ordered_graph) do
                   [
-                    [[b], [[[t2], param_100_front]]]
+                    [[b], [[[t1], param_100_front]]]
                   ]
                 end
 
@@ -243,7 +231,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.first }
                 let(:ordered_graph) do
                   [
-                    [[cb], [[[t2], param_100_cross]]]
+                    [[cb0], [[[ts], param_100_cross]]]
                   ]
                 end
               end
@@ -253,7 +241,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.last }
                 let(:ordered_graph) do
                   [
-                    [[cb], [[[t2], param_100_front]]]
+                    [[fb0], [[[ts], param_100_front]]]
                   ]
                 end
               end
@@ -263,7 +251,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.first }
                 let(:ordered_graph) do
                   [
-                    [[cb], [[[t2], param_100_cross]]]
+                    [[cb0], [[[ts], param_100_cross]]]
                   ]
                 end
               end
@@ -273,7 +261,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.last }
                 let(:ordered_graph) do
                   [
-                    [[cb], [[[t2], param_100_front]]]
+                    [[fb0], [[[ts], param_100_front]]]
                   ]
                 end
               end
@@ -284,10 +272,10 @@ module VersatileDiamond
                 let(:spec) { edge_dimer }
                 let(:ordered_graph) do
                   [
-                    [[dd], [[[td], param_110_cross]]],
-                    [[td], [[[ds], param_100_front]]],
-                    [[dm], [[[tm], param_100_cross]]],
-                    [[tm], [[[ms], param_amorph]]]
+                    [[sdr], [[[tdl], param_110_cross]]],
+                    [[tdl], [[[tdr], param_100_front]]],
+                    [[sdl], [[[:cb], param_100_cross]]],
+                    [[:cb], [[[:cm], param_amorph]]]
                   ]
                 end
               end

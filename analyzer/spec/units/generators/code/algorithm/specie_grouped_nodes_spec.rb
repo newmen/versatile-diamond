@@ -21,40 +21,38 @@ module VersatileDiamond
 
           let(:big_links_method) { :original_links }
 
-          let_atoms_of(:'subject.spec', Support::RoleChecker::ANCHOR_KEYNAMES)
-
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_bridge_base }
             let(:base_specs) { [subject] }
-            let(:flatten_face_grouped_atoms) { [[ct, cr, cl]] }
+            let(:flatten_face_grouped_atoms) { [[:ct, :cr, :cl]] }
             let(:nodes_list) do
               [
-                [Instances::NoneSpecie, ct],
-                [Instances::NoneSpecie, cr],
-                [Instances::NoneSpecie, cl]
+                [Instances::NoneSpecie, :ct],
+                [Instances::NoneSpecie, :cr],
+                [Instances::NoneSpecie, :cl]
               ]
             end
             let(:grouped_graph) do
               {
-                [ct] => [[[cl, cr], param_110_cross]],
-                [cr] => [[[ct], param_110_front]],
-                [cl] => [[[ct], param_110_front]]
+                [:ct] => [[[:cl, :cr], param_110_cross]],
+                [:cr] => [[[:ct], param_110_front]],
+                [:cl] => [[[:ct], param_110_front]]
               }
             end
           end
 
           describe 'like methyl on bridge' do
-            let(:flatten_face_grouped_atoms) { [[cb], [cm]] }
+            let(:flatten_face_grouped_atoms) { [[:cb], [:cm]] }
             let(:nodes_list) do
               [
-                [Instances::NoneSpecie, cm],
-                [Instances::UniqueParent, cb]
+                [Instances::NoneSpecie, :cm],
+                [Instances::UniqueParent, :cb]
               ]
             end
             let(:grouped_graph) do
               {
-                [cm] => [[[cb], param_amorph]],
-                [cb] => [[[cm], param_amorph]]
+                [:cm] => [[[:cb], param_amorph]],
+                [:cb] => [[[:cm], param_amorph]]
               }
             end
 
@@ -72,19 +70,19 @@ module VersatileDiamond
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_vinyl_on_bridge_base }
             let(:base_specs) { [dept_bridge_base, subject] }
-            let(:flatten_face_grouped_atoms) { [[cb], [c1, c2]] }
+            let(:flatten_face_grouped_atoms) { [[:cb], [:c1, :c2]] }
             let(:nodes_list) do
               [
-                [Instances::NoneSpecie, c1],
-                [Instances::NoneSpecie, c2],
-                [Instances::UniqueParent, cb]
+                [Instances::NoneSpecie, :c1],
+                [Instances::NoneSpecie, :c2],
+                [Instances::UniqueParent, :cb]
               ]
             end
             let(:grouped_graph) do
               {
-                [cb] => [[[c1], param_amorph]],
-                [c1] => [[[cb], param_amorph], [[c2], param_amorph]],
-                [c2] => [[[c1], param_amorph]]
+                [:cb] => [[[:c1], param_amorph]],
+                [:c1] => [[[:cb], param_amorph], [[:c2], param_amorph]],
+                [:c2] => [[[:c1], param_amorph]]
               }
             end
           end
@@ -92,17 +90,17 @@ module VersatileDiamond
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_dimer_base }
             let(:base_specs) { [dept_bridge_base, subject] }
-            let(:flatten_face_grouped_atoms) { [[cr, cl]] }
+            let(:flatten_face_grouped_atoms) { [[:cr, :cl]] }
             let(:nodes_list) do
               [
-                [Instances::UniqueParent, cr],
-                [Instances::UniqueParent, cl]
+                [Instances::UniqueParent, :cr],
+                [Instances::UniqueParent, :cl]
               ]
             end
             let(:grouped_graph) do
               {
-                [cr] => [[[cl], param_100_front]],
-                [cl] => [[[cr], param_100_front]]
+                [:cr] => [[[:cl], param_100_front]],
+                [:cl] => [[[:cr], param_100_front]]
               }
             end
           end
@@ -110,21 +108,21 @@ module VersatileDiamond
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_two_methyls_on_dimer_base }
             let(:base_specs) { [dept_dimer_base, subject] }
-            let(:flatten_face_grouped_atoms) { [[cr, cl], [c1, c2]] }
+            let(:flatten_face_grouped_atoms) { [[:cr, :cl], [:c1, :c2]] }
             let(:nodes_list) do
               [
-                [Instances::NoneSpecie, c1],
-                [Instances::NoneSpecie, c2],
-                [Instances::UniqueParent, cr],
-                [Instances::UniqueParent, cl]
+                [Instances::NoneSpecie, :c1],
+                [Instances::NoneSpecie, :c2],
+                [Instances::UniqueParent, :cr],
+                [Instances::UniqueParent, :cl]
               ]
             end
             let(:grouped_graph) do
               {
-                [c1] => [[[cr], param_amorph]],
-                [c2] => [[[cl], param_amorph]],
-                [cr] => [[[c1], param_amorph]],
-                [cl] => [[[c2], param_amorph]]
+                [:c1] => [[[:cr], param_amorph]],
+                [:c2] => [[[:cl], param_amorph]],
+                [:cr] => [[[:c1], param_amorph]],
+                [:cl] => [[[:c2], param_amorph]]
               }
             end
           end
@@ -133,16 +131,16 @@ module VersatileDiamond
             subject { dept_activated_methyl_on_incoherent_bridge }
             let(:base_specs) { [dept_methyl_on_bridge_base] }
             let(:specific_specs) { [subject] }
-            let(:flatten_face_grouped_atoms) { [[cb, cm]] }
+            let(:flatten_face_grouped_atoms) { [[:cb, :cm]] }
             let(:nodes_list) do
               [
-                [Instances::UniqueParent, cm],
-                [Instances::UniqueParent, cb]
+                [Instances::UniqueParent, :cm],
+                [Instances::UniqueParent, :cb]
               ]
             end
             let(:grouped_graph) do
               {
-                [cb, cm] => [],
+                [:cb, :cm] => [],
               }
             end
           end
@@ -152,17 +150,17 @@ module VersatileDiamond
             let(:base_specs) do
               [dept_bridge_base, dept_methyl_on_bridge_base, subject]
             end
-            let(:flatten_face_grouped_atoms) { [[cr, cl]] }
+            let(:flatten_face_grouped_atoms) { [[:cr, :cl]] }
             let(:nodes_list) do
               [
-                [Instances::UniqueParent, cr],
-                [Instances::UniqueParent, cl]
+                [Instances::UniqueParent, :cr],
+                [Instances::UniqueParent, :cl]
               ]
             end
             let(:grouped_graph) do
               {
-                [cr] => [[[cl], param_100_front]],
-                [cl] => [[[cr], param_100_front]]
+                [:cr] => [[[:cl], param_100_front]],
+                [:cl] => [[[:cr], param_100_front]]
               }
             end
           end
@@ -170,17 +168,17 @@ module VersatileDiamond
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_three_bridges_base }
             let(:base_specs) { [dept_bridge_base, subject] }
-            let(:flatten_face_grouped_atoms) { [[ct, cc]] }
+            let(:flatten_face_grouped_atoms) { [[:ct, :cc]] }
             let(:nodes_list) do
               [
-                [Instances::SpeciesScope, ct],
-                [Instances::SpeciesScope, cc]
+                [Instances::SpeciesScope, :ct],
+                [Instances::SpeciesScope, :cc]
               ]
             end
             let(:grouped_graph) do
               {
-                [ct] => [],
-                [cc] => []
+                [:ct] => [],
+                [:cc] => []
               }
             end
           end
@@ -188,17 +186,17 @@ module VersatileDiamond
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_bridge_with_dimer_base }
             let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
-            let(:flatten_face_grouped_atoms) { [[ct, cr]] }
+            let(:flatten_face_grouped_atoms) { [[:ct, :cr]] }
             let(:nodes_list) do
               [
-                [Instances::SpeciesScope, ct],
-                [Instances::SpeciesScope, cr]
+                [Instances::SpeciesScope, :ct],
+                [Instances::SpeciesScope, :cr]
               ]
             end
             let(:grouped_graph) do
               {
-                [ct] => [],
-                [cr] => []
+                [:ct] => [],
+                [:cr] => []
               }
             end
           end
@@ -207,15 +205,15 @@ module VersatileDiamond
             subject { dept_right_hydrogenated_bridge }
             let(:base_specs) { [dept_bridge_base] }
             let(:specific_specs) { [subject] }
-            let(:flatten_face_grouped_atoms) { [[cr]] }
+            let(:flatten_face_grouped_atoms) { [[:cr]] }
             let(:nodes_list) do
               [
-                [Instances::UniqueParent, cr]
+                [Instances::UniqueParent, :cr]
               ]
             end
             let(:grouped_graph) do
               {
-                [cr] => []
+                [:cr] => []
               }
             end
           end
@@ -225,19 +223,19 @@ module VersatileDiamond
 
             it_behaves_like :check_grouped_nodes_graph do
               let(:base_specs) { [dept_bridge_base, subject] }
-              let(:flatten_face_grouped_atoms) { [[cm], [cbr], [cr]] }
+              let(:flatten_face_grouped_atoms) { [[:cm], [:cbr], [:cr]] }
               let(:nodes_list) do
                 [
-                  [Instances::NoneSpecie, cm],
-                  [Instances::UniqueParent, cbr],
-                  [Instances::SpeciesScope, cr],
+                  [Instances::NoneSpecie, :cm],
+                  [Instances::UniqueParent, :cbr],
+                  [Instances::SpeciesScope, :cr],
                 ]
               end
               let(:grouped_graph) do
                 {
-                  [cm] => [[[cbr], param_amorph]],
-                  [cbr] => [[[cm], param_amorph]],
-                  [cr] => []
+                  [:cm] => [[[:cbr], param_amorph]],
+                  [:cbr] => [[[:cm], param_amorph]],
+                  [:cr] => []
                 }
               end
             end
@@ -246,17 +244,17 @@ module VersatileDiamond
               let(:base_specs) do
                 [dept_bridge_base, dept_methyl_on_right_bridge_base, subject]
               end
-              let(:flatten_face_grouped_atoms) { [[cr], [cbr]] }
+              let(:flatten_face_grouped_atoms) { [[:cr], [:cbr]] }
               let(:nodes_list) do
                 [
-                  [Instances::UniqueParent, cr],
-                  [Instances::UniqueParent, cbr]
+                  [Instances::UniqueParent, :cr],
+                  [Instances::UniqueParent, :cbr]
                 ]
               end
               let(:grouped_graph) do
                 {
-                  [cr] => [[[cbr], param_110_cross]],
-                  [cbr] => [[[cr], param_110_front]]
+                  [:cr] => [[[:cbr], param_110_cross]],
+                  [:cbr] => [[[:cr], param_110_front]]
                 }
               end
             end
@@ -264,22 +262,22 @@ module VersatileDiamond
 
           describe 'different dept_cross_bridge_on_bridges_base' do
             subject { dept_cross_bridge_on_bridges_base }
-            let(:flatten_face_grouped_atoms) { [[ctl, ctr], [cm]] }
+            let(:flatten_face_grouped_atoms) { [[:ctl, :ctr], [:cm]] }
 
             it_behaves_like :check_grouped_nodes_graph do
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:nodes_list) do
                 [
-                  [Instances::NoneSpecie, cm],
-                  [Instances::UniqueParent, ctr],
-                  [Instances::UniqueParent, ctl]
+                  [Instances::NoneSpecie, :cm],
+                  [Instances::UniqueParent, :ctr],
+                  [Instances::UniqueParent, :ctl]
                 ]
               end
               let(:grouped_graph) do
                 {
-                  [cm] => [[[ctr, ctl], param_amorph]],
-                  [ctr] => [[[ctl], param_100_cross], [[cm], param_amorph]],
-                  [ctl] => [[[ctr], param_100_cross], [[cm], param_amorph]]
+                  [:cm] => [[[:ctr, :ctl], param_amorph]],
+                  [:ctr] => [[[:ctl], param_100_cross], [[:cm], param_amorph]],
+                  [:ctl] => [[[:ctr], param_100_cross], [[:cm], param_amorph]]
                 }
               end
             end
@@ -290,16 +288,16 @@ module VersatileDiamond
               end
               let(:nodes_list) do
                 [
-                  [Instances::SpeciesScope, cm],
-                  [Instances::UniqueParent, ctr],
-                  [Instances::UniqueParent, ctl]
+                  [Instances::SpeciesScope, :cm],
+                  [Instances::UniqueParent, :ctr],
+                  [Instances::UniqueParent, :ctl]
                 ]
               end
               let(:grouped_graph) do
                 {
-                  [cm] => [],
-                  [ctr] => [[[ctl], param_100_cross]],
-                  [ctl] => [[[ctr], param_100_cross]]
+                  [:cm] => [],
+                  [:ctr] => [[[:ctl], param_100_cross]],
+                  [:ctl] => [[[:ctr], param_100_cross]]
                 }
               end
             end
@@ -307,26 +305,26 @@ module VersatileDiamond
 
           describe 'different dept_cross_bridge_on_dimers_base' do
             subject { dept_cross_bridge_on_dimers_base }
-            let(:flatten_face_grouped_atoms) { [[ctr, csr], [ctl, csl], [cm]] }
+            let(:flatten_face_grouped_atoms) { [[:ctr, :csr], [:ctl, :csl], [:cm]] }
 
             it_behaves_like :check_grouped_nodes_graph do
               let(:base_specs) { [dept_dimer_base, subject] }
               let(:nodes_list) do
                 [
-                  [Instances::NoneSpecie, cm],
-                  [Instances::UniqueParent, ctr],
-                  [Instances::UniqueParent, csr],
-                  [Instances::UniqueParent, ctl],
-                  [Instances::UniqueParent, csl]
+                  [Instances::NoneSpecie, :cm],
+                  [Instances::UniqueParent, :ctr],
+                  [Instances::UniqueParent, :csr],
+                  [Instances::UniqueParent, :ctl],
+                  [Instances::UniqueParent, :csl]
                 ]
               end
               let(:grouped_graph) do
                 {
-                  [cm] => [[[ctr, ctl], param_amorph]],
-                  [ctr] => [[[cm], param_amorph]],
-                  [ctl] => [[[cm], param_amorph]],
-                  [csr, ctr] => [[[csl, ctl], param_100_cross]],
-                  [csl, ctl] => [[[csr, ctr], param_100_cross]]
+                  [:cm] => [[[:ctr, :ctl], param_amorph]],
+                  [:ctr] => [[[:cm], param_amorph]],
+                  [:ctl] => [[[:cm], param_amorph]],
+                  [:csr, :ctr] => [[[:csl, :ctl], param_100_cross]],
+                  [:csl, :ctl] => [[[:csr, :ctr], param_100_cross]]
                 }
               end
             end
@@ -337,18 +335,18 @@ module VersatileDiamond
               end
               let(:nodes_list) do
                 [
-                  [Instances::SpeciesScope, cm],
-                  [Instances::UniqueParent, ctr],
-                  [Instances::UniqueParent, csr],
-                  [Instances::UniqueParent, ctl],
-                  [Instances::UniqueParent, csl]
+                  [Instances::SpeciesScope, :cm],
+                  [Instances::UniqueParent, :ctr],
+                  [Instances::UniqueParent, :csr],
+                  [Instances::UniqueParent, :ctl],
+                  [Instances::UniqueParent, :csl]
                 ]
               end
               let(:grouped_graph) do
                 {
-                  [cm] => [],
-                  [csr, ctr] => [[[csl, ctl], param_100_cross]],
-                  [csl, ctl] => [[[csr, ctr], param_100_cross]]
+                  [:cm] => [],
+                  [:csr, :ctr] => [[[:csl, :ctl], param_100_cross]],
+                  [:csl, :ctl] => [[[:csr, :ctr], param_100_cross]]
                 }
               end
             end
@@ -359,19 +357,19 @@ module VersatileDiamond
             let(:base_specs) do
               [dept_bridge_base, dept_methyl_on_bridge_base, subject]
             end
-            let(:flatten_face_grouped_atoms) { [[cbr, cbt], [cm]] }
+            let(:flatten_face_grouped_atoms) { [[:cbr, :cbt], [:cm]] }
             let(:nodes_list) do
               [
-                [Instances::SpeciesScope, cm],
-                [Instances::UniqueParent, cbr],
-                [Instances::UniqueParent, cbt]
+                [Instances::SpeciesScope, :cm],
+                [Instances::UniqueParent, :cbr],
+                [Instances::UniqueParent, :cbt]
               ]
             end
             let(:grouped_graph) do
               {
-                [cm] => [],
-                [cbr] => [[[cbt], param_100_cross]],
-                [cbt] => [[[cbr], param_100_cross]]
+                [:cm] => [],
+                [:cbr] => [[[:cbt], param_100_cross]],
+                [:cbt] => [[[:cbr], param_100_cross]]
               }
             end
           end
@@ -388,40 +386,40 @@ module VersatileDiamond
 
             it_behaves_like :check_grouped_nodes_graph do
               subject { dept_intermed_migr_down_common_base }
-              let(:flatten_face_grouped_atoms) { [[cbr, cdr], [cm]] }
+              let(:flatten_face_grouped_atoms) { [[:cbr, :cdr], [:cm]] }
               let(:nodes_list) do
                 [
-                  [Instances::UniqueParent, cm],
-                  [Instances::UniqueParent, cbr],
-                  [Instances::UniqueParent, cdr],
+                  [Instances::UniqueParent, :cm],
+                  [Instances::UniqueParent, :cbr],
+                  [Instances::UniqueParent, :cdr],
                 ]
               end
               let(:grouped_graph) do
                 {
-                  [cm] => [[[cdr], param_amorph]],
-                  [cdr] => [[[cbr], param_100_cross], [[cm], param_amorph]],
-                  [cbr] => [[[cdr], param_100_cross]]
+                  [:cm] => [[[:cdr], param_amorph]],
+                  [:cdr] => [[[:cbr], param_100_cross], [[:cm], param_amorph]],
+                  [:cbr] => [[[:cdr], param_100_cross]]
                 }
               end
             end
 
             describe 'both lower atoms are related' do
-              let(:flatten_face_grouped_atoms) { [[cm, cbr, cbl], [cdr, cdl]] }
+              let(:flatten_face_grouped_atoms) { [[:cm, :cbr, :cbl], [:cdr, :cdl]] }
               let(:nodes_list) do
                 [
-                  [Instances::UniqueParent, cm],
-                  [Instances::UniqueParent, cbr],
-                  [Instances::UniqueParent, cbl],
-                  [Instances::UniqueParent, cdr],
-                  [Instances::UniqueParent, cdl]
+                  [Instances::UniqueParent, :cm],
+                  [Instances::UniqueParent, :cbr],
+                  [Instances::UniqueParent, :cbl],
+                  [Instances::UniqueParent, :cdr],
+                  [Instances::UniqueParent, :cdl]
                 ]
               end
               let(:grouped_graph) do
                 {
-                  [cm] => [[[cdr], param_amorph]],
-                  [cdr] => [[[cm], param_amorph]],
-                  [cdl, cdr] => [[[cbl, cbr], param_100_cross]],
-                  [cbr, cbl] => [[[cdr, cdl], param_100_cross]]
+                  [:cm] => [[[:cdr], param_amorph]],
+                  [:cdr] => [[[:cm], param_amorph]],
+                  [:cdl, :cdr] => [[[:cbl, :cbr], param_100_cross]],
+                  [:cbr, :cbl] => [[[:cdr, :cdl], param_100_cross]]
                 }
               end
 

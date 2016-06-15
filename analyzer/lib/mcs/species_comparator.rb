@@ -70,7 +70,39 @@ module VersatileDiamond
         # @return [Set] the set of atom pairs for two species
         def first_general_intersec(first, second, collaps_multi_bond: false, &block)
           smb = collaps_multi_bond
-          intersec(first, second, collaps_multi_bond: smb, &block).first
+          isecs = intersec(first, second, collaps_multi_bond: smb, &block)
+          resort_intersecs(isecs, first, second).first
+        end
+
+        # @param [ISpec] spec
+        # @param [Concepts::Atom...] atom
+        # @return [Symbol]
+        def keyname_from(spec, atom)
+          spec.keyname(atom)
+        end
+
+        # @param [Array] intersecs
+        # @return [Array]
+        def resort_intersecs(intersecs, first, second)
+          fs, ss = first.links.size, second.links.size
+          intersecs.sort_by do |isec|
+            isec.map do |v, w|
+              kn_pair =
+                if v.is_a?(Array) && w.is_a?(Array)
+                  [v, w].map { |pair| keyname_from(*pair) }
+                else
+                  [keyname_from(first, v), keyname_from(second, w)]
+                end
+
+              if fs == ss
+                kn_pair
+              elsif fs > ss
+                kn_pair.last
+              else
+                kn_pair.first
+              end
+            end
+          end
         end
       end
     end

@@ -103,8 +103,8 @@ module VersatileDiamond
           let(:d_dup) { dimer.dup }
           let(:links) do
             {
-              [ab, ab.atom(:ct)] => [[[d_dup, d_dup.atom(:cl)], position_100_cross]],
-              [aib, aib.atom(:ct)] => [[[d_dup, d_dup.atom(:cr)], position_100_cross]]
+              [ab, ab.atom(:ct)] => [[[d_dup, d_dup.atom(:cr)], position_100_cross]],
+              [aib, aib.atom(:ct)] => [[[d_dup, d_dup.atom(:cl)], position_100_cross]]
             }
           end
         end

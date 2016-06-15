@@ -29,6 +29,12 @@ module VersatileDiamond
         @_clean_links = nil
       end
 
+      # @param [Concepts::Atom...] atom
+      # @return [Symbol]
+      def keyname(atom)
+        @owner.spec.keyname(atom)
+      end
+
       # Clones the current instance and replaces value of internal owner variable and
       # also changes internal hashes where uses the atoms of old owner spec
       #

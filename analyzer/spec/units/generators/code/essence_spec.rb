@@ -19,13 +19,17 @@ module VersatileDiamond
         let(:essence) { specie.essence }
 
         describe '#cut_links' do
-          USING_KEYNAMES = Algorithm::Support::RoleChecker::ANCHOR_KEYNAMES
-          let_atoms_of(:'subject.spec', USING_KEYNAMES)
-
           shared_examples_for :check_cut_links do
+            let(:kn_graph) do
+              essence.cut_links.each_with_object({}) do |(atom, rels), acc|
+                acc[subject.spec.keyname(atom)] =
+                  rels.map { |a, r| [subject.spec.keyname(a), r] }
+              end
+            end
+
             # each method should not change the state of essence
             it 'all public methods' do
-              expect(essence.cut_links).to match_graph(cut_links)
+              expect(kn_graph).to match_graph(cut_links)
             end
           end
 
@@ -34,9 +38,9 @@ module VersatileDiamond
             let(:base_specs) { [subject] }
             let(:cut_links) do
               {
-                ct => [[cl, bond_110_cross], [cr, bond_110_cross]],
-                cr => [[ct, bond_110_front]],
-                cl => [[ct, bond_110_front]]
+                :ct => [[:cl, bond_110_cross], [:cr, bond_110_cross]],
+                :cr => [[:ct, bond_110_front]],
+                :cl => [[:ct, bond_110_front]]
               }
             end
           end
@@ -44,8 +48,8 @@ module VersatileDiamond
           describe 'like methyl on bridge' do
             let(:cut_links) do
               {
-                cm => [[cb, free_bond]],
-                cb => [[cm, free_bond]]
+                :cm => [[:cb, free_bond]],
+                :cb => [[:cm, free_bond]]
               }
             end
 
@@ -65,9 +69,9 @@ module VersatileDiamond
             let(:base_specs) { [dept_bridge_base, subject] }
             let(:cut_links) do
               {
-                cb => [[c1, free_bond]],
-                c1 => [[cb, free_bond], [c2, free_bond]],
-                c2 => [[c1, free_bond]]
+                :cb => [[:c1, free_bond]],
+                :c1 => [[:cb, free_bond], [:c2, free_bond]],
+                :c2 => [[:c1, free_bond]]
               }
             end
           end
@@ -77,8 +81,8 @@ module VersatileDiamond
             let(:base_specs) { [dept_bridge_base, subject] }
             let(:cut_links) do
               {
-                cr => [[cl, bond_100_front]],
-                cl => [[cr, bond_100_front]]
+                :cr => [[:cl, bond_100_front]],
+                :cl => [[:cr, bond_100_front]]
               }
             end
           end
@@ -89,7 +93,7 @@ module VersatileDiamond
             let(:specific_specs) { [subject] }
             let(:cut_links) do
               {
-                cm => []
+                :cm => []
               }
             end
           end
@@ -101,10 +105,10 @@ module VersatileDiamond
               let(:base_specs) { [dept_dimer_base, subject] }
               let(:cut_links) do
                 {
-                  c1 => [[cr, free_bond]],
-                  c2 => [[cl, free_bond]],
-                  cr => [[c1, free_bond]],
-                  cl => [[c2, free_bond]]
+                  :c1 => [[:cr, free_bond]],
+                  :c2 => [[:cl, free_bond]],
+                  :cr => [[:c1, free_bond]],
+                  :cl => [[:c2, free_bond]]
                 }
               end
             end
@@ -122,8 +126,8 @@ module VersatileDiamond
               end
               let(:cut_links) do
                 {
-                  cr => [[c1, free_bond]],
-                  c1 => [[cr, free_bond]]
+                  :cl => [[:c2, free_bond]],
+                  :c2 => [[:cl, free_bond]]
                 }
               end
             end
@@ -135,8 +139,8 @@ module VersatileDiamond
             let(:specific_specs) { [subject] }
             let(:cut_links) do
               {
-                cb => [],
-                cm => []
+                :cb => [],
+                :cm => []
               }
             end
           end
@@ -148,8 +152,8 @@ module VersatileDiamond
             end
             let(:cut_links) do
               {
-                cr => [[cl, bond_100_front]],
-                cl => [[cr, bond_100_front]]
+                :cr => [[:cl, bond_100_front]],
+                :cl => [[:cr, bond_100_front]]
               }
             end
           end
@@ -159,8 +163,8 @@ module VersatileDiamond
             let(:base_specs) { [dept_bridge_base, subject] }
             let(:cut_links) do
               {
-                ct => [],
-                cc => []
+                :ct => [],
+                :cc => []
               }
             end
           end
@@ -170,8 +174,8 @@ module VersatileDiamond
             let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
             let(:cut_links) do
               {
-                ct => [],
-                cr => []
+                :ct => [],
+                :cr => []
               }
             end
           end
@@ -182,7 +186,7 @@ module VersatileDiamond
             let(:specific_specs) { [subject] }
             let(:cut_links) do
               {
-                cr => []
+                :cr => []
               }
             end
           end
@@ -194,9 +198,9 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:cut_links) do
                 {
-                  cr => [],
-                  cbr => [[cm, free_bond]],
-                  cm => [[cbr, free_bond]]
+                  :cr => [],
+                  :cbr => [[:cm, free_bond]],
+                  :cm => [[:cbr, free_bond]]
                 }
               end
             end
@@ -207,8 +211,8 @@ module VersatileDiamond
               end
               let(:cut_links) do
                 {
-                  cr => [[cbr, bond_110_cross]],
-                  cbr => [[cr, bond_110_front]]
+                  :cr => [[:cbr, bond_110_cross]],
+                  :cbr => [[:cr, bond_110_front]]
                 }
               end
             end
@@ -221,9 +225,9 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:cut_links) do
                 {
-                  cm => [[ctl, free_bond], [ctr, free_bond]],
-                  ctr => [[ctl, position_100_cross], [cm, free_bond]],
-                  ctl => [[ctr, position_100_cross], [cm, free_bond]],
+                  :cm => [[:ctr, free_bond], [:ctl, free_bond]],
+                  :ctr => [[:ctl, position_100_cross], [:cm, free_bond]],
+                  :ctl => [[:ctr, position_100_cross], [:cm, free_bond]],
                 }
               end
             end
@@ -234,9 +238,9 @@ module VersatileDiamond
               end
               let(:cut_links) do
                 {
-                  cm => [],
-                  ctr => [[ctl, position_100_cross]],
-                  ctl => [[ctr, position_100_cross]],
+                  :cm => [],
+                  :ctr => [[:ctl, position_100_cross]],
+                  :ctl => [[:ctr, position_100_cross]],
                 }
               end
             end
@@ -249,11 +253,11 @@ module VersatileDiamond
               let(:base_specs) { [dept_dimer_base, subject] }
               let(:cut_links) do
                 {
-                  cm => [[ctl, free_bond], [ctr, free_bond]],
-                  ctr => [[ctl, position_100_cross], [cm, free_bond]],
-                  ctl => [[ctr, position_100_cross], [cm, free_bond]],
-                  csr => [[csl, position_100_cross]],
-                  csl => [[csr, position_100_cross]],
+                  :cm => [[:ctr, free_bond], [:ctl, free_bond]],
+                  :ctr => [[:ctl, position_100_cross], [:cm, free_bond]],
+                  :ctl => [[:ctr, position_100_cross], [:cm, free_bond]],
+                  :csr => [[:csl, position_100_cross]],
+                  :csl => [[:csr, position_100_cross]],
                 }
               end
             end
@@ -264,11 +268,11 @@ module VersatileDiamond
               end
               let(:cut_links) do
                 {
-                  cm => [],
-                  ctr => [[ctl, position_100_cross]],
-                  ctl => [[ctr, position_100_cross]],
-                  csr => [[csl, position_100_cross]],
-                  csl => [[csr, position_100_cross]],
+                  :cm => [],
+                  :ctr => [[:ctl, position_100_cross]],
+                  :ctl => [[:ctr, position_100_cross]],
+                  :csr => [[:csl, position_100_cross]],
+                  :csl => [[:csr, position_100_cross]],
                 }
               end
             end
@@ -284,10 +288,10 @@ module VersatileDiamond
               end
               let(:cut_links) do
                 {
-                  ctr => [[csr, bond_100_front], [ctl, position_100_cross]],
-                  ctl => [[csl, bond_100_front], [ctr, position_100_cross]],
-                  csr => [[ctr, bond_100_front], [csl, position_100_cross]],
-                  csl => [[ctl, bond_100_front], [csr, position_100_cross]],
+                  :ctr => [[:csr, bond_100_front], [:ctl, position_100_cross]],
+                  :ctl => [[:csl, bond_100_front], [:ctr, position_100_cross]],
+                  :csr => [[:ctr, bond_100_front], [:csl, position_100_cross]],
+                  :csl => [[:ctl, bond_100_front], [:csr, position_100_cross]],
                 }
               end
             end
@@ -307,9 +311,9 @@ module VersatileDiamond
               subject { dept_intermed_migr_down_common_base }
               let(:cut_links) do
                 {
-                  cm => [[cdr, free_bond]],
-                  cdr => [[cbr, position_100_cross], [cm, free_bond]],
-                  cbr => [[cdr, position_100_cross]]
+                  :cm => [[:cdr, free_bond]],
+                  :cdr => [[:cbr, position_100_cross], [:cm, free_bond]],
+                  :cbr => [[:cdr, position_100_cross]]
                 }
               end
             end
@@ -318,11 +322,11 @@ module VersatileDiamond
               subject { dept_intermed_migr_down_half_base }
               let(:cut_links) do
                 {
-                  cm => [[cdr, free_bond]],
-                  cdr => [[cbr, position_100_cross], [cm, free_bond]],
-                  cbr => [[cdr, position_100_cross]],
-                  cdl => [[cbl, non_position_100_cross]],
-                  cbl => [[cdl, non_position_100_cross]]
+                  :cm => [[:cdr, free_bond]],
+                  :cdr => [[:cbr, position_100_cross], [:cm, free_bond]],
+                  :cbr => [[:cdr, position_100_cross]],
+                  :cdl => [[:cbl, non_position_100_cross]],
+                  :cbl => [[:cdl, non_position_100_cross]]
                 }
               end
             end
@@ -331,11 +335,11 @@ module VersatileDiamond
               subject { dept_intermed_migr_down_full_base }
               let(:cut_links) do
                 {
-                  cm => [[cdr, free_bond]],
-                  cdr => [[cbr, position_100_cross], [cm, free_bond]],
-                  cbr => [[cdr, position_100_cross]],
-                  cdl => [[cbl, position_100_cross]],
-                  cbl => [[cdl, position_100_cross]]
+                  :cm => [[:cdr, free_bond]],
+                  :cdr => [[:cbr, position_100_cross], [:cm, free_bond]],
+                  :cbr => [[:cdr, position_100_cross]],
+                  :cdl => [[:cbl, position_100_cross]],
+                  :cbl => [[:cdl, position_100_cross]]
                 }
               end
             end
