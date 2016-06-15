@@ -19,7 +19,7 @@ module VersatileDiamond
 
         describe 'different atoms' do
           let(:old_cr_twin) { subject.twin_of(dimer_base.atom(:cr)) }
-          let(:new_cr_twin) { clone.twin_of(dimer_base_dup.atom(:r)) }
+          let(:new_cr_twin) { clone.twin_of(dimer_base_dup.atom(:l)) }
           it { expect(new_cr_twin).not_to be_nil }
           it { expect(old_cr_twin).to eq(new_cr_twin) }
         end

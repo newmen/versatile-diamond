@@ -213,7 +213,7 @@ module VersatileDiamond
               let(:specific) { dept_bottom_hydrogenated_activated_dimer }
               let(:typical_reactions) { [dept_bhad_activation] }
               let(:symmetry_classes) do
-                ['AtomsSwapWrapper<EmptyBase<DIMER_CRs>, 4, 5>']
+                ['AtomsSwapWrapper<EmptyBase<DIMER_CRs>, 1, 2>']
               end
               let(:symmetric_keynames) { [:_cr1, :clb] }
 
@@ -228,7 +228,7 @@ module VersatileDiamond
               end
               let(:specific) { faked_rbhad }
               let(:symmetry_classes) do
-                ['AtomsSwapWrapper<EmptyBase<DIMER_CRs>, 1, 2>']
+                ['AtomsSwapWrapper<EmptyBase<DIMER_CRs>, 4, 5>']
               end
               let(:symmetric_keynames) { [:_cr0, :crb] }
 

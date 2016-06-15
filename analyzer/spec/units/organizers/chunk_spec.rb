@@ -81,8 +81,8 @@ module VersatileDiamond
           let(:aib) { middle_lateral_df.source.last }
 
           let(:env_specs) { middle_lateral_df.theres.flat_map(&:env_specs).uniq }
-          let(:dmr1) { env_specs.last }
-          let(:dmr2) { env_specs.first }
+          let(:dmr1) { env_specs.first }
+          let(:dmr2) { env_specs.last }
 
           let(:rest_links) do
             {
