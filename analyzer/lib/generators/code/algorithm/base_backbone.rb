@@ -6,6 +6,7 @@ module VersatileDiamond
         # Provides base logic for backbone instance
         # @abstract
         class BaseBackbone
+          include Modules::ListsComparer
           include NodesCollector
           extend Forwardable
 
@@ -155,7 +156,15 @@ module VersatileDiamond
           # @param [Array] neighbours the reverse relations from which will be excepted
           # @return [Hash] the graph without multi reverse relations
           def except_multi_reverse_relations(graph, nodes, neighbours)
-            except_relations(graph, nodes, &neighbours.public_method(:include?))
+            except_relations(graph, nodes, &include_proc(neighbours))
+          end
+
+          # @param [Array] nodes_lists
+          # @return [Proc]
+          def include_proc(nodes_lists)
+            -> key do
+              nodes_lists.any? { |ns| lists_are_identical?(key, ns) }
+            end
           end
 
           # Removes single reverse relations to passed nodes

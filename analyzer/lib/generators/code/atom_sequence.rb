@@ -105,14 +105,14 @@ module VersatileDiamond
             elsif as.map(&:reference?).uniq.size > 1
               !a.reference? && b.reference? ? -1 : 1
             else
-              order_similar(as)
+              order_similar(as, amorph_before: amorph_before)
             end
           end
         end
 
         # @param [Array] atoms the pair of sorting atoms
         # @return [Integer] the result of comparation
-        def order_similar(atoms)
+        def order_similar(atoms, amorph_before: true)
           ap, bp = atoms.map(&method(:atom_properties_for))
           if ap == bp
             ak, bk = atoms.map(&method(:keyname_for))
@@ -120,7 +120,8 @@ module VersatileDiamond
           elsif ap.lattice && bp.lattice
             bp <=> ap
           else
-            ap <=> bp
+            cmp = (ap <=> bp)
+            amorph_before ? cmp : -cmp
           end
         end
 

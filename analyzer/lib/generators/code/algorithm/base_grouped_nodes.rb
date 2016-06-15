@@ -42,30 +42,7 @@ module VersatileDiamond
           #   which have similar relations with neighbour nodes and values are wrapped
           #   to arrays other side "vertex" and relation to it vertex
           def final_graph
-            return @_final_graph if @_final_graph
-
-            result = {}
-            store_proc = proc do |nodes, nbrs_with_rel_param|
-              result[nodes] ||= []
-              result[nodes] << nbrs_with_rel_param if nbrs_with_rel_param
-            end
-
-            major_groups = non_complete_groups
-            if lists_are_identical?(major_groups.flatten, main_keys)
-              similar_groups = major_groups
-            else
-              similar_groups = non_flatten_groups + major_groups
-              flatten_groups.each do |group|
-                accurate_combine_relations(group, &store_proc)
-              end
-            end
-
-            similar_groups.each do |group|
-              similar_combine_relations(group, &store_proc)
-            end
-
-            @_final_graph =
-              result.empty? ? small_final_graph : collaps_similar_key_nodes(result)
+            @_final_graph ||= reorder_vertices(build_final_graph)
           end
 
         private
@@ -408,6 +385,54 @@ module VersatileDiamond
                 end
               end
             end
+          end
+
+          # @return [Hash] new builded instance of final graph
+          def build_final_graph
+            graph = {}
+            store_proc = proc do |nodes, nbrs_with_rel_param|
+              graph[nodes] ||= []
+              graph[nodes] << nbrs_with_rel_param if nbrs_with_rel_param
+            end
+
+            major_groups = non_complete_groups
+            if lists_are_identical?(major_groups.flatten, main_keys)
+              similar_groups = major_groups
+            else
+              similar_groups = non_flatten_groups + major_groups
+              flatten_groups.each do |group|
+                accurate_combine_relations(group, &store_proc)
+              end
+            end
+
+            similar_groups.each do |group|
+              similar_combine_relations(group, &store_proc)
+            end
+
+            graph.empty? ? small_final_graph : collaps_similar_key_nodes(graph)
+          end
+
+          # @param [Hash] graph which vertices will be accurate reordered
+          # @return [Hash] the graph with reordered vertices
+          def reorder_vertices(graph)
+            graph.each_with_object({}) do |(key, rels), acc|
+              if key.one?
+                acc[key] = rels.map { |nbrs, rp| [nbrs.sort, rp] }.sort
+              else
+                ordered_key = key.sort
+                acc[ordered_key] = rels.map do |nbrs, rp|
+                  nbrs.one? ? [nbrs, rp] : [order_vertex(nbrs, by: key), rp]
+                end
+                acc[ordered_key].sort!
+              end
+            end
+          end
+
+          # @param [Array] nodes which will be ordered
+          # @option [Array] :by which the order will be applyed
+          # @return [Array] the ordered nodes
+          def order_vertex(nodes, by: nodes)
+            by.zip(nodes).sort.transpose.last
           end
         end
 

@@ -19,15 +19,13 @@ module VersatileDiamond
           let(:specie) { generator.specie_class(subject.name) }
           let(:backbone) { described_class.new(generator, specie) }
 
-          let_atoms_of(:'subject.spec', Support::RoleChecker::ANCHOR_KEYNAMES)
-
           describe '#final_graph' do
             it_behaves_like :check_finite_graph do
               subject { dept_bridge_base }
               let(:base_specs) { [subject] }
               let(:final_graph) do
                 {
-                  [ct] => [[[cl, cr], param_110_cross]]
+                  [:ct] => [[[:cl, :cr], param_110_cross]]
                 }
               end
             end
@@ -37,7 +35,7 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:final_graph) do
                 {
-                  [cb] => [[[cm], param_amorph]]
+                  [:cb] => [[[:cm], param_amorph]]
                 }
               end
             end
@@ -47,8 +45,8 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:final_graph) do
                 {
-                  [cb] => [[[c1], param_amorph]],
-                  [c1] => [[[c2], param_amorph]],
+                  [:cb] => [[[:c1], param_amorph]],
+                  [:c1] => [[[:c2], param_amorph]],
                 }
               end
             end
@@ -58,7 +56,7 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:final_graph) do
                 {
-                  [cr] => [[[cl], param_100_front]]
+                  [:cl] => [[[:cr], param_100_front]]
                 }
               end
             end
@@ -70,8 +68,8 @@ module VersatileDiamond
                 let(:base_specs) { [dept_dimer_base, subject] }
                 let(:final_graph) do
                   {
-                    [cr] => [[[c1], param_amorph]],
-                    [cl] => [[[c2], param_amorph]]
+                    [:cr] => [[[:c1], param_amorph]],
+                    [:cl] => [[[:c2], param_amorph]]
                   }
                 end
               end
@@ -89,7 +87,7 @@ module VersatileDiamond
                 end
                 let(:final_graph) do
                   {
-                    [cr] => [[[c1], param_amorph]]
+                    [:cl] => [[[:c2], param_amorph]]
                   }
                 end
               end
@@ -101,7 +99,7 @@ module VersatileDiamond
               let(:specific_specs) { [subject] }
               let(:final_graph) do
                 {
-                  [cb, cm] => [],
+                  [:cb, :cm] => [],
                 }
               end
             end
@@ -113,8 +111,8 @@ module VersatileDiamond
               end
               let(:final_graph) do
                 {
-                  [cr] => [[[cl], param_100_front]],
-                  [cl] => [[[cr], param_100_front]]
+                  [:cr] => [[[:cl], param_100_front]],
+                  [:cl] => [[[:cr], param_100_front]]
                 }
               end
             end
@@ -124,8 +122,8 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:final_graph) do
                 {
-                  [ct] => [],
-                  [cc] => []
+                  [:ct] => [],
+                  [:cc] => []
                 }
               end
             end
@@ -136,7 +134,7 @@ module VersatileDiamond
               let(:specific_specs) { [subject] }
               let(:final_graph) do
                 {
-                  [cr] => []
+                  [:cr] => []
                 }
               end
             end
@@ -148,8 +146,8 @@ module VersatileDiamond
                 let(:base_specs) { [dept_bridge_base, subject] }
                 let(:final_graph) do
                   {
-                    [cr] => [],
-                    [cbr] => [[[cm], param_amorph]]
+                    [:cr] => [],
+                    [:cbr] => [[[:cm], param_amorph]]
                   }
                 end
               end
@@ -160,8 +158,8 @@ module VersatileDiamond
                 end
                 let(:final_graph) do
                   {
-                    [cr] => [[[cbr], param_110_cross]],
-                    [cbr] => [[[cr], param_110_front]]
+                    [:cr] => [[[:cbr], param_110_cross]],
+                    [:cbr] => [[[:cr], param_110_front]]
                   }
                 end
               end
@@ -174,8 +172,8 @@ module VersatileDiamond
                 let(:base_specs) { [dept_bridge_base, subject] }
                 let(:final_graph) do
                   {
-                    [ctr] => [[[cm], param_amorph]],
-                    [ctl] => [[[cm], param_amorph], [[ctr], param_100_cross]]
+                    [:ctr] => [[[:cm], param_amorph]],
+                    [:ctl] => [[[:cm], param_amorph], [[:ctr], param_100_cross]]
                   }
                 end
               end
@@ -186,8 +184,8 @@ module VersatileDiamond
                 end
                 let(:final_graph) do
                   {
-                    [cm] => [],
-                    [ctl] => [[[ctr], param_100_cross]]
+                    [:cm] => [],
+                    [:ctl] => [[[:ctr], param_100_cross]]
                   }
                 end
               end
@@ -200,9 +198,9 @@ module VersatileDiamond
                 let(:base_specs) { [dept_dimer_base, subject] }
                 let(:final_graph) do
                   {
-                    [ctl] => [[[cm], param_amorph]],
-                    [ctr] => [[[cm], param_amorph]],
-                    [csl, ctl] => [[[csr, ctr], param_100_cross]]
+                    [:ctl] => [[[:cm], param_amorph]],
+                    [:ctr] => [[[:cm], param_amorph]],
+                    [:csl, :ctl] => [[[:csr, :ctr], param_100_cross]]
                   }
                 end
               end
@@ -213,8 +211,8 @@ module VersatileDiamond
                 end
                 let(:final_graph) do
                   {
-                    [cm] => [],
-                    [csl, ctl] => [[[csr, ctr], param_100_cross]]
+                    [:cm] => [],
+                    [:csl, :ctl] => [[[:csr, :ctr], param_100_cross]]
                   }
                 end
               end
@@ -234,9 +232,9 @@ module VersatileDiamond
                 subject { dept_intermed_migr_down_common_base }
                 let(:final_graph) do
                   {
-                    [cm] => [],
-                    [cbr] => [[[cdr], param_100_cross]],
-                    [cdr] => [[[cm], param_amorph]]
+                    [:cm] => [],
+                    [:cbr] => [[[:cdr], param_100_cross]],
+                    [:cdr] => [[[:cm], param_amorph]]
                   }
                 end
               end
@@ -244,9 +242,9 @@ module VersatileDiamond
               describe 'both lower atoms are related' do
                 let(:final_graph) do
                   {
-                    [cm] => [],
-                    [cbr, cbl] => [[[cdr, cdl], param_100_cross]],
-                    [cdr] => [[[cm], param_amorph]]
+                    [:cm] => [],
+                    [:cbr, :cbl] => [[[:cdr, :cdl], param_100_cross]],
+                    [:cdr] => [[[:cm], param_amorph]]
                   }
                 end
 
@@ -267,7 +265,7 @@ module VersatileDiamond
               let(:base_specs) { [subject] }
               let(:ordered_graph) do
                 [
-                  [[ct], [[[cl, cr], param_110_cross]]]
+                  [[:ct], [[[:cl, :cr], param_110_cross]]]
                 ]
               end
             end
@@ -277,8 +275,8 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:ordered_graph) do
                 [
-                  [[cb], [[[c1], param_amorph]]],
-                  [[c1], [[[c2], param_amorph]]]
+                  [[:cb], [[[:c1], param_amorph]]],
+                  [[:c1], [[[:c2], param_amorph]]]
                 ]
               end
             end
@@ -288,7 +286,7 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:ordered_graph) do
                 [
-                  [[cr], [[[cl], param_100_front]]]
+                  [[:cl], [[[:cr], param_100_front]]]
                 ]
               end
             end
@@ -300,8 +298,8 @@ module VersatileDiamond
                 let(:base_specs) { [dept_dimer_base, subject] }
                 let(:ordered_graph) do
                   [
-                    [[cl], [[[c2], param_amorph]]],
-                    [[cr], [[[c1], param_amorph]]]
+                    [[:cl], [[[:c2], param_amorph]]],
+                    [[:cr], [[[:c1], param_amorph]]]
                   ]
                 end
               end
@@ -319,7 +317,7 @@ module VersatileDiamond
                 end
                 let(:ordered_graph) do
                   [
-                    [[cr], [[[c1], param_amorph]]]
+                    [[:cl], [[[:c2], param_amorph]]]
                   ]
                 end
               end
@@ -331,7 +329,7 @@ module VersatileDiamond
               let(:specific_specs) { [subject] }
               let(:ordered_graph) do
                 [
-                  [[cm, cb], []],
+                  [[:cb, :cm], []],
                 ]
               end
             end
@@ -341,8 +339,8 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:ordered_graph) do
                 [
-                  [[cc], []],
-                  [[ct], []]
+                  [[:cc], []],
+                  [[:ct], []]
                 ]
               end
             end
@@ -352,8 +350,8 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
               let(:ordered_graph) do
                 [
-                  [[cr], []],
-                  [[ct], []]
+                  [[:cr], []],
+                  [[:ct], []]
                 ]
               end
             end
@@ -363,8 +361,8 @@ module VersatileDiamond
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:ordered_graph) do
                 [
-                  [[cr], [[[cl], param_100_front]]],
-                  [[ct], []]
+                  [[:cr], [[[:cl], param_100_front]]],
+                  [[:ct], []]
                 ]
               end
             end
@@ -379,8 +377,8 @@ module VersatileDiamond
                   let(:entry_node) { backbone.entry_nodes.first }
                   let(:ordered_graph) do
                     [
-                      [[cbr], [[[cm], param_amorph]]],
-                      [[cr], []]
+                      [[:cbr], [[[:cm], param_amorph]]],
+                      [[:cr], []]
                     ]
                   end
                 end
@@ -389,8 +387,8 @@ module VersatileDiamond
                   let(:entry_node) { backbone.entry_nodes.last }
                   let(:ordered_graph) do
                     [
-                      [[cr], []],
-                      [[cbr], [[[cm], param_amorph]]]
+                      [[:cr], []],
+                      [[:cbr], [[[:cm], param_amorph]]]
                     ]
                   end
                 end
@@ -405,7 +403,7 @@ module VersatileDiamond
                   let(:entry_node) { backbone.entry_nodes.first }
                   let(:ordered_graph) do
                     [
-                      [[cbr], [[[cr], param_110_front]]]
+                      [[:cbr], [[[:cr], param_110_front]]]
                     ]
                   end
                 end
@@ -414,7 +412,7 @@ module VersatileDiamond
                   let(:entry_node) { backbone.entry_nodes.last }
                   let(:ordered_graph) do
                     [
-                      [[cr], [[[cbr], param_110_cross]]]
+                      [[:cr], [[[:cbr], param_110_cross]]]
                     ]
                   end
                 end
@@ -431,7 +429,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.first }
                 let(:ordered_graph) do
                   [
-                    [[ct], [[[cr], param_110_cross]]]
+                    [[:ct], [[[:cr], param_110_cross]]]
                   ]
                 end
               end
@@ -440,7 +438,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.last }
                 let(:ordered_graph) do
                   [
-                    [[cr], [[[ct], param_110_front]]]
+                    [[:cr], [[[:ct], param_110_front]]]
                   ]
                 end
               end
@@ -453,8 +451,8 @@ module VersatileDiamond
                 let(:base_specs) { [dept_bridge_base, subject] }
                 let(:ordered_graph) do
                   [
-                    [[ctl], [[[cm], param_amorph], [[ctr], param_100_cross]]],
-                    [[ctr], [[[cm], param_amorph]]]
+                    [[:ctl], [[[:cm], param_amorph], [[:ctr], param_100_cross]]],
+                    [[:ctr], [[[:cm], param_amorph]]]
                   ]
                 end
               end
@@ -465,8 +463,8 @@ module VersatileDiamond
                 end
                 let(:ordered_graph) do
                   [
-                    [[cm], []],
-                    [[ctl], [[[ctr], param_100_cross]]]
+                    [[:cm], []],
+                    [[:ctl], [[[:ctr], param_100_cross]]]
                   ]
                 end
               end
@@ -479,9 +477,9 @@ module VersatileDiamond
                 let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
                 let(:ordered_graph) do
                   [
-                    [[ctr], [[[cm], param_amorph]]],
-                    [[ctl, csl], [[[ctr, csr], param_100_cross]]],
-                    [[ctl], [[[cm], param_amorph]]]
+                    [[:ctl], [[[:cm], param_amorph]]],
+                    [[:ctl, :csl], [[[:ctr, :csr], param_100_cross]]],
+                    [[:ctr], [[[:cm], param_amorph]]]
                   ]
                 end
               end
@@ -498,8 +496,8 @@ module VersatileDiamond
                 let(:typical_reactions) { [dept_sierpinski_drop] }
                 let(:ordered_graph) do
                   [
-                    [[csr], [[[csl], param_100_cross]]],
-                    [[csl, csr], [[[ctl, ctr], param_100_front]]]
+                    [[:csl], [[[:csr], param_100_cross]]],
+                    [[:csl, :csr], [[[:ctl, :ctr], param_100_front]]]
                   ]
                 end
               end
@@ -515,7 +513,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.first }
                 let(:ordered_graph) do
                   [
-                    [[cr], [[[cl], param_100_front]]]
+                    [[:cr], [[[:cl], param_100_front]]]
                   ]
                 end
               end
@@ -524,7 +522,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.last }
                 let(:ordered_graph) do
                   [
-                    [[cl], [[[cr], param_100_front]]]
+                    [[:cl], [[[:cr], param_100_front]]]
                   ]
                 end
               end
@@ -547,9 +545,9 @@ module VersatileDiamond
                   let(:entry_node) { backbone.entry_nodes.first }
                   let(:ordered_graph) do
                     [
-                      [[cdr], [[[cm], param_amorph]]],
-                      [[cm], []],
-                      [[cbr], [[[cdr], param_100_cross]]]
+                      [[:cdr], [[[:cm], param_amorph]]],
+                      [[:cm], []],
+                      [[:cbr], [[[:cdr], param_100_cross]]]
                     ]
                   end
                 end
@@ -558,9 +556,9 @@ module VersatileDiamond
                   let(:entry_node) { backbone.entry_nodes.last }
                   let(:ordered_graph) do
                     [
-                      [[cm], []],
-                      [[cbr], [[[cdr], param_100_cross]]],
-                      [[cdr], [[[cm], param_amorph]]]
+                      [[:cm], []],
+                      [[:cbr], [[[:cdr], param_100_cross]]],
+                      [[:cdr], [[[:cm], param_amorph]]]
                     ]
                   end
                 end
@@ -570,9 +568,9 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.first }
                 let(:ordered_graph) do
                   [
-                    [[cdr], [[[cm], param_amorph]]],
-                    [[cm], []],
-                    [[cbl, cbr], [[[cdl, cdr], param_100_cross]]]
+                    [[:cdr], [[[:cm], param_amorph]]],
+                    [[:cm], []],
+                    [[:cbl, :cbr], [[[:cdl, :cdr], param_100_cross]]]
                   ]
                 end
 
@@ -589,9 +587,9 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.last }
                 let(:ordered_graph) do
                   [
-                    [[cm], []],
-                    [[cbl, cbr], [[[cdl, cdr], param_100_cross]]],
-                    [[cdr], [[[cm], param_amorph]]]
+                    [[:cm], []],
+                    [[:cbl, :cbr], [[[:cdl, :cdr], param_100_cross]]],
+                    [[:cdr], [[[:cm], param_amorph]]]
                   ]
                 end
 
@@ -613,8 +611,8 @@ module VersatileDiamond
               let(:cbt) { intermed_migr_down_bridge_base.atom(:cbt) }
               let(:ordered_graph) do
                 [
-                  [[cm], []],
-                  [[cbr], [[[cbt], param_100_cross]]]
+                  [[:cm], []],
+                  [[:cbr], [[[:cbt], param_100_cross]]]
                 ]
               end
             end

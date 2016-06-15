@@ -10,8 +10,8 @@ module VersatileDiamond
             # Grubs atoms from nodes
             # @param [Array] nodes from which the atoms will be gotten
             # @return [Array] the array of atoms
-            def grep_atoms(nodes)
-              nodes.map(&:atom)
+            def grep_keynames(nodes)
+              nodes.map(&:keyname)
             end
 
             # Collects the list of unique nodes which used in passed graph
@@ -26,10 +26,10 @@ module VersatileDiamond
             #
             # @param [Array | Hash] nodes_list which will be translated
             # @return [Array] translated atomic list of relations
-            def translate_to_atomic_list(nodes_list)
+            def translate_to_keyname_list(nodes_list)
               nodes_list.map do |nodes, rels|
-                new_rels = rels.map { |ns, r| [grep_atoms(ns), r] }
-                [grep_atoms(nodes), new_rels]
+                new_rels = rels.map { |ns, r| [grep_keynames(ns), r] }
+                [grep_keynames(nodes), new_rels]
               end
             end
 
@@ -38,8 +38,8 @@ module VersatileDiamond
             #
             # @param [Hash] nodes_graph which will be translated
             # @return [Hash] translated atomic graph
-            def translate_to_atomic_graph(nodes_graph)
-              Hash[translate_to_atomic_list(nodes_graph)]
+            def translate_to_keyname_graph(nodes_graph)
+              Hash[translate_to_keyname_list(nodes_graph)]
             end
 
           private
@@ -48,7 +48,7 @@ module VersatileDiamond
             # @param [BaseNode] node which will be converted
             # @return [Array] the simple checkable array with two values
             def typed_node(node)
-              [node.uniq_specie.class, node.atom]
+              [node.uniq_specie.class, node.keyname]
             end
           end
 
