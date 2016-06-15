@@ -94,7 +94,8 @@ module VersatileDiamond
         # @return [Array] the list of ubiquitous reactions
         def ubiquitous_reactions
           @_ubiquitous_reactions ||=
-            generator.ubiquitous_reactions + reactions_classes(&:local?)
+            reaction_classes(generator.ubiquitous_reactions) +
+              reactions_classes(&:local?)
         end
 
         # Gets the list of typical reaction code generator instances

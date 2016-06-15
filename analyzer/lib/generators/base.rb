@@ -67,7 +67,7 @@ module VersatileDiamond
       # Gets not ubiquitous reactions
       # @return [Array] the not ubiquitous reactions
       def spec_reactions
-        @_spec_reactions ||= [typical_reactions, lateral_reactions].flatten
+        @_spec_reactions ||= typical_reactions + lateral_reactions
       end
 
       # Checks that classfication of available atom properties done
