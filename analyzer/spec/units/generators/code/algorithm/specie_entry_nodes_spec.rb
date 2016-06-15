@@ -20,18 +20,16 @@ module VersatileDiamond
           let(:backbone) { SpecieBackbone.new(generator, specie) }
           let(:entry_nodes) { described_class.new(backbone.final_graph).list }
 
-          let_atoms_of(:'subject.spec', Support::RoleChecker::ANCHOR_KEYNAMES)
-
           it_behaves_like :check_entry_nodes do
             subject { dept_bridge_base }
             let(:base_specs) { [subject] }
-            let(:points_list) { [[ct]] }
+            let(:points_list) { [[:ct]] }
           end
 
           it_behaves_like :check_entry_nodes do
             subject { dept_methyl_on_bridge_base }
             let(:base_specs) { [dept_bridge_base, subject] }
-            let(:points_list) { [[cb]] }
+            let(:points_list) { [[:cb]] }
           end
 
           describe 'different dept_vinyl_on_bridge_base' do
@@ -39,19 +37,19 @@ module VersatileDiamond
 
             it_behaves_like :check_entry_nodes do
               let(:base_specs) { [dept_bridge_base, subject] }
-              let(:points_list) { [[cb]] }
+              let(:points_list) { [[:cb]] }
             end
 
             it_behaves_like :check_entry_nodes do
               let(:base_specs) { [dept_methyl_on_bridge_base, subject] }
-              let(:points_list) { [[c1]] }
+              let(:points_list) { [[:c1]] }
             end
           end
 
           it_behaves_like :check_entry_nodes do
             subject { dept_dimer_base }
             let(:base_specs) { [dept_bridge_base, subject] }
-            let(:points_list) { [[cr]] }
+            let(:points_list) { [[:cl]] }
           end
 
           it_behaves_like :check_entry_nodes do
@@ -66,14 +64,14 @@ module VersatileDiamond
                 dept_intermed_migr_dh_drop
               ]
             end
-            let(:points_list) { [[cr]] }
+            let(:points_list) { [[:cl]] }
           end
 
           it_behaves_like :check_entry_nodes do
             subject { dept_activated_methyl_on_incoherent_bridge }
             let(:base_specs) { [dept_methyl_on_bridge_base] }
             let(:specific_specs) { [subject] }
-            let(:points_list) { [[cb, cm]] }
+            let(:points_list) { [[:cb, :cm]] }
           end
 
           it_behaves_like :check_entry_nodes do
@@ -81,33 +79,33 @@ module VersatileDiamond
             let(:base_specs) do
               [dept_bridge_base, dept_methyl_on_bridge_base, subject]
             end
-            let(:points_list) { [[cr], [cl]] }
+            let(:points_list) { [[:cr], [:cl]] }
           end
 
           it_behaves_like :check_entry_nodes do
             subject { dept_three_bridges_base }
             let(:base_specs) { [dept_bridge_base, subject] }
-            let(:points_list) { [[cc]] }
+            let(:points_list) { [[:cc]] }
           end
 
           it_behaves_like :check_entry_nodes do
             subject { dept_bridge_with_dimer_base }
             let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
-            let(:points_list) { [[cr]] }
+            let(:points_list) { [[:cr]] }
           end
 
           it_behaves_like :check_entry_nodes do
             subject { dept_activated_methyl_on_bridge }
             let(:base_specs) { [dept_methyl_on_bridge_base] }
             let(:specific_specs) { [subject] }
-            let(:points_list) { [[cm]] }
+            let(:points_list) { [[:cm]] }
           end
 
           it_behaves_like :check_entry_nodes do
             subject { dept_activated_dimer }
             let(:base_specs) { [dept_dimer_base] }
             let(:specific_specs) { [subject] }
-            let(:points_list) { [[cr]] }
+            let(:points_list) { [[:cr]] }
           end
 
           describe 'different dept_cross_bridge_on_bridges_base' do
@@ -115,14 +113,14 @@ module VersatileDiamond
 
             it_behaves_like :check_entry_nodes do
               let(:base_specs) { [dept_bridge_base, subject] }
-              let(:points_list) { [[ctl]] }
+              let(:points_list) { [[:ctl]] }
             end
 
             it_behaves_like :check_entry_nodes do
               let(:base_specs) do
                 [dept_bridge_base, dept_methyl_on_bridge_base, subject]
               end
-              let(:points_list) { [[cm]] }
+              let(:points_list) { [[:cm]] }
             end
           end
 
@@ -131,27 +129,27 @@ module VersatileDiamond
 
             it_behaves_like :check_entry_nodes do
               let(:base_specs) { [dept_dimer_base, subject] }
-              let(:points_list) { [[ctl]] }
+              let(:points_list) { [[:ctl]] }
             end
 
             it_behaves_like :check_entry_nodes do
               let(:base_specs) do
                 [dept_dimer_base, dept_methyl_on_dimer_base, subject]
               end
-              let(:points_list) { [[cm]] }
+              let(:points_list) { [[:cm]] }
             end
 
             it_behaves_like :check_entry_nodes do
               let(:base_specs) do
                 [dept_bridge_base, dept_cross_bridge_on_bridges_base, subject]
               end
-              let(:points_list) { [[csr]] }
+              let(:points_list) { [[:csl]] }
             end
           end
 
           describe 'different dept_lower_methyl_on_half_extended_bridge_base' do
             subject { dept_lower_methyl_on_half_extended_bridge_base }
-            let(:points_list) { [[cbr], [cr]] }
+            let(:points_list) { [[:cbr], [:cr]] }
 
             it_behaves_like :check_entry_nodes do
               let(:base_specs) { [dept_bridge_base, subject] }
@@ -169,7 +167,7 @@ module VersatileDiamond
             let(:base_specs) do
               [dept_bridge_base, dept_methyl_on_bridge_base, subject]
             end
-            let(:points_list) { [[cm]] }
+            let(:points_list) { [[:cm]] }
           end
 
           describe 'intermediate specie of migration down process' do
@@ -180,11 +178,11 @@ module VersatileDiamond
 
               it_behaves_like :check_entry_nodes do
                 subject { dept_intermed_migr_down_common_base }
-                let(:points_list) { [[cdr]] }
+                let(:points_list) { [[:cdr]] }
               end
 
               describe 'many bottom entry points' do
-                let(:points_list) { [[cdr, cdl], [cbl]] } # why this is cool?!
+                let(:points_list) { [[:cdr, :cdl], [:cbl]] } # why this is cool?!
 
                 it_behaves_like :check_entry_nodes do
                   subject { dept_intermed_migr_down_half_base }
@@ -205,7 +203,7 @@ module VersatileDiamond
                   subject
                 ]
               end
-              let(:points_list) { [[cdr], [cm]] }
+              let(:points_list) { [[:cdr], [:cm]] }
 
               it_behaves_like :check_entry_nodes do
                 subject { dept_intermed_migr_down_common_base }
