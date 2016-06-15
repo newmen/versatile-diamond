@@ -46,7 +46,7 @@ module VersatileDiamond
                 let(:find_algorithm) do
                   <<-CODE
     sidepiece->eachSymmetry([](LateralSpec *symmetricDimer1) {
-        Atom *atoms1[2] = { symmetricDimer1->atom(0), symmetricDimer1->atom(3) };
+        Atom *atoms1[2] = { symmetricDimer1->atom(3), symmetricDimer1->atom(0) };
         eachNeighbours<2>(atoms1, &Diamond::cross_100, [&symmetricDimer1](Atom **neighbours1) {
             if (neighbours1[0]->is(#{aib_ct}) && neighbours1[1]->is(#{ab_ct}))
             {
@@ -93,7 +93,7 @@ module VersatileDiamond
                   let(:find_algorithm) do
                     <<-CODE
     sidepiece->eachSymmetry([](LateralSpec *symmetricDimer1) {
-        Atom *atoms1[2] = { symmetricDimer1->atom(0), symmetricDimer1->atom(3) };
+        Atom *atoms1[2] = { symmetricDimer1->atom(3), symmetricDimer1->atom(0) };
         eachNeighbours<2>(atoms1, &Diamond::cross_100, [&symmetricDimer1](Atom **neighbours1) {
             if (neighbours1[0]->is(#{aib_ct}) && neighbours1[1]->is(#{ab_ct}))
             {
@@ -166,7 +166,7 @@ module VersatileDiamond
 
                 let(:find_algorithm) do
                   <<-CODE
-    Atom *atoms1[2] = { sidepiece->atom(0), sidepiece->atom(3) };
+    Atom *atoms1[2] = { sidepiece->atom(3), sidepiece->atom(0) };
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [&sidepiece](Atom **neighbours1) {
         if (neighbours1[0]->is(#{id_cr}) && neighbours1[1]->is(#{id_cl}))
         {
@@ -332,7 +332,7 @@ module VersatileDiamond
                 let(:find_algorithm) do
                   <<-CODE
     sidepiece->eachSymmetry([](LateralSpec *symmetricDimer1) {
-        Atom *atoms1[2] = { symmetricDimer1->atom(0), symmetricDimer1->atom(3) };
+        Atom *atoms1[2] = { symmetricDimer1->atom(3), symmetricDimer1->atom(0) };
         eachNeighbour(atoms1[0], &Diamond::cross_110, [&atoms1, &symmetricDimer1](Atom *neighbour1) {
             if (neighbour1->is(#{admr_cl}))
             {

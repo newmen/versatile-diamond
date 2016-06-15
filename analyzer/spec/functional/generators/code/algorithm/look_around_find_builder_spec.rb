@@ -189,7 +189,7 @@ module VersatileDiamond
               it_behaves_like :check_code do
                 let(:find_algorithm) do
                   <<-CODE
-    Atom *atoms1[2] = { target(0)->atom(3), target(1)->atom(1) };
+    Atom *atoms1[2] = { target(0)->atom(0), target(1)->atom(1) };
     eachNeighbour(atoms1[0], &Diamond::front_110, [&](Atom *neighbour1) {
         if (neighbour1->is(#{edmr_cr}))
         {
