@@ -14,7 +14,7 @@ module VersatileDiamond
                 let(:lateral_reactions) { [dept_end_lateral_df] }
                 let(:final_graph) do
                   {
-                    [t1, t2] => [[[d2, d1], param_100_cross]]
+                    [t1, t2] => [[[:cl, :cr], param_100_cross]]
                   }
                 end
               end
@@ -23,8 +23,8 @@ module VersatileDiamond
                 let(:lateral_reactions) { [dept_ewb_lateral_df] }
                 let(:final_graph) do
                   {
-                    [t2] => [[[b], param_100_front]],
-                    [t2, t1] => [[[d1, d2], param_100_cross]]
+                    [t1] => [[[b], param_100_front]],
+                    [t1, t2] => [[[:cl, :cr], param_100_cross]]
                   }
                 end
               end
@@ -33,7 +33,7 @@ module VersatileDiamond
             it_behaves_like :many_similar_activated_bridges do
               let(:final_graph) do
                 {
-                  [t2] => [[[cb], param_100_cross], [[fb], param_100_front]]
+                  [t] => [[[cb1], param_100_cross], [[fb2], param_100_front]]
                 }
               end
 
@@ -50,8 +50,8 @@ module VersatileDiamond
               it_behaves_like :check_finite_graph do
                 let(:final_graph) do
                   {
-                    [tm] => [[[dm], param_100_cross]],
-                    [td] => [[[dd], param_110_front]]
+                    [:cb] => [[[sdl], param_100_cross]],
+                    [tdl] => [[[:cr], param_110_front]]
                   }
                 end
               end
@@ -62,17 +62,17 @@ module VersatileDiamond
             it_behaves_like :dimer_formation_in_different_envs do
               it_behaves_like :check_entry_nodes do
                 let(:lateral_reactions) { [dept_end_lateral_df] }
-                let(:points_list) { [[t1, t2]] }
+                let(:points_list) { [[:ct, :ct]] }
               end
 
               it_behaves_like :check_entry_nodes do
                 let(:lateral_reactions) { [dept_ewb_lateral_df] }
-                let(:points_list) { [[t2, t1], [t2]] }
+                let(:points_list) { [[:ct, :ct], [:ct]] }
               end
             end
 
             it_behaves_like :many_similar_activated_bridges do
-              let(:points_list) { [[t2], [t2]] }
+              let(:points_list) { [[:ct], [:ct]] }
 
               it_behaves_like :check_entry_nodes do
                 let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
@@ -91,14 +91,14 @@ module VersatileDiamond
 
             it_behaves_like :methyl_incorporation_near_edge do
               it_behaves_like :check_entry_nodes do
-                let(:points_list) { [[td, tm]] }
+                let(:points_list) { [[:cl, :cb]] }
               end
             end
           end
 
           describe '#action_nodes' do
             it_behaves_like :dimer_formation_in_different_envs do
-              let(:atoms_lists) { [t2, t1] }
+              let(:atoms_lists) { [:ct, :ct] }
 
               it_behaves_like :check_action_nodes do
                 let(:lateral_reactions) { [dept_end_lateral_df] }
@@ -110,7 +110,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :many_similar_activated_bridges do
-              let(:atoms_lists) { [t2, t1] }
+              let(:atoms_lists) { [:ct, :ct] }
 
               it_behaves_like :check_action_nodes do
                 let(:lateral_reactions) { [dept_small_ab_lateral_sdf] }
@@ -123,7 +123,7 @@ module VersatileDiamond
 
             it_behaves_like :methyl_incorporation_near_edge do
               it_behaves_like :check_action_nodes do
-                let(:atoms_lists) { [td, tm] }
+                let(:atoms_lists) { [:cl, :cb] }
               end
             end
           end
@@ -133,7 +133,7 @@ module VersatileDiamond
               describe 'just cross sidepieces' do
                 let(:ordered_graph) do
                   [
-                    [[t1, t2], [[[d2, d1], param_100_cross]]]
+                    [[t1, t2], [[[:cl, :cr], param_100_cross]]]
                   ]
                 end
 
@@ -173,7 +173,7 @@ module VersatileDiamond
                   let(:entry_node) { backbone.entry_nodes.first }
                   let(:ordered_graph) do
                     [
-                      [[t2, t1], [[[d1, d2], param_100_cross]]]
+                      [[t1, t2], [[[:cl, :cr], param_100_cross]]]
                     ]
                   end
                 end
@@ -182,7 +182,7 @@ module VersatileDiamond
                   let(:entry_node) { backbone.entry_nodes.last }
                   let(:ordered_graph) do
                     [
-                      [[t2], [[[b], param_100_front]]]
+                      [[t1], [[[b], param_100_front]]]
                     ]
                   end
                 end
@@ -204,7 +204,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.first }
                 let(:ordered_graph) do
                   [
-                    [[t2], [[[fb], param_100_front]]]
+                    [[t], [[[fb1], param_100_front]]]
                   ]
                 end
               end
@@ -213,7 +213,7 @@ module VersatileDiamond
                 let(:entry_node) { backbone.entry_nodes.last }
                 let(:ordered_graph) do
                   [
-                    [[t2], [[[cb], param_100_cross]]]
+                    [[t], [[[cb1], param_100_cross]]]
                   ]
                 end
               end
@@ -223,8 +223,8 @@ module VersatileDiamond
               it_behaves_like :check_ordered_graph do
                 let(:ordered_graph) do
                   [
-                    [[td], [[[dd], param_110_front]]],
-                    [[tm], [[[dm], param_100_cross]]]
+                    [[tdl], [[[:cr], param_110_front]]],
+                    [[:cb], [[[sdl], param_100_cross]]]
                   ]
                 end
               end

@@ -417,7 +417,7 @@ module VersatileDiamond
           def reorder_vertices(graph)
             graph.each_with_object({}) do |(key, rels), acc|
               if key.one?
-                acc[key] = rels.map { |nbrs, rp| [nbrs.sort, rp] }.sort
+                acc[key] = rels.map { |nbrs, rp| [nbrs.sort, rp] }.sort_by(&:first)
               else
                 ordered_key = key.sort
                 acc[ordered_key] = rels.map do |nbrs, rp|
