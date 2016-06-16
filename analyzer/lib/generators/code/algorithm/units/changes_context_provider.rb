@@ -56,7 +56,7 @@ module VersatileDiamond
           # @return [Array]
           def direct_neighbours_of(node)
             mirror = @full.include?(node) ? @src_mirror : @prd_mirror
-            neighbour_spec_atoms(node).map(&mirror.public_method(:[]))
+            neighbour_spec_atoms(node).map(&mirror.public_method(:[])).select(&:itself)
           end
 
           # @param [Array] nodes
@@ -130,7 +130,7 @@ module VersatileDiamond
           # @return [Array]
           def neighbour_spec_atoms(node)
             spec, atom = node.spec_atom
-            exists_bonds = spec.links[atom].select { |_, r| r.bond? && r.exist? }
+            exists_bonds = spec.links[atom].select { |_, r| r.bond? && r.exist? }.uniq
             exists_bonds.map { |a, _| [spec, a] }
           end
 
