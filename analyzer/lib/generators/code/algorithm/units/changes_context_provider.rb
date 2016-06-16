@@ -115,12 +115,12 @@ module VersatileDiamond
             neighbour_spec_atoms(node.product).each_with_object([]) do |sa, acc|
               nbr = @prd_to_src_mirror[sa]
               if nbr.lattice
-                src_rel = relation_between_sources(nbr, node)
-                if src_rel
-                  acc << [nbr, src_rel.params] if src_rel.exist?
+                prd_rel = relation_between_products(nbr, node)
+                if prd_rel
+                  acc << [nbr, prd_rel.params] if prd_rel.exist?
                 else
-                  prd_rel = relation_between_products(nbr, node)
-                  acc << [nbr, prd_rel.params] if prd_rel && prd_rel.exist?
+                  src_rel = relation_between_sources(nbr, node)
+                  acc << [nbr, src_rel.params] if src_rel && src_rel.exist?
                 end
               end
             end
@@ -130,7 +130,8 @@ module VersatileDiamond
           # @return [Array]
           def neighbour_spec_atoms(node)
             spec, atom = node.spec_atom
-            spec.links[atom].select { |_, r| r.bond? }.map { |a, _| [spec, a] }
+            exists_bonds = spec.links[atom].select { |_, r| r.bond? && r.exist? }
+            exists_bonds.map { |a, _| [spec, a] }
           end
 
           # @param [Hash] links
