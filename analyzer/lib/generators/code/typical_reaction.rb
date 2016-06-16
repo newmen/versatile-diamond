@@ -108,7 +108,7 @@ module VersatileDiamond
         # @param [Specie] specie from which the reaction will be found
         # @return [String] the string with signature of find method
         def find_arguments_str(specie)
-          "#{specie.class_name} *#{ANCHOR_SPECIE_NAME}"
+          "#{specie.class_name} *#{Specie::TARGET_SPECIE_NAME}"
         end
 
         # Builds find algorithm of current reaction from passed specie
@@ -142,7 +142,7 @@ module VersatileDiamond
         # @param [Specie] specie from which lateral reaction can be found
         # @return [String] the string with signature of find method
         def check_laterals_arguments_str(specie)
-          "#{specie.class_name} *{SIDEPIECE_SPECIE_NAME}"
+          "#{specie.class_name} *#{Specie::SIDE_SPECIE_NAME}"
         end
 
         # Builds check laterals algorithm of current reaction from passed specie

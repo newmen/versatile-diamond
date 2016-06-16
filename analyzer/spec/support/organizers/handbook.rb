@@ -138,6 +138,9 @@ module VersatileDiamond
           :hydrogen_migration,
           :one_dimer_hydrogen_migration
         ])
+        set(:dept_dimer_drop) do
+          Organizers::DependentTypicalReaction.new(dimer_formation.reverse)
+        end
         set(:dept_sierpinski_formation) do
           Organizers::DependentTypicalReaction.new(sierpinski_drop.reverse)
         end

@@ -127,12 +127,12 @@ module VersatileDiamond
           acc || @analysis_result.public_send(method_name, spec.name)
         end
 
-        result || @analysis_result.base_spec(spec.spec.name) ||
+        result ||
           if spec.class == Concepts::SpecificSpec
             dept_spec_spec = Organizers::DependentSpecificSpec.new(spec)
-            dept_spec_spec.specific? ? dept_spec_spec : make_dept_base_spec(spec.spec)
+            dept_spec_spec.specific? ? dept_spec_spec : dept_base_spec(spec.spec)
           else
-            make_dept_base_spec(spec)
+            dept_base_spec(spec)
           end
       end
 
@@ -140,8 +140,9 @@ module VersatileDiamond
       # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] spec
       #   the concept for which dependent base spec will be gotten
       # @return [Organizers::DependentBaseSpec] new combined dependent base spec
-      def make_dept_base_spec(spec)
-        Organizers::DependentBaseSpec.new(spec)
+      def dept_base_spec(spec)
+        @analysis_result.base_spec(spec.name) ||
+          Organizers::DependentBaseSpec.new(spec)
       end
 
       # Collects all uniq used surface species

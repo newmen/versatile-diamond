@@ -570,6 +570,107 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_code do
+              subject { dept_bridge_with_dimer_base }
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
+              let(:typical_reactions) { [dept_hydrogen_abs_from_gap] }
+              let(:find_algorithm) do
+                <<-CODE
+    if (anchor->is(#{role_cr}))
+    {
+        if (!anchor->hasRole(BRIDGE_WITH_DIMER, #{role_cr}))
+        {
+            ParentSpec *species1[2] = { anchor->specByRole<Dimer>(#{d_cr}), anchor->specByRole<Bridge>(#{b_cr}) };
+            if (species1[0] && species1[1])
+            {
+                species1[1]->eachSymmetry([&](ParentSpec *symmetricBridge1) {
+                    if (anchor == symmetricBridge1->atom(1))
+                    {
+                        Atom *atom1 = symmetricBridge1->atom(2);
+                        Bridge *bridge1 = atom1->specByRole<Bridge>(#{b_ct});
+                        if (bridge1)
+                        {
+                            ParentSpec *parents[3] = { species1[0], symmetricBridge1, bridge1 };
+                            create<BridgeWithDimer>(parents);
+                        }
+                    }
+                });
+            }
+        }
+    }
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              subject { dept_bridge_with_dimer_base }
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
+              let(:typical_reactions) { [dept_dimer_drop] }
+              let(:find_algorithm) do
+                <<-CODE
+    if (anchor->is(#{role_cr}))
+    {
+        if (!anchor->hasRole(BRIDGE_WITH_DIMER, #{role_cr}))
+        {
+            ParentSpec *species1[2] = { anchor->specByRole<Dimer>(#{d_cr}), anchor->specByRole<Bridge>(#{b_cr}) };
+            if (species1[0] && species1[1])
+            {
+                species1[0]->eachSymmetry([&](ParentSpec *symmetricDimer1) {
+                    if (anchor == symmetricDimer1->atom(3))
+                    {
+                        Atom *atom1 = species1[1]->atom(2);
+                        Bridge *bridge1 = atom1->specByRole<Bridge>(#{b_ct});
+                        if (bridge1)
+                        {
+                            ParentSpec *parents[3] = { symmetricDimer1, species1[1], bridge1 };
+                            create<BridgeWithDimer>(parents);
+                        }
+                    }
+                });
+            }
+        }
+    }
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              subject { dept_bridge_with_dimer_base }
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
+              let(:typical_reactions) { [dept_hydrogen_abs_from_gap, dept_dimer_drop] }
+              let(:find_algorithm) do
+                <<-CODE
+    if (anchor->is(#{role_cr}))
+    {
+        if (!anchor->hasRole(BRIDGE_WITH_DIMER, #{role_cr}))
+        {
+            ParentSpec *species1[2] = { anchor->specByRole<Dimer>(#{d_cr}), anchor->specByRole<Bridge>(#{b_cr}) };
+            if (species1[0] && species1[1])
+            {
+                species1[0]->eachSymmetry([&](ParentSpec *symmetricDimer1) {
+                    if (anchor == symmetricDimer1->atom(3))
+                    {
+                        species1[1]->eachSymmetry([&anchor, &symmetricDimer1](ParentSpec *symmetricBridge1) {
+                            if (anchor == symmetricBridge1->atom(1))
+                            {
+                                Atom *atom1 = symmetricBridge1->atom(2);
+                                Bridge *bridge1 = atom1->specByRole<Bridge>(#{b_ct});
+                                if (bridge1)
+                                {
+                                    ParentSpec *parents[3] = { symmetricDimer1, symmetricBridge1, bridge1 };
+                                    create<BridgeWithDimer>(parents);
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    }
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
               subject { dept_top_methyl_on_half_extended_bridge_base }
               let(:base_specs) do
                 [dept_bridge_base, dept_methyl_on_bridge_base, subject]

@@ -23,6 +23,8 @@ module VersatileDiamond
             @pure_factory = pure_factory
             @context = context
             @unit = unit
+
+            @_inner_units, @_symmetric_units = nil
           end
 
           # @yield incorporating statement
@@ -56,6 +58,11 @@ module VersatileDiamond
             close_nodes = context.symmetric_close_nodes(species)
             !close_nodes.empty? &&
               (close_nodes.one? || !context.symmetric_relations?(close_nodes))
+          end
+
+          # @return [Boolean]
+          def symmetric?
+            unit.symmetric? || asymmetric_related_atoms?
           end
 
           def to_s
@@ -94,12 +101,21 @@ module VersatileDiamond
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def iterate_symmetries(&block)
-            if one_symmetric_specie?
+            if one_symmetric_specie? || atoms.one?
               unit.iterate_specie_symmetries(&block)
             elsif asymmetric_related_atoms?
               unit.iterate_for_loop_symmetries(&block)
             else
               raise 'Incorrect unit configuration'
+            end
+          end
+
+          # @yield incorporating statement
+          # @return [Expressions::Core::Statement]
+          def check_symmetry_with_atom(&block)
+            defined_ancns = defined_self_next_same_nodes
+            iterate_symmetries do
+              check_eq_previous_atoms(defined_ancns, except_own: false, &block)
             end
           end
 
@@ -123,19 +139,35 @@ module VersatileDiamond
 
           # @return [Array]
           def units
-            unit.units.map(&method(:context_unit))
+            @_inner_units ||= unit.units.map(&method(:context_unit))
+          end
+
+          # @return [Array]
+          def symmetric_units
+            @_symmetric_units ||= units.select(&:symmetric?)
+          end
+
+          # @return [Boolean]
+          def defined_symmetric_units
+            symmetric_units.select { |inner_unit| any_defined?(inner_unit.species) }
           end
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
           def check_symmetries(&block)
-            if symmetric?
-              defined_ancns = defined_self_next_same_nodes
-              iterate_symmetries do
-                check_eq_previous_atoms(defined_ancns, except_own: false, &block)
-              end
-            else
+            if !symmetric?
               block.call
+            elsif atoms.one? && defined_symmetric_units.size > 1
+              call_procs(check_inner_symmetries_procs, &block)
+            else
+              check_symmetry_with_atom(&block)
+            end
+          end
+
+          # @return [Array]
+          def check_inner_symmetries_procs
+            defined_symmetric_units.map do |inner_unit|
+              -> &block { inner_unit.check_symmetry_with_atom(&block) }
             end
           end
 
@@ -471,11 +503,6 @@ module VersatileDiamond
             else
               symmetric_nodes
             end
-          end
-
-          # @return [Boolean]
-          def symmetric?
-            unit.symmetric? || asymmetric_related_atoms?
           end
 
           # @return [Boolean]

@@ -48,9 +48,6 @@ module VersatileDiamond
 
         let(:lattice) { subject.lattice_class(diamond) }
         it { expect(lattice).to be_a(Code::Lattice) }
-
-        let(:no_lattice) { subject.lattice_class(nil) }
-        it { expect(no_lattice).to be_nil }
       end
 
       describe '#specie_class' do

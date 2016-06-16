@@ -239,8 +239,7 @@ module VersatileDiamond
           def check_undefined_species(&block)
             var = make_undefined_species_from_anchors
             checking_exprs = var.collection? ? var.items : [var]
-            var.define_var +
-              Expressions::AndCondition[checking_exprs, block.call]
+            var.define_var + Expressions::AndCondition[checking_exprs, block.call]
           end
 
           # @return [Array]
