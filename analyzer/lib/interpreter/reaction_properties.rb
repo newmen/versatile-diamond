@@ -92,7 +92,9 @@ module VersatileDiamond
       #
       # @return [Concepts::UbiquitousReaction] reverse of current concept
       def reverse
-        store(forward.reverse) unless forward.has_reverse?
+        if !forward.has_reverse? || !Tools::Chest.has?(forward.reverse)
+          store(forward.reverse)
+        end
         forward.reverse
       rescue Concepts::There::ReversingError => e
         syntax_error('lateral_reaction.amorph_reverse_atom',

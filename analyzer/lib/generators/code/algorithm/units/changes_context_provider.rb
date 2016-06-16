@@ -43,12 +43,12 @@ module VersatileDiamond
           # @param [Nodes::SourceNode] node
           # @return [Array]
           def latticed_neighbours_with_params(node)
-            neighbours = significant_neighbours_of(node)
+            nbrs_with_params = significant_neighbours_of(node)
             # TODO: logic of neighbours selection depends from diamond crystal lattice!
-            if neighbours.size < 2
+            if nbrs_with_params.first.size < 2
               raise ArgumentError, "Cannot find neighbours for node #{node.inspect}"
             else
-              neighbours
+              nbrs_with_params
             end
           end
 

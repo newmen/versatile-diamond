@@ -19,7 +19,7 @@ module VersatileDiamond
       # @param [SpecificSpec] from the spec from which need to swap
       # @param [SpecificSpec] to the spec to which need to swap
       # @override
-      def swap_on(target, from, to)
+      def swap_on(target, from, to, **)
         super
         theres.each { |there| there.swap_target(from, to) } if target == :source
       end
@@ -56,8 +56,7 @@ module VersatileDiamond
       # Also reverse there objects
       # @override
       def reverse_params
-        reversed_theres = theres.map { |there| there.reverse(mapping) }
-        [*super, reversed_theres]
+        [*super, theres.map { |there| there.reverse(mapping) }]
       end
 
       # Also swaps target atoms for all used there objects

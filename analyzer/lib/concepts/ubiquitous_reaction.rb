@@ -126,10 +126,15 @@ module VersatileDiamond
       # @param [Symbol] target the type of swapping species
       # @param [TerminationSpec | SpecificSpec] from which spec will be deleted
       # @param [TerminationSpec | SpecificSpec] to which spec will be added
-      def swap_on(target, from, to)
+      def swap_on(target, from, to, reverse_too: true)
         var = instance_variable_get(:"@#{target}")
         idx = var.index(from)
         var[idx] = to if idx
+
+        if reverse_too && has_reverse?
+          reverse_target = (target == :source) ? :products : :source
+          reverse.swap_on(reverse_target, from, to, reverse_too: false)
+        end
       end
 
       # Compares two reactions and their source and products are same then

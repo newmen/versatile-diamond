@@ -116,9 +116,9 @@ module VersatileDiamond
       # @param [TerminationSpec | SpecificSpec] from which spec will be deleted
       # @param [TerminationSpec | SpecificSpec] to which spec will be added
       # @override
-      def swap_on(target, from, to)
+      def swap_on(target, from, to, **)
         super
-        @links = swap_in_links(:swap, @links, from, to) if target == :source
+        @links = swap_in_links(:swap, @links, from, to)
         mapping.swap(target, from, to)
         reset_changes_caches!
       end

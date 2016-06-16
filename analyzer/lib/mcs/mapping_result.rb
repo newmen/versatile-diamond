@@ -164,8 +164,11 @@ module VersatileDiamond
       # @param [SpecificSpec] to which spec will be added
       # @option [Boolean] :reverse_too
       def swap(target, from, to, reverse_too: true)
+        return if from.simple?
+
         mirror = SpeciesComparator.make_mirror(from, to)
-        instance_variable_get(:"@#{target}").map! { |spec| spec == from ? to : spec }
+        trg = instance_variable_get(:"@#{target}")
+        trg.map! { |spec| spec == from ? to : spec }
 
         @result.each do |_, mapping|
           mapping.map! do |specs, atoms|
@@ -179,11 +182,6 @@ module VersatileDiamond
               [specs, atoms]
             end
           end
-        end
-
-        if @reverse && reverse_too
-          reverse_target = (target == :source) ? :products : :source
-          @reverse.swap(reverse_target, to, from, reverse_too: false)
         end
       end
 
