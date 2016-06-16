@@ -14,7 +14,7 @@ module VersatileDiamond
               if expr.type?
                 arg_err!("ScalarType cannot be argument of bracers #{expr.inspect}")
               elsif !multilines && ext_new_lines
-                msg = "Cannot have external new line when statement is not multilines"
+                msg = 'Cannot have external new line when statement is not multilines'
                 arg_err!(msg)
               else
                 super
@@ -50,7 +50,11 @@ module VersatileDiamond
 
           # @return [String]
           def start_char
-            @ext_new_lines ? "\n" : (expr? ? '' : ' ')
+            if @ext_new_lines
+              "\n"
+            else
+              expr? ? '' : ' '
+            end
           end
 
           # @return [String]
