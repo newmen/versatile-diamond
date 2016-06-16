@@ -271,8 +271,16 @@ module VersatileDiamond
                   get(name).reactions
                 end
 
-                it { expect(reactions_for(:'dimer(cr: i)').map(&:reaction)).
-                  to eq([hydrogen_migration.reverse, dimer_formation.reverse]) }
+                let(:result) { reactions_for(:'dimer(cr: i)').map(&:reaction) }
+                let(:inner_reactions) do
+                  [
+                    hydrogen_migration, hydrogen_migration.reverse,
+                    dimer_formation, dimer_formation.reverse,
+                    end_lateral_df, middle_lateral_df
+                  ]
+                end
+
+                it { expect(inner_reactions).to match_array(result) }
               end
             end
           end

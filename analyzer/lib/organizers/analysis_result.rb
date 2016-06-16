@@ -133,7 +133,7 @@ module VersatileDiamond
                   cache[name] = create_dept_specific_spec(spec)
                 end
 
-                store_concept_to(dept_concept, cache[name]) if target == :source
+                store_concept_to(dept_concept, cache[name])
               end
             end
           end
