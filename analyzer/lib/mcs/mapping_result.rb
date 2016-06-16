@@ -163,7 +163,7 @@ module VersatileDiamond
       # @param [SpecificSpec] from which spec will be deleted
       # @param [SpecificSpec] to which spec will be added
       # @option [Boolean] :reverse_too
-      def swap(target, from, to, reverse_too: true)
+      def swap(target, from, to)
         return if from.simple?
 
         mirror = SpeciesComparator.make_mirror(from, to)
@@ -183,6 +183,8 @@ module VersatileDiamond
             end
           end
         end
+
+        clean_result!(from, to)
       end
 
       # Swaps atoms in result
@@ -380,6 +382,19 @@ module VersatileDiamond
           own
         else
           original_own
+        end
+      end
+
+      # @param [SpecificSpec] from which spec will be deleted
+      # @param [SpecificSpec] to which spec will be added
+      def clean_result!(from, to)
+        if from.links.size != to.links.size
+          no_val_proc = -> f, t { !f || !t }
+          if changes.any? { |_, aps| aps.any?(&no_val_proc) }
+            raise ArgumentError, "Wrong swapping species #{from} -> #{to}"
+          else
+            full.map! { |specs, aps| [specs, aps.reject(&no_val_proc)] }
+          end
         end
       end
     end
