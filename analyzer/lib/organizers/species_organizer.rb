@@ -103,16 +103,13 @@ module VersatileDiamond
       #   will be exchanged
       # @param [Hash] cache where contains pairs of name => dependent_spec
       def exchange_specs(cache, from, to)
-        lambda = -> wrapped_concept do
+        lambda = -> wrapped_holder do
           [:source, :products].each do |target|
-            wrapped_concept.each(target) do |spec|
-              if spec.name == from.spec.name
-                swap_carefully(target, wrapped_concept, spec, to.spec)
-              end
+            wrapped_holder.each(target) do |spec|
+              next unless spec.name == from.spec.name
+              swap_carefully(target, wrapped_holder, spec, to.spec)
+              store_concept_to(wrapped_holder, to)
             end
-          end
-          if wrapped_concept.each(:source).to_a.include?(to.spec)
-            store_concept_to(wrapped_concept, to)
           end
         end
 
