@@ -97,10 +97,9 @@ module VersatileDiamond
           there_is_new = false
           typical_reactions.each do |reaction|
             reaction.changes.each do |src_to_prd|
-              unless src_to_prd.map(&:first).any?(&:gas?)
-                raw_props = atom_properties_list(src_to_prd)
-                there_is_new ||= raw_clf.reorganize_with!(raw_props)
-              end
+              next if src_to_prd.map(&:first).any?(&:gas?)
+              raw_props = atom_properties_list(src_to_prd)
+              there_is_new ||= raw_clf.reorganize_with!(raw_props)
             end
           end
           break unless there_is_new

@@ -141,37 +141,65 @@ module VersatileDiamond
       end
 
       describe '#+' do
+        let(:cm_ss) { raw_prop(dept_methyl_on_bridge_base, :cm, '**') }
+        let(:cm_iss) { raw_prop(dept_methyl_on_bridge_base, :cm, 'i**') }
+        let(:cm_sss) { raw_prop(dept_methyl_on_bridge_base, :cm, '***') }
+        let(:uicm) { raw_prop(dept_methyl_on_bridge_base, :cm, 'ui') }
+        let(:ihbm) { raw_prop(dept_high_bridge_base, :cm, 'i') }
+
+        let(:a_diff) { amob - cm }
+        let(:ad_diff) { ad_cr - bridge_ct }
+        let(:id_diff) { ib_cr - bridge_cr }
+        let(:ai_diff) { iamob - cm }
+        let(:i_diff) { imob - cm }
+        let(:u_diff) { ucm - cm }
+
         describe 'ad' do
-          let(:ad_diff) { ad_cr - bridge_ct }
           it { expect(bridge_ct + ad_diff).to eq(ad_cr) }
           it { expect(ab_ct + ad_diff).to be_nil }
           it { expect(bridge_cr + ad_diff).to be_nil }
         end
 
-        describe 'i' do
-          let(:i_diff) { ib_cr - bridge_cr }
+        describe 'i%d' do
+          it { expect(ab_ct + id_diff).to eq(aib_ct) }
+          it { expect(hib_ct + id_diff).to eq(hib_ct) }
+          it { expect(dimer_cr + id_diff).to eq(id_cr) }
+          it { expect(tb_cc + id_diff).to be_nil }
+
+          it { expect(ucm + id_diff).to eq(uicm) }
+          it { expect(high_cm + id_diff).to eq(ihbm) }
+        end
+
+        describe 'i%_' do
           it { expect(ab_ct + i_diff).to eq(aib_ct) }
           it { expect(hib_ct + i_diff).to eq(hib_ct) }
           it { expect(dimer_cr + i_diff).to eq(id_cr) }
           it { expect(tb_cc + i_diff).to be_nil }
 
-          let(:uicm) { raw_prop(dept_methyl_on_bridge_base, :cm, 'ui') }
+          it { expect(cm_sss + i_diff).to eq(cm_sss) }
+
           it { expect(ucm + i_diff).to eq(uicm) }
+          it { expect(high_cm + i_diff).to eq(ihbm) }
+        end
+
+        describe 'u' do
+          it { expect(ab_ct + u_diff).to be_nil }
+          it { expect(high_cm + u_diff).to be_nil }
+          it { expect(ihbm + u_diff).to be_nil }
+
+          it { expect(ucm + u_diff).to eq(ucm) }
+          it { expect(uicm + u_diff).to eq(uicm) }
+          it { expect(imob + u_diff).to eq(uicm) }
+          it { expect(cm_sss + u_diff).to eq(cm_sss) }
         end
 
         describe 'methyl activation' do
-          let(:a_diff) { amob - cm }
-          let(:ai_diff) { iamob - cm }
-          let(:cm_ss) { raw_prop(dept_methyl_on_bridge_base, :cm, '**') }
-          let(:cm_iss) { raw_prop(dept_methyl_on_bridge_base, :cm, 'i**') }
-          let(:cm_sss) { raw_prop(dept_methyl_on_bridge_base, :cm, '***') }
           it { expect(amob + a_diff).to eq(cm_ss) }
           it { expect(amob + ai_diff).to eq(cm_iss) }
           it { expect(amob + ai_diff + a_diff).to eq(cm_sss) }
         end
 
         describe 'vinyl c1' do
-          let(:i_diff) { imob - cm }
           let(:ivob) { raw_prop(dept_vinyl_on_bridge_base, :c1, 'i') }
           it { expect(vob + i_diff).to eq(ivob) }
         end
@@ -179,6 +207,13 @@ module VersatileDiamond
         describe 'limited plus' do
           it { expect(cm + cm).to eq(bob) }
           it { expect(cm.+(cm, limit: 1)).to eq(nil) }
+
+          it { expect(high_cm + cm).not_to be_nil }
+          it { expect(high_cm + high_cm).not_to be_nil }
+          it { expect(high_cm + high_cm + cm).to be_nil }
+
+          it { expect(high_cm.+(cm, limit: 2)).to be_nil }
+          it { expect(high_cm.+(high_cm, limit: 2)).to be_nil }
         end
       end
 

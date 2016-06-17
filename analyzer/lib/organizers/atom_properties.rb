@@ -81,6 +81,7 @@ module VersatileDiamond
 
         @_is_incoherent, @_is_unfixed, @_is_unfixed_from_nbrs = nil
         @_estab_bond_num, @_actives_num, @_dangling_hydrogens_num = nil
+        @_to_s = nil
       end
 
       # Deep compares two properties by all properties
@@ -123,39 +124,40 @@ module VersatileDiamond
       # @option [Integer] :limit the number of maximal nbr_lattcies
       # @return [AtomProperties] the extended instance of atom properties or nil
       def +(other, limit: nil)
-        result = nil
         total_props = merge_props(other, &:+)
-        if total_props
-          bonds_num = estab_bonds_num_in(total_props[:relations])
-          dang_num = total_props[:danglings].size
-          lattices_num = total_props[:nbr_lattices].size
-          ext_num = bonds_num + dang_num
+        return unless total_props
+        return if limit && total_props[:nbr_lattices].size > limit
 
-          is_valid_lattices = !limit || lattices_num <= limit
+        lattices_num = total_props[:nbr_lattices].select(&:last).size
+        total_unfixed = total_props[:relevants].include?(UNFIXED)
+        return if total_unfixed && lattices_num > 1
 
-          any_without_bonds = [self, other].any? { |x| x.relations.empty? }
-          is_incoherent = bonds_num < valence && any_without_bonds &&
-            total_props[:relevants].include?(INCOHERENT)
+        any_without_lattices = ![self, other].all?(&:lattice)
+        return if total_unfixed && !any_without_lattices
 
-          any_without_lattices = [self, other].any? { |x| x.nbr_lattices.empty? }
-          is_unfixed = lattices_num == 1 && any_without_lattices &&
-            total_props[:relevants].include?(UNFIXED)
+        total_incoherent = total_props[:relevants].include?(INCOHERENT)
+        any_without_bonds = [self, other].any? { |x| x.relations.empty? }
+        return if total_incoherent && !any_without_bonds
 
-          is_complete = (ext_num == valence)
-          is_relevant = is_incoherent || is_unfixed
-          is_unrelevanted = is_complete && is_relevant
+        bonds_num = estab_bonds_num_in(total_props[:relations])
+        dang_num = total_props[:danglings].size
+        ext_num = bonds_num + dang_num
 
-          total_props[:relevants] = [] if is_unrelevanted
+        is_incoherent = bonds_num < valence && total_incoherent
+        is_unfixed = lattices_num == 1 && total_unfixed
+        is_complete = (ext_num == valence)
+        is_relevant = is_incoherent || is_unfixed
+        is_unrelevanted = is_complete && is_relevant
 
-          are_correct_props =
-            is_valid_lattices &&
-              (valid_relations?(total_props[:lattice], total_props[:relations])) &&
-              (is_unrelevanted || ext_num < valence ||
-                (is_complete && total_props[:relevants].empty?))
+        total_props[:lattice] = nil if lattices_num > 0
+        total_props[:relevants] = [] if is_unrelevanted
 
-          result = self.class.new(state_values(total_props)) if are_correct_props
-        end
-        result
+        are_correct_props =
+          (valid_relations?(total_props[:lattice], total_props[:relations])) &&
+          (is_unrelevanted || ext_num < valence ||
+            (is_complete && total_props[:relevants].empty?))
+
+        are_correct_props ? self.class.new(state_values(total_props)) : nil
       end
 
       # Gets the difference between two atom properties
@@ -409,6 +411,8 @@ module VersatileDiamond
       # Convert properties to string representation
       # @return [String] the string representaion of properties
       def to_s
+        return @_to_s if @_to_s
+
         name = atom_name.to_s
 
         dg = danglings.dup
@@ -426,13 +430,20 @@ module VersatileDiamond
 
         name = "#{name}%#{lattice.name}" if lattice
 
-        nlts = nbr_lattices.dup
+        all_nls_groups = nbr_lattices.groups(&:last)
+        many_nls_groups = all_nls_groups.reject(&:one?)
+        mono_nls_groups = all_nls_groups.select(&:one?).reduce(:+)
         lattice_symbol = -> rel do
-          frl = nlts.find { |r, _| r == rel }
-          if frl
-            nlts.delete_one(frl)
-            frl.last || '_'
+          if rel.multi?
+            g = many_nls_groups.find { |g| g.size == rel.arity }
+            frl = g && g.pop
+            frl && (rel.arity - 1).times(&g.public_method(:pop))
+          else
+            olc = mono_nls_groups && mono_nls_groups.pop
+            mlc = many_nls_groups.reject(&:empty?).first
+            frl = olc || (mlc && mlc.pop)
           end
+          (frl && frl.last) || '_'
         end
 
         rl = relations.dup
@@ -466,7 +477,7 @@ module VersatileDiamond
           name = "#{lattice_symbol[undirected_bond]}~#{name}"
         end
 
-        name
+        @_to_s = name
       end
 
       def inspect
@@ -521,7 +532,7 @@ module VersatileDiamond
       # @yield binary operation which applies the dynamic states of both instances
       # @return [Array] the list of the merged properties hash
       def produce_props(other, &block)
-        unit_props = UNIT_STATES.zip(static_states).to_h
+        unit_props = UNIT_STATES.zip([atom_name, valence]).to_h
         all_lattices = [self, other].map(&:lattice).uniq
         any_unfixed = [self, other].any?(&:unfixed?)
         iterating_lattices =
@@ -678,10 +689,12 @@ module VersatileDiamond
       #   spec see at #new same argument
       # @return [Array] the array of achieving lattices and correspond relations
       def nbr_lattices_for(spec, atom)
-        relations_with_atoms = remake_relations(spec, atom)
-        possible_vals = [undirected_bond, double_bond, triple_bond]
-        relations_with_atoms.each_with_object([]) do |(atom, relation), acc|
-          acc << [relation, atom.lattice] if possible_vals.include?(relation)
+        remake_relations(spec, atom).reduce([]) do |acc, (atom, relation)|
+          if UNDIRECTED_BONDS.include?(relation)
+            acc + [[undirected_bond, atom.lattice]] * relation.arity
+          else
+            acc
+          end
         end
       end
 
