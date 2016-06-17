@@ -82,6 +82,7 @@ events
 
   reaction 'surface deactivation'
     equation * + hydrogen(h: *) = H
+    activation 6.31
     forward_rate 2e13, 'cm3/(mol * s)'
 
   reaction 'methyl adsorption to dimer'

@@ -63,7 +63,8 @@ module VersatileDiamond
         pure_atoms = base_specs.reduce([]) do |acc, spec|
           all_atoms = spec.links.keys
           base_atoms = all_atoms.reject { |atom| atom.reference? || atom.specific? }
-          unificate(acc + base_atoms) { |a, b| a.name == b.name }
+          multivalents = base_atoms.select { |atom| atom.valence > 1 }
+          unificate(acc + multivalents) { |a, b| a.name == b.name }
         end
 
         raise 'No unique atoms found!' if pure_atoms.empty?
