@@ -9,7 +9,7 @@ module VersatileDiamond
       # Checks that spec is unused
       # @return [Boolean] is unused or not
       def unused?
-        children.empty? && !reactant?
+        children.empty? && !reactant? && gas?
       end
 
       # Checks that spec is excess

@@ -64,7 +64,7 @@ module VersatileDiamond
       # Grabs possible reactions from Chest by passed key
       # @param [Symbol] chest_key the key by which reactions will be got from Chest
       # @return [Array] the list of significant reactions
-      def avail_reactions(chest_key)
+      def significant_reactions(chest_key)
         Tools::Chest.all(chest_key).select(&:significant?)
       end
 
@@ -74,7 +74,7 @@ module VersatileDiamond
       # @raise [RuntimeError] if passed klass is not DependentReaction
       # @return [Array] the array with each wrapped reaction
       def wrap_reactions(klass, chest_key)
-        avail_reactions(chest_key).map { |reaction| klass.new(reaction) }
+        significant_reactions(chest_key).map { |reaction| klass.new(reaction) }
       end
 
       # Collects there instances from lateral reactions

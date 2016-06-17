@@ -170,12 +170,12 @@ module VersatileDiamond
             it_behaves_like :all_dependent_base_specs do
               let(:names) do
                 [
-                  # :bridge, # purged
+                  :bridge,
                   # :bridge_dup, # purged
-                  # :dimer, # purged
-                  # :high_bridge, # purged
-                  # :methyl_on_dimer, # purged
-                  # :methyl_on_bridge # purged
+                  :dimer,
+                  :high_bridge,
+                  :methyl_on_dimer,
+                  :methyl_on_bridge
                 ]
               end
             end

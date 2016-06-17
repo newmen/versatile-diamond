@@ -106,7 +106,7 @@ module VersatileDiamond
 
       describe '#unused?' do
         it 'default behavior' do
-          expect(dept_bridge_base.unused?).to be_truthy
+          expect(dept_bridge_base.unused?).to be_falsey
         end
 
         it_behaves_like :organize_dependencies do
