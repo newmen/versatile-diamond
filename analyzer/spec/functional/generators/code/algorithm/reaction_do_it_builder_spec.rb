@@ -542,6 +542,32 @@ module VersatileDiamond
               end
             end
 
+            describe 'high bridge to methyl on dimer' do
+              let(:typical_reaction) { dept_one_dimer_hydrogen_migration }
+              let(:first_spec) { dept_activated_incoherent_dimer }
+              let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+              let(:do_it_algorithm) do
+                <<-CODE
+    SpecificSpec *dimerCLsCRi1 = target();
+    assert(dimerCLsCRi1->type() == DIMER_CLs_CRi);
+    Atom *atoms1[2] = { dimerCLsCRi1->atom(0), dimerCLsCRi1->atom(3) };
+    assert(atoms1[0]->is(#{role_cl}));
+    assert(atoms1[1]->is(#{role_cr}));
+    atoms1[0]->deactivate();
+    atoms1[1]->activate();
+    atoms1[0]->changeType(#{cd_i});
+    assert(!atoms1[1]->is(#{cd_s}));
+    atoms1[1]->changeType(#{cd_s});
+    Finder::findAll(atoms1, 2);
+                CODE
+              end
+
+              it_behaves_like :check_do_it
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+              end
+            end
+
             describe 'incoherent dimer drop' do
               let(:typical_reaction) { dept_incoherent_dimer_drop }
               let(:first_spec) { dept_twise_incoherent_dimer }

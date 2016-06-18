@@ -298,7 +298,7 @@ module VersatileDiamond
         set(:activated_incoherent_dimer) do
           SpecificSpec.new(dimer_base, cr: incoherent_cd, cl: activated_cd)
         end
-        set(:symmetric_activated_incoherent_dimer) do
+        set(:asymmetric_activated_incoherent_dimer) do
           SpecificSpec.new(dimer_base, cl: incoherent_cd, cr: activated_cd)
         end
         set(:bottom_hydrogenated_activated_dimer) do
@@ -689,7 +689,7 @@ module VersatileDiamond
         end
 
         set(:odhm_source) { [activated_incoherent_dimer.dup] }
-        set(:odhm_products) { [symmetric_activated_incoherent_dimer.dup] }
+        set(:odhm_products) { [asymmetric_activated_incoherent_dimer.dup] }
         set(:odhm_names_to_specs) do {
           source: [[:d, odhm_source.first]],
           products: [[:d, odhm_products.first]]
