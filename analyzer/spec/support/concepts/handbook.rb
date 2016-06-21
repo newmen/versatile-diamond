@@ -456,6 +456,9 @@ module VersatileDiamond
           s.link(s.atom(:tt), s.atom(:cr), bond_110_cross)
           s.link(s.atom(:tt), s.atom(:ct), bond_110_cross); s
         end
+        set(:activated_bridge_with_dimer) do
+          SpecificSpec.new(bridge_with_dimer_base, ct: activated_cd)
+        end
 
         set(:cross_bridge_on_bridges_base) do
           s = SurfaceSpec.new(:cross_bridge_on_bridges)
@@ -746,6 +749,22 @@ module VersatileDiamond
         set(:high_bridge_to_methyl_on_dimer) do
           Reaction.new(:forward, 'high bridge to methyl on dimer',
             htm_source, htm_products, htm_atom_map)
+        end
+
+        set(:hsd_source) { [high_bridge.dup, activated_dimer.dup] }
+        set(:hsd_products) { [activated_bridge_with_dimer.dup] }
+        set(:hsd_names_to_specs) do
+          {
+            source: [:h, :ad].zip(hsd_source),
+            products: [:bwd].zip(hsd_products)
+          }
+        end
+        set(:hsd_atom_map) do
+          Mcs::AtomMapper.map(hsd_source, hsd_products, hsd_names_to_specs)
+        end
+        set(:high_bridge_stand_to_dimer) do
+          Reaction.new(:forward, 'high bridge stand to dimer',
+            hsd_source, hsd_products, hsd_atom_map)
         end
 
         set(:idd_source) { [twise_incoherent_dimer.dup] }
