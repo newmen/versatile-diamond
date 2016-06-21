@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Generators
     module Code
       module Algorithm::Units
@@ -131,10 +133,12 @@ module VersatileDiamond
           # @param [Nodes::SourceNode] node
           # @return [Array]
           def both_differences(node)
-            reflected, related = two_way_products(node).map(&:to_set)
-            create = node.different? ? related : related - reflected
-            drop = (reflected - related).reject(&:gas?)
-            [create, drop].map(&:to_a).map { |prds| prds.map(&:source) }
+            reflected, related = two_way_products(node)
+            create = node.different? ? related : related.accurate_diff(reflected)
+            # TODO: bonds between gas atoms can be dropped here under desorption
+            drop = reflected.accurate_diff(related)
+            surface_diff = [create, drop].map { |prds| prds.reject(&:gas?) }
+            surface_diff.map { |prds| prds.map(&:source) }
           end
 
           # @param [Nodes::SourceNode] node
@@ -151,11 +155,7 @@ module VersatileDiamond
             @_create_bond_calls ||=
               neighbours_difference.flat_map do |node, (nbrs, _)|
                 var = @dict.var_of(node.atom)
-                nbrs.flat_map do |nbr|
-                  relation = @context.relation_between_products(node, nbr)
-                  arity = relation ? relation.arity : 0
-                  arity == 0 ? [] : [var.bond_with(@dict.var_of(nbr.atom))] * arity
-                end
+                nbrs.flat_map { |nbr| var.bond_with(@dict.var_of(nbr.atom)) }
               end
           end
 
@@ -164,11 +164,7 @@ module VersatileDiamond
             @_drop_bond_calls ||=
               neighbours_difference.flat_map do |node, (_, nbrs)|
                 var = @dict.var_of(node.atom)
-                nbrs.flat_map do |nbr|
-                  relation = @context.relation_between_sources(node, nbr)
-                  arity = relation ? relation.arity : 0
-                  arity == 0 ? [] : [var.unbond_from(@dict.var_of(nbr.atom))] * arity
-                end
+                nbrs.flat_map { |nbr| var.unbond_from(@dict.var_of(nbr.atom)) }
               end
           end
 

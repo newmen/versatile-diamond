@@ -136,6 +136,7 @@ module VersatileDiamond
           :migration_over_111,
           :hydrogen_abs_from_gap,
           :hydrogen_migration,
+          :high_bridge_to_methyl_on_dimer,
           :one_dimer_hydrogen_migration
         ])
         set(:dept_dimer_drop) do

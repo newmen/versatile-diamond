@@ -64,6 +64,7 @@ module VersatileDiamond
             let(:cb_i) { raw_props_idx(dept_methyl_on_bridge_base, :cb, 'i') }
             let(:cd_s) { raw_props_idx(dept_dimer_base, :cr, '*') }
             let(:cd_i) { raw_props_idx(dept_dimer_base, :cr, 'i') }
+            let(:md_d) { raw_props_idx(dept_methyl_on_dimer_base, :cr, '') }
             let(:bd_c) { raw_props_idx(dept_bridge_with_dimer_base, :cr, '') }
             let(:tm_c) { raw_props_idx(dept_trimer_base, :cr, '') }
             let(:tb_c) { raw_props_idx(dept_three_bridges_base, :cc, '') }
@@ -708,6 +709,93 @@ module VersatileDiamond
         atoms1[1]->changeType(#{cd_i});
     }
     Finder::findAll(atoms1, 2);
+                  CODE
+                end
+              end
+            end
+
+            describe 'high bridge to methyl on dimer' do
+              let(:typical_reaction) { dept_high_bridge_to_methyl_on_dimer }
+              let(:first_spec) { dept_high_bridge_base }
+              let(:second_spec) { dept_activated_bridge }
+
+              it_behaves_like :check_do_it do
+                let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *species1[2] = { target(0), target(1) };
+    assert(species1[0]->type() == HIGH_BRIDGE);
+    assert(species1[1]->type() == BRIDGE_CTs);
+    Atom *atoms1[3] = { species1[0]->atom(1), species1[1]->atom(0), species1[0]->atom(0) };
+    assert(atoms1[0]->is(#{role_cb}));
+    assert(atoms1[1]->is(#{snd_role_ct}));
+    assert(atoms1[2]->is(#{role_cm}));
+    atoms1[0]->unbondFrom(atoms1[2]);
+    atoms1[0]->bondWith(atoms1[1]);
+    atoms1[0]->changeType(#{md_d});
+    atoms1[1]->changeType(#{cd_i});
+    atoms1[2]->changeType(#{cm_is});
+    Finder::findAll(atoms1, 3);
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:base_specs) do
+                  [
+                    dept_bridge_base,
+                    dept_methyl_on_bridge_base,
+                    dept_methyl_on_right_bridge_base
+                  ]
+                end
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *species1[2] = { target(0), target(1) };
+    assert(species1[0]->type() == HIGH_BRIDGE);
+    assert(species1[1]->type() == BRIDGE_CTs);
+    Atom *atoms1[3] = { species1[0]->atom(1), species1[1]->atom(0), species1[0]->atom(0) };
+    assert(atoms1[0]->is(#{role_cb}));
+    assert(atoms1[1]->is(#{snd_role_ct}));
+    assert(atoms1[2]->is(#{role_cm}));
+    atoms1[0]->unbondFrom(atoms1[2]);
+    atoms1[0]->bondWith(atoms1[1]);
+    atoms1[0]->changeType(#{md_d});
+    if (atoms1[1]->is(#{cd_s}))
+    {
+        atoms1[1]->changeType(#{tm_c});
+    }
+    else if (atoms1[1]->is(#{cb_s}))
+    {
+        atoms1[1]->changeType(#{md_d});
+    }
+    else if (atoms1[1]->is(#{br_s}))
+    {
+        atoms1[1]->changeType(#{bd_c});
+    }
+    else if (atoms1[1]->is(#{ct_ss}))
+    {
+        atoms1[1]->changeType(#{cd_s});
+    }
+    else
+    {
+        assert(atoms1[1]->is(#{ct_is}));
+        atoms1[1]->changeType(#{cd_i});
+    }
+    if (atoms1[2]->is(#{hm_ss}))
+    {
+        atoms1[2]->changeType(#{cm_sss});
+    }
+    else if (atoms1[2]->is(#{hm_is}))
+    {
+        atoms1[2]->changeType(#{cm_iss});
+    }
+    else
+    {
+        assert(atoms1[2]->is(#{hm_i}));
+        atoms1[2]->changeType(#{cm_is});
+    }
+    Finder::findAll(atoms1, 3);
                   CODE
                 end
               end

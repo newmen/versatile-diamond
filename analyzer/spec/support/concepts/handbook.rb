@@ -732,6 +732,22 @@ module VersatileDiamond
             sdf_source, sdf_products, sdf_atom_map)
         end
 
+        set(:htm_source) { [high_bridge.dup, activated_bridge.dup] }
+        set(:htm_products) { [activated_methyl_on_dimer.dup] }
+        set(:htm_names_to_specs) do
+          {
+            source: [:h, :ab].zip(htm_source),
+            products: [:amod].zip(htm_products)
+          }
+        end
+        set(:htm_atom_map) do
+          Mcs::AtomMapper.map(htm_source, htm_products, htm_names_to_specs)
+        end
+        set(:high_bridge_to_methyl_on_dimer) do
+          Reaction.new(:forward, 'high bridge to methyl on dimer',
+            htm_source, htm_products, htm_atom_map)
+        end
+
         set(:idd_source) { [twise_incoherent_dimer.dup] }
         set(:idd_products) do
           [activated_incoherent_bridge.dup, activated_incoherent_bridge.dup]

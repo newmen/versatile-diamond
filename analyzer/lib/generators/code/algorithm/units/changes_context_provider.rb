@@ -59,6 +59,14 @@ module VersatileDiamond
             neighbour_spec_atoms(node).map(&mirror.public_method(:[])).select(&:itself)
           end
 
+        private
+
+          # @param [Nodes::SourceNode] node
+          # @return [Boolean]
+          def main?(node)
+            @main.include?(node)
+          end
+
           # @param [Array] nodes
           # @return [Concept::Bond] or nil
           def relation_between_sources(*nodes)
@@ -69,14 +77,6 @@ module VersatileDiamond
           # @return [Concept::Bond] or nil
           def relation_between_products(*nodes)
             relation_between_in(@product_links, nodes.map(&:product))
-          end
-
-        private
-
-          # @param [Nodes::SourceNode] node
-          # @return [Boolean]
-          def main?(node)
-            @main.include?(node)
           end
 
           # @return [Array]
@@ -130,7 +130,7 @@ module VersatileDiamond
           # @return [Array]
           def neighbour_spec_atoms(node)
             spec, atom = node.spec_atom
-            exists_bonds = spec.links[atom].select { |_, r| r.bond? && r.exist? }.uniq
+            exists_bonds = spec.links[atom].select { |_, r| r.bond? && r.exist? }
             exists_bonds.map { |a, _| [spec, a] }
           end
 
