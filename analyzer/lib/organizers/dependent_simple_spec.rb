@@ -18,10 +18,22 @@ module VersatileDiamond
         @reactions = nil
       end
 
+      # Simple spec without anchors
+      # @return [Array] the empty array
+      def anchors
+        []
+      end
+
       # Simple spec does not have links
       # @return [Hash] the empty hash
       def links
         {}
+      end
+
+      # Gets number of external bonds for simple spec
+      # @return [Integer] 0
+      def external_bonds
+        0
       end
 
       # All species is not termination by default

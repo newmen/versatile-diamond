@@ -105,7 +105,7 @@ module VersatileDiamond
         return if specs.empty?
 
         puts "\n#{name}: [#{specs.size}]"
-        specs.sort.each do |spec|
+        specs.sort_by(&:external_bonds).each do |spec|
           puts @non_term_specs_format % [
             spec.name,
             spec.external_bonds,
@@ -121,7 +121,7 @@ module VersatileDiamond
         return if reactions.empty?
 
         puts "\n#{name}: [#{reactions.size}]"
-        reactions.sort.each do |reaction|
+        reactions.sort_by(&:full_rate).reverse.each do |reaction|
           puts @reactions_format % [
             reaction.formula,
             reaction.changes_num,

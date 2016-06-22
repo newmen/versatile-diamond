@@ -106,9 +106,12 @@ module VersatileDiamond
         lambda = -> wrapped_holder do
           [:source, :products].each do |target|
             wrapped_holder.each(target) do |spec|
-              next unless spec.name == from.spec.name
-              swap_carefully(target, wrapped_holder, spec, to.spec)
-              store_concept_to(wrapped_holder, to)
+              if spec.name == from.spec.name
+                swap_carefully(target, wrapped_holder, spec, to.spec)
+                store_concept_to(wrapped_holder, to)
+              elsif spec.name == to.spec.name
+                store_concept_to(wrapped_holder, to)
+              end
             end
           end
         end
