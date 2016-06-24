@@ -37,6 +37,12 @@ module VersatileDiamond
         @is_simple
       end
 
+      # The spec is not termination by default
+      # @return [Boolean] false
+      def termination?
+        false
+      end
+
       # Returns a instance of atom by passed atom keyname
       # @param [Symbol] keyname the key of atom instnance
       # @return [Atom] the atom or nil

@@ -139,8 +139,7 @@ module VersatileDiamond
       # @param [Array] products the array of product specs
       # @return [Boolean] has or not
       def has_termination_spec?(source, products)
-        check = -> specific_spec { specific_spec.is_a?(TerminationSpec) }
-        source.find(&check) || products.find(&check)
+        source.find(&:termination?) || products.find(&:termination?)
       end
 
       # Checks compliance of source and product specs for both directions

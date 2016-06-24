@@ -4,7 +4,7 @@ module VersatileDiamond
   module Organizers
 
     describe AtomClassifier, type: :organizer, use: :atom_properties do
-      subject { described_class.new }
+      subject { described_class.new([active_bond, adsorbed_h]) }
 
       describe '#analyze!' do
         before do

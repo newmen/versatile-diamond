@@ -22,8 +22,12 @@ module VersatileDiamond
         it { expect(adsorbed_h.external_bonds).to eq(1) }
       end
 
+      describe '#termination?' do
+        it { expect(adsorbed_h.termination?).to be_truthy }
+      end
+
       describe '#hydrogen?' do
-        it { adsorbed_h.hydrogen? }
+        it { expect(adsorbed_h.hydrogen?).to be_truthy }
       end
 
       describe '#terminations_num' do

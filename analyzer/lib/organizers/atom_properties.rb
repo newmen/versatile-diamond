@@ -339,8 +339,14 @@ module VersatileDiamond
       # Gets property same as current but activated
       # @return [AtomProperties] activated properties or nil
       def activated
+        add_dangling(Concepts::ActiveBond.property)
+      end
+
+      # Gets property same as current but with added dangling property
+      # @return [AtomProperties] extended properties or nil
+      def add_dangling(dangling)
         if valence > bonds_num
-          ext_dangs = danglings + [Concepts::ActiveBond.property]
+          ext_dangs = danglings + [dangling]
           props = [*static_states, relations, ext_dangs, nbr_lattices]
           props << (valence > bonds_num + 1 ? relevants : [])
           self.class.new(props)
@@ -352,8 +358,14 @@ module VersatileDiamond
       # Gets property same as current but deactivated
       # @return [AtomProperties] deactivated properties or nil
       def deactivated
+        remove_dangling(Concepts::ActiveBond.property)
+      end
+
+      # Gets property same as current but witout dangling property
+      # @return [AtomProperties] reduced properties or nil
+      def remove_dangling(dangling)
         dgs = danglings.dup
-        if dgs.delete_one(Concepts::ActiveBond.property)
+        if dgs.delete_one(dangling)
           props = [*static_states, relations, dgs, nbr_lattices, relevants]
           self.class.new(props)
         else

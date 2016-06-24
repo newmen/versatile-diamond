@@ -34,6 +34,10 @@ module VersatileDiamond
         it { expect(atom.actives).to eq(1) }
       end
 
+      describe '#termination?' do
+        it { expect(active_bond.termination?).to be_truthy }
+      end
+
       describe '#hydrogen?' do
         it { expect(active_bond.hydrogen?).to be_falsey }
       end

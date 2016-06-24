@@ -8,9 +8,9 @@ module VersatileDiamond
     class AtomClassifier
 
       # Initialize a classifier by empty sets of properties
-      # @param [Boolean] is_ions_presented identify that there are reactions with ions
-      def initialize(is_ions_presented = true)
-        @is_ions_presented = is_ions_presented
+      # @param [Array] danglings the list of termination species
+      def initialize(danglings = [])
+        @danglings = danglings
 
         @described_props = Set.new
         @over_danglings_props = Set.new
@@ -41,9 +41,9 @@ module VersatileDiamond
         avail_props = spec.links.map { |atom, _| AtomProperties.new(spec, atom) }
         avail_props.each do |prop|
           store_prop(@described_props, prop)
-          if @is_ions_presented
-            store_all(:activated, prop)
-            store_all(:deactivated, prop)
+          @danglings.each do |termination|
+            store_all(:add_dangling, prop, termination)
+            store_all(:remove_dangling, prop, termination)
           end
         end
       end
@@ -273,18 +273,21 @@ module VersatileDiamond
       # @yield [AtomProperties, AtomProperties] do with bigger and smallest atom
       #   properties
       def iterate_props_list(props_list, &block)
-        props_list_dup = props_list.dup
+        props_list_dup = props_list.sort
         until props_list_dup.empty?
-          first = props_list_dup.shift
-          props_list_dup.each { |internal| block[internal, first] }
+          small = props_list_dup.shift
+          props_list_dup.each { |big| block[big, small] }
         end
       end
 
       # Stores all derived properties which can be gotten by passed method name
       # @param [Symbol] method_name by which the derived props can be gotten
-      def store_all(method_name, prop)
+      # @param [AtomProperties] prop which extended copies will be stored
+      # @param [Concepts::TerminationSpec] termination spec by which the property
+      #   copies will be created
+      def store_all(method_name, prop, termination)
         next_prop = prop
-        while (next_prop = next_prop.public_send(method_name))
+        while (next_prop = next_prop.public_send(method_name, termination))
           store_prop(@over_danglings_props, next_prop)
         end
       end

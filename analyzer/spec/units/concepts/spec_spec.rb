@@ -18,6 +18,11 @@ module VersatileDiamond
         it { expect(bridge_base.simple?).not_to be_truthy }
       end
 
+      describe '#termination?' do
+        it { expect(hydrogen_base.termination?).to be_falsey }
+        it { expect(bridge_base.termination?).to be_falsey }
+      end
+
       describe '#atom' do
         it { expect(methane_base.atom(:w)).to be_nil }
         it { expect(methane_base.atom(:c)).to eq(c) }

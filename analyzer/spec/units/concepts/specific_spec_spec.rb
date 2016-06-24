@@ -155,6 +155,12 @@ module VersatileDiamond
         it { expect(extra_activated_bridge.simple?).to be_falsey }
       end
 
+      describe '#termination?' do
+        it { expect(hydrogen.termination?).to be_falsey }
+        it { expect(hydrogen_ion.termination?).to be_falsey }
+        it { expect(bridge.termination?).to be_falsey }
+      end
+
       describe '#incoherent!' do
         before { activated_bridge.incoherent!(:ct) }
         it { expect(activated_cd.incoherent?).to be_truthy }

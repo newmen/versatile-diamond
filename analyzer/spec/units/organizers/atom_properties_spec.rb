@@ -37,15 +37,9 @@ module VersatileDiamond
             end
 
             describe 'classification' do
-              subject { Hash[cln.map { |k, v| [k, [v[0].to_s, v[1]]] }] }
+              subject { Set.new(cln.map { |_, v| [v[0].to_s, v[1]] }) }
               let(:cln) { classifier.classify(target.parents.first.original) }
-              let(:hash) do
-                {
-                  10 => ['-C%d<', 1],
-                  13 => ['_~-C%d<', 1],
-                }
-              end
-
+              let(:hash) { Set[['-C%d<', 1], ['_~-C%d<', 1]] }
               it { should eq(hash) }
             end
           end
@@ -84,7 +78,7 @@ module VersatileDiamond
       end
 
       shared_context :classified_properties do
-        let(:classifier) { AtomClassifier.new(false) }
+        let(:classifier) { AtomClassifier.new }
 
         before do
           dependent_specs.each(&classifier.public_method(:analyze!))
@@ -606,7 +600,7 @@ module VersatileDiamond
         it { expect(hib_ct.relevant?).to be_truthy }
       end
 
-      describe 'activated' do
+      describe '#activated' do
         it { expect(ucm.activated).not_to be_nil }
         it { expect(high_cm.activated).not_to be_nil }
 
@@ -626,7 +620,7 @@ module VersatileDiamond
         it { expect(ib_cr.activated).not_to be_nil }
       end
 
-      describe 'deactivated' do
+      describe '#deactivated' do
         it { expect(ucm.deactivated).to be_nil }
         it { expect(high_cm.deactivated).to be_nil }
 

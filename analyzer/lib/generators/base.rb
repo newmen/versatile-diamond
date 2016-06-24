@@ -82,12 +82,18 @@ module VersatileDiamond
         @_classifier ||= !classified? && @config_path && load(CLASSIFIER_CACHE_SUFFIX)
         return @_classifier if @_classifier
 
-        raw_clf = Organizers::AtomClassifier.new(!ubiquitous_reactions.empty?)
+        raw_clf = Organizers::AtomClassifier.new(using_atomic_specs)
         surface_specs.each { |spec| raw_clf.analyze!(spec) }
         raw_clf.organize_properties!
         extend!(raw_clf)
 
         @_classifier = save(CLASSIFIER_CACHE_SUFFIX, raw_clf)
+      end
+
+      # Gets the list of using atomic species
+      # @return [Array]
+      def using_atomic_specs
+        ubiquitous_reactions.flat_map { |r| r.source.select(&:termination?) }.uniq
       end
 
       # Extends passed classifier by production new atom properties

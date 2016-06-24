@@ -10,7 +10,7 @@ module VersatileDiamond
       extend Forwardable
 
       attr_reader :spec, :specific_atoms
-      def_delegators :spec, :extendable?, :gas?, :simple?
+      def_delegators :spec, :extendable?, :termination?, :gas?, :simple?
 
       # Initialize specific spec instalce. Checks specified atom for correct
       # valence value
