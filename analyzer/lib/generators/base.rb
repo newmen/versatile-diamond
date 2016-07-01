@@ -93,7 +93,11 @@ module VersatileDiamond
       # Gets the list of using atomic species
       # @return [Array]
       def using_atomic_specs
-        ubiquitous_reactions.flat_map { |r| r.source.select(&:termination?) }.uniq
+        specs = ubiquitous_reactions.flat_map do |reaction|
+          source = reaction.source.reject(&:gas?)
+          source.all?(&:termination?) ? source.select(&:termination?) : []
+        end
+        specs.uniq
       end
 
       # Extends passed classifier by production new atom properties

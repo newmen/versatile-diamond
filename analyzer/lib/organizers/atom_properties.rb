@@ -14,7 +14,10 @@ module VersatileDiamond
       UNDIRECTED_BONDS = [undirected_bond, double_bond, triple_bond].freeze
       INCOHERENT = Concepts::Incoherent.property.freeze
       UNFIXED = Concepts::Unfixed.property.freeze
-      RELATIVE_PROPERTIES = [UNFIXED, INCOHERENT]
+      RELATIVE_PROPERTIES = [UNFIXED, INCOHERENT].freeze
+
+      ACTIVE_BOND = Concepts::ActiveBond.property.freeze
+      HYDROGEN = Concepts::AtomicSpec.new(Concepts::Atom.hydrogen).freeze
 
       UNIT_STATES = %i(atom_name valence).freeze
       STATIC_STATES = (UNIT_STATES + [:lattice]).freeze
@@ -81,7 +84,7 @@ module VersatileDiamond
 
         @_is_incoherent, @_is_unfixed, @_is_unfixed_from_nbrs = nil
         @_estab_bond_num, @_actives_num, @_dangling_hydrogens_num = nil
-        @_to_s = nil
+        @_hash, @_to_s = nil
       end
 
       # Deep compares two properties by all properties
@@ -196,7 +199,9 @@ module VersatileDiamond
       # Calculates the hash of current instance for using it as key values in Hashes
       # @return [Integer] the hash of current instance
       def hash
-        @props.hash
+        @_hash ||= ([atom_name, valence, lattice && lattice.instance] +
+                          relations.sort + danglings.sort + relevants.sort +
+                          nbr_lattices.map { |r, l| [r, l && l.instance] }.sort).hash
       end
 
       # Gets idempotent value of atom properties group
@@ -245,7 +250,7 @@ module VersatileDiamond
       def same_incoherent?(other)
         same_basic_values?(other) && eq_relations?(other) && eq_nbr_lattices?(other) &&
           ((incoherent? && other.unfixed? && eq_danglings?(other)) ||
-            ((incoherent? || bonds_num == valence) &&
+            ((incoherent? || maximal?) &&
               other.incoherent? && contain_all_danglings?(other)))
       end
 
@@ -339,7 +344,7 @@ module VersatileDiamond
       # Gets property same as current but activated
       # @return [AtomProperties] activated properties or nil
       def activated
-        add_dangling(Concepts::ActiveBond.property)
+        add_dangling(ACTIVE_BOND)
       end
 
       # Gets property same as current but with added dangling property
@@ -358,7 +363,7 @@ module VersatileDiamond
       # Gets property same as current but deactivated
       # @return [AtomProperties] deactivated properties or nil
       def deactivated
-        remove_dangling(Concepts::ActiveBond.property)
+        remove_dangling(ACTIVE_BOND)
       end
 
       # Gets property same as current but witout dangling property
@@ -383,7 +388,7 @@ module VersatileDiamond
       # Gets number of active bonds
       # @return [Integer] number of active bonds
       def actives_num
-        @_actives_num ||= count_danglings(Concepts::ActiveBond.property)
+        @_actives_num ||= count_danglings(ACTIVE_BOND)
       end
 
       # Gets the number of actives when each established bond replaced to active bond
@@ -395,8 +400,7 @@ module VersatileDiamond
       # Gets number of hydrogen atoms
       # @return [Integer] number of active bonds
       def dangling_hydrogens_num
-        @_dangling_hydrogens_num ||=
-          count_danglings(Concepts::AtomicSpec.new(Concepts::Atom.hydrogen))
+        @_dangling_hydrogens_num ||= count_danglings(HYDROGEN)
       end
 
       # Counts total number of hydrogen atoms
@@ -428,7 +432,7 @@ module VersatileDiamond
         name = atom_name.to_s
 
         dg = danglings.dup
-        name = "*#{name}" while dg.delete_one(Concepts::ActiveBond.property)
+        name = "*#{name}" while dg.delete_one(ACTIVE_BOND)
 
         while (monovalent_atom = dg.pop)
           name = "#{monovalent_atom}#{name}"
@@ -742,9 +746,10 @@ module VersatileDiamond
       # @param [Array] relations where bonds will be counted
       # @return [Integer] the number of established bond relations
       def estab_bonds_num_in(relations)
-        relations.count { |r| r.class == Concepts::Bond } +
-          2 * relations.count(double_bond) +
-          3 * relations.count(triple_bond)
+        bonds = relations.select(&:bond?)
+        bonds.reject(&:multi?).size +
+          2 * bonds.count(double_bond) +
+          3 * bonds.count(triple_bond)
       end
 
       # Gets number of established bond relations
@@ -763,6 +768,11 @@ module VersatileDiamond
       # @return [Integer] the total number of bonds
       def bonds_num
         estab_bonds_num + danglings.size
+      end
+
+      # @return [Boolean] are all valence atoms has special state?
+      def maximal?
+        valence == bonds_num
       end
     end
 

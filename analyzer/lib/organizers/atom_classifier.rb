@@ -38,7 +38,7 @@ module VersatileDiamond
       def analyze!(spec)
         raise 'Cache of properties already created' if @_props_with_indexes
 
-        avail_props = spec.links.map { |atom, _| AtomProperties.new(spec, atom) }
+        avail_props = spec.links.keys.map { |atom| AtomProperties.new(spec, atom) }
         avail_props.each do |prop|
           store_prop(@described_props, prop)
           @danglings.each do |termination|
@@ -210,6 +210,12 @@ module VersatileDiamond
         !props.any? { |prop| prop != bigger && is?(prop, bigger) }
       end
 
+      # @return [Boolean] is any stored properties defined or not?
+      def incoherent_defined?
+        return @_is_incoherent_defined unless @_is_incoherent_defined.nil?
+        @_is_incoherent_defined = props.any?(&:incoherent?)
+      end
+
       # Gets array of all using props with their indexes
       # @return [Array] zip of real properties to their indexes
       def props_with_indexes
@@ -262,7 +268,7 @@ module VersatileDiamond
           max_lattices_num = props.map(&:nbr_lattices_num).max
           diffs = children_of(src).map { |child| child - src }
           news = diffs.map { |df| df && df.+(prd, limit: max_lattices_num) }
-          news.select(&:itself).reject do |prop|
+          news.select(&:itself).reject(&:relevant?).reject do |prop|
             all_props.any? { |ap| ap == prop }
           end
         end
@@ -297,8 +303,10 @@ module VersatileDiamond
       # @param [AtomProperties] prop the storing properties
       def store_prop(props_set, prop)
         store_and_drop_cache(props_set, prop)
-        store_to(@over_relevants_props, prop.incoherent) unless prop.incoherent?
         store_to(@unrelevanted_props, prop.unrelevanted)
+        if @danglings.empty? && !prop.incoherent? && incoherent_defined?
+          store_to(@over_relevants_props, prop.incoherent)
+        end
       end
 
       # Stores atom properties and drops the internal cache of all properties
@@ -358,6 +366,7 @@ module VersatileDiamond
 
       def reset_caches!
         @_all_props, @_props, @_props_with_indexes, @_props_hash = nil
+        @_is_incoherent_defined = nil
         @_tmatrix, @_st_matrix = nil
       end
     end
