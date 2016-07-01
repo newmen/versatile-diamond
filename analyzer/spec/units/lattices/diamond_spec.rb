@@ -3,6 +3,26 @@ require 'spec_helper'
 describe Diamond do
   subject(:diamond) { described_class.new }
 
+  describe '#hash' do
+    it { expect(subject.hash).to eq(described_class.new.hash) }
+    it { expect(described_class.new.hash).to eq(subject.hash) }
+  end
+
+  describe '#eql?' do
+    it { expect(subject.eql?(described_class.new)).to be_truthy }
+    it { expect(described_class.new.eql?(subject)).to be_truthy }
+  end
+
+  describe '#==' do
+    it { expect(subject).to eq(described_class.new) }
+    it { expect(described_class.new).to eq(subject) }
+  end
+
+  describe '#<=>' do
+    it { expect(subject <=> described_class.new).to eq(0) }
+    it { expect(described_class.new <=> subject).to eq(0) }
+  end
+
   describe '#opposite_relation' do
     describe 'same lattice' do
       describe 'bonds' do
