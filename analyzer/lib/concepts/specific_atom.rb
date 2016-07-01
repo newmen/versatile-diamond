@@ -21,7 +21,7 @@ module VersatileDiamond
       class NotStated < Stated; end
 
       # Error for case if unfixed state is stated but incoherent state states now
-      class AlreadyUnfixed; end
+      class AlreadyUnfixed < Errors::Base; end
 
       def_delegators :@atom, :name, :lattice, :lattice=, :original_valence,
         :original_same?, :reference?, :relations_limits
@@ -92,11 +92,10 @@ module VersatileDiamond
       # @raise [AlreadyStated] if atom already has incoherent state
       def incoherent!
         raise AlreadyStated.new('incoherent') if incoherent?
-        if unfixed?
-          raise AlreadyUnfixed.new
-          not_unfixed!
-        end
+        is_unfixed = unfixed?
+        not_unfixed! if is_unfixed
         @options << Incoherent.property
+        raise AlreadyUnfixed.new if is_unfixed
       end
 
       # Changes atom unfixed state

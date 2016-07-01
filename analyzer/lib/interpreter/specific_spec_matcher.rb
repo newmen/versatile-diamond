@@ -3,6 +3,7 @@ module VersatileDiamond
 
     # Module for matching specific spec from string
     module SpecificSpecMatcher
+      include Interpreter::RelevantErrorsCatcher
 
       # Detects the specified spec by matching spec name and specifing atoms
       # @param [String] specific_spec_str the analyzing specific spec string
@@ -54,28 +55,23 @@ module VersatileDiamond
       # @param [Symbol] key the keyname of atom in spec
       # @param [String] value from which will be setuping atom
       def specify_atom_for(atom, spec, key, value)
-        unless atom
-          atom = spec.atom(key)
+        catch_relevant_errors(spec, key, value) do
           unless atom
-            syntax_error('specific_spec.wrong_specification', atom: key)
+            atom = spec.atom(key)
+            if atom
+              atom = Concepts::SpecificAtom.new(atom)
+            else
+              syntax_error('specific_spec.wrong_specification', atom: key)
+            end
           end
 
-          atom = Concepts::SpecificAtom.new(atom)
-        end
-
-        apply_state_to(atom, value) do |mma|
-          if !mma || mma.valence > 1
-            syntax_error('specific_spec.wrong_specification', atom: key)
+          apply_state_to(atom, value) do |mma|
+            if !mma || mma.valence > 1
+              syntax_error('specific_spec.wrong_specification', atom: key)
+            end
           end
         end
-
         atom
-      rescue Concepts::SpecificAtom::AlreadyUnfixed
-        syntax_warning('specific_spec.atom_already_unfixed',
-          spec: spec.name, atom: key)
-      rescue Concepts::SpecificAtom::AlreadyStated
-        syntax_error('specific_spec.atom_already_has_state',
-          spec: spec.name, atom: key, state: value)
       end
 
       # Applies state from value string to atom
