@@ -8,6 +8,16 @@ module VersatileDiamond
         subject { active_bond }
       end
 
+      describe '#hash' do
+        it { expect(active_bond.hash).to eq(described_class.new.hash) }
+      end
+
+      describe '#==' do
+        it { expect(active_bond).to eq(described_class.new) }
+        it { expect(active_bond).not_to eq(adsorbed_h) }
+        it { expect(active_bond).not_to eq(bridge) }
+      end
+
       describe '#<=>' do
         it { expect(active_bond <=> active_bond).to eq(0) }
         it { expect(active_bond <=> adsorbed_h).to eq(-1) }

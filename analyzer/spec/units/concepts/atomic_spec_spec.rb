@@ -4,6 +4,11 @@ module VersatileDiamond
   module Concepts
 
     describe AtomicSpec, use: :atom_properties do
+      describe '#hash' do
+        it { expect(adsorbed_h.hash).to eq(described_class.new(h).hash) }
+        it { expect(adsorbed_h.hash).not_to eq(adsorbed_cl.hash) }
+      end
+
       describe '#<=>' do
         it { expect(adsorbed_h <=> adsorbed_h).to eq(0) }
         it { expect(adsorbed_cl <=> adsorbed_h).to eq(-1) }
@@ -36,7 +41,7 @@ module VersatileDiamond
         it { expect(adsorbed_h.terminations_num(ehb_ct)).to eq(2) }
       end
 
-      describe '#== && #same?' do
+      describe '#== && :eql? && #same?' do
         let(:h_dup) { AtomicSpec.new(h.dup) }
         [:==, :same?].each do |method|
           it { expect(adsorbed_h.public_send(method, h_dup)).to be_truthy }

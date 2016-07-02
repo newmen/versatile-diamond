@@ -3,8 +3,23 @@ module VersatileDiamond
 
     # Represents a some "termination" spec which can be involved to ubiquitous
     # reaction
+    # @abstract
     class TerminationSpec
       include Modules::OrderProvider
+
+      # @return [Integer]
+      def hash
+        [self.class, name].hash
+      end
+
+      # Compares with an other spec
+      # @param [TerminationSpec | SpecificSpec] other with which comparison
+      # @return [Boolean] is specs same or not
+      def ==(other)
+        self.class == other.class && name == other.name
+      end
+      alias :eql? :==
+      alias :same? :==
 
       # Provides the order for termination specs
       # @param [TerminationSpec] other comparing instance
@@ -38,13 +53,6 @@ module VersatileDiamond
       # @return [Boolean] false
       def extendable?
         false
-      end
-
-      # Compares with an other spec
-      # @param [TerminationSpec | SpecificSpec] other with which comparison
-      # @return [Boolean] is specs same or not
-      def same?(other)
-        self == other
       end
     end
 
