@@ -88,10 +88,21 @@ module VersatileDiamond
             end
 
             describe 'refinements' do
-              it { expect { reaction.interpret('  incoherent bridge(:ct)') }.
-                not_to raise_error }
-              it { expect { reaction.interpret('  unfixed methyl_on_bridge(:cm)') }.
-                to raise_error(Concepts::SpecificAtom::AlreadyStated) }
+              describe 'incoherent' do
+                let(:dsl) { '  incoherent bridge(:ct)' }
+                it { expect { reaction.interpret(dsl) }.not_to raise_error }
+              end
+
+              describe 'unfixed' do
+                let(:dsl) { '  unfixed methyl_on_bridge(:cm)' }
+                let(:error) do
+                  opts = {
+                    spec: 'methyl_on_bridge(cm: i)', atom: 'cm', state: 'unfixed'
+                  }
+                  syntax_error('specific_spec.atom_already_has_state', **opts)
+                end
+                it { expect { reaction.interpret(dsl) }.to raise_error(*error) }
+              end
             end
           end
 

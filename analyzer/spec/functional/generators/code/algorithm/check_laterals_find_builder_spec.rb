@@ -210,9 +210,9 @@ module VersatileDiamond
                 <<-CODE
     Atom *atom1 = sidepiece->atom(0);
     eachNeighbour(atom1, &Diamond::cross_100, [&sidepiece](Atom *neighbour1) {
-        if (neighbour1->is(2))
+        if (neighbour1->is(1))
         {
-            BridgeCTs *bridgeCTs1 = neighbour1->specByRole<BridgeCTs>(2);
+            BridgeCTs *bridgeCTs1 = neighbour1->specByRole<BridgeCTs>(1);
             if (bridgeCTs1)
             {
                 ChainFactory<
@@ -237,9 +237,9 @@ module VersatileDiamond
         }
     });
     eachNeighbour(atom1, &Diamond::front_100, [&sidepiece](Atom *neighbour1) {
-        if (neighbour1->is(2))
+        if (neighbour1->is(1))
         {
-            BridgeCTs *bridgeCTs1 = neighbour1->specByRole<BridgeCTs>(2);
+            BridgeCTs *bridgeCTs1 = neighbour1->specByRole<BridgeCTs>(1);
             if (bridgeCTs1)
             {
                 ChainFactory<
