@@ -226,12 +226,16 @@ module VersatileDiamond
       # Iterates available dangling species and extends the total set of properties
       # @param [AtomProperties] prop which extended analogies will be stored too
       def append_danglings!(prop)
+        observed_props = [prop]
         checking_props = [prop]
         until checking_props.empty?
           cp = checking_props.shift
           @danglings.each do |termination|
-            checking_props += store_all(cp, termination, &:add_dangling)
-            checking_props += store_all(cp, termination, &:remove_dangling)
+            storing_props = store_all(cp, termination, &:add_dangling) +
+                            store_all(cp, termination, &:remove_dangling)
+            new_props = storing_props.reject(&observed_props.public_method(:include?))
+            checking_props = (checking_props + new_props).uniq
+            observed_props = (observed_props + new_props).uniq
           end
         end
       end
