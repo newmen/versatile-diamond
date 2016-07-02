@@ -9,8 +9,8 @@ module VersatileDiamond
       let(:keyname_error) { Chest::KeyNameError }
 
       def store_base_specs(specific_specs)
-        specific_specs.each do |specific_spec|
-          base_spec = specific_spec.spec
+        specific_specs.each do |reactant|
+          base_spec = reactant.simple? ? reactant : reactant.spec
           Tools::Chest.store(base_spec) unless Tools::Chest.has?(base_spec)
         end
       end
@@ -75,6 +75,7 @@ module VersatileDiamond
 
         (typicals + laterals).each do |reaction|
           store_base_specs(reaction.source)
+          store_base_specs(reaction.products)
         end
 
         laterals.each do |reaction|

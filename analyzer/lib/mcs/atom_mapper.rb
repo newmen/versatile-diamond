@@ -42,8 +42,6 @@ module VersatileDiamond
       # @raise [ManyToOneAlgorithm::CannotMap] see at #self.map
       # @return [MappingResult] see at #self.map
       def map(names_and_specs)
-        reject_simple_specs!
-
         mapping_result = MappingResult.new(@source, @products)
         if mapping_result.reaction_type == :exchange
           ManyToManyAlgorithm.map_to(mapping_result, names_and_specs)

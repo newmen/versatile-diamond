@@ -18,6 +18,13 @@ module VersatileDiamond
         @reactions = nil
       end
 
+      # Checks that other spec is same
+      # @param [DepdendentSimpleSpec] other the comparable spec
+      # @return [Boolean] same or not
+      def same?(other)
+        self.class == other.class && spec.same?(other.spec)
+      end
+
       # Simple spec without anchors
       # @return [Array] the empty array
       def anchors
@@ -51,6 +58,18 @@ module VersatileDiamond
       # All species is not termination by default
       # @return [Boolean] false
       def specific?
+        true
+      end
+
+      # Simple species are not excess
+      # @return [Boolean] false
+      def excess?
+        false
+      end
+
+      # Simple species are not unused
+      # @return [Boolean] false
+      def unused?
         true
       end
 

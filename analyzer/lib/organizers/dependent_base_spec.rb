@@ -6,14 +6,9 @@ module VersatileDiamond
     # Contain some spec and set of dependent specs
     class DependentBaseSpec < DependentWrappedSpec
 
-      # Checks that spec is unused
-      # @return [Boolean] is unused or not
-      def unused?
-        children.empty? && !reactant? && gas?
-      end
-
       # Checks that spec is excess
       # @return [Boolean] is excess spec or not
+      # @override
       def excess?
         !source? && !complex? &&
           children.one? && children.first.specific? && !reactant?

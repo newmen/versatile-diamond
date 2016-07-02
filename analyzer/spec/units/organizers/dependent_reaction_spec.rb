@@ -77,7 +77,7 @@ module VersatileDiamond
           let(:ubiq_react) { dept_surface_activation }
           let(:term_cache) { make_cache([dept_adsorbed_h]) }
           let(:non_term_cache) do
-            make_cache([dept_methyl_on_bridge, dept_hydrogen_ion])
+            make_cache([dept_hydrogenated_methyl_on_bridge, dept_hydrogen_ion])
           end
 
           before do

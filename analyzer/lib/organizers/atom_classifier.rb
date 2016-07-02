@@ -159,15 +159,14 @@ module VersatileDiamond
       end
 
       # Selects the children of passed atom properties
-      # @param [AtomProperties] smallest for which the children properties will be
+      # @param [AtomProperties] bigger for which the children properties will be
       #   gotten
       # @return [Array] the list of children atom properties
-      def children_of(smallest)
-        props.select do |prop|
-          (prop == smallest && prop.relevant?) ||
-          (prop != smallest && is?(prop, smallest) &&
-                      (prop.incoherent? || most_bigger?(prop)))
+      def children_of(bigger)
+        result = detect_prop(bigger).children.flat_map do |child|
+          child.children.empty? ? [child] : children_of(child)
         end
+        result.uniq.sort
       end
 
       def inspect

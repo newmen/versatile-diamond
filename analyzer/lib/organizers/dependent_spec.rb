@@ -7,8 +7,9 @@ module VersatileDiamond
       def_delegator :spec, :keyname
 
       # Checks that other spec has same atoms and links between them
-      # @param [DependentBaseSpec] other the comparable spec
+      # @param [DependentSpec] other the comparable spec
       # @return [Boolean] same or not
+      # @override
       def same?(other)
         other.is_a?(DependentSpec) ? spec.same?(other.spec) : other.same?(self)
       end

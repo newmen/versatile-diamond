@@ -244,9 +244,9 @@ module VersatileDiamond
       # @param [Array] base_specs array of base species the dependencies between
       #   which will be organized
       def organize_base_specs_dependencies!(base_specs)
-        complex_base_specs = base_specs.reject { |spec| spec.simple? || spec.gas? }
-        table = BaseSpeciesTable.new(complex_base_specs)
-        base_specs.each do |wrapped_base|
+        complex_surface_base_specs = base_specs.reject(&:simple?).reject(&:gas?)
+        table = BaseSpeciesTable.new(complex_surface_base_specs)
+        complex_surface_base_specs.each do |wrapped_base|
           wrapped_base.organize_dependencies!(table)
         end
       end

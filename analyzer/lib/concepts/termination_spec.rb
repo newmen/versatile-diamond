@@ -54,6 +54,10 @@ module VersatileDiamond
       def extendable?
         false
       end
+
+      def inspect
+        "[#{name}]"
+      end
     end
 
   end

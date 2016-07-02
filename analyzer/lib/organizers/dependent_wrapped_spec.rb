@@ -104,6 +104,13 @@ module VersatileDiamond
         non_term_children.select(&:deep_reactant?)
       end
 
+      # Checks that spec is unused
+      # @return [Boolean] is unused or not
+      # @override
+      def unused?
+        children.empty? && !reactant? && gas?
+      end
+
       # Checks that current instance is reactant
       # @return [Boolean] uses as part of any reaction or not
       def deep_reactant?

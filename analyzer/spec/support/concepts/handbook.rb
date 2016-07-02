@@ -210,6 +210,9 @@ module VersatileDiamond
         set(:incoherent_activated_methyl_on_bridge) do
           SpecificSpec.new(methyl_on_bridge_base, cm: incoherent_activated_c)
         end
+        set(:hydrogenated_methyl_on_bridge) do
+          SpecificSpec.new(methyl_on_bridge_base, cm: c_hydride)
+        end
         set(:incoherent_hydrogenated_methyl_on_bridge) do
           SpecificSpec.new(methyl_on_bridge_base, cm: incoherent_c_hydride)
         end

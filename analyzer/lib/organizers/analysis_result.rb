@@ -98,11 +98,8 @@ module VersatileDiamond
       # @return [Hash] the hash of collected base species where keys are names
       #   of each base spec
       def collect_base_specs
-        dependent_bases =
-          Chest.all(:gas_spec, :surface_spec).map do |base_spec|
-            DependentBaseSpec.new(base_spec)
-          end
-
+        concepts = Tools::Chest.all(:gas_spec, :surface_spec)
+        dependent_bases = concepts.map(&method(:create_dept_base_spec))
         make_cache(dependent_bases)
       end
 
@@ -162,10 +159,16 @@ module VersatileDiamond
         end
       end
 
+      # Creates correspond dependent base spec instance
+      # @param [Concepts::Spec] spec the concept by which new spec will created
+      # @return [DependentSimpleSpec | DependentBaseSpec] the wrapped concept spec
+      def create_dept_base_spec(spec)
+        spec.simple? ? DependentSimpleSpec.new(spec) : DependentBaseSpec.new(spec)
+      end
+
       # Creates correspond dependent specific spec instance
-      # @param [Concepts::SpecificSpec] spec the concept by which new spec will
-      #   created
-      # @return [DependentSimpleSpec] the wrapped concept spec
+      # @param [Concepts::SpecificSpec] spec concept by which new spec will created
+      # @return [DependentSimpleSpec | DependentSpecificSpec] the wrapped concept spec
       def create_dept_specific_spec(spec)
         spec.simple? ? DependentSimpleSpec.new(spec) : DependentSpecificSpec.new(spec)
       end
@@ -195,7 +198,7 @@ module VersatileDiamond
       # Checks that if some reaction contains specific spec and same base spec then
       # base spec will be swapped to veiled spec
       def exchange_same_used_base_specs!
-        exchange_same_used_base_specs_of(specific_specs)
+        exchange_same_used_base_specs_of(specific_specs.reject(&:simple?))
       end
 
       # Organize dependecies between collected items

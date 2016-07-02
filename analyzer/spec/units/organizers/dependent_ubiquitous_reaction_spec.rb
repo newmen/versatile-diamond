@@ -44,13 +44,13 @@ module VersatileDiamond
           end
 
           describe 'terminations are have parents' do
-            it { expect(terms_cache[term_name].parents).
-              to eq([specs_cache[specific_name]]) }
+            let(:parents) { terms_cache[term_name].parents }
+            it { expect(parents).to eq([specs_cache[specific_name]]) }
           end
 
           describe 'specific species are have children' do
-            it { expect(specs_cache[specific_name].children).
-              to eq([terms_cache[term_name]]) }
+            let(:children) { specs_cache[specific_name].children }
+            it { expect(children).to eq([terms_cache[term_name]]) }
           end
 
           describe '#parents' do
@@ -66,7 +66,7 @@ module VersatileDiamond
           let(:target) { subject }
           let(:complex) { dept_methyl_activation }
           let(:term_name) { :H }
-          let(:specific_name) { :'methyl_on_bridge()' }
+          let(:specific_name) { :'methyl_on_bridge(cm: H)' }
         end
 
         it_behaves_like :cover_just_one do

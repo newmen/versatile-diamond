@@ -36,7 +36,7 @@ module VersatileDiamond
       end
 
       # Fills under AtomClassifier#organize_properties
-      attr_reader :smallests, :sames
+      attr_reader :smallests, :sames, :children
 
       # Stores all properties of atom
       # @overload new(props)
@@ -82,6 +82,7 @@ module VersatileDiamond
 
         @smallests = Set.new
         @sames = Set.new
+        @children = Set.new
 
         @_is_incoherent, @_is_unfixed, @_is_unfixed_from_nbrs = nil
         @_estab_bond_num, @_actives_num, @_dangling_hydrogens_num = nil
@@ -295,19 +296,20 @@ module VersatileDiamond
         end
       end
 
-      %w(smallest same).each do |name|
-        plur_name = :"#{name}s"
-        var_name = :"@#{plur_name}"
+      # Adds dependency from smallest atom properties
+      # @param [AtomProperties] prop from which the current atom properties depends
+      def add_smallest(prop)
+        prop.add_children(self)
+        @smallests = @smallests.subtract(prop.smallests)
+        @smallests << prop
+      end
 
-        # Adds dependency from #{name} atom properties
-        # @param [AtomProperties] stuff the #{name} atom properties from which the
-        #   current atom properties depends
-        define_method(:"add_#{name}") do |stuff|
-          var = instance_variable_get(var_name)
-          from_child = stuff.public_send(plur_name)
-          var.subtract(from_child) if from_child
-          var << stuff
-        end
+      # Adds dependency from same atom properties
+      # @param [AtomProperties] prop from which the current atom properties depends
+      def add_same(prop)
+        prop.add_children(self)
+        @sames = @sames.subtract(prop.sames)
+        @sames << prop
       end
 
       # Makes unrelevanted copy of self
@@ -529,6 +531,13 @@ module VersatileDiamond
       # @return [Array] the array of static states
       def static_states
         STATIC_STATES.map(&method(:send))
+      end
+
+      # Adds dependency from child atom properties
+      # @param [AtomProperties] prop from which the current atom properties depends
+      def add_children(prop)
+        @children = @children.subtract(prop.children)
+        @children << prop
       end
 
       # Checks that properties have unfixed state by neighbour lattices set
