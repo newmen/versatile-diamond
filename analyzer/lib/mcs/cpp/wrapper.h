@@ -15,6 +15,14 @@ struct IntersecResult
     unsigned intersectsNum;
     unsigned intersectSize;
     ObjectID *data;
+
+    IntersecResult() = default;
+    IntersecResult(IntersecResult &&) = default;
+
+private:
+    IntersecResult(const IntersecResult &) = delete;
+    IntersecResult &operator=(const IntersecResult &) = delete;
+    IntersecResult &operator=(IntersecResult &&) = delete;
 };
 
 HR *createHanserRecursive();

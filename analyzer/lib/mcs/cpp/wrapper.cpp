@@ -12,7 +12,7 @@ void addEdgeTo(HR *h, ObjectID f, ObjectID s, bool isExt)
 
 IntersecResult *collectIntersections(HR *h)
 {
-    HR::Intersections its(std::move(h->intersections()));
+    HR::Intersections its(h->intersections());
     IntersecResult *result = new IntersecResult;
 
     result->intersectsNum = its.size();
