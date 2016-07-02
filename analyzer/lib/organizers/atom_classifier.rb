@@ -18,6 +18,7 @@ module VersatileDiamond
         @unrelevanted_props = Set.new
 
         @_default_latticed_atoms = nil
+        @_atomic_dangling = nil
         reset_caches!
       end
 
@@ -131,21 +132,19 @@ module VersatileDiamond
       # Gets array where each element is index of much more specific atom properties
       # @return [Array] the specification array
       def specification
-        props.map do |prop|
-          index(smallests_transitive_matrix.specification_for(prop))
-        end
+        props.map(&method(:specificate)).map(&method(:index))
       end
 
       # Gets transitions array of actives atoms to notactives
       # @return [Array] the transitions array
       def actives_to_deactives
-        collect_transitions(:deactivated)
+        collect_transitions(&:deactivated)
       end
 
       # Gets transitions array of notactives atoms to actives
       # @return [Array] the transitions array
       def deactives_to_actives
-        collect_transitions(:activated)
+        collect_transitions(&:activated)
       end
 
       # Gets all used lattices in analysed results
@@ -195,6 +194,8 @@ module VersatileDiamond
 
     private
 
+      ACTIVE_BOND = AtomProperties::ACTIVE_BOND
+
       # Checks that passed atom properties haven't most bigger
       # @param [AtomProperties] bigger atom properties which will be checked
       # @return [Boolean] is most bigger or not
@@ -206,6 +207,11 @@ module VersatileDiamond
       def incoherent_defined?
         return @_is_incoherent_defined unless @_is_incoherent_defined.nil?
         @_is_incoherent_defined = props.any?(&:incoherent?)
+      end
+
+      # @return [Boolean] are required relative states or not
+      def relatives_required?
+        @danglings.empty? && incoherent_defined?
       end
 
       # Gets array of all using props with their indexes
@@ -332,7 +338,7 @@ module VersatileDiamond
       def store_prop(props_set, prop)
         store_and_drop_cache(props_set, prop)
         store_to(@unrelevanted_props, prop.unrelevanted)
-        if @danglings.empty? && !prop.incoherent? && incoherent_defined?
+        if !prop.incoherent? && relatives_required?
           store_to(@over_relevants_props, prop.incoherent)
         end
       end
@@ -356,31 +362,52 @@ module VersatileDiamond
       # @param [AtomProperties] prop the  atom properties search patern or nil
       # @return [Boolean] was added or not
       def not_nil_stored?(prop)
-        !prop || over_all_props(:any?, prop)
+        !prop || over_all_props(prop, &:any?)
       end
 
       # Detects analogies atom properties
       # @param [AtomProperties] prop the  atom properties search patern or nil
       # @return [AtomProperties] analogies atom properties from internal value or nil
       def detect_prop(prop)
-        over_all_props(:find, prop) || prop
+        over_all_props(prop, &:find) || prop
       end
 
       # Applies passed method for detect some value on all properties set
       # @param [AtomProperties] prop the  atom properties search patern
+      # @yield [Array] applies to all atom properties list
       # @return [Object] the result of passing method
-      def over_all_props(method_name, prop)
-        all_props.send(method_name) { |x| prop == x }
+      def over_all_props(prop, &block)
+        block.call(all_props) { |x| prop == x }
       end
 
       # Collects transitions array by passed method name
-      # @param [Symbol] method_name which will be called
+      # @yield [AtomProperties] produce new properties
       # @return [Array] collected array
-      def collect_transitions(method_name)
-        props_hash.map do |p, prop|
-          other = prop.public_send(method_name)
-          other && (i = index(other)) && p != i ? i : p
+      def collect_transitions(&block)
+        props.map do |prop|
+          trans_prop = block[prop, atomic_dangling]
+          target_prop = trans_prop && not_nil_stored?(trans_prop) ? trans_prop : prop
+          index(specificate(target_prop))
         end
+      end
+
+      # Gets the atomic dangling if there is just one this dangling
+      # @return [DependentTermination] another used termiation dangling atomic spec
+      def atomic_dangling
+        if @_atomic_dangling.nil?
+          another_danglings = props.flat_map(&:danglings).uniq - [ACTIVE_BOND]
+          @_atomic_dangling = another_danglings.one? ? another_danglings.first : false
+        else
+          @_atomic_dangling == false ? nil : @_atomic_dangling
+        end
+      end
+
+      # @param [AtomProperties] prop which will be specified
+      # @return [AtomProperties] the end point fo atom properties dependencies graph
+      def specificate(prop)
+        small_next = smallests_transitive_matrix.specification_for(prop)
+        gen_next = general_transitive_matrix.specification_for(prop)
+        [small_next, gen_next].sort.last
       end
 
       # Gets matrix of transitive closure for smallests atom properties

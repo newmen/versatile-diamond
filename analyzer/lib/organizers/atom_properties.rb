@@ -355,9 +355,17 @@ module VersatileDiamond
       end
 
       # Gets property same as current but activated
+      # @param [DependentTermination] atomic_dangling
       # @return [AtomProperties] activated properties or nil
-      def activated
-        add_dangling(ACTIVE_BOND)
+      def activated(atomic_dangling = nil)
+        fixed_dangling_props(:remove_dangling, atomic_dangling, &:add_dangling)
+      end
+
+      # Gets property same as current but deactivated
+      # @param [DependentTermination] atomic_dangling
+      # @return [AtomProperties] deactivated properties or nil
+      def deactivated(atomic_dangling = nil)
+        fixed_dangling_props(:add_dangling, atomic_dangling, &:remove_dangling)
       end
 
       # Gets property same as current but with added dangling property
@@ -371,12 +379,6 @@ module VersatileDiamond
         else
           nil
         end
-      end
-
-      # Gets property same as current but deactivated
-      # @return [AtomProperties] deactivated properties or nil
-      def deactivated
-        remove_dangling(ACTIVE_BOND)
       end
 
       # Gets property same as current but witout dangling property
@@ -556,6 +558,11 @@ module VersatileDiamond
           contain_all_danglings?(other)
       end
 
+      # @return [Boolean] are all valence atoms has special state?
+      def maximal?
+        valence == bonds_num
+      end
+
     private
 
       # Transforms passed hash to flatten sequence of states
@@ -563,6 +570,29 @@ module VersatileDiamond
       # @return [Array] the array of states
       def state_values(props_hash)
         ALL_STATES.map { |state| props_hash[state] }
+      end
+
+      # @param [Symbol] atomic_op which will be called with atomic dangling if it is
+      #   existed
+      # @param [DependentTermination] atomic_dangling which will be additional applied
+      #   if it need
+      # @yield [AtomProperties] will be called with active bond
+      # @return [AtomProperties] which danglings will be correctly exetnded if need
+      def fixed_dangling_props(atomic_op, atomic_dangling = nil, &block)
+        smart_proc = -> prps { smart_dangling_from(prps, atomic_dangling, &atomic_op) }
+        result = atomic_op == :remove_dangling ? smart_proc[self] : self
+        result = block[result || self, ACTIVE_BOND]
+        atomic_op == :add_dangling ? smart_proc[result] : result
+      end
+
+      # @param [AtomProperties] props from which the atomic dangling will be remove if
+      #   it is maximal
+      # @param [DependentTermination] atomic_dangling which will be additional applied
+      #   if it need
+      # @yield [AtomProperties] by which the new property will be produced
+      # @return [AtomProperties]
+      def smart_dangling_from(props, atomic_dangling, &block)
+        props && atomic_dangling ? block[props, atomic_dangling] : props
       end
 
       # Makes merged props hash with other instance by passed operation
@@ -817,11 +847,6 @@ module VersatileDiamond
       # @return [Integer] the total number of bonds
       def bonds_num
         estab_bonds_num + danglings.size
-      end
-
-      # @return [Boolean] are all valence atoms has special state?
-      def maximal?
-        valence == bonds_num
       end
     end
 

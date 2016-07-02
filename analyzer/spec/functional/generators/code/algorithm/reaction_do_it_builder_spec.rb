@@ -57,6 +57,9 @@ module VersatileDiamond
             let(:ct_is) { raw_props_idx(dept_bridge_base, :ct, 'i*') }
             let(:ct_s) { raw_props_idx(dept_bridge_base, :ct, '*') }
             let(:ct_i) { raw_props_idx(dept_bridge_base, :ct, 'i') }
+            let(:ct_ih) { raw_props_idx(dept_bridge_base, :ct, 'iH') }
+            let(:ct_hh) { raw_props_idx(dept_bridge_base, :ct, 'HH') }
+            let(:ct_sh) { raw_props_idx(dept_bridge_base, :ct, '*H') }
             let(:br_s) { raw_props_idx(dept_bridge_base, :cr, '*') }
             let(:br_i) { raw_props_idx(dept_bridge_base, :cr, 'i') }
             let(:br_m) { raw_props_idx(dept_methyl_on_right_bridge_base, :cr, '') }
@@ -75,6 +78,9 @@ module VersatileDiamond
             let(:cm_i) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'i') }
             let(:hm_ss) { raw_props_idx(dept_high_bridge_base, :cm, '**') }
             let(:hm_is) { raw_props_idx(dept_high_bridge_base, :cm, 'i*') }
+            let(:hm_ih) { raw_props_idx(dept_high_bridge_base, :cm, 'iH') }
+            let(:hm_hh) { raw_props_idx(dept_high_bridge_base, :cm, 'HH') }
+            let(:hm_sh) { raw_props_idx(dept_high_bridge_base, :cm, '*H') }
             let(:hm_i) { raw_props_idx(dept_high_bridge_base, :cm, 'i') }
             let(:cv_s) { raw_props_idx(dept_vinyl_on_bridge_base, :c1, '*') }
             let(:cv_i) { raw_props_idx(dept_vinyl_on_bridge_base, :c1, 'i') }
@@ -858,6 +864,72 @@ module VersatileDiamond
     {
         assert(atoms1[2]->is(#{hm_i}));
         atoms1[2]->changeType(#{ct_i});
+    }
+    Finder::findAll(atoms1, 3);
+                  CODE
+                end
+              end
+            end
+
+            describe 'incoherent hydrogenated high bridge stand to dimer' do
+              let(:typical_reaction) { dept_ih_high_bridge_stand_to_dimer }
+              let(:first_spec) { dept_incoherent_hydrogenated_high_bridge }
+              let(:second_spec) { dept_activated_dimer }
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, dept_high_bridge_base]
+              end
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *species1[2] = { target(0), target(1) };
+    assert(species1[0]->type() == HIGH_BRIDGE_CMiH);
+    assert(species1[1]->type() == DIMER_CRs);
+    Atom *atoms1[3] = { species1[0]->atom(1), species1[1]->atom(3), species1[0]->atom(0) };
+    assert(atoms1[0]->is(#{role_cb}));
+    assert(atoms1[1]->is(#{snd_role_cr}));
+    assert(atoms1[2]->is(#{role_cm}));
+    Handbook::amorph().erase(atoms1[2]);
+    crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at(atoms1[0], atoms1[1]));
+    atoms1[0]->unbondFrom(atoms1[2]);
+    atoms1[1]->bondWith(atoms1[2]);
+    atoms1[0]->changeType(#{br_s});
+    atoms1[1]->changeType(#{bd_c});
+    atoms1[2]->changeType(#{ct_ih});
+    Finder::findAll(atoms1, 3);
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *species1[2] = { target(0), target(1) };
+    assert(species1[0]->type() == HIGH_BRIDGE_CMiH);
+    assert(species1[1]->type() == DIMER_CRs);
+    Atom *atoms1[3] = { species1[0]->atom(1), species1[1]->atom(3), species1[0]->atom(0) };
+    assert(atoms1[0]->is(#{role_cb}));
+    assert(atoms1[1]->is(#{snd_role_cr}));
+    assert(atoms1[2]->is(#{role_cm}));
+    Handbook::amorph().erase(atoms1[2]);
+    crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at(atoms1[0], atoms1[1]));
+    atoms1[0]->unbondFrom(atoms1[2]);
+    atoms1[1]->bondWith(atoms1[2]);
+    atoms1[0]->changeType(#{br_s});
+    atoms1[1]->changeType(#{bd_c});
+    if (atoms1[2]->is(#{hm_sh}))
+    {
+        atoms1[2]->changeType(#{ct_sh});
+    }
+    else if (atoms1[2]->is(#{hm_ss}))
+    {
+        atoms1[2]->changeType(#{ct_ss});
+    }
+    else
+    {
+        assert(atoms1[2]->is(#{hm_hh}));
+        atoms1[2]->changeType(#{ct_hh});
     }
     Finder::findAll(atoms1, 3);
                   CODE

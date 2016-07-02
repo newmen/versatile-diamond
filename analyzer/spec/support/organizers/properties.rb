@@ -45,6 +45,8 @@ module VersatileDiamond
         def convert_char_prop(char)
           if char == '*'
             [:danglings, Concepts::ActiveBond.property]
+          elsif char == 'H'
+            [:danglings, Concepts::AtomicSpec.new(Concepts::Atom.hydrogen)]
           elsif char == 'i'
             [:relevants, Concepts::Incoherent.property]
           elsif char == 'u'
@@ -124,6 +126,7 @@ module VersatileDiamond
         prop(:pseudo_dimer_cr, :pseudo_dimer_base, :cr)
 
         prop(:high_cm, :high_bridge, :cm)
+        prop(:ihigh_cm, :incoherent_high_bridge, :cm)
         prop(:cm, :methyl_on_bridge_base, :cm)
         prop(:ucm, :unfixed_methyl_on_bridge, :cm)
         prop(:amob, :activated_methyl_on_bridge, :cm)

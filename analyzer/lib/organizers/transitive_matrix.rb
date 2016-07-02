@@ -40,7 +40,9 @@ module VersatileDiamond
       end
 
       def to_a
-        @matrix.to_a
+        @matrix.to_a.map do |row|
+          row.map { |x| x ? 1 : 0 }
+        end
       end
 
     private

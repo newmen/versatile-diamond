@@ -280,6 +280,12 @@ module VersatileDiamond
           s.link(s.atom(:cm), s.atom(:cb), free_bond); s
         end
         set(:high_bridge) { SpecificSpec.new(high_bridge_base) }
+        set(:incoherent_high_bridge) do
+          SpecificSpec.new(high_bridge_base, cm: incoherent_c)
+        end
+        set(:incoherent_hydrogenated_high_bridge) do
+          SpecificSpec.new(high_bridge_base, cm: incoherent_c_hydride)
+        end
 
         set(:dimer_base) do
           s = SurfaceSpec.new(:dimer)
@@ -464,6 +470,11 @@ module VersatileDiamond
         end
         set(:activated_bridge_with_dimer) do
           SpecificSpec.new(bridge_with_dimer_base, ct: activated_cd)
+        end
+
+        set(:activated_incoherent_hydrogenated_bridge_with_dimer) do
+          opts = { ct: activated_cd, tt: incoherent_cd_hydride }
+          SpecificSpec.new(bridge_with_dimer_base, **opts)
         end
 
         set(:cross_bridge_on_bridges_base) do
@@ -771,6 +782,26 @@ module VersatileDiamond
         set(:high_bridge_stand_to_dimer) do
           Reaction.new(:forward, 'high bridge stand to dimer',
             hsd_source, hsd_products, hsd_atom_map)
+        end
+
+        set(:ihhsd_source) do
+          [incoherent_hydrogenated_high_bridge.dup, activated_dimer.dup]
+        end
+        set(:ihhsd_products) do
+          [activated_incoherent_hydrogenated_bridge_with_dimer.dup]
+        end
+        set(:ihhsd_names_to_specs) do
+          {
+            source: [:h, :ad].zip(ihhsd_source),
+            products: [:bwd].zip(ihhsd_products)
+          }
+        end
+        set(:ihhsd_atom_map) do
+          Mcs::AtomMapper.map(ihhsd_source, ihhsd_products, ihhsd_names_to_specs)
+        end
+        set(:ih_high_bridge_stand_to_dimer) do
+          Reaction.new(:forward, 'incoherent hydrogenated high bridge stand to dimer',
+            ihhsd_source, ihhsd_products, ihhsd_atom_map)
         end
 
         set(:idd_source) { [twise_incoherent_dimer.dup] }

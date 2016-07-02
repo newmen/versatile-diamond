@@ -88,6 +88,7 @@ module VersatileDiamond
           :extra_activated_bridge,
           :extra_hydrogenated_bridge,
           :high_bridge,
+          :incoherent_hydrogenated_high_bridge,
           :hydrogenated_bridge,
           :hydrogenated_incoherent_bridge,
           :incoherent_methyl_on_bridge,
@@ -138,6 +139,7 @@ module VersatileDiamond
           :hydrogen_migration,
           :high_bridge_to_methyl_on_dimer,
           :high_bridge_stand_to_dimer,
+          :ih_high_bridge_stand_to_dimer,
           :one_dimer_hydrogen_migration
         ])
         set(:dept_dimer_drop) do
