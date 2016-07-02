@@ -41,7 +41,6 @@ module VersatileDiamond
 
         avail_props = spec.links.keys.map { |atom| AtomProperties.new(spec, atom) }
         avail_props.each do |prop|
-          next if @described_props.include?(prop)
           store_prop(@described_props, prop)
           append_danglings!(prop) unless @danglings.empty?
         end
@@ -52,21 +51,6 @@ module VersatileDiamond
         add_default_latticed_atoms
         organize_by_inclusion!(props)
         organize_by_relatives!(props)
-      end
-
-      # Reorganizes dependencies between properties extended by new produced from raw
-      # @param [Array] raw_props the pair of raw source and product atom properties
-      # @return [Boolean] reorganization has been occurred?
-      def reorganize_with!(raw_props)
-        news = produce_news(raw_props)
-        if news.empty?
-          false
-        else
-          news.each { |prop| store_prop(@described_props, prop) }
-          organize_by_inclusion!(props)
-          organize_by_relatives!(props)
-          true
-        end
       end
 
       # Classify spec and return the hash where keys are order numbers of properties
@@ -282,23 +266,6 @@ module VersatileDiamond
           children.any? { |child| child == small || deep_same?(child, small) }
       end
 
-      # Produces new atom properties
-      # @param [Array] raw_props
-      # @return [Array]
-      def produce_news(raw_props)
-        src, prd = raw_props.map(&method(:detect_prop))
-        if src == prd
-          []
-        else
-          max_lattices_num = props.map(&:nbr_lattices_num).max
-          diffs = children_of(src).map { |child| child - src }
-          news = diffs.map { |df| df && df.+(prd, limit: max_lattices_num) }
-          news.select(&:itself).reject(&:relevant?).reject do |prop|
-            all_props.any? { |ap| ap == prop }
-          end
-        end
-      end
-
       # Groups passed list of atom properties
       # @param [Array] props_list the iterating atom properties
       # @yield [AtomProperties, AtomProperties] do with bigger and smallest atom
@@ -314,6 +281,7 @@ module VersatileDiamond
         result.sort_by(&:first)
       end
 
+
       # Stores all derived properties which can be gotten by passed method name
       # @param [AtomProperties] prop which extended copies will be stored
       # @param [Concepts::TerminationSpec] termination spec by which the property
@@ -322,20 +290,25 @@ module VersatileDiamond
       # @return [Array] the list of added nodes
       def store_all(prop, termination, &block)
         result = []
+        # relevants = Set.new
         next_prop = prop
-        while (next_prop = block[next_prop, termination])
+        loop do
+          next_prop = block[next_prop, termination]
+          return result unless next_prop
+          next if next_prop.relevant? #&& !relevants.include?(next_prop)
+        #     # relevants << next_prop
           unless @over_danglings_props.include?(next_prop)
             store_prop(@over_danglings_props, next_prop)
             result << next_prop
           end
         end
-        result
       end
 
       # Stores passed prop and it over props to internal sets
       # @param [Set] props_set the target set where props will be stored
       # @param [AtomProperties] prop the storing properties
       def store_prop(props_set, prop)
+        return if props_set.include?(prop)
         store_and_drop_cache(props_set, prop)
         store_to(@unrelevanted_props, prop.unrelevanted)
         if !prop.incoherent? && relatives_required?

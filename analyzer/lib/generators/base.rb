@@ -85,7 +85,6 @@ module VersatileDiamond
         raw_clf = Organizers::AtomClassifier.new(using_atomic_specs)
         surface_specs.each { |spec| raw_clf.analyze!(spec) }
         raw_clf.organize_properties!
-        extend!(raw_clf)
 
         @_classifier = save(CLASSIFIER_CACHE_SUFFIX, raw_clf)
       end
@@ -98,35 +97,6 @@ module VersatileDiamond
           source.all?(&:termination?) ? source.select(&:termination?) : []
         end
         specs.uniq
-      end
-
-      # Extends passed classifier by production new atom properties
-      # @param [Organizers::AtomClassifier] raw_clf will be extended!
-      def extend!(raw_clf)
-        loop do
-          there_is_new = false
-          changes.each do |src_to_prd|
-            next if src_to_prd.map(&:first).any?(&:gas?)
-            raw_props = atom_properties_list(src_to_prd)
-            there_is_new ||= raw_clf.reorganize_with!(raw_props)
-          end
-          break unless there_is_new
-        end
-      end
-
-      # @return [Array] the list of all available changes
-      def changes
-        @_changes ||= typical_reactions.flat_map { |r| r.changes.to_a }.uniq
-      end
-
-      # Makes atom properties from passed list of specs and atoms
-      # @param [Array] specs_atoms which will transformed to atom properties
-      # @return [Array] the list of corresponding atom properties
-      def atom_properties_list(specs_atoms)
-        specs_atoms.map do |spec, atom|
-          proxy_spec = dept_spec(spec).clone_with_replace(spec)
-          atom_properties(proxy_spec, atom)
-        end
       end
 
       # Gets dependent spec from concept spec

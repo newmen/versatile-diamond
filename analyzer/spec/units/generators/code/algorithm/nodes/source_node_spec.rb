@@ -111,7 +111,7 @@ module VersatileDiamond
             describe 'surface' do
               include_context :without_gas
               # because generator without ubiquitous reactions
-              it { expect(subject.wrong_properties).to eq([aib_ct]) }
+              it { expect(subject.wrong_properties).to be_empty }
             end
           end
         end
