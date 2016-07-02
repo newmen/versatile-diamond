@@ -105,7 +105,7 @@ module VersatileDiamond
         changes_zip = []
         full_zip = atoms1.zip(atoms2).map do |atom1, atom2|
           a1 = setup_by_other(spec1, spec2, atom1, atom2)
-          a2 = setup_by_other(spec2, spec1, atom2, atom1)
+          a2 = setup_by_other(spec2, spec1, atom2, a1)
           pair = [a1, a2]
 
           changes_zip << pair if changes1.include?(atom1)
@@ -373,28 +373,33 @@ module VersatileDiamond
 
         original_own = own
         own = SpecificAtom.new(own) unless own.specific?
-        is_own_relevant = -> { own.incoherent? || own.unfixed? }
         diff = own.diff(foreign)
 
-        simple_products = (products - [other]).select(&:simple?)
-        if diff.empty? && simple_products.one? && foreign.actives > own.actives
-          monovalent_atoms = simple_products.first.links.keys
-          monovalent_awns = monovalent_atoms.reduce([]) do |acc, atom|
+        is_own_relevant_lazy = -> { own.incoherent? || own.unfixed? }
+        target_extb_lazy = -> { target.external_bonds_for(original_own) }
+        other_extb = other.external_bonds_for(foreign)
+
+        is_recharging =
+          target_extb_lazy.call > other_extb && foreign.actives > own.actives
+        simple_reactants = (source - [target]).select(&:simple?)
+
+        if is_recharging && diff.empty? && simple_reactants.one?
+          monovalent_atoms = simple_reactants.first.links.keys
+          atoms_with_names = monovalent_atoms.reduce([]) do |acc, atom|
             acc.any? { |name, _| name == atom.name } ? acc : acc << [atom.name, atom]
           end
-          own.use!(monovalent_awns.first.last) if monovalent_awns.one?
+          own.use!(atoms_with_names.first.last.clean) if atoms_with_names.one?
         end
 
-        extb = target.external_bonds_for(original_own)
-        if extb > 0
-          own.incoherent! if !is_own_relevant.call &&
+        if target_extb_lazy.call > 0
+          own.incoherent! if !is_own_relevant_lazy.call &&
                     (other.gas? || diff.include?(Incoherent.property) ||
-                      (other.links[foreign] && other.external_bonds_for(foreign) == 0))
-        elsif extb == 0 && own.incoherent?
+                      (other.links[foreign] && other_extb == 0))
+        elsif target_extb_lazy.call == 0 && own.incoherent?
           own.not_incoherent!
         end
 
-        own.unfixed! if !is_own_relevant.call && !own.lattice &&
+        own.unfixed! if !is_own_relevant_lazy.call && !own.lattice &&
           own.valence - target.external_bonds_for(original_own) == 1 &&
           ((other.gas? && !other.simple?) || diff.include?(Unfixed.property))
 

@@ -25,7 +25,7 @@ module VersatileDiamond
       # Error for case if unfixed state is stated but incoherent state states now
       class AlreadyUnfixed < Errors::Base; end
 
-      def_delegators :@atom, :name, :lattice, :lattice=, :original_valence,
+      def_delegators :atom, :name, :lattice, :lattice=, :original_valence,
         :original_same?, :reference?, :relations_limits
 
       attr_reader :monovalents
@@ -55,6 +55,12 @@ module VersatileDiamond
       # @return [Integer] the number of valence bonds
       def valence
         atom.valence - actives - monovalents.size
+      end
+
+      # Gets the unspecified atom instance
+      # @return [Atom | AtomReference] without specific states
+      def clean
+        atom
       end
 
       # Specific atom could be not specified

@@ -108,6 +108,13 @@ module VersatileDiamond
         it { expect(a_cd.relations_limits).to eq(cd.relations_limits) }
       end
 
+      describe '#clean' do
+        it { expect(a_c.clean.same?(c)).to be_truthy }
+        it { expect(a_c.clean.same?(cd)).to be_falsey }
+        it { expect(a_cd.clean.same?(c)).to be_falsey }
+        it { expect(a_cd.clean.same?(cd)).to be_truthy }
+      end
+
       describe '#specific?' do
         it { expect(a_c.specific?).to be_truthy }
         it { expect(cd_chloride.specific?).to be_truthy }

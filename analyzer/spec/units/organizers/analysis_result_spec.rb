@@ -222,8 +222,8 @@ module VersatileDiamond
 
                 it { expect(reactions_for(:bridge)).to be_empty }
                 it { expect(reactions_for(:dimer)).to be_empty }
+                it { expect(reactions_for(:methyl_on_bridge)).to be_empty }
 
-                it { expect(reactions_for(:methyl_on_bridge)).not_to be_empty }
                 it { expect(reactions_for(:methyl_on_dimer)).not_to be_empty }
               end
             end
