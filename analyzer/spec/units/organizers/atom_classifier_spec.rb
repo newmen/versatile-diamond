@@ -118,6 +118,12 @@ module VersatileDiamond
                 ]) }
           end
 
+          describe '#specificate' do
+            it { expect(subject.specificate(ib_cb).to_s).to eq('_~HC%d<') }
+            it { expect(subject.specificate(imob).to_s).to eq('HHHC~%d') }
+            it { expect(subject.specificate(tb_cc).to_s).to eq('>C%d<') }
+          end
+
           describe 'all specifications' do
             def map_specifications(indexes)
               hs = subject.props_hash

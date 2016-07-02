@@ -730,6 +730,13 @@ module VersatileDiamond
         it { expect(ad_cr.has_free_bonds?).to be_falsey }
       end
 
+      describe '#maximal?' do
+        it { expect(bridge_ct.maximal?).to be_falsey }
+        it { expect(aib_ct.maximal?).to be_falsey }
+        it { expect(eab_ct.maximal?).to be_truthy }
+        it { expect(hb_cr.maximal?).to be_truthy }
+      end
+
       describe '#smallests' do
         it { expect(bridge_ct.smallests).to be_empty }
         it { expect(ab_ct.smallests).to be_empty }

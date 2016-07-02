@@ -35,7 +35,7 @@ module VersatileDiamond
       # Tries to load state from cache file
       # @param [String] suffix of loading file
       def load(suffix)
-        Tools::Serializer.load(@config_path, suffix: suffix)
+        @config_path && Tools::Serializer.load(@config_path, suffix: suffix)
       end
 
       # Saves state to cache file
@@ -79,7 +79,7 @@ module VersatileDiamond
       # Creates atom classifier and analyse each surface spec
       # @return [Organizers::AtomClassifier]
       def classifier
-        @_classifier ||= !classified? && @config_path && load(CLASSIFIER_CACHE_SUFFIX)
+        @_classifier ||= !classified? && load(CLASSIFIER_CACHE_SUFFIX)
         return @_classifier if @_classifier
 
         raw_clf = Organizers::AtomClassifier.new(using_atomic_specs)

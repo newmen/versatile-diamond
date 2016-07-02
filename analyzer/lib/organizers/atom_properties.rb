@@ -441,6 +441,11 @@ module VersatileDiamond
         num < valence
       end
 
+      # @return [Boolean] are all valence atoms has special state?
+      def maximal?
+        valence == bonds_num
+      end
+
       # Convert properties to string representation
       # @return [String] the string representaion of properties
       def to_s
@@ -565,11 +570,6 @@ module VersatileDiamond
       def eq_relevant_bonds?(other)
         eq_relations?(other) && eq_nbr_lattices?(other) &&
           contain_all_danglings?(other)
-      end
-
-      # @return [Boolean] are all valence atoms has special state?
-      def maximal?
-        valence == bonds_num
       end
 
     private

@@ -383,6 +383,8 @@ module VersatileDiamond
           target_extb_lazy.call > other_extb && foreign.actives > own.actives
         simple_reactants = (source - [target]).select(&:simple?)
 
+        # Pass back the additional detecting monovalent properties to own atom
+
         if is_recharging && diff.empty? && simple_reactants.one?
           monovalent_atoms = simple_reactants.first.links.keys
           atoms_with_names = monovalent_atoms.reduce([]) do |acc, atom|
@@ -390,6 +392,8 @@ module VersatileDiamond
           end
           own.use!(atoms_with_names.first.last.clean) if atoms_with_names.one?
         end
+
+        # Check and setup incoherent
 
         if target_extb_lazy.call > 0
           own.incoherent! if !is_own_relevant_lazy.call &&
@@ -399,11 +403,14 @@ module VersatileDiamond
           own.not_incoherent!
         end
 
+        # Check and setup unfixed
+
         own.unfixed! if !is_own_relevant_lazy.call && !own.lattice &&
           own.valence - target.external_bonds_for(original_own) == 1 &&
           ((other.gas? && !other.simple?) || diff.include?(Unfixed.property))
 
-        # return own specific atom if atom was a simple atom
+        # Return own specific atom if atom was a simple atom
+
         if own == original_own || (own.relevants.empty? && own.monovalents.empty?)
           original_own
         else

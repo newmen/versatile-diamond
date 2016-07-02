@@ -113,6 +113,15 @@ module VersatileDiamond
         @_tmatrix ||= TransitiveMatrix.new(self, :smallests, :sames)
       end
 
+      # @param [AtomProperties] prop which will be specified
+      # @return [AtomProperties] the end point fo atom properties dependencies graph
+      def specificate(prop)
+        checking_prop = detect_prop(prop)
+        small_next = smallests_transitive_matrix.specification_for(checking_prop)
+        gen_next = general_transitive_matrix.specification_for(checking_prop)
+        [small_next, gen_next].sort.last
+      end
+
       # Gets array where each element is index of much more specific atom properties
       # @return [Array] the specification array
       def specification
@@ -294,9 +303,7 @@ module VersatileDiamond
         loop do
           next_prop = block[next_prop, termination]
           return result unless next_prop
-          next if next_prop.relevant? #&& !relevants.include?(next_prop)
-        #     # relevants << next_prop
-          unless @over_danglings_props.include?(next_prop)
+          unless next_prop.relevant? && @over_danglings_props.include?(next_prop)
             store_prop(@over_danglings_props, next_prop)
             result << next_prop
           end
@@ -372,14 +379,6 @@ module VersatileDiamond
         else
           @_atomic_dangling == false ? nil : @_atomic_dangling
         end
-      end
-
-      # @param [AtomProperties] prop which will be specified
-      # @return [AtomProperties] the end point fo atom properties dependencies graph
-      def specificate(prop)
-        small_next = smallests_transitive_matrix.specification_for(prop)
-        gen_next = general_transitive_matrix.specification_for(prop)
-        [small_next, gen_next].sort.last
       end
 
       # Gets matrix of transitive closure for smallests atom properties
