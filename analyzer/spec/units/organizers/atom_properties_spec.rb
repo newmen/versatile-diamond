@@ -4,6 +4,9 @@ module VersatileDiamond
   module Organizers
     describe AtomProperties, type: :organizer, use: :atom_properties do
 
+      let(:i_diff) { imob - cm }
+      let(:u_diff) { ucm - cm }
+
       describe 'initialize' do
         describe 'crystal atom with several dependencies' do
           let(:classifier) { AtomClassifier.new }
@@ -71,7 +74,7 @@ module VersatileDiamond
           [:atom_name, :valence, :lattice, :relations].each do |prop|
             describe "without #{prop}" do
               before { hash.delete(prop) }
-              it { expect { described_class.new(hash) }.to raise_error RuntimeError }
+              it { expect { described_class.new(hash) }.to raise_error ArgumentError }
             end
           end
         end
@@ -138,15 +141,12 @@ module VersatileDiamond
         let(:cm_ss) { raw_prop(dept_methyl_on_bridge_base, :cm, '**') }
         let(:cm_iss) { raw_prop(dept_methyl_on_bridge_base, :cm, 'i**') }
         let(:cm_sss) { raw_prop(dept_methyl_on_bridge_base, :cm, '***') }
-        let(:uicm) { raw_prop(dept_methyl_on_bridge_base, :cm, 'ui') }
         let(:ihbm) { raw_prop(dept_high_bridge_base, :cm, 'i') }
 
         let(:a_diff) { amob - cm }
         let(:ad_diff) { ad_cr - bridge_ct }
         let(:id_diff) { ib_cr - bridge_cr }
         let(:ai_diff) { iamob - cm }
-        let(:i_diff) { imob - cm }
-        let(:u_diff) { ucm - cm }
 
         describe 'ad' do
           it { expect(bridge_ct + ad_diff).to eq(ad_cr) }
@@ -160,7 +160,6 @@ module VersatileDiamond
           it { expect(dimer_cr + id_diff).to eq(id_cr) }
           it { expect(tb_cc + id_diff).to be_nil }
 
-          it { expect(ucm + id_diff).to eq(uicm) }
           it { expect(high_cm + id_diff).to eq(ihbm) }
         end
 
@@ -172,18 +171,18 @@ module VersatileDiamond
 
           it { expect(cm_sss + i_diff).to eq(cm_sss) }
 
-          it { expect(ucm + i_diff).to eq(uicm) }
           it { expect(high_cm + i_diff).to eq(ihbm) }
         end
 
         describe 'u' do
+          it { expect(i_diff + u_diff).to eq(i_diff) }
+          it { expect(id_diff + u_diff).to eq(i_diff) }
+
           it { expect(ab_ct + u_diff).to be_nil }
           it { expect(high_cm + u_diff).to be_nil }
           it { expect(ihbm + u_diff).to be_nil }
 
           it { expect(ucm + u_diff).to eq(ucm) }
-          it { expect(uicm + u_diff).to eq(uicm) }
-          it { expect(imob + u_diff).to eq(uicm) }
           it { expect(cm_sss + u_diff).to eq(cm_sss) }
         end
 
@@ -223,6 +222,9 @@ module VersatileDiamond
 
         it { expect(bridge_cr - dimer_cr).to be_nil }
         it { expect(dimer_cr - bridge_cr).to be_nil }
+
+        it { expect(u_diff - i_diff).to eq(u_diff) }
+        it { expect(i_diff - u_diff).to eq(u_diff.zero) }
       end
 
       describe '#safe_plus' do
@@ -361,6 +363,11 @@ module VersatileDiamond
         it { expect(ucm.contained_in?(bob)).to be_falsey }
         it { expect(ucm.contained_in?(eob)).to be_falsey }
         it { expect(ucm.contained_in?(vob)).to be_falsey }
+
+        it { expect(ucm.contained_in?(uvob)).to be_truthy }
+        it { expect(ucm.contained_in?(ivob)).to be_falsey }
+        it { expect(uvob.contained_in?(ucm)).to be_falsey }
+        it { expect(ivob.contained_in?(ucm)).to be_falsey }
       end
 
       describe '#like?' do
@@ -418,7 +425,7 @@ module VersatileDiamond
         it { expect(ab_ct.same_incoherent?(eab_ct)).to be_falsey }
         it { expect(ab_ct.same_incoherent?(aib_ct)).to be_falsey }
         it { expect(ad_cr.same_incoherent?(ab_ct)).to be_falsey }
-        it { expect(eab_ct.same_incoherent?(ab_ct)).to be_falsey }
+        it { expect(eab_ct.same_incoherent?(ab_ct)).to be_truthy }
         it { expect(aib_ct.same_incoherent?(eab_ct)).to be_falsey }
         it { expect(aib_ct.same_incoherent?(ahb_ct)).to be_falsey }
         it { expect(hb_ct.same_incoherent?(ahb_ct)).to be_falsey }
@@ -438,6 +445,8 @@ module VersatileDiamond
         it { expect(hb_cr.same_incoherent?(ib_cr)).to be_truthy }
         it { expect(ab_cr.same_incoherent?(ib_cr)).to be_truthy }
         it { expect(clb_cr.same_incoherent?(ib_cr)).to be_truthy }
+
+        it { expect(ivob.same_incoherent?(ucm)).to be_falsey }
       end
 
       describe '#same_hydrogens?' do
@@ -471,12 +480,12 @@ module VersatileDiamond
       end
 
       describe '#same_unfixed?' do
-        it { expect(cm.same_unfixed?(ucm)).to be_truthy }
+        it { expect(cm.same_unfixed?(ucm)).to be_falsey }
         it { expect(cm.same_unfixed?(bob)).to be_falsey }
         it { expect(cm.same_unfixed?(eob)).to be_falsey }
         it { expect(cm.same_unfixed?(vob)).to be_falsey }
 
-        it { expect(ucm.same_unfixed?(cm)).to be_falsey }
+        it { expect(ucm.same_unfixed?(cm)).to be_truthy }
         it { expect(ucm.same_unfixed?(bob)).to be_falsey }
         it { expect(ucm.same_unfixed?(eob)).to be_falsey }
         it { expect(ucm.same_unfixed?(vob)).to be_falsey }
@@ -487,14 +496,17 @@ module VersatileDiamond
         it { expect(bob.same_unfixed?(vob)).to be_falsey }
 
         it { expect(eob.same_unfixed?(cm)).to be_falsey }
-        it { expect(eob.same_unfixed?(ucm)).to be_truthy }
+        it { expect(eob.same_unfixed?(ucm)).to be_falsey }
         it { expect(eob.same_unfixed?(bob)).to be_falsey }
         it { expect(eob.same_unfixed?(vob)).to be_falsey }
 
         it { expect(vob.same_unfixed?(cm)).to be_falsey }
-        it { expect(vob.same_unfixed?(ucm)).to be_truthy }
+        it { expect(vob.same_unfixed?(ucm)).to be_falsey }
         it { expect(vob.same_unfixed?(bob)).to be_falsey }
         it { expect(vob.same_unfixed?(eob)).to be_falsey }
+
+        it { expect(uvob.same_unfixed?(ucm)).to be_falsey }
+        it { expect(ivob.same_unfixed?(ucm)).to be_falsey }
       end
 
       describe '#correspond?' do

@@ -267,6 +267,12 @@ module VersatileDiamond
           s.link(s.atom(:c1), s.atom(:c2), free_bond); s
         end
         set(:vinyl_on_bridge) { SpecificSpec.new(vinyl_on_bridge_base) }
+        set(:incoherent_vinyl_on_bridge) do
+          SpecificSpec.new(vinyl_on_bridge_base, c1: incoherent_c)
+        end
+        set(:unfixed_vinyl_on_bridge) do
+          SpecificSpec.new(vinyl_on_bridge_base, c1: unfixed_c)
+        end
 
         set(:high_bridge_base) do
           s = SurfaceSpec.new(:high_bridge)

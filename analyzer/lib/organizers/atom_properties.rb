@@ -54,13 +54,13 @@ module VersatileDiamond
             @props = arg
           elsif arg.is_a?(Hash)
             @props = [
-              arg[:atom_name] || raise('Undefined atom name'),
-              arg[:valence] || raise('Undefined valence'),
-              arg[:lattice] || raise('Undefined lattice'),
-              arg[:relations] || raise('Undefined relations'),
+              arg[:atom_name] || raise(ArgumentError, 'Undefined atom name'),
+              arg[:valence] || raise(ArgumentError, 'Undefined valence'),
+              arg[:lattice] || raise(ArgumentError, 'Undefined lattice'),
+              arg[:relations] || raise(ArgumentError, 'Undefined relations'),
               arg[:danglings] || [],
               arg[:nbr_lattices] || [],
-              arg[:relevants] || []
+              arg[:relevants] ? check_and_dup_relevants_from(arg[:relevants]) : []
             ]
           else
             raise ArgumentError, 'Wrong type of argument'
@@ -74,7 +74,7 @@ module VersatileDiamond
             relations_for(spec, atom),
             danglings_for(spec, atom),
             nbr_lattices_for(spec, atom),
-            atom.relevants.dup
+            check_and_dup_relevants_from(atom.relevants)
           ]
         else
           raise ArgumentError, 'Wrong number of arguments'
@@ -91,7 +91,7 @@ module VersatileDiamond
       # @param [AtomProperties] other an other atom properties
       # @return [Boolean] equal or not
       def ==(other)
-        same_basic_values?(other) && DYNAMIC_STATES.all? { |name| eq_by?(other, name) }
+        same_basic_values?(other) && DYNAMIC_STATES.all? { |stn| eq_by?(other, &stn) }
       end
       alias :eql? :==
 
@@ -104,14 +104,16 @@ module VersatileDiamond
         elsif other.include?(self)
           -1
         else
-          order(self, other, :valence) do
-            typed_order(self, other, :lattice) do
-              order(self, other, :estab_bonds_num) do
-                order(self, other, :crystal_relatons, :sort) do
-                  order(self, other, :danglings, :sort) do
-                    typed_order(self, other, :incoherent?) do
-                      typed_order(self, other, :unfixed?) do
-                        typed_order(self, other, :atom_name)
+          typed_order(self, other, :atom_name) do
+            order(self, other, :valence) do
+              typed_order(self, other, :lattice) do
+                order(self, other, :estab_bonds_num) do
+                  order(self, other, :crystal_relatons, :sort) do
+                    order(self, other, :danglings, :sort, :reverse) do
+                      order(self, other, :actives_num) do
+                        typed_order(self, other, :unfixed?) do
+                          typed_order(self, other, :incoherent?)
+                        end
                       end
                     end
                   end
@@ -153,7 +155,11 @@ module VersatileDiamond
         is_unrelevanted = is_complete && is_relevant
 
         total_props[:lattice] = nil if lattices_num > 0
-        total_props[:relevants] = [] if is_unrelevanted
+        if is_unrelevanted
+          total_props[:relevants] = []
+        elsif total_incoherent
+          total_props[:relevants] = [INCOHERENT]
+        end
 
         are_correct_props =
           (valid_relations?(total_props[:lattice], total_props[:relations])) &&
@@ -172,8 +178,11 @@ module VersatileDiamond
             self_state.accurate_diff(other_state)
         end
 
-        is_good = (diff_props && DYNAMIC_STATES.all? { |sn| diff_props[sn] }) || nil
-        diff_props && is_good && self.class.new(state_values(diff_props))
+        if diff_props && DYNAMIC_STATES.all? { |sn| diff_props[sn] }
+          self.class.new(state_values(diff_props))
+        else
+          nil
+        end
       end
 
       # Accurate combines two atom properties
@@ -226,8 +235,13 @@ module VersatileDiamond
       # @param [AtomProperties] other probably parent atom properties
       # @return [Boolean] contained or not
       def contained_in?(other)
-        same_basic_values?(other) && other.contain_all_bonds?(self) &&
-          same_correspond_relevants?(other)
+        return false unless same_basic_values?(other)
+        return false unless other.contain_all_relevants?(self)
+        if incoherent? && other.relevant?
+          other.eq_relevant_bonds?(self)
+        else
+          other.contain_all_bonds?(self)
+        end
       end
 
       # Checks that some atom can have both properties: self and other
@@ -248,20 +262,17 @@ module VersatileDiamond
       # @param [AtomProperties] other probably same properties by incoherent state
       # @return [Boolean] same or not
       def same_incoherent?(other)
-        same_basic_values?(other) && eq_relations?(other) && eq_nbr_lattices?(other) &&
-          ((incoherent? && other.unfixed? && eq_danglings?(other)) ||
-            ((incoherent? || maximal?) &&
-              other.incoherent? && contain_all_danglings?(other)))
+        same_basic_values?(other) && (incoherent? || maximal?) &&
+          (maximal? || !other.relevant?) && same_dynamics?(other)
       end
 
       # Checks that other properties have same unfixed state
       # @param [AtomProperties] other probably same properties by unfixed state
       # @return [Boolean] same or not
       def same_unfixed?(other)
-        same_basic_values?(other) &&
-          !unfixed? && unfixed_by_nbrs? && other.unfixed? &&
-          !incoherent? && eq_danglings?(other) &&
-          contain_all_nbr_lattices?(other) && contain_all_relations?(other)
+        same_basic_values?(other) && (unfixed? || maximal?) &&
+          (maximal? || !other.unfixed?) && other.unfixed_by_nbrs? &&
+          same_dynamics?(other)
       end
 
       # Checks that current properties correspond to atom, lattice and have same
@@ -508,7 +519,7 @@ module VersatileDiamond
       ALL_STATES.each_with_index do |name, i|
         define_method(name) { props[i] }
       end
-      public :atom_name, :lattice
+      public :atom_name, :lattice, :relations, :danglings, :nbr_lattices, :relevants
 
       # The static (not arrayed) states of properties
       # @return [Array] the array of static states
@@ -530,8 +541,17 @@ module VersatileDiamond
       # @return [Boolean] contain or not
       def contain_all_bonds?(other)
         [:relations, :danglings, :nbr_lattices].all? do |name|
-          contain_all_by?(other, name)
+          contain_all_by?(other, &name)
         end
+      end
+
+      # Checks that other properties have equal relations and neighbour lattices but
+      #   contains all dangling properties
+      # @param [AtomProperties] other the checking properties
+      # @return [Boolean] equal or not
+      def eq_relevant_bonds?(other)
+        eq_relations?(other) && eq_nbr_lattices?(other) &&
+          contain_all_danglings?(other)
       end
 
     private
@@ -560,6 +580,12 @@ module VersatileDiamond
             self_state, other_state = [self, other].map { |x| x.send(state_name) }
             result[state_name] = block[self_state, other_state]
           end
+
+          unless result[:relevants]
+            if relevants.include?(UNFIXED) && other.relevants.include?(INCOHERENT)
+              result[:relevants] = [UNFIXED]
+            end
+          end
         end
       end
 
@@ -585,12 +611,19 @@ module VersatileDiamond
         end
       end
 
+      # Compares dynamic states of two properties
+      # @peram [AtomProperties] other the comparing properties
+      # @return [Boolean] equal or not
+      def same_dynamics?(other)
+        eq_nbr_lattices?(other) && eq_relations?(other) && same_danglings?(other)
+      end
+
       # Compares with other properties by some method which returns list
       # @param [AtomProperties] other the comparing properties
-      # @param [Symbol] method_name by which will be comparing
+      # @yield method by which will be comparing
       # @return [Boolean] lists are equal or not
-      def eq_by?(other, method_name)
-        lists_are_identical?(send(method_name), other.send(method_name))
+      def eq_by?(other, &block)
+        lists_are_identical?(block[self], block[other])
       end
 
       DYNAMIC_STATES.each do |method_name|
@@ -598,26 +631,41 @@ module VersatileDiamond
         # @param [AtomProperties] other the comparing properties
         # @return [Boolean] lists are equal or not
         define_method(:"eq_#{method_name}?") do |other|
-          eq_by?(other, method_name)
+          eq_by?(other, &method_name)
         end
 
         # Checks that other properties contain all current #{method_name}
         # @param [AtomProperties] other the checking properties
         # @return [Boolean] contain or not
         define_method(:"contain_all_#{method_name}?") do |other|
-          contain_all_by?(other, method_name)
+          contain_all_by?(other, &method_name)
         end
       end
+      protected :contain_all_relevants?
 
       # Checks that other properties contain all current states that go by some
       # method
       #
       # @param [AtomProperties] other the checking properties
-      # @param [Symbol] method_name by which will be comparing
+      # @yield method by which will be comparing
       # @return [Boolean] contain or not
-      def contain_all_by?(other, method_name)
-        stats = send(method_name).dup
-        other.send(method_name).all? { |rel| stats.delete_one(rel) }
+      def contain_all_by?(other, &block)
+        stats = block[self].dup
+        block[other].all? { |rel| stats.delete_one(rel) }
+      end
+
+      # Compares dynamic states of two properties
+      # @peram [AtomProperties] other the comparing properties
+      # @return [Boolean] equal or not
+      def same_dynamics?(other)
+        eq_nbr_lattices?(other) && eq_relations?(other) && same_danglings?(other)
+      end
+
+      # Compares dangling states of two properties
+      # @peram [AtomProperties] other the comparing properties
+      # @return [Boolean] similar danglings or not
+      def same_danglings?(other)
+        maximal? ? contain_all_danglings?(other) : eq_danglings?(other)
       end
 
       # Compares basic values of two properties
@@ -625,17 +673,6 @@ module VersatileDiamond
       # @return [Boolean] same or not
       def same_basic_values?(other)
         static_states == other.static_states
-      end
-
-      # Checks that current properties are not incoherent and if unfixed then
-      # other is unfixed too
-      #
-      # @param [AtomProperties] other the checking properties
-      # @return [Boolean] contain or not
-      def same_correspond_relevants?(other)
-        return false if relevant? && !other.relevant?
-        return true unless relevant?
-        !incoherent? && other.unfixed?
       end
 
       # Harvest relations of atom in spec
@@ -711,6 +748,16 @@ module VersatileDiamond
           else
             acc
           end
+        end
+      end
+
+      # Collects and checks that relevant states are correct
+      def check_and_dup_relevants_from(incoming_relevant_states)
+        if incoming_relevant_states.size < 2 # just incoherent or unfixed
+          incoming_relevant_states.dup
+        else
+          msg = "Incorrect pack of relevant states: #{incoming_relevant_states}"
+          raise ArgumentError, msg
         end
       end
 

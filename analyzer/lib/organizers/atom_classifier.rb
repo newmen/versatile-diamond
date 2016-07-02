@@ -236,25 +236,39 @@ module VersatileDiamond
       # Organizes dependencies between atom properties by checking inclusion
       # @param [Array] props_list the observing atom properties
       def organize_by_inclusion!(props_list)
-        iterate_props_list(props_list) do |first, internal|
-          first.add_smallest(internal) if internal.contained_in?(first)
+        group_props_list(props_list, &:contained_in?).each do |big, smallests|
+          smallests.each do |small|
+            big.add_smallest(small) unless deep_same?(big, small)
+          end
         end
       end
 
       # Organizes dependencies between atom properties by checking relative states
       # @param [Array] props_list the observing atom properties
       def organize_by_relatives!(props_list)
-        iterate_props_list(props_list) do |first, internal|
-          if first.same_incoherent?(internal)
-            if first.same_hydrogens?(internal)
-              first.add_smallest(internal)
-            else
-              first.add_same(internal)
-            end
-          elsif first.same_unfixed?(internal)
-            first.add_same(internal)
+        group_props_list(props_list, &method(:relevant_same?)).each do |big, smallests|
+          smallests.each do |small|
+            big.add_same(small) unless deep_same?(big, small)
           end
         end
+      end
+
+      # @param [AtomProperties] small
+      # @param [AtomProperties] big
+      # @return [Boolean] is big relevant states are same as in small
+      def relevant_same?(small, big)
+        !small.contained_in?(big) &&
+          (big.same_incoherent?(small) || big.same_unfixed?(small))
+      end
+
+      # @param [AtomProperties] big atom properties which children will be checked
+      # @param [AtomProperties] small atom properties which will be compared with each
+      #   child properties of big
+      # @return [Boolean] is big already has small as same
+      def deep_same?(big, small)
+        children = (big.sames || []).to_a + (big.smallests || []).to_a
+        !children.empty? &&
+          children.any? { |child| child == small || deep_same?(child, small) }
       end
 
       # Produces new atom properties
@@ -274,16 +288,19 @@ module VersatileDiamond
         end
       end
 
-      # Iterates passed list of atom properties
+      # Groups passed list of atom properties
       # @param [Array] props_list the iterating atom properties
       # @yield [AtomProperties, AtomProperties] do with bigger and smallest atom
-      #   properties
-      def iterate_props_list(props_list, &block)
+      #   properties which should be compared by
+      def group_props_list(props_list, &block)
+        result = []
         props_list_dup = props_list.sort
         until props_list_dup.empty?
-          small = props_list_dup.shift
-          props_list_dup.each { |big| block[big, small] }
+          big = props_list_dup.pop
+          smallests = props_list_dup.select { |small| block[small, big] }
+          result << [big, smallests.sort.reverse]
         end
+        result.sort_by(&:first)
       end
 
       # Stores all derived properties which can be gotten by passed method name

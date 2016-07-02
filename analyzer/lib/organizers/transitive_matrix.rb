@@ -47,7 +47,7 @@ module VersatileDiamond
 
     private
 
-      # Transitive closure on DFS
+      # Transitive closure on DFS (why not multiplication to transparent??)
       # @param [Integer] v the v vertex
       # @param [Integer] w the w vertex
       # @param [Array] method_names wich will be called for get children

@@ -14,7 +14,7 @@ module VersatileDiamond
         @analysis_result = analysis_result
         @config_path = config_path
 
-        @_spec_reactions, @_classifier, @_surface_specs = nil
+        @_spec_reactions, @_classifier, @_surface_specs, @_changes = nil
       end
 
       # Gets atom properties for passed entities
@@ -105,15 +105,18 @@ module VersatileDiamond
       def extend!(raw_clf)
         loop do
           there_is_new = false
-          typical_reactions.each do |reaction|
-            reaction.changes.each do |src_to_prd|
-              next if src_to_prd.map(&:first).any?(&:gas?)
-              raw_props = atom_properties_list(src_to_prd)
-              there_is_new ||= raw_clf.reorganize_with!(raw_props)
-            end
+          changes.each do |src_to_prd|
+            next if src_to_prd.map(&:first).any?(&:gas?)
+            raw_props = atom_properties_list(src_to_prd)
+            there_is_new ||= raw_clf.reorganize_with!(raw_props)
           end
           break unless there_is_new
         end
+      end
+
+      # @return [Array] the list of all available changes
+      def changes
+        @_changes ||= typical_reactions.flat_map { |r| r.changes.to_a }.uniq
       end
 
       # Makes atom properties from passed list of specs and atoms

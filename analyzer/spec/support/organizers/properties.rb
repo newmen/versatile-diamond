@@ -134,6 +134,8 @@ module VersatileDiamond
         prop(:bod, :cross_bridge_on_bridges_base, :ctl)
         prop(:eob, :ethane_on_bridge_base, :c1)
         prop(:vob, :vinyl_on_bridge_base, :c1)
+        prop(:ivob, :incoherent_vinyl_on_bridge, :c1)
+        prop(:uvob, :unfixed_vinyl_on_bridge, :c1)
       end
     end
   end

@@ -3,6 +3,7 @@ module VersatileDiamond
 
     # Class for multibond instance. The multibond can only be amorphous.
     class MultiBond
+      include BondsOrderer
 
       class << self
         # The singleton method [] caches all instnaces and returns it if arity is same
