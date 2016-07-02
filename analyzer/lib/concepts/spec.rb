@@ -34,7 +34,11 @@ module VersatileDiamond
       # If spec is simple (H2 or HCl for example) then true or false overwise
       # @return [Boolean] is current spec simple?
       def simple?
-        @is_simple
+        if @atoms.empty?
+          raise 'The specie does not contain any atom and cannot be simple or complex'
+        else
+          @atoms.values.all? { |a| a.valence == 1 }
+        end
       end
 
       # The spec is not termination by default
@@ -64,7 +68,6 @@ module VersatileDiamond
       def describe_atom(atom_keyname, atom)
         @atoms[atom_keyname] = atom
         @links[atom] = []
-        @is_simple = (@atoms.one? && atom_instances.first.valence == 1)
       end
 
       # Swaps from own to new

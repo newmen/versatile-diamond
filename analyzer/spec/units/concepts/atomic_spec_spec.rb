@@ -15,6 +15,12 @@ module VersatileDiamond
         it { expect(adsorbed_h <=> adsorbed_cl).to eq(1) }
       end
 
+      describe '#apply_to' do
+        let(:atom) { SpecificAtom.new(cd) }
+        before { adsorbed_h.apply_to(atom) }
+        it { expect(atom.monovalents).to eq([adsorbed_h]) }
+      end
+
       describe 'bond?' do
         it { expect(adsorbed_h.bond?).to be_falsey }
       end

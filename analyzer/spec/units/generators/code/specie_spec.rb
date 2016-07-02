@@ -7,15 +7,19 @@ module VersatileDiamond
       describe Specie, type: :code do
         let(:base_specs) { [] }
         let(:specific_specs) { [] }
+        let(:ubiquitous_reactions) { [] }
         let(:typical_reactions) { [] }
         let(:lateral_reactions) { [] }
         let(:generator) do
           stub_generator(
             base_specs: base_specs,
             specific_specs: specific_specs,
+            ubiquitous_reactions: ubiquitous_reactions,
             typical_reactions: typical_reactions,
             lateral_reactions: lateral_reactions)
         end
+
+        let(:classifier) { generator.classifier }
 
         describe '#spec' do
           it { expect(code_bridge_base.spec).to eq(dept_bridge_base) }
@@ -175,7 +179,7 @@ module VersatileDiamond
             end
           end
 
-          describe 'only one child specie' do
+          describe 'not reactant specie with one child' do
             subject { specie_class(methyl_on_bridge_base) }
             let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
             let(:typical_reactions) { [dept_methyl_activation] }
@@ -184,7 +188,37 @@ module VersatileDiamond
             it_behaves_like :check_classes_names do
               let(:base_class_names) { [name] }
               let(:name) do
-                'Specific<Base<AdditionalAtomsWrapper<DependentSpec<BaseSpec, 1>, 1>, METHYL_ON_BRIDGE, 2>>'
+                'Base<AdditionalAtomsWrapper<DependentSpec<ParentSpec, 1>, 1>, METHYL_ON_BRIDGE, 2>'
+              end
+            end
+          end
+
+          describe 'no children reactant specie' do
+            subject { specie_class(hydrogenated_methyl_on_bridge) }
+            let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+            let(:typical_reactions) { [dept_methyl_activation] }
+
+            it_behaves_like :parent_bridge_name
+            it_behaves_like :check_classes_names do
+              let(:base_class_names) { [name] }
+              let(:name) do
+                'Specific<Base<DependentSpec<BaseSpec, 1>, METHYL_ON_BRIDGE_CMH, 1>>'
+              end
+            end
+          end
+
+          describe 'local reactant specie' do
+            subject { specie_class(hydrogenated_methyl_on_bridge) }
+            let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+            let(:ubiquitous_reactions) { [dept_surface_activation] }
+            let(:typical_reactions) { [dept_methyl_activation] }
+
+            it_behaves_like :parent_bridge_name
+            it_behaves_like :check_classes_names do
+              let(:base_class_names) { [name] }
+              let(:cmix) { subject.index(subject.spec.spec.atom(:cm)) }
+              let(:name) do
+                "Base<LocalableRole<DependentSpec<BaseSpec, 1>, #{cmix}>, METHYL_ON_BRIDGE_CMH, 1>"
               end
             end
           end
@@ -257,8 +291,9 @@ module VersatileDiamond
             let(:base_specs) { [dept_bridge_base] }
             let(:typical_reactions) { [dept_hydrogen_abs_from_gap] }
             it { expect(specie_class(bridge_base).symmetric?).to be_truthy }
-            it { expect(specie_class(right_hydrogenated_bridge).symmetric?).
-              to be_falsey }
+
+            let(:dept_rhb) { specie_class(right_hydrogenated_bridge) }
+            it { expect(dept_rhb.symmetric?).to be_falsey }
           end
 
           describe 'dimers' do
@@ -332,7 +367,6 @@ module VersatileDiamond
         end
 
         describe '#role' do
-          let(:classifier) { generator.classifier }
           before { classifier.analyze!(subject.spec) }
 
           subject { code_bridge_base }

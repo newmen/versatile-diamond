@@ -14,6 +14,12 @@ module VersatileDiamond
         @atom = atom
       end
 
+      # Applies monovalent state to passed atom
+      # @param [SpecificAtom] atom to which the atomic spec will be applied
+      def apply_to(atom)
+        atom.use!(self)
+      end
+
       # Is hydrogen or not?
       # @return [Boolean]
       def hydrogen?

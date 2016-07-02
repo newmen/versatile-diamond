@@ -70,7 +70,7 @@ module VersatileDiamond
       # Simple species are not unused
       # @return [Boolean] false
       def unused?
-        true
+        false
       end
 
       def inspect

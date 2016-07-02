@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Concepts
 
     # Specified atom class, contain additional atom states like incoherentness,
@@ -135,7 +137,11 @@ module VersatileDiamond
       #   compares
       # @return [Array] the array of relevants state symbols
       def diff(other)
-        other.relevants - relevants
+        actives_delta = actives - other.actives
+        actives_delta = 0 if actives_delta < 0
+        (other.relevants - relevants) +
+          monovalents.accurate_diff(other.monovalents) +
+          ([ActiveBond.property] * actives_delta)
       end
 
       # Applies diff to current options

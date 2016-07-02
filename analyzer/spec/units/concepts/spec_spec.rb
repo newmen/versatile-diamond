@@ -10,8 +10,6 @@ module VersatileDiamond
       end
 
       describe '#simple?' do
-        it { expect(Spec.new(:not_set).simple?).to be_nil }
-
         it { expect(hydrogen_base.simple?).to be_truthy }
         it { expect(methane_base.simple?).not_to be_truthy }
         it { expect(ethylene_base.simple?).not_to be_truthy }

@@ -34,7 +34,7 @@ module VersatileDiamond
 
             it_behaves_like :check_code do
               subject { dept_methyl_activation }
-              let(:target_spec) { dept_methyl_on_bridge_base }
+              let(:target_spec) { dept_hydrogenated_methyl_on_bridge }
               let(:find_algorithm) do
                 <<-CODE
     create<ForwardMethylActivation>(target);

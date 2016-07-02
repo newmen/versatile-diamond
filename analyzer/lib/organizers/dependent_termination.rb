@@ -32,13 +32,6 @@ module VersatileDiamond
         true
       end
 
-      # Checks that spec is unused
-      # @return [Boolean] is unused or not
-      # @override
-      def unused?
-        false
-      end
-
       def to_s
         "(#{name})"
       end

@@ -39,7 +39,7 @@ module VersatileDiamond
 
             describe "methyl on bridge isn't specified" do
               before { ma_atom_map } # runs atom mapping
-              it { expect(ma_s.atom(:cm)).to be_a(Concepts::Atom) }
+              it { expect(ma_s.atom(:cm)).to be_a(Concepts::SpecificAtom) }
             end
           end
         end

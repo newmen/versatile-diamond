@@ -190,7 +190,7 @@ module VersatileDiamond
                 [
                   :bridge,
                   :dimer,
-                  # :extended_dimer, # purged
+                  :extended_dimer,
                   # :extended_methyl_on_bridge, # purged
                   :methyl_on_bridge,
                   :methyl_on_dimer
@@ -254,6 +254,7 @@ module VersatileDiamond
                   :"extended_dimer(_cr0: i)", # added by methyl incorporation (product)
                   # :'methyl_on_bridge()', # purged
                   :'methyl_on_bridge(cm: *)',
+                  :'methyl_on_bridge(cm: H)',
                   :'methyl_on_bridge(cm: i)',
                   # :'methyl_on_dimer()', # purged
                   :'methyl_on_dimer(cm: *)'
@@ -435,21 +436,19 @@ module VersatileDiamond
             describe 'organization termination species dependencies' do
               shared_examples_for :termination_parents do
                 let(:parents) { subject.term_spec(term_name).parents }
-                let(:specific) { subject.public_send(spec_method, spec_name) }
+                let(:specific) { subject.specific_spec(spec_name) }
 
                 it { expect(parents).to eq([specific]) }
               end
 
               it_behaves_like :termination_parents do
                 let(:term_name) { :H }
-                let(:spec_name) { :methyl_on_bridge }
-                let(:spec_method) { :base_spec }
+                let(:spec_name) { :'methyl_on_bridge(cm: H)' }
               end
 
               it_behaves_like :termination_parents do
                 let(:term_name) { :* }
                 let(:spec_name) { :'methyl_on_bridge(cm: *)' }
-                let(:spec_method) { :specific_spec }
               end
             end
           end
@@ -459,7 +458,12 @@ module VersatileDiamond
 
             let(:wrapped_base) { subject.base_spec(:dimer) }
             let(:parent) { subject.base_spec(:bridge) }
-            let(:children) { [subject.specific_spec(:'dimer(cr: i)')] }
+            let(:children) do
+              [
+                subject.base_spec(:extended_dimer),
+                subject.specific_spec(:'dimer(cr: i)')
+              ]
+            end
 
             it { expect(wrapped_base.children).to match_array(children) }
             it { expect(wrapped_base.parents.map(&:original)).to eq([parent, parent]) }
