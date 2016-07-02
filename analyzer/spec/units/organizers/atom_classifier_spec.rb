@@ -425,8 +425,13 @@ module VersatileDiamond
         end
 
         describe '#has_relevants?' do
-          it { expect(subject.has_relevants?(26)).to be_truthy }
-          it { expect(subject.has_relevants?(2)).to be_falsey }
+          it { expect(subject.has_relevants?(subject.index(ab_ct))).to be_falsey }
+          it { expect(subject.has_relevants?(subject.index(ib_cb))).to be_truthy }
+
+          describe 'there is relevant properties' do
+            include_context :without_ubiquitous
+            it { expect(subject.has_relevants?(subject.index(ihigh_cm))).to be_truthy }
+          end
         end
       end
     end

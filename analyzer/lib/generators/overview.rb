@@ -17,7 +17,7 @@ module VersatileDiamond
         puts @atoms_format % %w(Image Index Lattice Name Parents)
         print_atoms('Atoms', classifier.props)
         puts
-        puts "Total number of different atom types: #{classifier.all_types_num}"
+        puts "Total number of different atom types: #{classifier.props.size}"
         puts "Total number of different atom types without relevant properties: #{classifier.props.reject(&:relevant?).size}"
 
         puts

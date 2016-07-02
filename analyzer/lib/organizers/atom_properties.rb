@@ -80,7 +80,8 @@ module VersatileDiamond
           raise ArgumentError, 'Wrong number of arguments'
         end
 
-        @smallests, @sames = nil
+        @smallests = Set.new
+        @sames = Set.new
 
         @_is_incoherent, @_is_unfixed, @_is_unfixed_from_nbrs = nil
         @_estab_bond_num, @_actives_num, @_dangling_hydrogens_num = nil
@@ -190,7 +191,10 @@ module VersatileDiamond
       # @return [AtomProperties] the sum or nil
       def safe_plus(other)
         both = [self, other]
-        smallests_of_both = both.map { |props| props.smallests || Set[props] }
+        smallests_of_both = both.map do |props|
+          props.smallests.empty? ? Set[props] : props.smallests
+        end
+
         max_root = smallests_of_both.reduce(:&).max
         return nil unless max_root
 
@@ -299,9 +303,7 @@ module VersatileDiamond
         # @param [AtomProperties] stuff the #{name} atom properties from which the
         #   current atom properties depends
         define_method(:"add_#{name}") do |stuff|
-          var = instance_variable_get(var_name) ||
-            instance_variable_set(var_name, Set.new)
-
+          var = instance_variable_get(var_name)
           from_child = stuff.public_send(plur_name)
           var.subtract(from_child) if from_child
           var << stuff

@@ -21,7 +21,7 @@ module VersatileDiamond
         end
       end
 
-      # @return [String]
+      # @return [Integer]
       def hash
         self.class.hash
       end

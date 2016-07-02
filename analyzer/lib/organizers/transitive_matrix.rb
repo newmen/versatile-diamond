@@ -27,11 +27,9 @@ module VersatileDiamond
         idx = index(prop)
         column_idx_enum = @matrix.column(idx).map.with_index
         cells_with_idxs = column_idx_enum.select { |b, j| b && source_index?(j) }
-        curr_source_idxs = cells_with_idxs.map(&:last)
-        result = curr_source_idxs.empty? ?
-          idx : select_best_index(prop, curr_source_idxs)
-
-        @prop_vector[result]
+        source_idxs = cells_with_idxs.map(&:last)
+        best_index = source_idxs.empty? ? idx : select_best_index(prop, source_idxs)
+        @prop_vector[best_index]
       end
 
       # Gets item of matrix by passed properties

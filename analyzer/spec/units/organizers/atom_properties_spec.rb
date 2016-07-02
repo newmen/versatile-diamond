@@ -731,23 +731,23 @@ module VersatileDiamond
       end
 
       describe '#smallests' do
-        it { expect(bridge_ct.smallests).to be_nil }
-        it { expect(ab_ct.smallests).to be_nil }
+        it { expect(bridge_ct.smallests).to be_empty }
+        it { expect(ab_ct.smallests).to be_empty }
 
         describe '#add_smallest' do
           before(:each) { ab_ct.add_smallest(bridge_ct) }
-          it { expect(bridge_ct.smallests).to be_nil }
+          it { expect(bridge_ct.smallests).to be_empty }
           it { expect(ab_ct.smallests.to_a).to eq([bridge_ct]) }
         end
       end
 
       describe '#sames' do
-        it { expect(aib_ct.sames).to be_nil }
-        it { expect(eab_ct.sames).to be_nil }
+        it { expect(aib_ct.sames).to be_empty }
+        it { expect(eab_ct.sames).to be_empty }
 
         describe '#add_same' do
           before(:each) { eab_ct.add_same(aib_ct) }
-          it { expect(aib_ct.sames).to be_nil }
+          it { expect(aib_ct.sames).to be_empty }
           it { expect(eab_ct.sames.to_a).to eq([aib_ct]) }
         end
       end

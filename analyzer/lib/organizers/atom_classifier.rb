@@ -40,11 +40,9 @@ module VersatileDiamond
 
         avail_props = spec.links.keys.map { |atom| AtomProperties.new(spec, atom) }
         avail_props.each do |prop|
+          next if @described_props.include?(prop)
           store_prop(@described_props, prop)
-          @danglings.each do |termination|
-            store_all(:add_dangling, prop, termination)
-            store_all(:remove_dangling, prop, termination)
-          end
+          append_danglings!(prop) unless @danglings.empty?
         end
       end
 
@@ -115,12 +113,6 @@ module VersatileDiamond
             raise ArgumentError, "Wrong number of arguments: #{args.inspect}"
           end
         props_hash.key(prop)
-      end
-
-      # Gets number of all different properties
-      # @return [Integer] quantity of all uniq properties
-      def all_types_num
-        all_props.size
       end
 
       # Checks that properties by index has relevants
@@ -233,6 +225,19 @@ module VersatileDiamond
         default_latticed_atoms.each { |prop| store_prop(@described_props, prop) }
       end
 
+      # Iterates available dangling species and extends the total set of properties
+      # @param [AtomProperties] prop which extended analogies will be stored too
+      def append_danglings!(prop)
+        checking_props = [prop]
+        until checking_props.empty?
+          cp = checking_props.shift
+          @danglings.each do |termination|
+            checking_props += store_all(cp, termination, &:add_dangling)
+            checking_props += store_all(cp, termination, &:remove_dangling)
+          end
+        end
+      end
+
       # Organizes dependencies between atom properties by checking inclusion
       # @param [Array] props_list the observing atom properties
       def organize_by_inclusion!(props_list)
@@ -266,7 +271,7 @@ module VersatileDiamond
       #   child properties of big
       # @return [Boolean] is big already has small as same
       def deep_same?(big, small)
-        children = (big.sames || []).to_a + (big.smallests || []).to_a
+        children = big.sames + big.smallests
         !children.empty? &&
           children.any? { |child| child == small || deep_same?(child, small) }
       end
@@ -304,15 +309,21 @@ module VersatileDiamond
       end
 
       # Stores all derived properties which can be gotten by passed method name
-      # @param [Symbol] method_name by which the derived props can be gotten
       # @param [AtomProperties] prop which extended copies will be stored
       # @param [Concepts::TerminationSpec] termination spec by which the property
       #   copies will be created
-      def store_all(method_name, prop, termination)
+      # @yield [AtomProperties] by which the derived props can be gotten
+      # @return [Array] the list of added nodes
+      def store_all(prop, termination, &block)
+        result = []
         next_prop = prop
-        while (next_prop = next_prop.public_send(method_name, termination))
-          store_prop(@over_danglings_props, next_prop)
+        while (next_prop = block[next_prop, termination])
+          unless @over_danglings_props.include?(next_prop)
+            store_prop(@over_danglings_props, next_prop)
+            result << next_prop
+          end
         end
+        result
       end
 
       # Stores passed prop and it over props to internal sets
