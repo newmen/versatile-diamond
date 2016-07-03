@@ -73,12 +73,15 @@ module VersatileDiamond
 
         define_dependents(DependentSpecificSpec, [
           :activated_bridge,
+          :activated_hydrogenated_bridge,
           :activated_dimer,
           :activated_incoherent_bridge,
           :activated_incoherent_dimer,
           :activated_methyl_on_bridge,
           :extra_activated_methyl_on_bridge,
           :hydrogenated_methyl_on_bridge,
+          :incoherent_hydrogenated_methyl_on_bridge,
+          :twise_activated_cross_bridge_on_bridges,
           :activated_methyl_on_dimer,
           :activated_methyl_on_incoherent_bridge,
           :activated_methyl_on_right_bridge,

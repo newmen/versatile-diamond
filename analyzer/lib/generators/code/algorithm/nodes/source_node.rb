@@ -46,7 +46,7 @@ module VersatileDiamond
 
         private
 
-          def_delegators :@classifier, :specificate, :children_of, :index
+          def_delegators :@classifier, :specificate, :children_of, :index, :limitations
 
           # @return [Array]
           def props_transit
@@ -68,13 +68,25 @@ module VersatileDiamond
           # @return [Array] grouped intermediate properties
           def intermediate_groups
             src_current, prd_current = props_transit
-            src_children = finalized_children_of(src_current)
+            src_children = children_of(src_current)
             src_diffs = src_children.map { |child| child - src_current }
-            prd_news = src_diffs.map { |diff| diff && (diff + prd_current) }
-
-            src_children.zip(prd_news).group_by do |_, prd_new|
-              !!(prd_new && @classifier.index(prd_new))
+            prd_news = src_diffs.map do |diff|
+              diff && diff.limited_plus(prd_current, limitations)
             end
+
+            edges = src_children.zip(prd_news).select do |_, prd_new|
+              prd_new && (prd_new.maximal? ||
+                (@classifier.index(prd_new) && prd_new == specificate(prd_new)))
+            end
+
+            groups = edges.group_by do |_, prd_edge|
+              !!(prd_edge && @classifier.index(prd_edge))
+            end
+
+            groups[false] && groups[false].reject! do |src, prd|
+              groups[true] && groups[true].any? { |s, p| s.like?(src) && p.like?(prd) }
+            end
+            groups
           end
 
           # @param [Organizers::AtomProperties] prop
@@ -84,7 +96,8 @@ module VersatileDiamond
             { true => [[prop, prd_current]], false => [[prd_current, nil]] }
           end
 
-          # @return [Hash] grouped intermediate properties
+          # @return [Hash] grouped the properties for the edge case when product
+          #   already maximal and cannot adsorb any other properties
           def marginal_groups
             src_current, prd_current = props_transit
             possible_states = finalized_children_of(src_current) - [prd_current]
@@ -102,8 +115,7 @@ module VersatileDiamond
           # @return [Array] gets the list of possible finalized atom properties
           def finalized_children_of(prop)
             children = children_of(prop)
-            edges = children.select(&:maximal?)
-            edges = children.select { |ap| ap == specificate(ap) } if edges.empty?
+            edges = children.select { |ap| ap.maximal? || ap == specificate(ap) }
             edges.empty? ? children : edges
           end
 

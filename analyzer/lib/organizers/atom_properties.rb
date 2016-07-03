@@ -128,47 +128,9 @@ module VersatileDiamond
 
       # Gets new atom properties instance from two instances
       # @param [AtomProperties] other adding atom properties
-      # @option [Integer] :limit the number of maximal nbr_lattcies
       # @return [AtomProperties] the extended instance of atom properties or nil
-      def +(other, limit: nil)
-        total_props = merge_props(other, &:+)
-        return unless total_props
-        return if limit && total_props[:nbr_lattices].size > limit
-
-        lattices_num = total_props[:nbr_lattices].select(&:last).size
-        total_unfixed = total_props[:relevants].include?(UNFIXED)
-        return if total_unfixed && lattices_num > 1
-
-        any_without_lattices = ![self, other].all?(&:lattice)
-        return if total_unfixed && !any_without_lattices
-
-        total_incoherent = total_props[:relevants].include?(INCOHERENT)
-        any_without_bonds = [self, other].any? { |x| x.relations.empty? }
-        return if total_incoherent && !any_without_bonds
-
-        bonds_num = estab_bonds_num_in(total_props[:relations])
-        dang_num = total_props[:danglings].size
-        ext_num = bonds_num + dang_num
-
-        is_incoherent = bonds_num < valence && total_incoherent
-        is_unfixed = lattices_num == 1 && total_unfixed
-        is_complete = (ext_num == valence)
-        is_relevant = is_incoherent || is_unfixed
-        is_unrelevanted = is_complete && is_relevant
-
-        total_props[:lattice] = nil if lattices_num > 0
-        if is_unrelevanted
-          total_props[:relevants] = []
-        elsif total_incoherent
-          total_props[:relevants] = [INCOHERENT]
-        end
-
-        are_correct_props =
-          (valid_relations?(total_props[:lattice], total_props[:relations])) &&
-          (is_unrelevanted || ext_num < valence ||
-            (is_complete && total_props[:relevants].empty?))
-
-        are_correct_props ? self.class.new(state_values(total_props)) : nil
+      def +(other)
+        common_plus(other, merge_props(other, &:+))
       end
 
       # Gets the difference between two atom properties
@@ -210,12 +172,35 @@ module VersatileDiamond
         is_zero_diffs ? rests_sum : max_root + rests_sum
       end
 
+      # @return [AtomProperties] the result properties or nil
+      def limited_plus(other, limitations)
+        total_props = merge_props(other, &:+)
+        return unless total_props
+
+        key = [total_props[:atom_name], total_props[:valence], total_props[:lattice]]
+        target_limits = limitations[key]
+
+        groups = total_props[:relations].group_by(&:params)
+        return if groups.any? { |(rp, rels)| target_limits[rp] < rels.size }
+
+        lattices_num = total_props[:nbr_lattices].select(&:last).size
+        return if target_limits[:nbr_lts_num] < lattices_num
+
+        common_plus(other, total_props)
+      end
+
       # Calculates the hash of current instance for using it as key values in Hashes
       # @return [Integer] the hash of current instance
       def hash
         @_hash ||= ([atom_name, valence, lattice && lattice.instance] +
                           relations.sort + danglings.sort + relevants.sort +
                           nbr_lattices.map { |r, l| [r, l && l.instance] }.sort).hash
+      end
+
+      # Gets the major values of atom properties
+      # @return [Array]
+      def key
+        [atom_name, valence, lattice]
       end
 
       # Gets idempotent value of atom properties group
@@ -429,7 +414,7 @@ module VersatileDiamond
       # Gets the number of neighbour lattices of current atom properties
       # @return [Integer]
       def nbr_lattices_num
-        nbr_lattices.size
+        nbr_lattices.select(&:last).size
       end
 
       # Checks has or not free bonds?
@@ -579,6 +564,47 @@ module VersatileDiamond
       # @return [Array] the array of states
       def state_values(props_hash)
         ALL_STATES.map { |state| props_hash[state] }
+      end
+
+      # Concates two atom properties
+      # @param [AtomProperties] other
+      # @param [Hash] total_props
+      # @return [AtomProperties] the result properties or nil
+      def common_plus(other, total_props)
+        lattices_num = total_props[:nbr_lattices].select(&:last).size
+        total_unfixed = total_props[:relevants].include?(UNFIXED)
+        return if total_unfixed && lattices_num > 1
+
+        any_without_lattices = ![self, other].all?(&:lattice)
+        return if total_unfixed && !any_without_lattices
+
+        total_incoherent = total_props[:relevants].include?(INCOHERENT)
+        any_without_bonds = [self, other].any? { |x| x.relations.empty? }
+        return if total_incoherent && !any_without_bonds
+
+        bonds_num = estab_bonds_num_in(total_props[:relations])
+        dang_num = total_props[:danglings].size
+        ext_num = bonds_num + dang_num
+
+        is_incoherent = bonds_num < valence && total_incoherent
+        is_unfixed = lattices_num == 1 && total_unfixed
+        is_complete = (ext_num == valence)
+        is_relevant = is_incoherent || is_unfixed
+        is_unrelevanted = is_complete && is_relevant
+
+        total_props[:lattice] = nil if lattices_num > 0
+        if is_unrelevanted
+          total_props[:relevants] = []
+        elsif total_incoherent
+          total_props[:relevants] = [INCOHERENT]
+        end
+
+        are_correct_props =
+          (valid_relations?(total_props[:lattice], total_props[:relations])) &&
+          (is_unrelevanted || ext_num < valence ||
+            (is_complete && total_props[:relevants].empty?))
+
+        are_correct_props ? self.class.new(state_values(total_props)) : nil
       end
 
       # @param [Symbol] atomic_op which will be called with atomic dangling if it is

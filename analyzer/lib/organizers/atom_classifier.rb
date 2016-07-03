@@ -42,7 +42,7 @@ module VersatileDiamond
         avail_props = spec.links.keys.map { |atom| AtomProperties.new(spec, atom) }
         avail_props.each do |prop|
           store_prop(@described_props, prop)
-          append_danglings!(prop) unless @danglings.empty?
+          append_danglings!(prop) unless @danglings.empty? || prop.relevant?
         end
       end
 
@@ -173,11 +173,21 @@ module VersatileDiamond
       # @return [Array] the list of children atom properties
       def children_of(bigger)
         result = detect_prop(bigger).children.flat_map do |child|
-          child.children.empty? ? [child] : children_of(child)
+          [child] + (child.children.empty? ? [] : children_of(child))
         end
         result.uniq.sort
       end
 
+      # @return [Hash]
+      def limitations
+        @_limitations ||= props.reduce({}) do |acc, prop|
+          groups = prop.relations.group_by(&:params)
+          limits = groups.map { |rp, rels| [rp, rels.size] }.to_h
+          merge_limits(acc, prop, limits)
+        end
+      end
+
+      # @return [String]
       def inspect
         props_with_index = props.map.with_index
         items = props_with_index.map { |pr, i| "#{i.to_s.rjust(7)}:  #{pr}\n" }
@@ -187,6 +197,21 @@ module VersatileDiamond
     private
 
       ACTIVE_BOND = AtomProperties::ACTIVE_BOND
+
+      # @param [Hash] acc
+      # @param [AtomProperties] prop
+      # @param [Hash] groups
+      # @return [Hash]
+      def merge_limits(acc, prop, groups)
+        key = prop.key
+        slice = (acc[key] ||= {})
+        slice[:nbr_lts_num] ||= 0
+        slice[:nbr_lts_num] = [slice[:nbr_lts_num], prop.nbr_lattices_num].max
+        groups.each_with_object(acc) do |(rp, num), _|
+          slice[rp] ||= 0
+          slice[rp] = [slice[rp], num].max
+        end
+      end
 
       # Checks that passed atom properties haven't most bigger
       # @param [AtomProperties] bigger atom properties which will be checked
@@ -226,7 +251,7 @@ module VersatileDiamond
       # Iterates available dangling species and extends the total set of properties
       # @param [AtomProperties] prop which extended analogies will be stored too
       def append_danglings!(prop)
-        observed_props = [prop]
+        observed_props = Set[prop]
         checking_props = [prop]
         until checking_props.empty?
           cp = checking_props.shift
@@ -235,7 +260,7 @@ module VersatileDiamond
                             store_all(cp, termination, &:remove_dangling)
             new_props = storing_props.reject(&observed_props.public_method(:include?))
             checking_props = (checking_props + new_props).uniq
-            observed_props = (observed_props + new_props).uniq
+            observed_props = observed_props + new_props.to_set
           end
         end
       end
@@ -302,7 +327,6 @@ module VersatileDiamond
       # @return [Array] the list of added nodes
       def store_all(prop, termination, &block)
         result = []
-        # relevants = Set.new
         next_prop = prop
         loop do
           next_prop = block[next_prop, termination]
@@ -395,6 +419,7 @@ module VersatileDiamond
       end
 
       def reset_caches!
+        @_limitations = nil
         @_all_props, @_props, @_props_with_indexes, @_props_hash = nil
         @_is_incoherent_defined = nil
         @_tmatrix, @_st_matrix = nil

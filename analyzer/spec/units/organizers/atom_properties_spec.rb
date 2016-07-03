@@ -197,17 +197,37 @@ module VersatileDiamond
           it { expect(vob + i_diff).to eq(ivob) }
         end
 
-        describe 'limited plus' do
+        describe 'unlimited plus' do
           it { expect(cm + cm).to eq(bob) }
-          it { expect(cm.+(cm, limit: 1)).to eq(nil) }
+          it { expect(high_cm + high_cm + cm).to be_nil }
 
           it { expect(high_cm + cm).not_to be_nil }
           it { expect(high_cm + high_cm).not_to be_nil }
-          it { expect(high_cm + high_cm + cm).to be_nil }
 
-          it { expect(high_cm.+(cm, limit: 2)).to be_nil }
-          it { expect(high_cm.+(high_cm, limit: 2)).to be_nil }
+          let(:dimer_relation) { dimer_cr - bridge_ct }
+          it { expect(dimer_cr + dimer_relation).not_to be_nil }
         end
+      end
+
+      describe '#limited_plus' do
+        include_context :classified_properties
+        let(:dependent_specs) do
+          [
+            dept_methyl_on_bridge_base,
+            dept_methyl_on_dimer_base,
+            dept_high_bridge_base,
+            dept_dimer_base,
+            dept_bridge_base,
+          ]
+        end
+
+        let(:limits) { classifier.limitations }
+        it { expect(cm.limited_plus(cm, limits)).to eq(nil) }
+        it { expect(high_cm.limited_plus(cm, limits)).to be_nil }
+        it { expect(high_cm.limited_plus(high_cm, limits)).to be_nil }
+
+        let(:dimer_relation) { dimer_cr - bridge_ct }
+        it { expect(dimer_cr.limited_plus(dimer_relation, limits)).to be_nil }
       end
 
       describe '#-' do
@@ -396,6 +416,7 @@ module VersatileDiamond
         it { expect(fd(ab_cb).like?(fd(ab_cr))).to be_falsey }
         it { expect(fd(ab_cr).like?(fd(ab_cb))).to be_falsey }
 
+        it { expect(fd(dimer_cr).like?(fd(dimer_cr))).to be_truthy }
         it { expect(fd(dimer_cr).like?(fd(bridge_cr))).to be_truthy }
         it { expect(fd(bridge_cr).like?(fd(dimer_cr))).to be_truthy }
         it { expect(fd(id_cr).like?(fd(bridge_cr))).to be_falsey }

@@ -56,74 +56,87 @@ module VersatileDiamond
             let(:ct_ss) { raw_props_idx(dept_bridge_base, :ct, '**') }
             let(:ct_is) { raw_props_idx(dept_bridge_base, :ct, 'i*') }
             let(:ct_s) { raw_props_idx(dept_bridge_base, :ct, '*') }
-            let(:ct_i) { raw_props_idx(dept_bridge_base, :ct, 'i') }
+            let(:ct_f) { raw_props_idx(dept_bridge_base, :ct, '') }
             let(:ct_ih) { raw_props_idx(dept_bridge_base, :ct, 'iH') }
             let(:ct_hh) { raw_props_idx(dept_bridge_base, :ct, 'HH') }
             let(:ct_sh) { raw_props_idx(dept_bridge_base, :ct, '*H') }
+            let(:br_h) { raw_props_idx(dept_bridge_base, :cr, 'H') }
             let(:br_s) { raw_props_idx(dept_bridge_base, :cr, '*') }
             let(:br_i) { raw_props_idx(dept_bridge_base, :cr, 'i') }
             let(:br_m) { raw_props_idx(dept_methyl_on_right_bridge_base, :cr, '') }
+            let(:cb_h) { raw_props_idx(dept_methyl_on_bridge_base, :cb, 'H') }
             let(:cb_s) { raw_props_idx(dept_methyl_on_bridge_base, :cb, '*') }
             let(:cb_i) { raw_props_idx(dept_methyl_on_bridge_base, :cb, 'i') }
+            let(:cb_f) { raw_props_idx(dept_methyl_on_bridge_base, :cb, '') }
+            let(:cd_h) { raw_props_idx(dept_dimer_base, :cr, 'H') }
             let(:cd_s) { raw_props_idx(dept_dimer_base, :cr, '*') }
             let(:cd_i) { raw_props_idx(dept_dimer_base, :cr, 'i') }
+            let(:cd_f) { raw_props_idx(dept_dimer_base, :cr, '') }
             let(:md_d) { raw_props_idx(dept_methyl_on_dimer_base, :cr, '') }
             let(:bd_c) { raw_props_idx(dept_bridge_with_dimer_base, :cr, '') }
-            let(:tm_c) { raw_props_idx(dept_trimer_base, :cr, '') }
             let(:tb_c) { raw_props_idx(dept_three_bridges_base, :cc, '') }
             let(:cm_sss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '***') }
-            let(:cm_iss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'i**') }
-            let(:cm_ss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '**') }
-            let(:cm_is) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'i*') }
+            let(:cm_ssh) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '**H') }
+            let(:cm_shh) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '*HH') }
+            let(:cm_hhh) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'HHH') }
+            let(:cm_s) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '*') }
+            let(:cm_h) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'H') }
             let(:cm_i) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'i') }
             let(:hm_ss) { raw_props_idx(dept_high_bridge_base, :cm, '**') }
-            let(:hm_is) { raw_props_idx(dept_high_bridge_base, :cm, 'i*') }
-            let(:hm_ih) { raw_props_idx(dept_high_bridge_base, :cm, 'iH') }
             let(:hm_hh) { raw_props_idx(dept_high_bridge_base, :cm, 'HH') }
             let(:hm_sh) { raw_props_idx(dept_high_bridge_base, :cm, '*H') }
-            let(:hm_i) { raw_props_idx(dept_high_bridge_base, :cm, 'i') }
-            let(:cv_s) { raw_props_idx(dept_vinyl_on_bridge_base, :c1, '*') }
             let(:cv_i) { raw_props_idx(dept_vinyl_on_bridge_base, :c1, 'i') }
-            let(:cw_ss) { raw_props_idx(dept_vinyl_on_bridge_base, :c2, '**') }
-            let(:cw_is) { raw_props_idx(dept_vinyl_on_bridge_base, :c2, 'i*') }
             let(:cw_i) { raw_props_idx(dept_vinyl_on_bridge_base, :c2, 'i') }
+            let(:sm_hh) { raw_props_idx(dept_cross_bridge_on_bridges_base, :cm, 'HH') }
+            let(:sm_sh) { raw_props_idx(dept_cross_bridge_on_bridges_base, :cm, '*H') }
             let(:sm_ss) { raw_props_idx(dept_cross_bridge_on_bridges_base, :cm, '**') }
-            let(:sm_is) { raw_props_idx(dept_cross_bridge_on_bridges_base, :cm, 'i*') }
-            let(:sm_i) { raw_props_idx(dept_cross_bridge_on_bridges_base, :cm, 'i') }
+            let(:sm_f) { raw_props_idx(dept_cross_bridge_on_bridges_base, :cm, '') }
 
             describe 'methyl activation' do
               let(:typical_reaction) { dept_methyl_activation }
               let(:first_spec) { dept_methyl_on_bridge_base }
               let(:base_specs) { [dept_bridge_base] }
               let(:specific_specs) { [dept_activated_methyl_on_bridge] }
-              let(:do_it_algorithm) do
-                <<-CODE
-    SpecificSpec *methylOnBridge1 = target();
-    assert(methylOnBridge1->type() == METHYL_ON_BRIDGE);
-    Atom *amorph1 = methylOnBridge1->atom(0);
-    assert(amorph1->is(#{role_cm}));
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *methylOnBridgeCMH1 = target();
+    assert(methylOnBridgeCMH1->type() == METHYL_ON_BRIDGE_CMH);
+    Atom *amorph1 = methylOnBridgeCMH1->atom(0);
+    assert(amorph1->is(#{cm_h}));
     amorph1->activate();
-    assert(!amorph1->is(#{cm_sss}));
-    if (amorph1->is(#{cm_iss}))
+    amorph1->changeType(#{cm_s});
+    Finder::findAll(&amorph1, 1);
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *methylOnBridgeCMH1 = target();
+    assert(methylOnBridgeCMH1->type() == METHYL_ON_BRIDGE_CMH);
+    Atom *amorph1 = methylOnBridgeCMH1->atom(0);
+    assert(amorph1->is(#{cm_h}));
+    amorph1->activate();
+    if (amorph1->is(#{cm_hhh}))
     {
-        amorph1->changeType(#{cm_sss});
+        amorph1->changeType(#{cm_shh});
     }
-    else if (amorph1->is(#{cm_is}))
+    else if (amorph1->is(#{cm_shh}))
     {
-        amorph1->changeType(#{cm_iss});
+        amorph1->changeType(#{cm_ssh});
     }
     else
     {
-        assert(amorph1->is(#{cm_i}));
-        amorph1->changeType(#{cm_is});
+        assert(amorph1->is(#{cm_ssh}));
+        amorph1->changeType(#{cm_sss});
     }
     Finder::findAll(&amorph1, 1);
-                CODE
-              end
-
-              it_behaves_like :check_do_it
-              it_behaves_like :check_do_it do
-                include_context :with_ubiquitous
+                  CODE
+                end
               end
             end
 
@@ -131,7 +144,7 @@ module VersatileDiamond
               let(:typical_reaction) { dept_methyl_deactivation }
               let(:first_spec) { dept_activated_methyl_on_bridge }
 
-              it_behaves_like :check_do_it do
+              describe 'simple cases' do
                 let(:do_it_algorithm) do
                   <<-CODE
     SpecificSpec *methylOnBridgeCMs1 = target();
@@ -139,13 +152,19 @@ module VersatileDiamond
     Atom *amorph1 = methylOnBridgeCMs1->atom(0);
     assert(amorph1->is(#{role_cm}));
     amorph1->deactivate();
-    amorph1->changeType(#{cm_i});
+    amorph1->changeType(#{cm_h});
     Finder::findAll(&amorph1, 1);
                   CODE
+                end
+
+                it_behaves_like :check_do_it
+                it_behaves_like :check_do_it do
+                  let(:other_reactions) { [dept_methyl_activation] }
                 end
               end
 
-              describe 'all states' do
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
                 let(:do_it_algorithm) do
                   <<-CODE
     SpecificSpec *methylOnBridgeCMs1 = target();
@@ -153,29 +172,21 @@ module VersatileDiamond
     Atom *amorph1 = methylOnBridgeCMs1->atom(0);
     assert(amorph1->is(#{role_cm}));
     amorph1->deactivate();
-    if (amorph1->is(#{cm_sss}))
+    if (amorph1->is(#{cm_shh}))
     {
-        amorph1->changeType(#{cm_ss});
+        amorph1->changeType(#{cm_hhh});
     }
-    else if (amorph1->is(#{cm_iss}))
+    else if (amorph1->is(#{cm_ssh}))
     {
-        amorph1->changeType(#{cm_is});
+        amorph1->changeType(#{cm_shh});
     }
     else
     {
-        assert(amorph1->is(#{cm_is}));
-        amorph1->changeType(#{cm_i});
+        assert(amorph1->is(#{cm_sss}));
+        amorph1->changeType(#{cm_ssh});
     }
     Finder::findAll(&amorph1, 1);
                   CODE
-                end
-
-                it_behaves_like :check_do_it do
-                  include_context :with_ubiquitous
-                end
-
-                it_behaves_like :check_do_it do
-                  let(:other_reactions) { [dept_methyl_activation] }
                 end
               end
             end
@@ -194,7 +205,7 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{ct_s}));
     Handbook::amorph().insert(atoms1[1]);
     atoms1[0]->bondWith(atoms1[1]);
-    atoms1[0]->changeType(#{cb_i});
+    atoms1[0]->changeType(#{cb_f});
     Finder::findAll(atoms1, 2);
                   CODE
                 end
@@ -211,19 +222,45 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{ct_s}));
     Handbook::amorph().insert(atoms1[1]);
     atoms1[0]->bondWith(atoms1[1]);
-    assert(!atoms1[0]->is(#{cb_s}));
+    assert(!atoms1[0]->is(#{br_s}));
+    if (atoms1[0]->is(#{ct_sh}))
+    {
+        atoms1[0]->changeType(#{cb_h});
+    }
+    else
+    {
+        assert(atoms1[0]->is(#{ct_ss}));
+        atoms1[0]->changeType(#{cb_s});
+    }
+    Finder::findAll(atoms1, 2);
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:other_reactions) { [dept_migration_over_111] }
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *bridgeCTs1 = target();
+    assert(bridgeCTs1->type() == BRIDGE_CTs);
+    AtomBuilder builder;
+    Atom *atoms1[2] = { bridgeCTs1->atom(0), builder.buildC(#{cm_i}, 1) };
+    assert(atoms1[0]->is(#{ct_s}));
+    Handbook::amorph().insert(atoms1[1]);
+    atoms1[0]->bondWith(atoms1[1]);
     if (atoms1[0]->is(#{br_s}))
     {
         atoms1[0]->changeType(#{br_m});
     }
-    else if (atoms1[0]->is(#{ct_ss}))
+    else if (atoms1[0]->is(#{ct_sh}))
     {
-        atoms1[0]->changeType(#{cb_s});
+        atoms1[0]->changeType(#{cb_h});
     }
     else
     {
-        assert(atoms1[0]->is(#{ct_is}));
-        atoms1[0]->changeType(#{cb_i});
+        assert(atoms1[0]->is(#{ct_ss}));
+        atoms1[0]->changeType(#{cb_s});
     }
     Finder::findAll(atoms1, 2);
                   CODE
@@ -248,7 +285,7 @@ module VersatileDiamond
     atoms1[0]->bondWith(atoms1[1]);
     atoms1[1]->bondWith(atoms1[2]);
     atoms1[1]->bondWith(atoms1[2]);
-    atoms1[0]->changeType(#{cb_i});
+    atoms1[0]->changeType(#{cb_f});
     Finder::findAll(atoms1, 3);
                   CODE
                 end
@@ -268,19 +305,15 @@ module VersatileDiamond
     atoms1[0]->bondWith(atoms1[1]);
     atoms1[1]->bondWith(atoms1[2]);
     atoms1[1]->bondWith(atoms1[2]);
-    assert(!atoms1[0]->is(#{cb_s}));
-    if (atoms1[0]->is(#{br_s}))
+    assert(!atoms1[0]->is(#{br_s}));
+    if (atoms1[0]->is(#{ct_sh}))
     {
-        atoms1[0]->changeType(#{br_m});
-    }
-    else if (atoms1[0]->is(#{ct_ss}))
-    {
-        atoms1[0]->changeType(#{cb_s});
+        atoms1[0]->changeType(#{cb_h});
     }
     else
     {
-        assert(atoms1[0]->is(#{ct_is}));
-        atoms1[0]->changeType(#{cb_i});
+        assert(atoms1[0]->is(#{ct_ss}));
+        atoms1[0]->changeType(#{cb_s});
     }
     Finder::findAll(atoms1, 3);
                   CODE
@@ -298,7 +331,7 @@ module VersatileDiamond
     SpecificSpec *methylOnBridgeCMi1 = target();
     assert(methylOnBridgeCMi1->type() == METHYL_ON_BRIDGE_CMi);
     Atom *atoms1[2] = { methylOnBridgeCMi1->atom(1), methylOnBridgeCMi1->atom(0) };
-    assert(atoms1[0]->is(#{role_cb}));
+    assert(atoms1[0]->is(#{cb_f}));
     assert(atoms1[1]->is(#{cm_i}));
     Handbook::amorph().erase(atoms1[1]);
     atoms1[1]->unbondFrom(atoms1[0]);
@@ -316,18 +349,18 @@ module VersatileDiamond
     SpecificSpec *methylOnBridgeCMi1 = target();
     assert(methylOnBridgeCMi1->type() == METHYL_ON_BRIDGE_CMi);
     Atom *atoms1[2] = { methylOnBridgeCMi1->atom(1), methylOnBridgeCMi1->atom(0) };
-    assert(atoms1[0]->is(#{role_cb}));
+    assert(atoms1[0]->is(#{cb_f}));
     assert(atoms1[1]->is(#{cm_i}));
     Handbook::amorph().erase(atoms1[1]);
     atoms1[1]->unbondFrom(atoms1[0]);
-    if (atoms1[0]->is(#{cb_s}))
+    if (atoms1[0]->is(#{cb_h}))
     {
-        atoms1[0]->changeType(#{ct_ss});
+        atoms1[0]->changeType(#{ct_sh});
     }
     else
     {
-        assert(atoms1[0]->is(#{cb_i}));
-        atoms1[0]->changeType(#{ct_is});
+        assert(atoms1[0]->is(#{cb_s}));
+        atoms1[0]->changeType(#{ct_ss});
     }
     Handbook::scavenger().markAtom(atoms1[1]);
     Finder::findAll(&atoms1[0], 1);
@@ -373,14 +406,14 @@ module VersatileDiamond
     Handbook::amorph().erase(atoms1[1]);
     Handbook::amorph().erase(atoms1[2]);
     atoms1[1]->unbondFrom(atoms1[0]);
-    if (atoms1[0]->is(#{cb_s}))
+    if (atoms1[0]->is(#{cb_h}))
     {
-        atoms1[0]->changeType(#{ct_ss});
+        atoms1[0]->changeType(#{ct_sh});
     }
     else
     {
-        assert(atoms1[0]->is(#{cb_i}));
-        atoms1[0]->changeType(#{ct_is});
+        assert(atoms1[0]->is(#{cb_s}));
+        atoms1[0]->changeType(#{ct_ss});
     }
     Handbook::scavenger().markAtom(atoms1[1]);
     Handbook::scavenger().markAtom(atoms1[2]);
@@ -403,8 +436,8 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{role_ctr}));
     assert(atoms1[1]->is(#{role_cm}));
     atoms1[0]->unbondFrom(atoms1[1]);
-    atoms1[0]->changeType(#{ct_is});
-    atoms1[1]->changeType(#{cm_is});
+    atoms1[0]->changeType(#{ct_s});
+    atoms1[1]->changeType(#{cm_s});
     Finder::findAll(atoms1, 2);
                   CODE
                 end
@@ -420,27 +453,27 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{role_ctr}));
     assert(atoms1[1]->is(#{role_cm}));
     atoms1[0]->unbondFrom(atoms1[1]);
-    if (atoms1[0]->is(#{cb_s}))
+    if (atoms1[0]->is(#{cb_h}))
     {
+        atoms1[0]->changeType(#{ct_sh});
+    }
+    else
+    {
+        assert(atoms1[0]->is(#{cb_s}));
         atoms1[0]->changeType(#{ct_ss});
     }
+    if (atoms1[1]->is(#{sm_hh}))
+    {
+        atoms1[1]->changeType(#{cm_shh});
+    }
+    else if (atoms1[1]->is(#{sm_sh}))
+    {
+        atoms1[1]->changeType(#{cm_ssh});
+    }
     else
     {
-        assert(atoms1[0]->is(#{cb_i}));
-        atoms1[0]->changeType(#{ct_is});
-    }
-    if (atoms1[1]->is(#{sm_ss}))
-    {
+        assert(atoms1[1]->is(#{sm_ss}));
         atoms1[1]->changeType(#{cm_sss});
-    }
-    else if (atoms1[1]->is(#{sm_is}))
-    {
-        atoms1[1]->changeType(#{cm_iss});
-    }
-    else
-    {
-        assert(atoms1[1]->is(#{sm_i}));
-        atoms1[1]->changeType(#{cm_is});
     }
     Finder::findAll(atoms1, 2);
                   CODE
@@ -454,7 +487,6 @@ module VersatileDiamond
               let(:second_spec) { dept_activated_bridge }
 
               it_behaves_like :check_do_it do
-                let(:second_spec) { dept_activated_bridge }
                 let(:do_it_algorithm) do
                   <<-CODE
     SpecificSpec *species1[2] = { target(0), target(1) };
@@ -464,16 +496,33 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{snd_role_ct}));
     assert(atoms1[1]->is(#{role_cm}));
     atoms1[0]->bondWith(atoms1[1]);
-    atoms1[0]->changeType(#{cb_i});
-    atoms1[1]->changeType(#{sm_i});
+    atoms1[0]->changeType(#{cb_f});
+    atoms1[1]->changeType(#{sm_f});
     Finder::findAll(atoms1, 2);
                   CODE
                 end
               end
 
               it_behaves_like :check_do_it do
-                let(:other_reactions) { [dept_methyl_activation] }
-                let(:second_spec) { dept_activated_bridge }
+                let(:other_reactions) do
+                  [dept_methyl_activation, dept_methyl_deactivation]
+                end
+                let(:base_specs) { [dept_methyl_on_right_bridge_base] }
+                let(:specific_specs) do
+                  [
+                    dept_activated_bridge,
+                    dept_hydrogenated_bridge,
+                    dept_activated_hydrogenated_bridge,
+                    dept_activated_incoherent_bridge,
+                    dept_methyl_on_incoherent_bridge,
+                    dept_methyl_on_activated_bridge,
+                    dept_activated_methyl_on_bridge,
+                    dept_incoherent_hydrogenated_methyl_on_bridge,
+                    dept_twise_activated_cross_bridge_on_bridges,
+                    dept_incoherent_hydrogenated_high_bridge,
+                    dept_right_activated_bridge
+                  ]
+                end
                 let(:do_it_algorithm) do
                   <<-CODE
     SpecificSpec *species1[2] = { target(0), target(1) };
@@ -483,21 +532,16 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{snd_role_ct}));
     assert(atoms1[1]->is(#{role_cm}));
     atoms1[0]->bondWith(atoms1[1]);
-    atoms1[0]->changeType(#{cb_i});
-    assert(!atoms1[1]->is(#{sm_is}) && !atoms1[1]->is(#{sm_ss}));
-    if (atoms1[1]->is(#{cm_sss}))
+    if (atoms1[0]->is(#{br_s}))
     {
-        atoms1[1]->changeType(#{sm_ss});
-    }
-    else if (atoms1[1]->is(#{cm_iss}))
-    {
-        atoms1[1]->changeType(#{sm_is});
+        atoms1[0]->changeType(#{br_m});
     }
     else
     {
-        assert(atoms1[1]->is(#{cm_is}));
-        atoms1[1]->changeType(#{sm_i});
+        assert(atoms1[0]->is(#{ct_sh}));
+        atoms1[0]->changeType(#{cb_i});
     }
+    atoms1[1]->changeType(#{sm_f});
     Finder::findAll(atoms1, 2);
                   CODE
                 end
@@ -505,7 +549,6 @@ module VersatileDiamond
 
               it_behaves_like :check_do_it do
                 include_context :with_ubiquitous
-                let(:second_spec) { dept_activated_bridge }
                 let(:do_it_algorithm) do
                   <<-CODE
     SpecificSpec *species1[2] = { target(0), target(1) };
@@ -515,33 +558,28 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{snd_role_ct}));
     assert(atoms1[1]->is(#{role_cm}));
     atoms1[0]->bondWith(atoms1[1]);
-    assert(!atoms1[0]->is(#{cb_s}));
-    if (atoms1[0]->is(#{br_s}))
+    assert(!atoms1[0]->is(#{br_s}));
+    if (atoms1[0]->is(#{ct_sh}))
     {
-        atoms1[0]->changeType(#{br_m});
+        atoms1[0]->changeType(#{cb_h});
     }
-    else if (atoms1[0]->is(#{ct_ss}))
+    else
     {
+        assert(atoms1[0]->is(#{ct_ss}));
         atoms1[0]->changeType(#{cb_s});
     }
+    if (atoms1[1]->is(#{cm_shh}))
+    {
+        atoms1[1]->changeType(#{sm_hh});
+    }
+    else if (atoms1[1]->is(#{cm_ssh}))
+    {
+        atoms1[1]->changeType(#{sm_sh});
+    }
     else
     {
-        assert(atoms1[0]->is(#{ct_is}));
-        atoms1[0]->changeType(#{cb_i});
-    }
-    assert(!atoms1[1]->is(#{sm_is}) && !atoms1[1]->is(#{sm_ss}));
-    if (atoms1[1]->is(#{cm_sss}))
-    {
+        assert(atoms1[1]->is(#{cm_sss}));
         atoms1[1]->changeType(#{sm_ss});
-    }
-    else if (atoms1[1]->is(#{cm_iss}))
-    {
-        atoms1[1]->changeType(#{sm_is});
-    }
-    else
-    {
-        assert(atoms1[1]->is(#{cm_is}));
-        atoms1[1]->changeType(#{sm_i});
     }
     Finder::findAll(atoms1, 2);
                   CODE
@@ -553,8 +591,11 @@ module VersatileDiamond
               let(:typical_reaction) { dept_one_dimer_hydrogen_migration }
               let(:first_spec) { dept_activated_incoherent_dimer }
               let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
-              let(:do_it_algorithm) do
-                <<-CODE
+
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
     SpecificSpec *dimerCLsCRi1 = target();
     assert(dimerCLsCRi1->type() == DIMER_CLs_CRi);
     Atom *atoms1[2] = { dimerCLsCRi1->atom(0), dimerCLsCRi1->atom(3) };
@@ -566,12 +607,27 @@ module VersatileDiamond
     assert(!atoms1[1]->is(#{cd_s}));
     atoms1[1]->changeType(#{cd_s});
     Finder::findAll(atoms1, 2);
-                CODE
+                  CODE
+                end
               end
 
-              it_behaves_like :check_do_it
               it_behaves_like :check_do_it do
                 include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *dimerCLsCRi1 = target();
+    assert(dimerCLsCRi1->type() == DIMER_CLs_CRi);
+    Atom *atoms1[2] = { dimerCLsCRi1->atom(0), dimerCLsCRi1->atom(3) };
+    assert(atoms1[0]->is(#{role_cl}));
+    assert(atoms1[1]->is(#{role_cr}));
+    atoms1[0]->deactivate();
+    atoms1[1]->activate();
+    atoms1[0]->changeType(#{cd_h});
+    assert(!atoms1[1]->is(#{cd_s}));
+    atoms1[1]->changeType(#{cd_s});
+    Finder::findAll(atoms1, 2);
+                  CODE
+                end
               end
             end
 
@@ -605,23 +661,23 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{role_cr}));
     assert(atoms1[1]->is(#{role_cr}));
     atoms1[0]->unbondFrom(atoms1[1]);
-    if (atoms1[0]->is(#{cd_s}))
+    if (atoms1[0]->is(#{cd_h}))
     {
+        atoms1[0]->changeType(#{ct_sh});
+    }
+    else
+    {
+        assert(atoms1[0]->is(#{cd_s}));
         atoms1[0]->changeType(#{ct_ss});
     }
+    if (atoms1[1]->is(#{cd_h}))
+    {
+        atoms1[1]->changeType(#{ct_sh});
+    }
     else
     {
-        assert(atoms1[0]->is(#{cd_i}));
-        atoms1[0]->changeType(#{ct_is});
-    }
-    if (atoms1[1]->is(#{cd_s}))
-    {
+        assert(atoms1[1]->is(#{cd_s}));
         atoms1[1]->changeType(#{ct_ss});
-    }
-    else
-    {
-        assert(atoms1[1]->is(#{cd_i}));
-        atoms1[1]->changeType(#{ct_is});
     }
     Finder::findAll(atoms1, 2);
                   CODE
@@ -653,6 +709,7 @@ module VersatileDiamond
 
               it_behaves_like :check_do_it do
                 let(:other_reactions) { [dept_hydrogen_abs_from_gap] }
+                let(:base_specs) { [dept_bridge_with_dimer_base] }
                 let(:do_it_algorithm) do
                   <<-CODE
     SpecificSpec *species1[2] = { target(0), target(1) };
@@ -688,31 +745,24 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{role_ct}));
     assert(atoms1[1]->is(#{snd_role_ct}));
     atoms1[0]->bondWith(atoms1[1]);
-    if (atoms1[0]->is(#{ct_ss}))
+    if (atoms1[0]->is(#{ct_sh}))
     {
+        atoms1[0]->changeType(#{cd_h});
+    }
+    else
+    {
+        assert(atoms1[0]->is(#{ct_ss}));
         atoms1[0]->changeType(#{cd_s});
     }
+    assert(!atoms1[1]->is(#{br_s}));
+    if (atoms1[1]->is(#{ct_sh}))
+    {
+        atoms1[1]->changeType(#{cd_h});
+    }
     else
     {
-        assert(atoms1[0]->is(#{ct_is}));
-        atoms1[0]->changeType(#{cd_i});
-    }
-    if (atoms1[1]->is(#{cd_s}))
-    {
-        atoms1[1]->changeType(#{tm_c});
-    }
-    else if (atoms1[1]->is(#{br_s}))
-    {
-        atoms1[1]->changeType(#{bd_c});
-    }
-    else if (atoms1[1]->is(#{ct_ss}))
-    {
+        assert(atoms1[1]->is(#{ct_ss}));
         atoms1[1]->changeType(#{cd_s});
-    }
-    else
-    {
-        assert(atoms1[1]->is(#{ct_is}));
-        atoms1[1]->changeType(#{cd_i});
     }
     Finder::findAll(atoms1, 2);
                   CODE
@@ -738,9 +788,10 @@ module VersatileDiamond
     assert(atoms1[2]->is(#{role_cm}));
     atoms1[0]->unbondFrom(atoms1[2]);
     atoms1[0]->bondWith(atoms1[1]);
+    assert(!atoms1[0]->is(#{md_d}));
     atoms1[0]->changeType(#{md_d});
-    atoms1[1]->changeType(#{cd_i});
-    atoms1[2]->changeType(#{cm_is});
+    atoms1[1]->changeType(#{cd_f});
+    atoms1[2]->changeType(#{cm_s});
     Finder::findAll(atoms1, 3);
                   CODE
                 end
@@ -766,40 +817,34 @@ module VersatileDiamond
     assert(atoms1[2]->is(#{role_cm}));
     atoms1[0]->unbondFrom(atoms1[2]);
     atoms1[0]->bondWith(atoms1[1]);
+    assert(!atoms1[0]->is(#{md_d}));
     atoms1[0]->changeType(#{md_d});
-    if (atoms1[1]->is(#{cd_s}))
-    {
-        atoms1[1]->changeType(#{tm_c});
-    }
-    else if (atoms1[1]->is(#{cb_s}))
+    assert(!atoms1[1]->is(#{br_s}));
+    if (atoms1[1]->is(#{cb_s}))
     {
         atoms1[1]->changeType(#{md_d});
     }
-    else if (atoms1[1]->is(#{br_s}))
+    else if (atoms1[1]->is(#{ct_sh}))
     {
-        atoms1[1]->changeType(#{bd_c});
+        atoms1[1]->changeType(#{cd_h});
     }
-    else if (atoms1[1]->is(#{ct_ss}))
+    else
     {
+        assert(atoms1[1]->is(#{ct_ss}));
         atoms1[1]->changeType(#{cd_s});
     }
+    if (atoms1[2]->is(#{hm_hh}))
+    {
+        atoms1[2]->changeType(#{cm_shh});
+    }
+    else if (atoms1[2]->is(#{hm_sh}))
+    {
+        atoms1[2]->changeType(#{cm_ssh});
+    }
     else
     {
-        assert(atoms1[1]->is(#{ct_is}));
-        atoms1[1]->changeType(#{cd_i});
-    }
-    if (atoms1[2]->is(#{hm_ss}))
-    {
+        assert(atoms1[2]->is(#{hm_ss}));
         atoms1[2]->changeType(#{cm_sss});
-    }
-    else if (atoms1[2]->is(#{hm_is}))
-    {
-        atoms1[2]->changeType(#{cm_iss});
-    }
-    else
-    {
-        assert(atoms1[2]->is(#{hm_i}));
-        atoms1[2]->changeType(#{cm_is});
     }
     Finder::findAll(atoms1, 3);
                   CODE
@@ -827,9 +872,11 @@ module VersatileDiamond
     crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at(atoms1[0], atoms1[1]));
     atoms1[0]->unbondFrom(atoms1[2]);
     atoms1[1]->bondWith(atoms1[2]);
+    assert(!atoms1[0]->is(#{br_s}));
     atoms1[0]->changeType(#{br_s});
+    assert(!atoms1[1]->is(#{bd_c}));
     atoms1[1]->changeType(#{bd_c});
-    atoms1[2]->changeType(#{ct_i});
+    atoms1[2]->changeType(#{ct_f});
     Finder::findAll(atoms1, 3);
                   CODE
                 end
@@ -850,20 +897,22 @@ module VersatileDiamond
     crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at(atoms1[0], atoms1[1]));
     atoms1[0]->unbondFrom(atoms1[2]);
     atoms1[1]->bondWith(atoms1[2]);
+    assert(!atoms1[0]->is(#{br_s}));
     atoms1[0]->changeType(#{br_s});
+    assert(!atoms1[1]->is(#{bd_c}));
     atoms1[1]->changeType(#{bd_c});
-    if (atoms1[2]->is(#{hm_ss}))
+    if (atoms1[2]->is(#{hm_hh}))
     {
-        atoms1[2]->changeType(#{ct_ss});
+        atoms1[2]->changeType(#{ct_hh});
     }
-    else if (atoms1[2]->is(#{hm_is}))
+    else if (atoms1[2]->is(#{hm_sh}))
     {
-        atoms1[2]->changeType(#{ct_is});
+        atoms1[2]->changeType(#{ct_sh});
     }
     else
     {
-        assert(atoms1[2]->is(#{hm_i}));
-        atoms1[2]->changeType(#{ct_i});
+        assert(atoms1[2]->is(#{hm_ss}));
+        atoms1[2]->changeType(#{ct_ss});
     }
     Finder::findAll(atoms1, 3);
                   CODE
@@ -893,7 +942,9 @@ module VersatileDiamond
     crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at(atoms1[0], atoms1[1]));
     atoms1[0]->unbondFrom(atoms1[2]);
     atoms1[1]->bondWith(atoms1[2]);
+    assert(!atoms1[0]->is(#{br_s}));
     atoms1[0]->changeType(#{br_s});
+    assert(!atoms1[1]->is(#{bd_c}));
     atoms1[1]->changeType(#{bd_c});
     atoms1[2]->changeType(#{ct_ih});
     Finder::findAll(atoms1, 3);
@@ -916,20 +967,18 @@ module VersatileDiamond
     crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at(atoms1[0], atoms1[1]));
     atoms1[0]->unbondFrom(atoms1[2]);
     atoms1[1]->bondWith(atoms1[2]);
+    assert(!atoms1[0]->is(#{br_s}));
     atoms1[0]->changeType(#{br_s});
+    assert(!atoms1[1]->is(#{bd_c}));
     atoms1[1]->changeType(#{bd_c});
-    if (atoms1[2]->is(#{hm_sh}))
+    if (atoms1[2]->is(#{hm_hh}))
     {
-        atoms1[2]->changeType(#{ct_sh});
-    }
-    else if (atoms1[2]->is(#{hm_ss}))
-    {
-        atoms1[2]->changeType(#{ct_ss});
+        atoms1[2]->changeType(#{ct_hh});
     }
     else
     {
-        assert(atoms1[2]->is(#{hm_hh}));
-        atoms1[2]->changeType(#{ct_hh});
+        assert(atoms1[2]->is(#{hm_sh}));
+        atoms1[2]->changeType(#{ct_sh});
     }
     Finder::findAll(atoms1, 3);
                   CODE
@@ -951,8 +1000,8 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{role_ct}));
     assert(atoms1[1]->is(#{snd_role_cm}));
     atoms1[0]->bondWith(atoms1[1]);
-    atoms1[0]->changeType(#{cb_i});
-    atoms1[1]->changeType(#{sm_i});
+    atoms1[0]->changeType(#{cb_f});
+    atoms1[1]->changeType(#{sm_f});
     Finder::findAll(atoms1, 2);
                   CODE
                 end
@@ -969,37 +1018,32 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{role_ct}));
     assert(atoms1[1]->is(#{snd_role_cm}));
     atoms1[0]->bondWith(atoms1[1]);
-    assert(!atoms1[0]->is(#{cb_s}));
+    assert(!atoms1[0]->is(#{br_s}));
     if (atoms1[0]->is(#{cd_s}))
     {
         atoms1[0]->changeType(#{snd_role_cr});
     }
-    else if (atoms1[0]->is(#{br_s}))
+    else if (atoms1[0]->is(#{ct_sh}))
     {
-        atoms1[0]->changeType(#{br_m});
+        atoms1[0]->changeType(#{cb_h});
     }
-    else if (atoms1[0]->is(#{ct_ss}))
+    else
     {
+        assert(atoms1[0]->is(#{ct_ss}));
         atoms1[0]->changeType(#{cb_s});
     }
+    if (atoms1[1]->is(#{cm_shh}))
+    {
+        atoms1[1]->changeType(#{sm_hh});
+    }
+    else if (atoms1[1]->is(#{cm_ssh}))
+    {
+        atoms1[1]->changeType(#{sm_sh});
+    }
     else
     {
-        assert(atoms1[0]->is(#{ct_is}));
-        atoms1[0]->changeType(#{cb_i});
-    }
-    assert(!atoms1[1]->is(#{sm_is}) && !atoms1[1]->is(#{sm_ss}));
-    if (atoms1[1]->is(#{cm_sss}))
-    {
+        assert(atoms1[1]->is(#{cm_sss}));
         atoms1[1]->changeType(#{sm_ss});
-    }
-    else if (atoms1[1]->is(#{cm_iss}))
-    {
-        atoms1[1]->changeType(#{sm_is});
-    }
-    else
-    {
-        assert(atoms1[1]->is(#{cm_is}));
-        atoms1[1]->changeType(#{sm_i});
     }
     Finder::findAll(atoms1, 2);
                   CODE
@@ -1054,17 +1098,10 @@ module VersatileDiamond
     atoms1[0]->bondWith(atoms1[3]);
     atoms1[1]->bondWith(atoms1[3]);
     atoms1[0]->changeType(#{br_i});
-    if (atoms1[1]->is(#{cd_s}))
-    {
-        atoms1[1]->changeType(#{br_s});
-    }
-    else
-    {
-        assert(atoms1[1]->is(#{cd_i}));
-        atoms1[1]->changeType(#{br_i});
-    }
-    atoms1[2]->changeType(#{cd_i});
-    atoms1[3]->changeType(#{cd_i});
+    assert(!atoms1[1]->is(#{cd_s}));
+    atoms1[1]->changeType(#{br_i});
+    atoms1[2]->changeType(#{cd_f});
+    atoms1[3]->changeType(#{cd_f});
     Finder::findAll(atoms1, 4);
                   CODE
                 end
@@ -1089,34 +1126,33 @@ module VersatileDiamond
     atoms1[3]->activate();
     atoms1[0]->bondWith(atoms1[3]);
     atoms1[1]->bondWith(atoms1[3]);
-    atoms1[0]->changeType(#{br_i});
-    if (atoms1[1]->is(#{cd_s}))
+    atoms1[0]->changeType(#{br_h});
+    if (atoms1[1]->is(#{cd_h}))
     {
+        atoms1[1]->changeType(#{br_h});
+    }
+    else
+    {
+        assert(atoms1[1]->is(#{cd_s}));
         atoms1[1]->changeType(#{br_s});
     }
+    if (atoms1[2]->is(#{cb_h}))
+    {
+        atoms1[2]->changeType(#{cd_h});
+    }
     else
     {
-        assert(atoms1[1]->is(#{cd_i}));
-        atoms1[1]->changeType(#{br_i});
-    }
-    if (atoms1[2]->is(#{cb_s}))
-    {
+        assert(atoms1[2]->is(#{cb_s}));
         atoms1[2]->changeType(#{cd_s});
     }
+    if (atoms1[3]->is(#{cm_shh}))
+    {
+        atoms1[3]->changeType(#{cd_h});
+    }
     else
     {
-        assert(atoms1[2]->is(#{cb_i}));
-        atoms1[2]->changeType(#{cd_i});
-    }
-    assert(!atoms1[3]->is(#{cm_sss}));
-    if (atoms1[3]->is(#{cm_iss}))
-    {
+        assert(atoms1[3]->is(#{cm_ssh}));
         atoms1[3]->changeType(#{cd_s});
-    }
-    else
-    {
-        assert(atoms1[3]->is(#{cm_is}));
-        atoms1[3]->changeType(#{cd_i});
     }
     Finder::findAll(atoms1, 4);
                   CODE
@@ -1146,10 +1182,12 @@ module VersatileDiamond
     crystalBy(atoms1[1])->insert(atoms1[3], Diamond::front_110_at(atoms1[1], atoms1[2]));
     atoms1[1]->bondWith(atoms1[3]);
     atoms1[2]->bondWith(atoms1[3]);
-    atoms1[0]->changeType(#{cd_i});
+    atoms1[0]->changeType(#{cd_f});
+    assert(!atoms1[1]->is(#{tb_c}));
     atoms1[1]->changeType(#{tb_c});
+    assert(!atoms1[2]->is(#{tb_c}));
     atoms1[2]->changeType(#{tb_c});
-    atoms1[3]->changeType(#{cd_i});
+    atoms1[3]->changeType(#{cd_f});
     Finder::findAll(atoms1, 4);
                   CODE
                 end
@@ -1172,25 +1210,27 @@ module VersatileDiamond
     crystalBy(atoms1[1])->insert(atoms1[3], Diamond::front_110_at(atoms1[1], atoms1[2]));
     atoms1[1]->bondWith(atoms1[3]);
     atoms1[2]->bondWith(atoms1[3]);
-    if (atoms1[0]->is(#{cb_s}))
+    if (atoms1[0]->is(#{cb_h}))
     {
+        atoms1[0]->changeType(#{cd_h});
+    }
+    else
+    {
+        assert(atoms1[0]->is(#{cb_s}));
         atoms1[0]->changeType(#{cd_s});
     }
-    else
-    {
-        assert(atoms1[0]->is(#{cb_i}));
-        atoms1[0]->changeType(#{cd_i});
-    }
+    assert(!atoms1[1]->is(#{tb_c}));
     atoms1[1]->changeType(#{tb_c});
+    assert(!atoms1[2]->is(#{tb_c}));
     atoms1[2]->changeType(#{tb_c});
-    if (atoms1[3]->is(#{cm_sss}))
+    if (atoms1[3]->is(#{cm_ssh}))
     {
-        atoms1[3]->changeType(#{cd_s});
+        atoms1[3]->changeType(#{cd_h});
     }
     else
     {
-        assert(atoms1[3]->is(#{cm_iss}));
-        atoms1[3]->changeType(#{cd_i});
+        assert(atoms1[3]->is(#{cm_sss}));
+        atoms1[3]->changeType(#{cd_s});
     }
     Finder::findAll(atoms1, 4);
                   CODE
@@ -1222,8 +1262,10 @@ module VersatileDiamond
     crystalBy(atoms1[0])->insert(atoms1[3], Diamond::front_110_at(atoms1[0], atoms1[2]));
     atoms1[0]->bondWith(atoms1[3]);
     atoms1[2]->bondWith(atoms1[3]);
+    assert(!atoms1[0]->is(#{bd_c}));
     atoms1[0]->changeType(#{bd_c});
     atoms1[1]->changeType(#{cd_i});
+    assert(!atoms1[2]->is(#{tb_c}));
     atoms1[2]->changeType(#{tb_c});
     atoms1[3]->changeType(#{cd_i});
     Finder::findAll(atoms1, 4);
@@ -1248,25 +1290,27 @@ module VersatileDiamond
     crystalBy(atoms1[0])->insert(atoms1[3], Diamond::front_110_at(atoms1[0], atoms1[2]));
     atoms1[0]->bondWith(atoms1[3]);
     atoms1[2]->bondWith(atoms1[3]);
+    assert(!atoms1[0]->is(#{bd_c}));
     atoms1[0]->changeType(#{bd_c});
-    if (atoms1[1]->is(#{cb_s}))
+    if (atoms1[1]->is(#{cb_h}))
     {
+        atoms1[1]->changeType(#{cd_h});
+    }
+    else
+    {
+        assert(atoms1[1]->is(#{cb_s}));
         atoms1[1]->changeType(#{cd_s});
     }
-    else
-    {
-        assert(atoms1[1]->is(#{cb_i}));
-        atoms1[1]->changeType(#{cd_i});
-    }
+    assert(!atoms1[2]->is(#{tb_c}));
     atoms1[2]->changeType(#{tb_c});
-    if (atoms1[3]->is(#{cm_sss}))
+    if (atoms1[3]->is(#{cm_ssh}))
     {
-        atoms1[3]->changeType(#{cd_s});
+        atoms1[3]->changeType(#{cd_h});
     }
     else
     {
-        assert(atoms1[3]->is(#{cm_iss}));
-        atoms1[3]->changeType(#{cd_i});
+        assert(atoms1[3]->is(#{cm_sss}));
+        atoms1[3]->changeType(#{cd_s});
     }
     Finder::findAll(atoms1, 4);
                   CODE
@@ -1287,7 +1331,9 @@ module VersatileDiamond
     assert(atoms1[1]->is(#{role_cr}));
     atoms1[0]->activate();
     atoms1[1]->activate();
+    assert(!atoms1[0]->is(#{br_s}));
     atoms1[0]->changeType(#{br_s});
+    assert(!atoms1[1]->is(#{br_s}));
     atoms1[1]->changeType(#{br_s});
     Finder::findAll(atoms1, 2);
                 CODE
