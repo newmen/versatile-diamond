@@ -15,6 +15,13 @@ module VersatileDiamond
             end
           end
 
+          # Defines dependent instances
+          def define_dependent_reverse_reactions(klass, names_pairs)
+            names_pairs.each do |dept_root, concept_name|
+              set("dept_#{dept_root}") { klass.new(send(concept_name).reverse) }
+            end
+          end
+
           # Defines dependent theres
           def define_dependent_theres(zipped_names_with_reactions)
             zipped_names_with_reactions.each do |there_name, reaction_name|
@@ -146,27 +153,16 @@ module VersatileDiamond
           :ih_high_bridge_stand_to_dimer,
           :one_dimer_hydrogen_migration
         ])
-        set(:dept_dimer_drop) do
-          Organizers::DependentTypicalReaction.new(dimer_formation.reverse)
-        end
-        set(:dept_sierpinski_formation) do
-          Organizers::DependentTypicalReaction.new(sierpinski_drop.reverse)
-        end
-        set(:dept_intermed_migr_db_drop) do
-          Organizers::DependentTypicalReaction.new(intermed_migr_db_formation.reverse)
-        end
-        set(:dept_intermed_migr_dc_drop) do
-          Organizers::DependentTypicalReaction.new(intermed_migr_dc_formation.reverse)
-        end
-        set(:dept_intermed_migr_dh_drop) do
-          Organizers::DependentTypicalReaction.new(intermed_migr_dh_formation.reverse)
-        end
-        set(:dept_intermed_migr_df_drop) do
-          Organizers::DependentTypicalReaction.new(intermed_migr_df_formation.reverse)
-        end
-        set(:dept_reverse_migration_over_111) do
-          Organizers::DependentTypicalReaction.new(migration_over_111.reverse)
-        end
+        define_dependent_reverse_reactions(DependentTypicalReaction, [
+          [:dimer_drop, :dimer_formation],
+          [:sierpinski_formation, :sierpinski_drop],
+          [:intermed_migr_db_drop, :intermed_migr_db_formation],
+          [:intermed_migr_dc_drop, :intermed_migr_dc_formation],
+          [:intermed_migr_dh_drop, :intermed_migr_dh_formation],
+          [:intermed_migr_df_drop, :intermed_migr_df_formation],
+          [:reverse_migration_over_111, :migration_over_111],
+          [:methyl_on_dimer_to_high_bridge, :high_bridge_to_methyl_on_dimer]
+        ])
 
         define_dependents(DependentLateralReaction, [
           :end_lateral_idd,
