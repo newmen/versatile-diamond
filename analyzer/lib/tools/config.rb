@@ -114,11 +114,13 @@ module VersatileDiamond
           arrenius = reaction.rate * (temp ** reaction.temp_power) *
             Math.exp(-reaction.activation / (Dimension::R * temp))
 
-          reaction.gases_num == 0 ?
-            arrenius :
+          if reaction.gases_num == 0
+            arrenius
+          else
             reaction.each(:source).reduce(arrenius) do |acc, spec|
               spec.gas? ? acc * concentration_value(spec) : acc
             end
+          end
         end
 
         # Finds concenctration value for some spec

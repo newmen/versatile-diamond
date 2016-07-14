@@ -157,7 +157,7 @@ module VersatileDiamond
       # Calculate full rate of reaction
       # @return [Float] the full raction rate
       def full_rate
-        @activation && @rate ? Tools::Config.rate(self) : 0
+        @rate ? Tools::Config.rate(self) : 0
       end
 
       # Checks that current reaction has not zero rate
