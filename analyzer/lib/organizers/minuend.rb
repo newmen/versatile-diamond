@@ -74,7 +74,7 @@ module VersatileDiamond
       end
 
       # Checks whether the key is used in current links
-      # @param [Array] mirrored_keys the keys which was mapped to keys of subtrahend
+      # @param [Array] mirrored_keys the keys which were mapped to keys of subtrahend
       # @param [Object] key the checkable key
       # @return [Boolean] is used or not
       def used?(mirrored_keys, key)

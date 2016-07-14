@@ -90,7 +90,7 @@ module VersatileDiamond
           mirrors.each(&block)
 
           mirror = mirrors[:source]
-          # here there objects which was used for creating a duplicate, will be
+          # here there objects which were used for creating a duplicate, will be
           # changed by swapping target species
           theres.each do |there|
             there.target_specs.each do |spec|

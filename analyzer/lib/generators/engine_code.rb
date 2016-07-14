@@ -265,7 +265,7 @@ module VersatileDiamond
       #   will be checked of several times usation for source species
       # @return [Hash] the classification hash, where keys are specie names and values
       #   are hashes, which keys are anchors as atom properties and values are numbers,
-      #   of usage this properties in all another major species
+      #   of usage these properties in all another major species
       # @example
       #   {
       #     :bridge => {

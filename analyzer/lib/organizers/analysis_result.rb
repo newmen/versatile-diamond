@@ -234,7 +234,7 @@ module VersatileDiamond
       # Organize dependencies between all stored reactions.
       # Also organize dependencies between termination species and their complex
       # parents.
-      # The lateral reactions which was missed by user and which could be is combined.
+      # The lateral reactions which were missed by user and which could be is combined.
       # Combined lateral reactions extends initial list of lateral reactions.
       def organize_all_reactions_dependencies!
         nt_spec_cache = @specific_specs.merge(@base_specs)

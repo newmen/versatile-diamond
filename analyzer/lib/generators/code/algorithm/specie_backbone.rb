@@ -161,7 +161,7 @@ module VersatileDiamond
           # @param [Array] nodes the set of similar nodes to which reverse relations
           #   will be excluded
           # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-          #   atom by which the nodes was selected
+          #   atom by which the nodes were selected
           # @return [Hash] the graph wihtout excess reverse relations
           def full_clear_reverse_rels(graph, nodes, atom)
             is_latticed = !!atom.lattice
@@ -222,7 +222,7 @@ module VersatileDiamond
           #
           # @param [Hash] graph the graph which uses for receive next nodes
           # @param [Set] visited nodes
-          # @return [Array] the sequence of nodes which was not added under building
+          # @return [Array] the sequence of nodes which were not added under building
           #   main sequence of find algorithm steps
           # @override
           def build_next_sequence(graph, visited)

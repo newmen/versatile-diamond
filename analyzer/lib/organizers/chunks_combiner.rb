@@ -397,7 +397,7 @@ module VersatileDiamond
       end
 
       # Maps selected chunks to using targets
-      # @param [Array] chunks which was selected
+      # @param [Array] chunks which were selected
       # @param [Array] original_target which uses in chunks
       # @param [Array] same_target which should be used for merge chunks
       # @return [Array] list of mapped chunk to using targets

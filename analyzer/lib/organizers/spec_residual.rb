@@ -160,7 +160,7 @@ module VersatileDiamond
 
       # Merges collected references of atoms to parent specs
       # @param [Hash] prev_refs the previous collected references
-      # @return [Hash] new_refs the references which was collecected in difference
+      # @return [Hash] new_refs the references which were collecected in difference
       #   operation
       # @return [Hash] the merging result where each value is list of possible values
       def merge(prev_refs, new_refs)

@@ -33,7 +33,7 @@ module VersatileDiamond
 
           @spec = spec
           if spec.simple?
-            # for this species should not be called methods that dependent from these
+            # for these species should not be called methods that dependent from these
             # instance variables
             # TODO: separate for AbstractSpecie which will contain methods for getting
             # class name of simple species, because class name using in env.yml config

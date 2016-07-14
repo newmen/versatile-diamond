@@ -74,7 +74,7 @@ module VersatileDiamond
           #
           # @param [Hash] graph the graph which uses for receive next nodes
           # @param [Set] visited nodes
-          # @return [Array] the sequence of nodes which was not added under building
+          # @return [Array] the sequence of nodes which were not added under building
           #   main sequence of find algorithm steps
           def build_next_sequence(graph, visited)
             connected_nodes_from(graph).reduce([]) do |acc, nodes|

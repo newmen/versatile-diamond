@@ -104,7 +104,7 @@ module VersatileDiamond
               @atoms[keyname] ? generate_keyname(keyname) : keyname
             end
 
-          # if block was given and returned keyname or block is not given
+          # if block given and returned keyname or block is not given
           describe_atom(current_keyname, atom) if current_keyname
         end
         adsorb_links(other, duplicates)

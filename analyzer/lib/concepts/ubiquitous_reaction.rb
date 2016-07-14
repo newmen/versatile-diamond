@@ -64,7 +64,7 @@ module VersatileDiamond
       end
 
       # Checks that reverse reaction was created
-      # @return [Boolean] was created reverse reaction or not
+      # @return [Boolean] is created reverse reaction or not
       def has_reverse?
         !!@reverse
       end

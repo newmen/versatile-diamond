@@ -56,7 +56,7 @@ module VersatileDiamond
         @rest ? @rest.parents : []
       end
 
-      # Finds parent species by atom the twins of which belongs to this parents
+      # Finds parent species by atom the twins of which belongs to these parents
       # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
       #   atom by which parent specs with twins will be found
       # @option [Boolean] :anchored the flag which says that each twin atom in
@@ -298,7 +298,7 @@ module VersatileDiamond
         end
       end
 
-      # Gets lists of parent anchors which was skipped in residual detecting
+      # Gets lists of parent anchors which were skipped in residual detecting
       # @return [Array] the lists of skipped parent anchors
       def parents_skipped_zip
         parents_anchors_zip.reject do |_, twins_to_atoms|
@@ -324,8 +324,8 @@ module VersatileDiamond
         end
       end
 
-      # Gets the list of anchors which was not added to main anchors
-      # @return [Array] the list of anchor atoms which was not detected under residual
+      # Gets the list of anchors which were not added to main anchors
+      # @return [Array] the list of anchor atoms which were not detected under residual
       #   calculation but are used as anchors for parent species
       def skipped_anchors
         result = Set.new
