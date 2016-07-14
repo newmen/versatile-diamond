@@ -279,7 +279,7 @@ module VersatileDiamond
       end
 
       # Gets lists of parent atoms to own atoms for each parent
-      # @return [Hash] the lists of all parent atoms to own atoms separated by parent
+      # @return [Hash] the lists of all parent atoms to own atoms grouped by parent
       def parents_atoms_zip
         atoms.reduce({}) do |acc, atom|
           parents_with_twins_for(atom).each_with_object(acc) do |(parent, twin), lists|
@@ -290,8 +290,7 @@ module VersatileDiamond
       end
 
       # Gets lists of parent anchors to own atoms for each parent
-      # @return [Array] the lists of all parent anchors to own atoms separated by
-      #   parent
+      # @return [Array] the lists of all parent anchors to own atoms grouped by parent
       def parents_anchors_zip
         parents_atoms_zip.map do |parent, twins_to_atoms|
           [parent, twins_to_atoms.select { |twin, _| parent.anchors.include?(twin) }]
@@ -306,6 +305,48 @@ module VersatileDiamond
         end
       end
 
+      # Gets the splitten hash of atoms which has grouped by parent spec
+      # @return [Hash] the keys are parents and the values are lists of correspond
+      #   atoms
+      def main_groups
+        return @_main_groups if @_main_groups
+        pairs = main_anchors.flat_map do |anchor|
+          pwts = parents_with_twins_for(anchor)
+          if pwts.one?
+            [[pwts.first.first, anchor]]
+          else
+            anchored_pwts = pwts.select { |p, t| p.anchors.include?(t) }
+            anchored_pwts.map { |parent, _| [parent, anchor] }
+          end
+        end
+        groups = pairs.group_by(&:first)
+        @_main_groups = groups.map { |parent, pairs| [parent, pairs.map(&:last)] }.to_h
+      end
+
+      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #   atom which links will be checked
+      # @param [Array] atoms to which links will be checked
+      # @return [Boolean] is atom linked with any passed atoms or not
+      def related_with?(atom, atoms)
+        links[atom].any? { |a, _| atoms.include?(a) }
+      end
+
+      # Selects major parent anchors which were skipped in residual detecting
+      # @return [Array] the lists of skipped parent anchors
+      def select_skipped_zip
+        parents_skipped_zip.each_with_object([]) do |(parent, twins_to_atoms), acc|
+          parent_mains = main_groups[parent] || []
+          next unless parent_mains.empty?
+
+          parent_skipped = twins_to_atoms.map(&:last)
+          parent_total = parent_mains + parent_skipped
+          other_mains = main_anchors - parent_mains
+          bonded_pairs = twins_to_atoms.select { |_, a| related_with?(a, other_mains) }
+
+          acc << [parent, bonded_pairs.empty? ? twins_to_atoms : bonded_pairs]
+        end
+      end
+
       # Sorts lists of skipped parent anchors by number of anchors or by parent size
       # from bigger to smallest
       #
@@ -313,7 +354,7 @@ module VersatileDiamond
       def sorted_skipped_zip
         eq_cmp = (:==).to_proc
         ord_cmp = (:'<=>').to_proc
-        parents_skipped_zip.sort do |*lists|
+        select_skipped_zip.sort do |*lists|
           prs, twas = lists.transpose
           atoms_nums = twas.map(&:size)
           if eq_cmp[*atoms_nums] # if atoms num from both parents are equal
@@ -334,7 +375,7 @@ module VersatileDiamond
           unless atoms.any?(&result.public_method(:include?))
             sorted_atoms = sort_atoms(self, atoms)
             bigger_bonded_atom = sorted_atoms.reverse.find do |own_atom|
-              links[own_atom].any? { |a, _| main_anchors.include?(a) }
+              related_with?(own_atom, main_anchors)
             end
 
             result << bigger_bonded_atom ||

@@ -99,6 +99,34 @@ module VersatileDiamond
         end
 
         it_behaves_like :check_anchors do
+          let(:base_specs) { [subject, dept_methyl_on_bridge_base, target_spec] }
+          let(:target_spec) { dept_methyl_on_dimer_base }
+          let(:keynames) { [:cr, :cl] }
+        end
+
+        describe 'different bases for vinyl on dimer' do
+          let(:target_spec) { dept_vinyl_on_dimer_base }
+          let(:keynames) { [:cr, :cl] }
+
+          it_behaves_like :check_anchors do
+            let(:base_specs) do
+              [subject, dept_vinyl_on_bridge_base, target_spec]
+            end
+          end
+
+          it_behaves_like :check_anchors do
+            let(:base_specs) do
+              [
+                subject,
+                dept_methyl_on_bridge_base,
+                dept_vinyl_on_bridge_base,
+                target_spec
+              ]
+            end
+          end
+        end
+
+        it_behaves_like :check_anchors do
           let(:base_specs) { [subject, dept_methyl_on_dimer_base] }
           let(:specific_specs) { [target_spec] }
           let(:target_spec) { dept_activated_methyl_on_dimer }
