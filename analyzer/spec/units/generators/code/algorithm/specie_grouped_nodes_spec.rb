@@ -165,11 +165,8 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_grouped_nodes_graph do
+          describe 'different bases for vinyl on dimer' do
             subject { dept_vinyl_on_dimer_base }
-            let(:base_specs) do
-              [dept_bridge_base, dept_vinyl_on_bridge_base, subject]
-            end
             let(:flatten_face_grouped_atoms) { [[:cr, :cl]] }
             let(:nodes_list) do
               [
@@ -182,6 +179,23 @@ module VersatileDiamond
                 [:cr] => [[[:cl], param_100_front]],
                 [:cl] => [[[:cr], param_100_front]]
               }
+            end
+
+            it_behaves_like :check_grouped_nodes_graph do
+              let(:base_specs) do
+                [dept_bridge_base, dept_vinyl_on_bridge_base, subject]
+              end
+            end
+
+            it_behaves_like :check_grouped_nodes_graph do
+              let(:base_specs) do
+                [
+                  dept_bridge_base,
+                  dept_methyl_on_bridge_base,
+                  dept_vinyl_on_bridge_base,
+                  subject
+                ]
+              end
             end
           end
 

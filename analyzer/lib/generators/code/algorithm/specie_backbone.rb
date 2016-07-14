@@ -77,8 +77,11 @@ module VersatileDiamond
           # @return [Hash] the graph wihtout excess relations
           def clear_excess_rels(graph)
             all_nodes_lists = collect_nodes(graph)
+            real_nodes = all_nodes_lists.reduce(:+).uniq.reject(&:none?)
+            real_species = real_nodes.map(&:uniq_specie).uniq
+            eq_nums = (real_nodes.size == real_species.size)
 
-            unless all_anchored?(all_nodes_lists)
+            unless eq_nums || all_anchored?(all_nodes_lists)
               graph = setup_anchored_order(graph, all_nodes_lists)
             end
 

@@ -82,6 +82,28 @@ module VersatileDiamond
             let(:points_list) { [[:cr], [:cl]] }
           end
 
+          describe 'different bases for vinyl on dimer' do
+            subject { dept_vinyl_on_dimer_base }
+            let(:points_list) { [[:cr], [:cl]] }
+
+            it_behaves_like :check_entry_nodes do
+              let(:base_specs) do
+                [dept_bridge_base, dept_vinyl_on_bridge_base, subject]
+              end
+            end
+
+            it_behaves_like :check_entry_nodes do
+              let(:base_specs) do
+                [
+                  dept_bridge_base,
+                  dept_methyl_on_bridge_base,
+                  dept_vinyl_on_bridge_base,
+                  subject
+                ]
+              end
+            end
+          end
+
           it_behaves_like :check_entry_nodes do
             subject { dept_three_bridges_base }
             let(:base_specs) { [dept_bridge_base, subject] }

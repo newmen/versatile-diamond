@@ -61,7 +61,7 @@ module VersatileDiamond
                 [@nodes]
               else
                 # finds first because nodes are sorted ^^
-                limited_nodes = @nodes.select(&method(:limited_node?))
+                limited_nodes = @nodes.select(&method(:extra_limited?))
                 if limited_nodes.empty?
                   most_important_nodes
                 else
@@ -75,8 +75,8 @@ module VersatileDiamond
           # Checks that scoped node is limited by number of bonds or unique properties
           # @param [SpecieNode] node which will be checked
           # @return [Boolean] is limited or not
-          def limited_node?(node)
-            node.scope? && ((node.anchor? && node.limited?) || !avail_more?(node))
+          def extra_limited?(node)
+            node.anchor? && node.scope? && (node.limited? || !avail_more?(node))
           end
 
           # Checks that avail another node which includes the passed
@@ -99,22 +99,35 @@ module VersatileDiamond
               end
           end
 
+          # Gets the list of anchor nodes from which the search can be occured
+          # @return [Array] the list of anchor nodes
+          def major_anchor_nodes
+            real_nodes = @nodes.reject(&:none?).select(&:actual_anchor?)
+            uniq_species = real_nodes.map(&:uniq_specie).uniq
+            if real_nodes.size == uniq_species.size
+              real_nodes
+            else
+              real_nodes.select(&:anchor?)
+            end
+          end
+
           # Selects the nodes which are mostly used as keys of grouped nodes graph
           # @return [Array] the array of most used nodes
           def most_used_nodes
-            anchor_ns = @nodes.reject(&:none?).select(&:anchor?)
-            raise 'Anchor nodes not found' if anchor_ns.empty?
-
-            groups = anchor_ns.groups { |n| [originals_species_from(n), n.properties] }
-            # selects the best from each group
-            groups.map { |group| best_node_in(group, anchor_ns) }.uniq
+            anchor_nodes = major_anchor_nodes
+            if anchor_nodes.empty?
+              raise 'Anchor nodes not found'
+            else
+              groups = anchor_nodes.groups { |n| [orig_species_from(n), n.properties] }
+              # selects the best from each group
+              groups.map { |group| best_node_in(group, anchor_nodes) }.uniq
+            end
           end
 
           # Selects the most important nodes in keys of grouped nodes graph
           # @return [Array] the ordered most different or binding nodes
           def most_important_nodes
-            groups = target_groups
-            self.class.sort(groups.uniq { |ns| ns.map(&:properties).to_set })
+            self.class.sort(target_groups.uniq { |ns| ns.map(&:properties).to_set })
           end
 
           # Gets nodes which grouped by using in parent specie and each group contains
@@ -143,7 +156,7 @@ module VersatileDiamond
           # Gets set of original species from node
           # @param [SpecieNode] node from whic species will be gotten
           # @return [Set] the set of original species
-          def originals_species_from(node)
+          def orig_species_from(node)
             if node.scope?
               node.uniq_specie.species.map(&:original).to_set
             else

@@ -82,7 +82,8 @@ module VersatileDiamond
         # @param [Concepts::Bond] rel which will be checked
         # @return [Boolean] is required not bond relation or not
         def required_relation?(*atoms, rel)
-          rel.relation? && !rel.bond? &&
+          rel.relation? &&
+            (!rel.bond? || parents_from(atoms).reduce(:&).empty?) &&
             atoms.permutation.all? do |a1, a2|
               spec.residual_links[a1].include?([a2, rel])
             end

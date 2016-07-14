@@ -117,16 +117,30 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_finite_graph do
+            describe 'different bases for vinyl on dimer' do
               subject { dept_vinyl_on_dimer_base }
-              let(:base_specs) do
-                [dept_bridge_base, dept_vinyl_on_bridge_base, subject]
-              end
               let(:final_graph) do
                 {
                   [:cr] => [[[:cl], param_100_front]],
                   [:cl] => [[[:cr], param_100_front]]
                 }
+              end
+
+              it_behaves_like :check_finite_graph do
+                let(:base_specs) do
+                  [dept_bridge_base, dept_vinyl_on_bridge_base, subject]
+                end
+              end
+
+              it_behaves_like :check_finite_graph do
+                let(:base_specs) do
+                  [
+                    dept_bridge_base,
+                    dept_methyl_on_bridge_base,
+                    dept_vinyl_on_bridge_base,
+                    subject
+                  ]
+                end
               end
             end
 
@@ -152,7 +166,7 @@ module VersatileDiamond
               end
             end
 
-            describe 'different dept_lower_methyl_on_half_extended_bridge_base' do
+            describe 'different lower methyl on half extended bridge' do
               subject { dept_lower_methyl_on_half_extended_bridge_base }
 
               it_behaves_like :check_finite_graph do
@@ -178,7 +192,7 @@ module VersatileDiamond
               end
             end
 
-            describe 'different dept_cross_bridge_on_bridges_base' do
+            describe 'different cross bridge on bridges' do
               subject { dept_cross_bridge_on_bridges_base }
 
               it_behaves_like :check_finite_graph do
@@ -204,7 +218,7 @@ module VersatileDiamond
               end
             end
 
-            describe 'different dept_cross_bridge_on_dimers_base' do
+            describe 'different cross bridge on dimers_ ase' do
               subject { dept_cross_bridge_on_dimers_base }
 
               it_behaves_like :check_finite_graph do
@@ -383,7 +397,7 @@ module VersatileDiamond
             describe 'under up migration through 111 face' do
               subject { dept_lower_methyl_on_half_extended_bridge_base }
 
-              describe 'just bridge base' do
+              describe 'just bridge' do
                 let(:base_specs) { [dept_bridge_base, subject] }
 
                 it_behaves_like :check_ordered_graph do
@@ -457,7 +471,7 @@ module VersatileDiamond
               end
             end
 
-            describe 'multi anchored dept_cross_bridge_on_bridges_base' do
+            describe 'multi anchored cross bridge on bridges' do
               subject { dept_cross_bridge_on_bridges_base }
 
               it_behaves_like :check_ordered_graph do
@@ -483,7 +497,7 @@ module VersatileDiamond
               end
             end
 
-            describe 'different dept_cross_bridge_on_dimers_base' do
+            describe 'different cross bridge on dimers_ ase' do
               subject { dept_cross_bridge_on_dimers_base }
 
               it_behaves_like :check_ordered_graph do
@@ -542,26 +556,42 @@ module VersatileDiamond
             end
 
 
-            describe 'different anchors of dept_methyl_on_dimer_base' do
+            describe 'different anchors of vinyl on dimer' do
               subject { dept_vinyl_on_dimer_base }
-              let(:base_specs) do
-                [dept_bridge_base, dept_vinyl_on_bridge_base, subject]
-              end
 
-              it_behaves_like :check_ordered_graph do
-                let(:entry_node) { backbone.entry_nodes.first }
-                let(:ordered_graph) do
-                  [
-                    [[:cr], [[[:cl], param_100_front]]]
-                  ]
+              shared_examples_for :check_both_sides do
+                it_behaves_like :check_ordered_graph do
+                  let(:entry_node) { backbone.entry_nodes.first }
+                  let(:ordered_graph) do
+                    [
+                      [[:cr], [[[:cl], param_100_front]]]
+                    ]
+                  end
+                end
+
+                it_behaves_like :check_ordered_graph do
+                  let(:entry_node) { backbone.entry_nodes.last }
+                  let(:ordered_graph) do
+                    [
+                      [[:cl], [[[:cr], param_100_front]]]
+                    ]
+                  end
                 end
               end
 
-              it_behaves_like :check_ordered_graph do
-                let(:entry_node) { backbone.entry_nodes.last }
-                let(:ordered_graph) do
+              it_behaves_like :check_both_sides do
+                let(:base_specs) do
+                  [dept_bridge_base, dept_vinyl_on_bridge_base, subject]
+                end
+              end
+
+              it_behaves_like :check_both_sides do
+                let(:base_specs) do
                   [
-                    [[:cl], [[[:cr], param_100_front]]]
+                    dept_bridge_base,
+                    dept_methyl_on_bridge_base,
+                    dept_vinyl_on_bridge_base,
+                    subject
                   ]
                 end
               end
