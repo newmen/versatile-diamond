@@ -36,7 +36,8 @@ module VersatileDiamond
         private
 
           attr_reader :grouped_nodes_graph
-          def_delegators :grouped_nodes_graph, :final_graph, :big_ungrouped_graph
+          def_delegator :grouped_nodes_graph, :complete_grouped_graph
+          def_delegator :grouped_nodes_graph, :big_ungrouped_graph
 
           # Builds sequence of kv pairs from graph for find algorithm walking
           # @param [Hash] graph by which the sequence will be combined

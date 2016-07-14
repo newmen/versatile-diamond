@@ -31,8 +31,7 @@ module VersatileDiamond
           # @return [Hash] the grouped graph with relations only from target nodes
           # TODO: must be private!
           def final_graph
-            @_final_graph ||=
-              cut_and_extend_to_anchors(@grouped_nodes_graph.final_graph)
+            @_final_graph ||= cut_and_extend_to_anchors(complete_grouped_graph)
           end
 
           # Gets list of nodes from which find begins
@@ -69,6 +68,7 @@ module VersatileDiamond
 
           attr_reader :lateral_chunks, :lateral_nodes_factory
           def_delegator :lateral_nodes_factory, :otherside_node
+          def_delegator :@grouped_nodes_graph, :complete_grouped_graph
           def_delegators :@grouped_nodes_graph, :overall_graph, :relation_between
 
           # @return [Hash]
@@ -173,7 +173,7 @@ module VersatileDiamond
 
           # @return [Array]
           def grouped_keys
-            cutten_final_graph = cut_own_branches(@grouped_nodes_graph.final_graph)
+            cutten_final_graph = cut_own_branches(complete_grouped_graph)
             group_by_reactions(grouped_ratio(cutten_final_graph)).map do |group|
               group.one? ? group.first.first : group.flat_map(&:first)
             end

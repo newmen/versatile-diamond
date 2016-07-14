@@ -29,7 +29,7 @@ module VersatileDiamond
           #   excepted
           # TODO: must be private!
           def final_graph
-            @_final_graph ||= clear_excess_rels(super)
+            @_final_graph ||= clear_excess_rels(complete_grouped_graph)
           end
 
         private

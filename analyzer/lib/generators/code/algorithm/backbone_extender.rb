@@ -55,7 +55,7 @@ module VersatileDiamond
             scope = anchored_species_scope(fn_graph)
             first_step_graph = extend_own_branches(cut_own_branches(fn_graph), scope)
             next_scope = scope + anchored_species_scope(first_step_graph)
-            extend_all_branches(first_step_graph, fn_graph, next_scope)
+            extend_all_branches(first_step_graph, next_scope)
           end
 
           # @param [Hash] graph which will be cutten
@@ -79,25 +79,23 @@ module VersatileDiamond
             end
           end
 
-          # @param [Hash] extending_graph which extended instance will be gotten
-          # @param [Hash] grouped_final_graph by which another nodes will be selected
+          # @param [Hash] graph which extended instance will be gotten
           # @param [Set] scope of already defined anchored species
           # @return [Hash] the extended graph with anchor nodes on sides
-          def extend_all_branches(extending_graph, grouped_final_graph, scope)
-            result = extending_graph
-            final_keys = grouped_final_graph.keys
-            final_nodes_num = nodes_set(grouped_final_graph).size
+          def extend_all_branches(graph, scope)
+            final_keys = complete_grouped_graph.keys
+            final_nodes_num = nodes_set(complete_grouped_graph).size
             loop do
               next_nodes = nil
-              reached_nodes = nodes_set(result)
+              reached_nodes = nodes_set(graph)
               if reached_nodes.size < final_nodes_num
                 next_nodes = final_keys.find { |k| k.to_set == reached_nodes }
                 if next_nodes
-                  result = extend_graph(result, next_nodes, scope)
-                  scope += anchored_species_scope(result)
+                  graph = extend_graph(graph, next_nodes, scope)
+                  scope += anchored_species_scope(graph)
                 end
               end
-              return result unless next_nodes
+              return graph unless next_nodes
             end
           end
 

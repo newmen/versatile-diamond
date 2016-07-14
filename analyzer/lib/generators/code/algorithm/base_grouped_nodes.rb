@@ -18,7 +18,7 @@ module VersatileDiamond
           #   nodes for current grouped nodes graph builder
           def initialize(factory)
             @factory = factory
-            @_flatten_face_grouped_nodes, @_final_graph = nil
+            @_flatten_face_grouped_nodes, @_complete_grouped_graph = nil
           end
 
           # Gets the nodes of small links graph which are grouped by available
@@ -41,8 +41,8 @@ module VersatileDiamond
           # @return [Hash] the hash of sparse graph where keys are arrays of nodes
           #   which have similar relations with neighbour nodes and values are wrapped
           #   to arrays other side "vertex" and relation to it vertex
-          def final_graph
-            @_final_graph ||= reorder_vertices(build_final_graph)
+          def complete_grouped_graph
+            @_complete_grouped_graph ||= reorder_vertices(build_complete_grouped_graph)
           end
 
         private
@@ -58,7 +58,7 @@ module VersatileDiamond
 
           # Combines final graph from small graph
           # @return [Hash] the final grouped graph
-          def small_final_graph
+          def small_complete_grouped_graph
             small_ungrouped_graph.each_with_object({}) do |(node, rels), acc|
               acc[[node]] = rels.map { |n, r| [[n], r.params] }
             end
@@ -388,7 +388,7 @@ module VersatileDiamond
           end
 
           # @return [Hash] new builded instance of final graph
-          def build_final_graph
+          def build_complete_grouped_graph
             graph = {}
             store_proc = proc do |nodes, nbrs_with_rel_param|
               graph[nodes] ||= []
@@ -409,7 +409,11 @@ module VersatileDiamond
               similar_combine_relations(group, &store_proc)
             end
 
-            graph.empty? ? small_final_graph : collaps_similar_key_nodes(graph)
+            if graph.empty?
+              small_complete_grouped_graph
+            else
+              collaps_similar_key_nodes(graph)
+            end
           end
 
           # @param [Hash] graph which vertices will be accurate reordered

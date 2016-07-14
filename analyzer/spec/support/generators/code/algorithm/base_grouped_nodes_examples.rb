@@ -21,10 +21,11 @@ module VersatileDiamond
                 anchor_kns = anchor_nodes.map(&method(:grep_keynames))
                 expect(anchor_kns).to match_multidim_array(flatten_face_grouped_atoms)
 
-                typed_nodes = typed_nodes_list(grouped_nodes.final_graph)
+                final_grouped_graph = grouped_nodes.complete_grouped_graph
+                typed_nodes = typed_nodes_list(final_grouped_graph)
                 expect(typed_nodes).to match_array(nodes_list)
 
-                keyname_graph = translate_to_keyname_graph(grouped_nodes.final_graph)
+                keyname_graph = translate_to_keyname_graph(final_grouped_graph)
                 expect(keyname_graph).to match_graph(grouped_graph)
               end
             end

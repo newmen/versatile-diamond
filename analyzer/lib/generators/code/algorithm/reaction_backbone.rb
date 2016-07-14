@@ -30,7 +30,7 @@ module VersatileDiamond
           # @return [Hash] the grouped graph with relations only from target reactant
           # TODO: must be private!
           def final_graph
-            @_final_graph ||= cut_and_extend_to_anchors(super)
+            @_final_graph ||= cut_and_extend_to_anchors(complete_grouped_graph)
           end
 
         private
