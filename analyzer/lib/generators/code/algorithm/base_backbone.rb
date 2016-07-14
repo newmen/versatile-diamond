@@ -10,8 +10,6 @@ module VersatileDiamond
           include NodesCollector
           extend Forwardable
 
-          def_delegator :grouped_nodes_graph, :big_graph
-
           # Initializes backbone by grouped nodes graph
           # @param [Hash] group
           def initialize(grouped_nodes_graph)
@@ -29,10 +27,15 @@ module VersatileDiamond
             reorder_by_maximals(build_sequence_from(final_graph, nodes, Set.new))
           end
 
+          # @return [Hash] gets big graph by which the backbone has been built
+          def big_graph
+            big_ungrouped_graph
+          end
+
         private
 
           attr_reader :grouped_nodes_graph
-          def_delegator :grouped_nodes_graph, :final_graph
+          def_delegators :grouped_nodes_graph, :final_graph, :big_ungrouped_graph
 
           # Builds sequence of kv pairs from graph for find algorithm walking
           # @param [Hash] graph by which the sequence will be combined

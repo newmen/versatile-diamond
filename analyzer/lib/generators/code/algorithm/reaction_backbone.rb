@@ -35,8 +35,6 @@ module VersatileDiamond
 
         private
 
-          alias_method :big_ungrouped_graph, :big_graph # for extender
-
           # Checks that passed nodes belongs to target specie
           # @param [Array] nodes which will be checked
           # @return [Boolean] are all nodes belongs to target specie or not

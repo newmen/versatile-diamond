@@ -8,8 +8,9 @@ module VersatileDiamond
             shared_examples_for :check_grouped_nodes_graph do
               # each method should not change the state of grouped nodes graph
               it 'all public methods' do
+                big_graph = grouped_nodes.big_ungrouped_graph
                 big_atomic =
-                  grouped_nodes.big_graph.each_with_object({}) do |(node, rels), acc|
+                  big_graph.each_with_object({}) do |(node, rels), acc|
                     acc[node_to_vertex(node)] = rels.map do |n, r|
                       [node_to_vertex(n), r]
                     end
