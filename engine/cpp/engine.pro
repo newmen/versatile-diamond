@@ -2,8 +2,8 @@ TEMPLATE = app
 CONFIG -= app_bundle
 CONFIG -= qt
 
-QMAKE_CXX = g++-5
-QMAKE_LIBDIR += /usr/local/Cellar/gcc/5.3.0/lib/gcc/5
+QMAKE_CXX = /usr/local/opt/gcc/bin/g++-6
+QMAKE_LIBDIR += /usr/local/opt/gcc/lib/gcc/6
 QMAKE_LIBDIR += /usr/local/lib
 QMAKE_INCDIR += /usr/local/include
 

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <unordered_set>
 #include <unordered_map>
+#include <vector>
 #include "../species/base_spec.h"
 #include "../tools/common.h"
 #include "lattice.h"
@@ -58,6 +59,8 @@ public:
     Lattice *lattice() const { return _lattice; }
     void setLattice(Crystal *crystal, const int3 &coords);
     void unsetLattice();
+
+    void eraseFromCrystal();
 
     void describe(ushort role, BaseSpec *spec);
     void forget(ushort role, BaseSpec *spec);

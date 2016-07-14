@@ -114,6 +114,12 @@ void Atom::unsetLattice()
     _lattice = nullptr;
 }
 
+void Atom::eraseFromCrystal()
+{
+    assert(lattice());
+    lattice()->crystal()->erase(this);
+}
+
 void Atom::describe(ushort role, BaseSpec *spec)
 {
     assert(is(role));

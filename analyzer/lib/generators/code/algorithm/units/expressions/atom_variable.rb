@@ -154,7 +154,7 @@ module VersatileDiamond
           # @return [Core::FunctionCall]
           def erase_from_crystal
             if instance.lattice
-              call('lattice').call('crystal').call('erase', self)
+              call('eraseFromCrystal')
             else
               raise NoMethodError, 'Atom without lattice cannot be erased from crystal'
             end

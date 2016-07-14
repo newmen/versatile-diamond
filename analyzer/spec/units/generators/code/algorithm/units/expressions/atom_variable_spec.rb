@@ -275,7 +275,7 @@ allNeighbours(atom1, &Diamond::cross_110, [](Atom **atoms1) {
           describe '#erase_from_crystal' do
             include_context :unique_reactant_context
             let(:atom) { cb }
-            let(:code) { 'atom1->lattice()->crystal()->erase(atom1)' }
+            let(:code) { 'atom1->eraseFromCrystal()' }
             it { expect(var.erase_from_crystal.code).to eq(code) }
           end
 
