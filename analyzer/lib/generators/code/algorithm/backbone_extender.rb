@@ -25,22 +25,22 @@ module VersatileDiamond
           # @param [Set] detected_scope
           # @param [Nodes::ReactantNode] node
           # @return [Boolean]
-          def anchor_at?(detected_scope, node)
+          def next_anchor?(detected_scope, node)
             node.anchor? && !detected_scope.include?(node.uniq_specie)
           end
 
           # @param [Set] detected_scope
           # @param [Array] nodes
           # @return [Boolean]
-          def anchors_in?(detected_scope, nodes)
-            !anchors_in(detected_scope, nodes).empty?
+          def anchors_near?(detected_scope, nodes)
+            !anchors_near(detected_scope, nodes).empty?
           end
 
           # @param [Set] detected_scope
           # @param [Array] nodes
           # @return [Array]
-          def anchors_in(detected_scope, nodes)
-            nodes.select { |node| anchor_at?(detected_scope, node) }
+          def anchors_near(detected_scope, nodes)
+            nodes.select { |node| next_anchor?(detected_scope, node) }
           end
 
           # @param [Hash] graph
@@ -86,11 +86,11 @@ module VersatileDiamond
           def extend_all_branches(extending_graph, grouped_final_graph, scope)
             result = extending_graph
             final_keys = grouped_final_graph.keys
-            final_nodes = nodes_set(grouped_final_graph)
+            final_nodes_num = nodes_set(grouped_final_graph).size
             loop do
               next_nodes = nil
               reached_nodes = nodes_set(result)
-              if reached_nodes.size < final_nodes.size
+              if reached_nodes.size < final_nodes_num
                 next_nodes = final_keys.find { |k| k.to_set == reached_nodes }
                 if next_nodes
                   result = extend_graph(result, next_nodes, scope)
@@ -105,10 +105,10 @@ module VersatileDiamond
           # @param [Set] scope
           # @return [Hash]
           def best_graph(graphs, scope)
-            gwasz = graphs.map { |g| [g, anchors_in(scope, nodes_set(g)).size] }
+            gwasz = graphs.map { |g| [g, anchors_near(scope, nodes_set(g)).size] }
             max_n = gwasz.map(&:last).max
             maximal_anchored = gwasz.select { |_, n| n == max_n }.map(&:first)
-            maximal_anchored.sort_by { |g| g.values.reduce(:+).size }.first
+            maximal_anchored.sort_by { |g| g.values.reduce(:+).size }.first # minimal
           end
 
           # Extends passed graph from passed nodes to nodes with anchor atom
@@ -123,13 +123,13 @@ module VersatileDiamond
             inter_scope = scope + anchored_species_scope(graph)
 
             vs = extending_ways(graph, next_rels)
-            anchored_vs = vs.select { |_, ns| anchors_in?(inter_scope, ns) }
+            anchored_vs = vs.select { |_, ns| anchors_near?(inter_scope, ns) }
             complete_vs = anchored_vs.select { |g, _| totaly_closed?(g) }
 
             extended_graphs =
               if complete_vs.empty?
                 resolving_vs = anchored_vs.empty? ? vs : anchored_vs
-                resolving_vs.map { |nwg| extend_graph(*nwg, inter_scope) }
+                resolving_vs.map { |gwn| extend_graph(*gwn, inter_scope) }
               else
                 complete_vs.map(&:first)
               end
@@ -162,8 +162,7 @@ module VersatileDiamond
           def next_ways(graph, nodes)
             prev_nodes = nodes_set(graph)
             nodes.flat_map do |node|
-              all_rels = big_ungrouped_graph[node]
-              next_rels = all_rels.select do |n, r|
+              next_rels = big_ungrouped_graph[node].select do |n, r|
                 !prev_nodes.include?(n) && r.exist? && !own_key?([n])
               end
               next_rels.map { |n, r| [[node, n], r.params] }

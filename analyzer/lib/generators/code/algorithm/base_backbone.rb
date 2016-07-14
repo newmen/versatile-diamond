@@ -27,7 +27,8 @@ module VersatileDiamond
             reorder_by_maximals(build_sequence_from(final_graph, nodes, Set.new))
           end
 
-          # @return [Hash] gets big graph by which the backbone has been built
+          # Gets big ungrouped graph by which the backbone has been built
+          # @return [Hash] the simple sparse graph with many node-vertices
           def big_graph
             big_ungrouped_graph
           end
