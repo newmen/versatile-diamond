@@ -118,6 +118,19 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_finite_graph do
+              subject { dept_vinyl_on_dimer_base }
+              let(:base_specs) do
+                [dept_bridge_base, dept_vinyl_on_bridge_base, subject]
+              end
+              let(:final_graph) do
+                {
+                  [:cr] => [[[:cl], param_100_front]],
+                  [:cl] => [[[:cr], param_100_front]]
+                }
+              end
+            end
+
+            it_behaves_like :check_finite_graph do
               subject { dept_three_bridges_base }
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:final_graph) do
@@ -507,6 +520,32 @@ module VersatileDiamond
               subject { dept_methyl_on_dimer_base }
               let(:base_specs) do
                 [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+              end
+
+              it_behaves_like :check_ordered_graph do
+                let(:entry_node) { backbone.entry_nodes.first }
+                let(:ordered_graph) do
+                  [
+                    [[:cr], [[[:cl], param_100_front]]]
+                  ]
+                end
+              end
+
+              it_behaves_like :check_ordered_graph do
+                let(:entry_node) { backbone.entry_nodes.last }
+                let(:ordered_graph) do
+                  [
+                    [[:cl], [[[:cr], param_100_front]]]
+                  ]
+                end
+              end
+            end
+
+
+            describe 'different anchors of dept_methyl_on_dimer_base' do
+              subject { dept_vinyl_on_dimer_base }
+              let(:base_specs) do
+                [dept_bridge_base, dept_vinyl_on_bridge_base, subject]
               end
 
               it_behaves_like :check_ordered_graph do

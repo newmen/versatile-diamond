@@ -166,6 +166,26 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_grouped_nodes_graph do
+            subject { dept_vinyl_on_dimer_base }
+            let(:base_specs) do
+              [dept_bridge_base, dept_vinyl_on_bridge_base, subject]
+            end
+            let(:flatten_face_grouped_atoms) { [[:cr, :cl]] }
+            let(:nodes_list) do
+              [
+                [Instances::UniqueParent, :cr],
+                [Instances::UniqueParent, :cl]
+              ]
+            end
+            let(:grouped_graph) do
+              {
+                [:cr] => [[[:cl], param_100_front]],
+                [:cl] => [[[:cr], param_100_front]]
+              }
+            end
+          end
+
+          it_behaves_like :check_grouped_nodes_graph do
             subject { dept_three_bridges_base }
             let(:base_specs) { [dept_bridge_base, subject] }
             let(:flatten_face_grouped_atoms) { [[:ct, :cc]] }

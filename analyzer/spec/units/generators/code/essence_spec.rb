@@ -159,6 +159,19 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_cut_links do
+            subject { dept_vinyl_on_dimer_base }
+            let(:base_specs) do
+              [dept_bridge_base, dept_vinyl_on_bridge_base, subject]
+            end
+            let(:cut_links) do
+              {
+                :cr => [[:cl, bond_100_front]],
+                :cl => [[:cr, bond_100_front]]
+              }
+            end
+          end
+
+          it_behaves_like :check_cut_links do
             subject { dept_three_bridges_base }
             let(:base_specs) { [dept_bridge_base, subject] }
             let(:cut_links) do

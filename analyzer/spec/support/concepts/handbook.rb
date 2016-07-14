@@ -450,7 +450,7 @@ module VersatileDiamond
         set(:vinyl_on_dimer_base) do
           s = SurfaceSpec.new(:vinyl_on_dimer)
           s.adsorb(ethane_on_bridge_base)
-          s.rename_atom(:cb, :cl)
+          s.rename_atom(:cb, :cr)
           s.adsorb(bridge_base)
           s.rename_atom(:ct, :cl)
           s.link(s.atom(:cl), s.atom(:cr), bond_100_front)

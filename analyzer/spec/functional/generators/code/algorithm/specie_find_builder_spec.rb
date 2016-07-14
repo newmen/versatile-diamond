@@ -260,6 +260,65 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_code do
+              subject { dept_vinyl_on_dimer_base }
+              let(:base_specs) do
+                [dept_bridge_base, dept_vinyl_on_bridge_base, subject]
+              end
+              let(:find_algorithm) do
+                <<-CODE
+    if (anchor->is(#{role_cr}))
+    {
+        if (!anchor->hasRole(VINYL_ON_DIMER, #{role_cr}))
+        {
+            VinylOnBridge *vinylOnBridge1 = anchor->specByRole<VinylOnBridge>(#{mob_cb});
+            if (vinylOnBridge1)
+            {
+                eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
+                    if (neighbour1->is(#{role_cl}))
+                    {
+                        if (anchor->hasBondWith(neighbour1))
+                        {
+                            Bridge *bridge1 = neighbour1->specByRole<Bridge>(#{b_ct});
+                            if (bridge1)
+                            {
+                                ParentSpec *parents[2] = { vinylOnBridge1, bridge1 };
+                                create<VinylOnDimer>(parents);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+    if (anchor->is(#{role_cl}))
+    {
+        if (!anchor->hasRole(VINYL_ON_DIMER, #{role_cl}))
+        {
+            Bridge *bridge1 = anchor->specByRole<Bridge>(#{b_ct});
+            if (bridge1)
+            {
+                eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
+                    if (neighbour1->is(#{role_cr}))
+                    {
+                        if (anchor->hasBondWith(neighbour1))
+                        {
+                            VinylOnBridge *vinylOnBridge1 = neighbour1->specByRole<VinylOnBridge>(#{mob_cb});
+                            if (vinylOnBridge1)
+                            {
+                                ParentSpec *parents[2] = { vinylOnBridge1, bridge1 };
+                                create<VinylOnDimer>(parents);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
               subject { dept_two_methyls_on_dimer_base }
               let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
               let(:find_algorithm) do
