@@ -24,7 +24,7 @@ module VersatileDiamond
             @uniq_specie = uniq_specie
             @atom = atom
 
-            @_is_anchor, @_is_many_used, @_usages_num = nil
+            @_is_anchor, @_is_actual_anchor, @_is_many_used, @_usages_num = nil
             @_atom_properties, @_sub_properties, @_symmetric_atoms = nil
           end
 
@@ -58,6 +58,13 @@ module VersatileDiamond
           def anchor?
             return @_is_anchor unless @_is_anchor.nil?
             @_is_anchor = uniq_specie.anchor?(atom)
+          end
+
+          # Checks that target atom is anchor in original specie
+          # @return [Boolean] is anchor or not
+          def actual_anchor?
+            return @_is_actual_anchor unless @_is_actual_anchor.nil?
+            @_is_actual_anchor = uniq_specie.actual_anchor?(atom)
           end
 
           # Checks that target atom is used many times in unique specie

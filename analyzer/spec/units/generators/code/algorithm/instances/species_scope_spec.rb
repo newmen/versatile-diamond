@@ -59,12 +59,14 @@ module VersatileDiamond
             it { expect([subject, other].shuffle.sort).to eq([other, subject]) }
           end
 
-          describe '#anchor?' do
+          describe '#anchor? && #actual_anchor?' do
             shared_examples_for :check_anchors do
               let(:original_specie) { generator.specie_class(concept_spec.name) }
               it 'check anchors hash' do
                 anchors.each do |keyname, result|
-                  expect(subject.anchor?(concept_spec.atom(keyname))).to be_truthy
+                  atom = concept_spec.atom(keyname)
+                  expect(subject.anchor?(atom)).to be_truthy
+                  expect(subject.actual_anchor?(atom)).to be_truthy
                 end
               end
             end

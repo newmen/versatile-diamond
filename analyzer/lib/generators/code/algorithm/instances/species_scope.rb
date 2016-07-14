@@ -26,6 +26,8 @@ module VersatileDiamond
             spec.anchors.include?(atom)
           end
 
+          alias :actual_anchor? :anchor?
+
           # Scope is not "no specie"
           # @return [Boolean] false
           def none?

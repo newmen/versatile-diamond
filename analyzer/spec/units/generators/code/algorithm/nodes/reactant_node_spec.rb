@@ -51,6 +51,11 @@ module VersatileDiamond
             it { expect(node_ab.anchor?).to be_truthy }
           end
 
+          describe '#actual_anchor?' do
+            it { expect(node_aib.actual_anchor?).to be_truthy }
+            it { expect(node_ab.actual_anchor?).to be_truthy }
+          end
+
           describe '#used_many_times?' do
             it { expect(node_aib.used_many_times?).to be_falsey }
             it { expect(node_ab.used_many_times?).to be_falsey }
