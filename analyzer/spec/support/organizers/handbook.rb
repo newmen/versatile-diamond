@@ -93,6 +93,8 @@ module VersatileDiamond
           :activated_methyl_on_incoherent_bridge,
           :activated_methyl_on_right_bridge,
           :bottom_hydrogenated_activated_dimer,
+          :activated_bridge_with_dimer,
+          :activated_incoherent_hydrogenated_bridge_with_dimer,
           :bridge,
           :chlorigenated_bridge,
           :dimer,
@@ -161,7 +163,9 @@ module VersatileDiamond
           [:intermed_migr_dh_drop, :intermed_migr_dh_formation],
           [:intermed_migr_df_drop, :intermed_migr_df_formation],
           [:reverse_migration_over_111, :migration_over_111],
-          [:methyl_on_dimer_to_high_bridge, :high_bridge_to_methyl_on_dimer]
+          [:methyl_on_dimer_to_high_bridge, :high_bridge_to_methyl_on_dimer],
+          [:bwd_to_hb_and_d, :high_bridge_stand_to_dimer],
+          [:ih_bwd_to_hb_and_d, :ih_high_bridge_stand_to_dimer],
         ])
 
         define_dependents(DependentLateralReaction, [

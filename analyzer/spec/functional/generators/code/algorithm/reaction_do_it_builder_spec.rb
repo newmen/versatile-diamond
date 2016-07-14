@@ -85,6 +85,7 @@ module VersatileDiamond
             let(:hm_ss) { raw_props_idx(dept_high_bridge_base, :cm, '**') }
             let(:hm_hh) { raw_props_idx(dept_high_bridge_base, :cm, 'HH') }
             let(:hm_sh) { raw_props_idx(dept_high_bridge_base, :cm, '*H') }
+            let(:hm_ih) { raw_props_idx(dept_high_bridge_base, :cm, 'iH') }
             let(:hm_f) { raw_props_idx(dept_high_bridge_base, :cm, '') }
             let(:hc_f) { raw_props_idx(dept_high_bridge_base, :cb, '') }
             let(:cv_i) { raw_props_idx(dept_vinyl_on_bridge_base, :c1, 'i') }
@@ -1002,6 +1003,61 @@ module VersatileDiamond
               end
             end
 
+            describe 'bridge with dimer to high bridge and activated dimer' do
+              let(:typical_reaction) { dept_bwd_to_hb_and_d }
+              let(:first_spec) { dept_activated_bridge_with_dimer }
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
+              end
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *bridgeWithDimerCTs1 = target();
+    assert(bridgeWithDimerCTs1->type() == BRIDGE_WITH_DIMER_CTs);
+    Atom *atoms1[3] = { bridgeWithDimerCTs1->atom(3), bridgeWithDimerCTs1->atom(8), bridgeWithDimerCTs1->atom(6) };
+    assert(atoms1[0]->is(#{role_cr}));
+    assert(atoms1[1]->is(#{role_ct}));
+    assert(atoms1[2]->is(#{ct_f}));
+    atoms1[2]->eraseFromCrystal();
+    Handbook::amorph().insert(atoms1[2]);
+    atoms1[0]->unbondFrom(atoms1[2]);
+    atoms1[1]->bondWith(atoms1[2]);
+    assert(!atoms1[0]->is(#{cd_s}));
+    atoms1[0]->changeType(#{cd_s});
+    assert(!atoms1[1]->is(#{hc_f}));
+    atoms1[1]->changeType(#{hc_f});
+    atoms1[2]->changeType(#{hm_f});
+    Finder::findAll(atoms1, 3);
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *bridgeWithDimerCTs1 = target();
+    assert(bridgeWithDimerCTs1->type() == BRIDGE_WITH_DIMER_CTs);
+    Atom *atoms1[3] = { bridgeWithDimerCTs1->atom(3), bridgeWithDimerCTs1->atom(8), bridgeWithDimerCTs1->atom(6) };
+    assert(atoms1[0]->is(#{role_cr}));
+    assert(atoms1[1]->is(#{role_ct}));
+    assert(atoms1[2]->is(#{ct_f}));
+    atoms1[2]->eraseFromCrystal();
+    Handbook::amorph().insert(atoms1[2]);
+    atoms1[0]->unbondFrom(atoms1[2]);
+    atoms1[1]->bondWith(atoms1[2]);
+    assert(!atoms1[0]->is(#{cd_s}));
+    atoms1[0]->changeType(#{cd_s});
+    assert(!atoms1[1]->is(#{hc_f}));
+    atoms1[1]->changeType(#{hc_f});
+    atoms1[2]->changeType(#{hm_hh});
+    Finder::findAll(atoms1, 3);
+                  CODE
+                end
+              end
+            end
+
             describe 'incoherent hydrogenated high bridge stand to dimer' do
               let(:typical_reaction) { dept_ih_high_bridge_stand_to_dimer }
               let(:first_spec) { dept_incoherent_hydrogenated_high_bridge }
@@ -1062,6 +1118,63 @@ module VersatileDiamond
         assert(atoms1[2]->is(#{hm_sh}));
         atoms1[2]->changeType(#{ct_sh});
     }
+    Finder::findAll(atoms1, 3);
+                  CODE
+                end
+              end
+            end
+
+            describe 'bridge with dimer to ih high bridge and activated dimer' do
+              let(:typical_reaction) { dept_ih_bwd_to_hb_and_d }
+              let(:first_spec) do
+                dept_activated_incoherent_hydrogenated_bridge_with_dimer
+              end
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, dept_dimer_base]
+              end
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *specieBWDCTTTH1 = target();
+    assert(specieBWDCTTTH1->type() == BRIDGE_WITH_DIMER_CTs_TTiH);
+    Atom *atoms1[3] = { specieBWDCTTTH1->atom(3), specieBWDCTTTH1->atom(8), specieBWDCTTTH1->atom(6) };
+    assert(atoms1[0]->is(#{role_cr}));
+    assert(atoms1[1]->is(#{role_ct}));
+    assert(atoms1[2]->is(#{ct_ih}));
+    atoms1[2]->eraseFromCrystal();
+    Handbook::amorph().insert(atoms1[2]);
+    atoms1[0]->unbondFrom(atoms1[2]);
+    atoms1[1]->bondWith(atoms1[2]);
+    assert(!atoms1[0]->is(#{cd_s}));
+    atoms1[0]->changeType(#{cd_s});
+    assert(!atoms1[1]->is(#{hc_f}));
+    atoms1[1]->changeType(#{hc_f});
+    atoms1[2]->changeType(#{hm_ih});
+    Finder::findAll(atoms1, 3);
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *specieBWDCTTTH1 = target();
+    assert(specieBWDCTTTH1->type() == BRIDGE_WITH_DIMER_CTs_TTiH);
+    Atom *atoms1[3] = { specieBWDCTTTH1->atom(3), specieBWDCTTTH1->atom(8), specieBWDCTTTH1->atom(6) };
+    assert(atoms1[0]->is(#{role_cr}));
+    assert(atoms1[1]->is(#{role_ct}));
+    assert(atoms1[2]->is(#{ct_ih}));
+    atoms1[2]->eraseFromCrystal();
+    Handbook::amorph().insert(atoms1[2]);
+    atoms1[0]->unbondFrom(atoms1[2]);
+    atoms1[1]->bondWith(atoms1[2]);
+    assert(!atoms1[0]->is(#{cd_s}));
+    atoms1[0]->changeType(#{cd_s});
+    assert(!atoms1[1]->is(#{hc_f}));
+    atoms1[1]->changeType(#{hc_f});
+    atoms1[2]->changeType(#{hm_hh});
     Finder::findAll(atoms1, 3);
                   CODE
                 end
