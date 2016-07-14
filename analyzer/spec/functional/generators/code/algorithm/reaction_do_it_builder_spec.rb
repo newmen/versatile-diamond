@@ -935,6 +935,130 @@ module VersatileDiamond
               end
             end
 
+            describe 'high bridge stand to bridge' do
+              let(:typical_reaction) { dept_high_bridge_stand_to_incoherent_bridge }
+              let(:first_spec) { dept_high_bridge_base }
+              let(:second_spec) { dept_activated_incoherent_bridge }
+              let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *species1[2] = { target(0), target(1) };
+    assert(species1[0]->type() == HIGH_BRIDGE);
+    assert(species1[1]->type() == BRIDGE_CTsi);
+    Atom *atoms1[3] = { species1[0]->atom(1), species1[1]->atom(0), species1[0]->atom(0) };
+    assert(atoms1[0]->is(#{role_cb}));
+    assert(atoms1[1]->is(#{snd_role_ct}));
+    assert(atoms1[2]->is(#{role_cm}));
+    Handbook::amorph().erase(atoms1[2]);
+    crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at(atoms1[0], atoms1[1]));
+    atoms1[0]->unbondFrom(atoms1[2]);
+    atoms1[1]->activate();
+    atoms1[1]->bondWith(atoms1[2]);
+    assert(!atoms1[0]->is(#{br_s}));
+    atoms1[0]->changeType(#{br_s});
+    assert(!atoms1[1]->is(#{br_s}));
+    atoms1[1]->changeType(#{br_s});
+    atoms1[2]->changeType(#{ct_f});
+    Finder::findAll(atoms1, 3);
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *species1[2] = { target(0), target(1) };
+    assert(species1[0]->type() == HIGH_BRIDGE);
+    assert(species1[1]->type() == BRIDGE_CTsi);
+    Atom *atoms1[3] = { species1[0]->atom(1), species1[1]->atom(0), species1[0]->atom(0) };
+    assert(atoms1[0]->is(#{role_cb}));
+    assert(atoms1[1]->is(#{snd_role_ct}));
+    assert(atoms1[2]->is(#{role_cm}));
+    Handbook::amorph().erase(atoms1[2]);
+    crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at(atoms1[0], atoms1[1]));
+    atoms1[0]->unbondFrom(atoms1[2]);
+    atoms1[1]->activate();
+    atoms1[1]->bondWith(atoms1[2]);
+    assert(!atoms1[0]->is(#{br_s}));
+    atoms1[0]->changeType(#{br_s});
+    assert(!atoms1[1]->is(#{br_s}));
+    atoms1[1]->changeType(#{br_s});
+    if (atoms1[2]->is(#{hm_hh}))
+    {
+        atoms1[2]->changeType(#{ct_hh});
+    }
+    else if (atoms1[2]->is(#{hm_sh}))
+    {
+        atoms1[2]->changeType(#{ct_sh});
+    }
+    else
+    {
+        assert(atoms1[2]->is(#{hm_ss}));
+        atoms1[2]->changeType(#{ct_ss});
+    }
+    Finder::findAll(atoms1, 3);
+                  CODE
+                end
+              end
+            end
+
+            describe 'next level bridge to high bridge and activated bridge' do
+              let(:typical_reaction) { dept_bwd_to_hb_and_b }
+              # Under analyzing the EXTENDED_BRIDGE_CLs_CRs swaps to BRIDGE_CLs_CRs
+              let(:first_spec) { dept_twice_bottom_activated_bridge }
+              let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+
+              it_behaves_like :check_do_it do
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *extendedBridgeCLsCRs1 = target();
+    assert(extendedBridgeCLsCRs1->type() == EXTENDED_BRIDGE_CLs_CRs);
+    Atom *atoms1[3] = { extendedBridgeCLsCRs1->atom(1), extendedBridgeCLsCRs1->atom(2), extendedBridgeCLsCRs1->atom(0) };
+    assert(atoms1[0]->is(#{role_cr}));
+    assert(atoms1[1]->is(#{role_cr}));
+    assert(atoms1[2]->is(#{ct_f}));
+    atoms1[2]->eraseFromCrystal();
+    Handbook::amorph().insert(atoms1[2]);
+    atoms1[1]->unbondFrom(atoms1[2]);
+    atoms1[1]->deactivate();
+    atoms1[0]->bondWith(atoms1[2]);
+    assert(!atoms1[0]->is(#{hc_f}));
+    atoms1[0]->changeType(#{hc_f});
+    atoms1[1]->changeType(#{ct_is});
+    atoms1[2]->changeType(#{hm_f});
+    Finder::findAll(atoms1, 3);
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_do_it do
+                include_context :with_ubiquitous
+                let(:do_it_algorithm) do
+                  <<-CODE
+    SpecificSpec *extendedBridgeCLsCRs1 = target();
+    assert(extendedBridgeCLsCRs1->type() == EXTENDED_BRIDGE_CLs_CRs);
+    Atom *atoms1[3] = { extendedBridgeCLsCRs1->atom(1), extendedBridgeCLsCRs1->atom(2), extendedBridgeCLsCRs1->atom(0) };
+    assert(atoms1[0]->is(#{role_cr}));
+    assert(atoms1[1]->is(#{role_cr}));
+    assert(atoms1[2]->is(#{ct_f}));
+    atoms1[2]->eraseFromCrystal();
+    Handbook::amorph().insert(atoms1[2]);
+    atoms1[1]->unbondFrom(atoms1[2]);
+    atoms1[1]->deactivate();
+    atoms1[0]->bondWith(atoms1[2]);
+    assert(!atoms1[0]->is(#{hc_f}));
+    atoms1[0]->changeType(#{hc_f});
+    atoms1[1]->changeType(#{ct_sh});
+    atoms1[2]->changeType(#{hm_hh});
+    Finder::findAll(atoms1, 3);
+                  CODE
+                end
+              end
+            end
+
             describe 'high bridge stand to dimer' do
               let(:typical_reaction) { dept_high_bridge_stand_to_dimer }
               let(:first_spec) { dept_high_bridge_base }

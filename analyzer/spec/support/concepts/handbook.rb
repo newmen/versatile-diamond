@@ -157,7 +157,15 @@ module VersatileDiamond
           a = SpecificAtom.new(bridge_base.atom(:cr), monovalents: [adsorbed_cl])
           SpecificSpec.new(bridge_base, cr: a)
         end
+        set(:twice_bottom_activated_bridge) do
+          opts = { cl: activated_cd.dup, cr: activated_cd.dup }
+          SpecificSpec.new(bridge_base, **opts)
+        end
         set(:extended_bridge_base) { bridge_base.extend_by_references }
+        set(:twice_bottom_activated_extended_bridge) do
+          opts = { cl: activated_cd.dup, cr: activated_cd.dup }
+          SpecificSpec.new(extended_bridge_base, **opts)
+        end
         set(:right_activated_extended_bridge) do
           right_activated_bridge.extended
         end
@@ -769,6 +777,22 @@ module VersatileDiamond
         set(:high_bridge_to_methyl_on_dimer) do
           Reaction.new(:forward, 'high bridge to methyl on dimer',
             htm_source, htm_products, htm_atom_map)
+        end
+
+        set(:hsib_source) { [high_bridge.dup, activated_incoherent_bridge.dup] }
+        set(:hsib_products) { [twice_bottom_activated_extended_bridge.dup] }
+        set(:hsib_names_to_specs) do
+          {
+            source: [:h, :aib].zip(hsib_source),
+            products: [:tbaeb].zip(hsib_products)
+          }
+        end
+        set(:hsib_atom_map) do
+          Mcs::AtomMapper.map(hsib_source, hsib_products, hsib_names_to_specs)
+        end
+        set(:high_bridge_stand_to_incoherent_bridge) do
+          Reaction.new(:forward, 'high bridge stand to incoherent bridge',
+            hsib_source, hsib_products, hsib_atom_map)
         end
 
         set(:hsd_source) { [high_bridge.dup, activated_dimer.dup] }

@@ -13,7 +13,10 @@ module VersatileDiamond
       def initialize(classifier, *method_names)
         @classifier = classifier
         @prop_vector = classifier.props
+
         @prop_to_index = Hash[@prop_vector.zip(@prop_vector.size.times.to_a)]
+        @index_to_prop = @prop_to_index.invert
+
         @matrix = Patches::SetableMatrix.build(@prop_vector.size) { false }
         @prop_vector.each_with_index { |prop, i| tcR(i, i, *method_names) }
 
@@ -24,9 +27,13 @@ module VersatileDiamond
       # @param [AtomProperties] prop the specifing atom properties
       # @result [AtomProperties] the result of maximal specification
       def specification_for(prop)
+        actives_num = prop.actives_num
         idx = index(prop)
         column_idx_enum = @matrix.column(idx).map.with_index
-        cells_with_idxs = column_idx_enum.select { |b, j| b && source_index?(j) }
+        cells_with_idxs = column_idx_enum.select do |b, j|
+          b && source_index?(j) && @index_to_prop[j].actives_num == actives_num
+        end
+
         source_idxs = cells_with_idxs.map(&:last)
         best_index = source_idxs.empty? ? idx : select_best_index(prop, source_idxs)
         @prop_vector[best_index]

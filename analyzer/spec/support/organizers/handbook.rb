@@ -95,6 +95,8 @@ module VersatileDiamond
           :bottom_hydrogenated_activated_dimer,
           :activated_bridge_with_dimer,
           :activated_incoherent_hydrogenated_bridge_with_dimer,
+          :twice_bottom_activated_bridge,
+          :twice_bottom_activated_extended_bridge,
           :bridge,
           :chlorigenated_bridge,
           :dimer,
@@ -151,6 +153,7 @@ module VersatileDiamond
           :hydrogen_abs_from_gap,
           :hydrogen_migration,
           :high_bridge_to_methyl_on_dimer,
+          :high_bridge_stand_to_incoherent_bridge,
           :high_bridge_stand_to_dimer,
           :ih_high_bridge_stand_to_dimer,
           :one_dimer_hydrogen_migration
@@ -164,6 +167,7 @@ module VersatileDiamond
           [:intermed_migr_df_drop, :intermed_migr_df_formation],
           [:reverse_migration_over_111, :migration_over_111],
           [:methyl_on_dimer_to_high_bridge, :high_bridge_to_methyl_on_dimer],
+          [:bwd_to_hb_and_b, :high_bridge_stand_to_incoherent_bridge],
           [:bwd_to_hb_and_d, :high_bridge_stand_to_dimer],
           [:ih_bwd_to_hb_and_d, :ih_high_bridge_stand_to_dimer],
         ])

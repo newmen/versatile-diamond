@@ -101,10 +101,14 @@ module VersatileDiamond
           def marginal_groups
             src_current, prd_current = props_transit
             possible_states = finalized_children_of(src_current) - [prd_current]
-            if possible_states.empty?
+            similar_states = possible_states.select do |checking_prop|
+              checking_prop.same_hydrogens?(src_current)
+            end
+
+            if similar_states.empty?
               edge_group_with(src_current, prd_current)
-            elsif possible_states.one?
-              edge_group_with(possible_states.first, prd_current)
+            elsif similar_states.one?
+              edge_group_with(similar_states.first, prd_current)
             else
               msg = 'Too many possible source states for just one product properties'
               raise ArgumentError, msg
