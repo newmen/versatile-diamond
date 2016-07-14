@@ -201,7 +201,8 @@ module VersatileDiamond
       # @return [Hash] the hash of changes where keys are spec-atom of source and
       #   values are spec-atom of products
       def full_mapping
-        @_full_mapping ||= MappingResult.rezip(mapping.full).to_h
+        @_full_mapping ||=
+          MappingResult.rezip(mapping.full).select { |(_, sa), (_, pa)| sa && pa }.to_h
       end
 
       # Gets atom changes list
