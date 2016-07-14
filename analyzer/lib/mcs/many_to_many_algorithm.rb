@@ -10,6 +10,7 @@ module VersatileDiamond
         #   result of structures mapping
         # @param [Hash] names_and_specs contains names of specs for source and products
         #   of reaction
+        # @return [MappingResult] the fillingn results
         def map_to(mapping_result, names_and_specs)
           pairs = mapping_result.source.map do |source_spec|
             source_name = names_and_specs[:source].find do |_, spec|
@@ -41,8 +42,9 @@ module VersatileDiamond
       # active bonds num
       #
       # @param [MappingResult] mapping_result see at #self.map_to same argument
+      # @return [MappingResult] the fillingn results
       def map_to(mapping_result)
-        @pairs.each do |source, product|
+        @pairs.each_with_object(mapping_result) do |(source, product), acc|
           changed_source, changed_product = [], []
           source_atoms, product_atoms = [], []
 
@@ -61,7 +63,7 @@ module VersatileDiamond
 
           changes = [changed_source, changed_product]
           full = [source_atoms, product_atoms]
-          mapping_result.add([source, product], full, changes)
+          acc.add([source, product], full, changes)
         end
       end
     end

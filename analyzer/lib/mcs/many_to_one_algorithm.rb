@@ -24,6 +24,7 @@ module VersatileDiamond
         # @param [MappingResult] map_result the object which accumulate mapping
         #   result
         # @raise [AtomMapper::CannotMap] when algorithm cannot be applied
+        # @return [MappingResult] the fillingn results
         def map_to(map_result)
           new(map_result.source, map_result.products,
             map_result.reaction_type).map_to(map_result)
@@ -72,11 +73,12 @@ module VersatileDiamond
       #
       # @param [MappingResult] map_result see at #self.map same argument
       # @raise [AtomMapper::CannotMap] see at #self.map
+      # @return [MappingResult] the fillingn results
       def map_to(mapping_result)
         @few_graphs.sort! { |a, b| b.size <=> a.size }
 
         @boundary_big_vertices = nil
-        @few_graphs.each do |small_graph|
+        @few_graphs.each_with_object(mapping_result) do |small_graph, acc|
           @small_graph = small_graph
           @remaining_small_vertices = nil
 
@@ -100,7 +102,7 @@ module VersatileDiamond
           # store result
           changes = associate_links(changed_big, changed_small)
           full = associate_links(big_mapped_vertices, small_mapped_vertices)
-          mapping_result.add(associate_specs, full, changes)
+          acc.add(associate_specs, full, changes)
         end
       end
 
