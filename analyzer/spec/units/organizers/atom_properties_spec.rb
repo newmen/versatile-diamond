@@ -530,6 +530,20 @@ module VersatileDiamond
         it { expect(ivob.same_unfixed?(ucm)).to be_falsey }
       end
 
+      describe '#same_internal?' do
+        it { expect(cm.same_internal?(ucm)).to be_truthy }
+        it { expect(cm.same_internal?(bob)).to be_falsey }
+        it { expect(cm.same_internal?(vob)).to be_falsey }
+
+        it { expect(bridge_ct.same_internal?(ehb_ct)).to be_truthy }
+        it { expect(bridge_ct.same_internal?(hb_ct)).to be_truthy }
+        it { expect(bridge_ct.same_internal?(hib_ct)).to be_truthy }
+        it { expect(ab_ct.same_internal?(aib_ct)).to be_truthy }
+
+        it { expect(bridge_ct.same_internal?(ab_ct)).to be_falsey }
+        it { expect(bridge_ct.same_internal?(bridge_cr)).to be_falsey }
+      end
+
       describe '#correspond?' do
         let(:common_info) do
           {

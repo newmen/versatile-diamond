@@ -954,12 +954,10 @@ module VersatileDiamond
     Handbook::amorph().erase(atoms1[2]);
     crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at(atoms1[0], atoms1[1]));
     atoms1[0]->unbondFrom(atoms1[2]);
-    atoms1[1]->activate();
     atoms1[1]->bondWith(atoms1[2]);
     assert(!atoms1[0]->is(#{br_s}));
     atoms1[0]->changeType(#{br_s});
-    assert(!atoms1[1]->is(#{br_s}));
-    atoms1[1]->changeType(#{br_s});
+    atoms1[1]->changeType(#{br_i});
     atoms1[2]->changeType(#{ct_f});
     Finder::findAll(atoms1, 3);
                   CODE
@@ -980,12 +978,18 @@ module VersatileDiamond
     Handbook::amorph().erase(atoms1[2]);
     crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at(atoms1[0], atoms1[1]));
     atoms1[0]->unbondFrom(atoms1[2]);
-    atoms1[1]->activate();
     atoms1[1]->bondWith(atoms1[2]);
     assert(!atoms1[0]->is(#{br_s}));
     atoms1[0]->changeType(#{br_s});
-    assert(!atoms1[1]->is(#{br_s}));
-    atoms1[1]->changeType(#{br_s});
+    if (atoms1[1]->is(#{ct_sh}))
+    {
+        atoms1[1]->changeType(#{br_h});
+    }
+    else
+    {
+        assert(atoms1[1]->is(#{ct_ss}));
+        atoms1[1]->changeType(#{br_s});
+    }
     if (atoms1[2]->is(#{hm_hh}))
     {
         atoms1[2]->changeType(#{ct_hh});
@@ -1008,25 +1012,25 @@ module VersatileDiamond
             describe 'next level bridge to high bridge and activated bridge' do
               let(:typical_reaction) { dept_bwd_to_hb_and_b }
               # Under analyzing the EXTENDED_BRIDGE_CLs_CRs swaps to BRIDGE_CLs_CRs
-              let(:first_spec) { dept_twice_bottom_activated_bridge }
+              let(:first_spec) { dept_bottom_activated_incoherent_extended_bridge }
               let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
 
               it_behaves_like :check_do_it do
                 let(:do_it_algorithm) do
                   <<-CODE
-    SpecificSpec *extendedBridgeCLsCRs1 = target();
-    assert(extendedBridgeCLsCRs1->type() == EXTENDED_BRIDGE_CLs_CRs);
-    Atom *atoms1[3] = { extendedBridgeCLsCRs1->atom(1), extendedBridgeCLsCRs1->atom(2), extendedBridgeCLsCRs1->atom(0) };
-    assert(atoms1[0]->is(#{role_cr}));
+    SpecificSpec *extendedBridgeCLsCRi1 = target();
+    assert(extendedBridgeCLsCRi1->type() == EXTENDED_BRIDGE_CLs_CRi);
+    Atom *atoms1[3] = { extendedBridgeCLsCRi1->atom(1), extendedBridgeCLsCRi1->atom(2), extendedBridgeCLsCRi1->atom(0) };
+    assert(atoms1[0]->is(#{role_cl}));
     assert(atoms1[1]->is(#{role_cr}));
     assert(atoms1[2]->is(#{ct_f}));
     atoms1[2]->eraseFromCrystal();
     Handbook::amorph().insert(atoms1[2]);
     atoms1[1]->unbondFrom(atoms1[2]);
-    atoms1[1]->deactivate();
     atoms1[0]->bondWith(atoms1[2]);
     assert(!atoms1[0]->is(#{hc_f}));
     atoms1[0]->changeType(#{hc_f});
+    assert(!atoms1[1]->is(#{br_s}));
     atoms1[1]->changeType(#{ct_is});
     atoms1[2]->changeType(#{hm_f});
     Finder::findAll(atoms1, 3);
@@ -1038,20 +1042,27 @@ module VersatileDiamond
                 include_context :with_ubiquitous
                 let(:do_it_algorithm) do
                   <<-CODE
-    SpecificSpec *extendedBridgeCLsCRs1 = target();
-    assert(extendedBridgeCLsCRs1->type() == EXTENDED_BRIDGE_CLs_CRs);
-    Atom *atoms1[3] = { extendedBridgeCLsCRs1->atom(1), extendedBridgeCLsCRs1->atom(2), extendedBridgeCLsCRs1->atom(0) };
-    assert(atoms1[0]->is(#{role_cr}));
+    SpecificSpec *extendedBridgeCLsCRi1 = target();
+    assert(extendedBridgeCLsCRi1->type() == EXTENDED_BRIDGE_CLs_CRi);
+    Atom *atoms1[3] = { extendedBridgeCLsCRi1->atom(1), extendedBridgeCLsCRi1->atom(2), extendedBridgeCLsCRi1->atom(0) };
+    assert(atoms1[0]->is(#{role_cl}));
     assert(atoms1[1]->is(#{role_cr}));
     assert(atoms1[2]->is(#{ct_f}));
     atoms1[2]->eraseFromCrystal();
     Handbook::amorph().insert(atoms1[2]);
     atoms1[1]->unbondFrom(atoms1[2]);
-    atoms1[1]->deactivate();
     atoms1[0]->bondWith(atoms1[2]);
     assert(!atoms1[0]->is(#{hc_f}));
     atoms1[0]->changeType(#{hc_f});
-    atoms1[1]->changeType(#{ct_sh});
+    if (atoms1[1]->is(#{br_h}))
+    {
+        atoms1[1]->changeType(#{ct_sh});
+    }
+    else
+    {
+        assert(atoms1[1]->is(#{br_s}));
+        atoms1[1]->changeType(#{ct_ss});
+    }
     atoms1[2]->changeType(#{hm_hh});
     Finder::findAll(atoms1, 3);
                   CODE

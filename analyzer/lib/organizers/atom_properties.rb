@@ -265,6 +265,13 @@ module VersatileDiamond
           same_dynamics?(other)
       end
 
+      # Checks that the inernal state of bonds are equal for comparing properties
+      # @param [AtomProperties] other comparing properties
+      # @return [Boolean] same or not
+      def same_internal?(other)
+        actives_num == other.actives_num && estab_bonds_num == other.estab_bonds_num
+      end
+
       # Checks that current properties correspond to atom, lattice and have same
       # relations pack
       #
@@ -528,6 +535,12 @@ module VersatileDiamond
       def add_children(prop)
         @children = @children.subtract(prop.children)
         @children << prop
+      end
+
+      # Gets number of established bond relations
+      # @return [Integer] the number of established bond relations
+      def estab_bonds_num
+        @_estab_bond_num ||= estab_bonds_num_in(relations)
       end
 
       # Checks that properties have unfixed state by neighbour lattices set
@@ -864,12 +877,6 @@ module VersatileDiamond
         bonds.reject(&:multi?).size +
           2 * bonds.count(double_bond) +
           3 * bonds.count(triple_bond)
-      end
-
-      # Gets number of established bond relations
-      # @return [Integer] the number of established bond relations
-      def estab_bonds_num
-        @_estab_bond_num ||= estab_bonds_num_in(relations)
       end
 
       # Gets list of relations which belongs to crystal

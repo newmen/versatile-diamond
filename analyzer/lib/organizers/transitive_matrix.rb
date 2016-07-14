@@ -27,11 +27,10 @@ module VersatileDiamond
       # @param [AtomProperties] prop the specifing atom properties
       # @result [AtomProperties] the result of maximal specification
       def specification_for(prop)
-        actives_num = prop.actives_num
         idx = index(prop)
         column_idx_enum = @matrix.column(idx).map.with_index
         cells_with_idxs = column_idx_enum.select do |b, j|
-          b && source_index?(j) && @index_to_prop[j].actives_num == actives_num
+          b && source_index?(j) && prop.same_internal?(@index_to_prop[j])
         end
 
         source_idxs = cells_with_idxs.map(&:last)
