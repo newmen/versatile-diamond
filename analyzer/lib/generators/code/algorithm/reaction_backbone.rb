@@ -6,8 +6,6 @@ module VersatileDiamond
         # Cleans the reaction grouped nodes graph from not significant relations and
         # gets the ordered graph by which the find reaction algorithm will be built
         class ReactionBackbone < BaseBackbone
-          include BackboneExtender
-
           # Initializes backbone by reaction and reactant specie
           # @param [EngineCode] generator the major engine code generator
           # @param [TypicalReaction] reaction the target reaction code generator

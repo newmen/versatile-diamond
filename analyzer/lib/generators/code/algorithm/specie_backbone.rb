@@ -15,32 +15,75 @@ module VersatileDiamond
             super(SpecieGroupedNodes.new(generator, specie))
             @specie = specie
 
-            @_final_graph = nil
+            @_final_graph, @_clean_grouped_graph, @_clean_keys = nil
+            @_entry_nodes = nil
           end
 
           # Gets entry nodes for generating algorithm
           # @return [Array] the array of entry nodes
           def entry_nodes
-            SpecieEntryNodes.new(final_graph).list
+            @_entry_nodes ||= SpecieEntryNodes.new(final_graph).list
           end
 
           # Makes clean graph without not significant relations
           # @return [Hash] the grouped graph without reverse relations if them could be
           #   excepted
-          # TODO: must be private!
           def final_graph
-            @_final_graph ||= clear_excess_rels(complete_grouped_graph)
+            return @_final_graph if @_final_graph
+            anchored_species = anchored_species_scope(clean_grouped_graph)
+            total_species = total_species_scope(complete_grouped_graph)
+            if anchored_species == total_species
+              clean_grouped_graph
+            else
+              cut_and_extend_to_anchors(clean_grouped_graph)
+            end
           end
 
         private
 
           def_delegators :@specie, :spec, :sequence
 
+          # @return [Hash] the complete grouped graph but without excess relations
+          def clean_grouped_graph
+            @_clean_grouped_graph ||= clear_excess_rels(complete_grouped_graph)
+          end
+
+          # Checks that passed nodes are keys for current backbone
+          # @param [Array] nodes which will be checked
+          # @return [Boolean] are own or not
+          def own_key?(nodes)
+            @_clean_keys ||= nodes_set(clean_grouped_graph)
+            nodes.all?(&@_clean_keys.public_method(:include?))
+          end
+
           # Checks that all nodes in passed lists are contained anchor atoms
           # @param [Array] lists_of_nodes which internal nodes will be checked
           # @return [Boolean] are all nodes have anchor atoms or not
           def all_anchored?(lists_of_nodes)
             lists_of_nodes.flatten.all? { |node| node.anchor? || node.none? }
+          end
+
+          # Extends the passed list of species by species which are contained in scoped
+          # species
+          #
+          # @param [Array] species which possible will be extended
+          # @return [Set] the set of all internal species
+          def extend_scopes(species)
+            scoped_species = species.select(&:scope?)
+            (species.to_a + scoped_species.flat_map(&:species)).to_set
+          end
+
+          # @param [Hash] graph
+          # @return [Set]
+          # @override
+          def anchored_species_scope(graph)
+            extend_scopes(super(graph))
+          end
+
+          # @param [Hash] graph
+          # @return [Set]
+          def total_species_scope(graph)
+            extend_scopes(nodes_set(graph).map(&:uniq_specie))
           end
 
           # Finds nodes from passed lists by passed atom

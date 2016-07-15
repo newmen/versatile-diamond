@@ -119,16 +119,16 @@ module VersatileDiamond
 
             describe 'different bases for vinyl on dimer' do
               subject { dept_vinyl_on_dimer_base }
-              let(:final_graph) do
-                {
-                  [:cr] => [[[:cl], param_100_front]],
-                  [:cl] => [[[:cr], param_100_front]]
-                }
-              end
 
               it_behaves_like :check_finite_graph do
                 let(:base_specs) do
                   [dept_bridge_base, dept_vinyl_on_bridge_base, subject]
+                end
+                let(:final_graph) do
+                  {
+                    [:cr] => [[[:cl], param_100_front]],
+                    [:cl] => [[[:cr], param_100_front]]
+                  }
                 end
               end
 
@@ -140,6 +140,12 @@ module VersatileDiamond
                     dept_vinyl_on_bridge_base,
                     subject
                   ]
+                end
+                let(:final_graph) do
+                  {
+                    [:cr] => [[[:cl], param_100_front], [[:c1], param_amorph]],
+                    [:cl] => [[[:cr], param_100_front]]
+                  }
                 end
               end
             end
@@ -282,6 +288,21 @@ module VersatileDiamond
                 it_behaves_like :check_finite_graph do
                   subject { dept_intermed_migr_down_full_base }
                 end
+              end
+            end
+
+            it_behaves_like :check_finite_graph do
+              subject { dept_intermed_migr_down_bridge_base }
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+              end
+              let(:cbt) { intermed_migr_down_bridge_base.atom(:cbt) }
+              let(:final_graph) do
+                {
+                  [:cm] => [],
+                  [:cbr] => [[[:cbt], param_100_cross]],
+                  [:cbt] => [[[:cbr], param_100_cross]]
+                }
               end
             end
           end
@@ -559,7 +580,11 @@ module VersatileDiamond
             describe 'different anchors of vinyl on dimer' do
               subject { dept_vinyl_on_dimer_base }
 
-              shared_examples_for :check_both_sides do
+              describe 'without methyl on bridge' do
+                let(:base_specs) do
+                  [dept_bridge_base, dept_vinyl_on_bridge_base, subject]
+                end
+
                 it_behaves_like :check_ordered_graph do
                   let(:entry_node) { backbone.entry_nodes.first }
                   let(:ordered_graph) do
@@ -579,13 +604,7 @@ module VersatileDiamond
                 end
               end
 
-              it_behaves_like :check_both_sides do
-                let(:base_specs) do
-                  [dept_bridge_base, dept_vinyl_on_bridge_base, subject]
-                end
-              end
-
-              it_behaves_like :check_both_sides do
+              describe 'with methyl on bridge' do
                 let(:base_specs) do
                   [
                     dept_bridge_base,
@@ -593,6 +612,25 @@ module VersatileDiamond
                     dept_vinyl_on_bridge_base,
                     subject
                   ]
+                end
+
+                it_behaves_like :check_ordered_graph do
+                  let(:entry_node) { backbone.entry_nodes.first }
+                  let(:ordered_graph) do
+                    [
+                      [[:cr], [[[:c1], param_amorph], [[:cl], param_100_front]]]
+                    ]
+                  end
+                end
+
+                it_behaves_like :check_ordered_graph do
+                  let(:entry_node) { backbone.entry_nodes.last }
+                  let(:ordered_graph) do
+                  [
+                    [[:cl], [[[:cr], param_100_front]]],
+                    [[:cr], [[[:c1], param_amorph]]]
+                  ]
+                  end
                 end
               end
             end

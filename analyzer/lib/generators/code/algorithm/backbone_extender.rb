@@ -5,6 +5,8 @@ module VersatileDiamond
 
         # Provides method for extending graph to anchored nodes
         module BackboneExtender
+          include Algorithm::NodesCollector
+
         private
 
           # Checks that passed graph do not contains unanchored nodes on other side

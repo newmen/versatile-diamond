@@ -10,7 +10,6 @@ module VersatileDiamond
         class LateralChunksBackbone
           include Modules::GraphDupper
           include BackboneExtender
-          include NodesCollector
           extend Forwardable
 
           # Initializes backbone by lateral chunks object

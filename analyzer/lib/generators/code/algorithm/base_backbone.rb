@@ -7,7 +7,7 @@ module VersatileDiamond
         # @abstract
         class BaseBackbone
           include Modules::ListsComparer
-          include NodesCollector
+          include BackboneExtender
           extend Forwardable
 
           # Initializes backbone by grouped nodes graph
