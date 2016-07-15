@@ -29,6 +29,7 @@ module VersatileDiamond
             end
             let(:d_cr) { role(dept_dimer_base, :cr) }
             let(:mod_cm) { role(dept_methyl_on_dimer_base, :cm) }
+            let(:vob) { role(dept_vinyl_on_bridge_base, :c1) }
 
             it_behaves_like :check_code do
               subject { dept_bridge_base }
@@ -308,6 +309,80 @@ module VersatileDiamond
                                 ParentSpec *parents[2] = { vinylOnBridge1, bridge1 };
                                 create<VinylOnDimer>(parents);
                             }
+                        }
+                    }
+                });
+            }
+        }
+    }
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              subject { dept_vinyl_on_dimer_base }
+              let(:base_specs) do
+                [
+                  dept_bridge_base,
+                  dept_methyl_on_bridge_base,
+                  dept_vinyl_on_bridge_base,
+                  subject
+                ]
+              end
+              let(:find_algorithm) do
+                <<-CODE
+    if (anchor->is(#{role_cr}))
+    {
+        if (!anchor->hasRole(VINYL_ON_DIMER, #{role_cr}))
+        {
+            anchor->eachAmorphNeighbour([&](Atom *amorph1) {
+                if (amorph1->is(#{vob}))
+                {
+                    VinylOnBridge *vinylOnBridge1 = amorph1->specByRole<VinylOnBridge>(#{vob});
+                    if (vinylOnBridge1)
+                    {
+                        eachNeighbour(anchor, &Diamond::front_100, [&anchor, &vinylOnBridge1](Atom *neighbour1) {
+                            if (neighbour1->is(#{role_cl}))
+                            {
+                                if (anchor->hasBondWith(neighbour1))
+                                {
+                                    Bridge *bridge1 = neighbour1->specByRole<Bridge>(#{b_ct});
+                                    if (bridge1)
+                                    {
+                                        ParentSpec *parents[2] = { vinylOnBridge1, bridge1 };
+                                        create<VinylOnDimer>(parents);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
+    if (anchor->is(#{role_cl}))
+    {
+        if (!anchor->hasRole(VINYL_ON_DIMER, #{role_cl}))
+        {
+            Bridge *bridge1 = anchor->specByRole<Bridge>(#{b_ct});
+            if (bridge1)
+            {
+                eachNeighbour(anchor, &Diamond::front_100, [&](Atom *neighbour1) {
+                    if (neighbour1->is(#{role_cr}))
+                    {
+                        if (anchor->hasBondWith(neighbour1))
+                        {
+                            neighbour1->eachAmorphNeighbour([&bridge1](Atom *amorph1) {
+                                if (amorph1->is(#{vob}))
+                                {
+                                    VinylOnBridge *vinylOnBridge1 = amorph1->specByRole<VinylOnBridge>(#{vob});
+                                    if (vinylOnBridge1)
+                                    {
+                                        ParentSpec *parents[2] = { vinylOnBridge1, bridge1 };
+                                        create<VinylOnDimer>(parents);
+                                    }
+                                }
+                            });
                         }
                     }
                 });
