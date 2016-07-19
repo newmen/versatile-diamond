@@ -50,7 +50,23 @@ module VersatileDiamond
           end
 
           # @return [Array]
-          def check_asymmetric_inner_units_procs
+          def check_inner_units_symmetries_procs
+            if units.all?(&:symmetric?)
+              check_inner_symmetric_units_procs
+            else
+              check_inner_asymmetric_units_procs
+            end
+          end
+
+          # @return [Array]
+          def check_inner_symmetric_units_procs
+            units.map do |inner_unit|
+              -> &block { inner_unit.check_symmetry_with_atom(&block) }
+            end
+          end
+
+          # @return [Array]
+          def check_inner_asymmetric_units_procs
             units.select(&:asymmetric_related_atoms?).map do |inner_unit|
               -> &block { inner_unit.iterate_symmetries(&block) }
             end
@@ -125,8 +141,8 @@ module VersatileDiamond
 
           # @yield incorporating statement
           # @return [Expressions::Core::Statement]
-          def check_each_asymmetric_inner_unit(&block)
-            call_procs(check_asymmetric_inner_units_procs, &block)
+          def check_inner_symmetries(&block)
+            call_procs(check_inner_units_symmetries_procs, &block)
           end
 
           # @yield incorporating statement
@@ -137,7 +153,7 @@ module VersatileDiamond
             else
               unit.iterate_portions_of_similar_species do
                 iterate_portioned_species do
-                  check_each_asymmetric_inner_unit(&block)
+                  check_inner_symmetries(&block)
                 end
               end
             end

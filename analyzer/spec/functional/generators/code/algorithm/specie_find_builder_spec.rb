@@ -687,11 +687,13 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_code do
+            describe 'different three bridges' do
               subject { dept_three_bridges_base }
               let(:base_specs) { [dept_bridge_base, subject] }
-              let(:find_algorithm) do
-                <<-CODE
+
+              it_behaves_like :check_code do
+                let(:find_algorithm) do
+                  <<-CODE
     if (anchor->is(#{role_cc}))
     {
         if (!anchor->hasRole(THREE_BRIDGES, #{role_cc}))
@@ -710,15 +712,54 @@ module VersatileDiamond
             });
         }
     }
-                CODE
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_code do
+                let(:typical_reactions) { [dept_hydrogen_abs_from_gap] }
+                let(:find_algorithm) do
+                  <<-CODE
+    if (anchor->is(#{role_cc}))
+    {
+        if (!anchor->hasRole(THREE_BRIDGES, #{role_cc}))
+        {
+            anchor->eachSpecsPortionByRole<Bridge>(#{b_cr}, 2, [&](Bridge **species1) {
+                for (uint s = 0; s < 2; ++s)
+                {
+                    species1[s]->eachSymmetry([&](ParentSpec *symmetricBridge1) {
+                        if (anchor == symmetricBridge1->atom(1))
+                        {
+                            species1[1 - s]->eachSymmetry([&anchor, &symmetricBridge1](ParentSpec *symmetricBridge2) {
+                                if (anchor == symmetricBridge2->atom(1))
+                                {
+                                    Atom *atom1 = symmetricBridge1->atom(2);
+                                    Bridge *bridge1 = atom1->specByRole<Bridge>(#{b_ct});
+                                    if (bridge1)
+                                    {
+                                        ParentSpec *parents[3] = { symmetricBridge1, symmetricBridge2, bridge1 };
+                                        create<ThreeBridges>(parents);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    }
+                  CODE
+                end
               end
             end
 
-            it_behaves_like :check_code do
+            describe 'different bridge with dimer' do
               subject { dept_bridge_with_dimer_base }
               let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
-              let(:find_algorithm) do
-                <<-CODE
+
+              it_behaves_like :check_code do
+                let(:find_algorithm) do
+                  <<-CODE
     if (anchor->is(#{role_cr}))
     {
         if (!anchor->hasRole(BRIDGE_WITH_DIMER, #{role_cr}))
@@ -736,16 +777,14 @@ module VersatileDiamond
             }
         }
     }
-                CODE
+                  CODE
+                end
               end
-            end
 
-            it_behaves_like :check_code do
-              subject { dept_bridge_with_dimer_base }
-              let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
-              let(:typical_reactions) { [dept_hydrogen_abs_from_gap] }
-              let(:find_algorithm) do
-                <<-CODE
+              it_behaves_like :check_code do
+                let(:typical_reactions) { [dept_hydrogen_abs_from_gap] }
+                let(:find_algorithm) do
+                  <<-CODE
     if (anchor->is(#{role_cr}))
     {
         if (!anchor->hasRole(BRIDGE_WITH_DIMER, #{role_cr}))
@@ -768,16 +807,14 @@ module VersatileDiamond
             }
         }
     }
-                CODE
+                  CODE
+                end
               end
-            end
 
-            it_behaves_like :check_code do
-              subject { dept_bridge_with_dimer_base }
-              let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
-              let(:typical_reactions) { [dept_dimer_drop] }
-              let(:find_algorithm) do
-                <<-CODE
+              it_behaves_like :check_code do
+                let(:typical_reactions) { [dept_dimer_drop] }
+                let(:find_algorithm) do
+                  <<-CODE
     if (anchor->is(#{role_cr}))
     {
         if (!anchor->hasRole(BRIDGE_WITH_DIMER, #{role_cr}))
@@ -800,16 +837,14 @@ module VersatileDiamond
             }
         }
     }
-                CODE
+                  CODE
+                end
               end
-            end
 
-            it_behaves_like :check_code do
-              subject { dept_bridge_with_dimer_base }
-              let(:base_specs) { [dept_bridge_base, dept_dimer_base, subject] }
-              let(:typical_reactions) { [dept_hydrogen_abs_from_gap, dept_dimer_drop] }
-              let(:find_algorithm) do
-                <<-CODE
+              it_behaves_like :check_code do
+                let(:typical_reactions) { [dept_hydrogen_abs_from_gap, dept_dimer_drop] }
+                let(:find_algorithm) do
+                  <<-CODE
     if (anchor->is(#{role_cr}))
     {
         if (!anchor->hasRole(BRIDGE_WITH_DIMER, #{role_cr}))
@@ -837,7 +872,8 @@ module VersatileDiamond
             }
         }
     }
-                CODE
+                  CODE
+                end
               end
             end
 
