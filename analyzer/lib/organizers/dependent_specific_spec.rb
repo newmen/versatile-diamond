@@ -69,7 +69,7 @@ module VersatileDiamond
         props_to_atoms = self_props.zip(specific_atoms.values)
         parent = similar_specs.find do |possible_parent|
           pp_props = specific_props_from(possible_parent)
-          are_props_identical = lists_are_identical?(self_props, pp_props, &:like?)
+          are_props_identical = lists_are_identical?(self_props, pp_props, &:include?)
           anchor_props = self_props - pp_props
           next if !are_props_identical && anchor_props == self_props
 

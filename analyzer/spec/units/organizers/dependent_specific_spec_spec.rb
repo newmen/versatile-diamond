@@ -166,6 +166,26 @@ module VersatileDiamond
           end
         end
 
+        describe 'right activated bridge' do
+          let(:similars) do
+            [
+              dept_bridge_base,
+              dept_activated_bridge,
+              dept_right_activated_bridge
+            ]
+          end
+          let(:parent) { dept_bridge_base }
+          let(:children) { [] }
+
+          it_behaves_like :organize_and_check do
+            subject { dept_activated_bridge }
+          end
+
+          it_behaves_like :organize_and_check do
+            subject { dept_right_activated_bridge }
+          end
+        end
+
         describe 'methyl on bridge' do
           let(:similars) do
             [
