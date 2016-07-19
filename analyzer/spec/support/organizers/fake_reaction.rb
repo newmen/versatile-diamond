@@ -22,11 +22,16 @@ module VersatileDiamond
           dept_spec
         end
 
+        # @return [Array]
+        def source
+          @pseudo_source
+        end
+
         # Iterates the pseudo source in the case when target is :source symbol
         # @param [Symbol] target which identify the type of iterating entities
         # @yield [Organizers::DependentWrappedSpec] iterates applied species
         def each(target, &block)
-          (target == :source ? @pseudo_source : []).each(&block)
+          (target == :source ? source : []).each(&block)
         end
 
         # Fake does not use any atom

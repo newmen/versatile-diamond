@@ -157,10 +157,13 @@ module VersatileDiamond
           a = SpecificAtom.new(bridge_base.atom(:cr), monovalents: [adsorbed_cl])
           SpecificSpec.new(bridge_base, cr: a)
         end
+        set(:bottom_activated_incoherent_bridge) do
+          opts = { cl: activated_cd.dup, cr: incoherent_cd.dup }
+          SpecificSpec.new(bridge_base, **opts)
+        end
         set(:extended_bridge_base) { bridge_base.extend_by_references }
         set(:bottom_activated_incoherent_extended_bridge) do
-          opts = { cl: activated_cd.dup, cr: incoherent_cd.dup }
-          SpecificSpec.new(extended_bridge_base, **opts)
+          bottom_activated_incoherent_bridge.extended
         end
         set(:right_activated_extended_bridge) do
           right_activated_bridge.extended

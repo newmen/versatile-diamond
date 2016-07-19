@@ -15,7 +15,7 @@ module VersatileDiamond
                 let(:spec) { lateral_dimer }
                 let(:final_graph) do
                   {
-                    [:cl, :cr] => [[[t1, t2], param_100_cross]]
+                    [:cl, :cr] => [[[t2, t1], param_100_cross]]
                   }
                 end
 
@@ -45,8 +45,8 @@ module VersatileDiamond
               let(:spec) { front_bridge }
               let(:final_graph) do
                 {
-                  [cb0] => [[[ts], param_100_cross]],
-                  [fb2] => [[[ts], param_100_front]]
+                  [cb0] => [[[ts2], param_100_cross]],
+                  [fb1] => [[[ts2], param_100_front]]
                 }
               end
 
@@ -176,7 +176,7 @@ module VersatileDiamond
                 let(:spec) { lateral_dimer }
                 let(:ordered_graph) do
                   [
-                    [[:cl, :cr], [[[t1, t2], param_100_cross]]]
+                    [[:cl, :cr], [[[t2, t1], param_100_cross]]]
                   ]
                 end
 

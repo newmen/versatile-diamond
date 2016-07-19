@@ -78,6 +78,25 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_code do
+              subject { dept_bottom_activated_incoherent_bridge }
+              let(:base_specs) { [dept_bridge_base] }
+              let(:specific_specs) { [dept_right_activated_bridge, subject] }
+              let(:typical_reactions) { [dept_high_bridge_stand_to_incoherent_bridge] }
+              let(:find_algorithm) do
+                <<-CODE
+    Atom *atom1 = parent->atom(2);
+    if (atom1->is(#{role_cr}))
+    {
+        if (!atom1->hasRole(BRIDGE_CLs_CRi, #{role_cr}))
+        {
+            create<BridgeCLsCRi>(parent);
+        }
+    }
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
               subject { dept_methyl_on_bridge_base }
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:typical_reactions) { [dept_methyl_deactivation] }

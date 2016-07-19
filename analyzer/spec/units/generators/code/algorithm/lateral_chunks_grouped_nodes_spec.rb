@@ -28,8 +28,8 @@ module VersatileDiamond
 
               let(:grouped_graph) do
                 {
-                  [t1, t2] => [[[:cl, :cr], param_100_cross]],
-                  [:cl, :cr] => [[[t1, t2], param_100_cross]]
+                  [t1, t2] => [[[:cr, :cl], param_100_cross]],
+                  [:cr, :cl] => [[[t1, t2], param_100_cross]]
                 }
               end
 
@@ -65,8 +65,8 @@ module VersatileDiamond
 
               let(:grouped_graph) do
                 {
-                  [t1, t2] => [[[:cl, :cr], param_100_cross]],
-                  [:cl, :cr] => [[[t1, t2], param_100_cross]],
+                  [t1, t2] => [[[:cr, :cl], param_100_cross]],
+                  [:cr, :cl] => [[[t1, t2], param_100_cross]],
                   [t1] => [[[b], param_100_front]],
                   [b] => [[[t1], param_100_front]]
                 }

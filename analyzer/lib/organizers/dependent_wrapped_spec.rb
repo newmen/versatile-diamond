@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Organizers
 
     # Wraps some many-atomic species and provides common methods for using them
@@ -451,9 +453,14 @@ module VersatileDiamond
       # Checks that current instance is reactant
       # @return [Boolean] uses as part of any reaction or not
       def reactant?
-        [reactions, theres].any? do |container|
-          container.any? { |item| item.each(:source).to_a.include?(spec) }
-        end
+        !theres.empty? || reactions.any? { |r| r.source.include?(spec) } ||
+          (spec.respond_to?(:original) &&
+            reactions.any? { |r| r.source.include?(spec.original) }) ||
+          reactions.any? do |r|
+            origs = r.source.select { |s| s.respond_to?(:original) }.map(&:original)
+            uniqs = origs.groups(&:itself).select(&:one?).reduce(:+)
+            uniqs && uniqs.include?(spec)
+          end
       end
 
       # @param [Array] _

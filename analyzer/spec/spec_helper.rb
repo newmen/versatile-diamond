@@ -18,6 +18,7 @@ RSpec.configure do |config|
 
   config.extend VD::Support::DefineAtomsHelper
   config.include VD::Support::Matchers
+  config.include VD::Support::KeynameGraphConverter
 
   config.include VD::Concepts::Support::Handbook
   config.include VD::Interpreter::Support::Handbook, type: :interpreter

@@ -1,3 +1,5 @@
+require_relative '../../../keyname_graph_converter.rb'
+
 module VersatileDiamond
   using Patches::RichArray
 
@@ -8,6 +10,7 @@ module VersatileDiamond
 
           # Provides usefull methods for working with noded graphs
           module NodesConverter
+            include VersatileDiamond::Support::KeynameGraphConverter
             include Algorithm::NodesCollector
 
             # Grubs atoms from nodes
@@ -29,43 +32,21 @@ module VersatileDiamond
             #
             # @param [Array | Hash] nodes_list which will be translated
             # @return [Array] translated atomic list of relations
+            # @override
+            alias_method :super_translate_to_keyname_list, :translate_to_keyname_list
             def translate_to_keyname_list(nodes_list)
-              all_nodes = nodes_list.flat_map do |key, rels|
-                key + rels.flat_map(&:first)
-              end
-
-              nds_to_kns = {}
-              nodes_with_keynames = all_nodes.map { |n| [n, n.keyname] }.uniq
-              groups = nodes_with_keynames.groups(&:last)
-              groups.select(&:one?).each do |group|
-                node, keyname = group.first
-                nds_to_kns[node] = keyname
-              end
-
-              groups.reject(&:one?).each do |group|
-                sub_groups = group.groups { |n, _| n.spec.name }
-                sub_groups.select(&:one?).each do |g|
-                  node, keyname = g.first
-                  nds_to_kns[node] = :"#{node.spec.name}__#{keyname}"
-                end
-                sub_groups.reject(&:one?).each do |g|
-                  g.each_with_index do |(node, keyname), i|
-                    nds_to_kns[node] = :"#{node.spec.name}__#{i}__#{keyname}"
-                  end
-                end
-              end
-
-              kn_proc = nds_to_kns.public_method(:[])
-              nodes_list.map do |nodes, rels|
-                [nodes.map(&kn_proc), rels.map { |ns, r| [ns.map(&kn_proc), r] }]
-              end
+              spec_name_proc = -> n { n.spec.name }
+              all_keys_proc = -> scope { scope.reduce(:+) }
+              super_translate_to_keyname_list(nodes_list, spec_name_proc, all_keys_proc)
             end
 
-            # Translates the passed graph to another graph where instead nodes the
-            # atoms uses as vertices
+            # Translates the passed graph to another graph where instead vertices the
+            # atoms uses as keynames
             #
-            # @param [Hash] nodes_graph which will be translated
+            # @param [Array] nodes_list which will be translated
+            # @param [Hash] graph which will be translated
             # @return [Hash] translated atomic graph
+            # @override
             def translate_to_keyname_graph(nodes_graph)
               Hash[translate_to_keyname_list(nodes_graph)]
             end

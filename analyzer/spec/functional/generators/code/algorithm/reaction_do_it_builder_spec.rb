@@ -1018,9 +1018,9 @@ module VersatileDiamond
               it_behaves_like :check_do_it do
                 let(:do_it_algorithm) do
                   <<-CODE
-    SpecificSpec *extendedBridgeCLsCRi1 = target();
-    assert(extendedBridgeCLsCRi1->type() == EXTENDED_BRIDGE_CLs_CRi);
-    Atom *atoms1[3] = { extendedBridgeCLsCRi1->atom(1), extendedBridgeCLsCRi1->atom(2), extendedBridgeCLsCRi1->atom(0) };
+    SpecificSpec *bridgeCLsCRi1 = target();
+    assert(bridgeCLsCRi1->type() == BRIDGE_CLs_CRi);
+    Atom *atoms1[3] = { bridgeCLsCRi1->atom(1), bridgeCLsCRi1->atom(2), bridgeCLsCRi1->atom(0) };
     assert(atoms1[0]->is(#{role_cl}));
     assert(atoms1[1]->is(#{role_cr}));
     assert(atoms1[2]->is(#{ct_f}));
@@ -1042,9 +1042,9 @@ module VersatileDiamond
                 include_context :with_ubiquitous
                 let(:do_it_algorithm) do
                   <<-CODE
-    SpecificSpec *extendedBridgeCLsCRi1 = target();
-    assert(extendedBridgeCLsCRi1->type() == EXTENDED_BRIDGE_CLs_CRi);
-    Atom *atoms1[3] = { extendedBridgeCLsCRi1->atom(1), extendedBridgeCLsCRi1->atom(2), extendedBridgeCLsCRi1->atom(0) };
+    SpecificSpec *bridgeCLsCRi1 = target();
+    assert(bridgeCLsCRi1->type() == BRIDGE_CLs_CRi);
+    Atom *atoms1[3] = { bridgeCLsCRi1->atom(1), bridgeCLsCRi1->atom(2), bridgeCLsCRi1->atom(0) };
     assert(atoms1[0]->is(#{role_cl}));
     assert(atoms1[1]->is(#{role_cr}));
     assert(atoms1[2]->is(#{ct_f}));

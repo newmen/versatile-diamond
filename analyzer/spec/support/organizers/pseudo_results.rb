@@ -131,7 +131,7 @@ module VersatileDiamond
                   if all_specs.include?(s.name)
                     swap_carefully(target, dr, s, spec_from(all_specs, s).spec)
                   else
-                    if s.is_a?(Concepts::TerminationSpec)
+                    if s.termination?
                       dt = DependentTermination.new(s)
                       depts_cache[:term_specs] << dt
                       all_specs[dt.name] = dt
@@ -140,7 +140,7 @@ module VersatileDiamond
                     end
                   end
 
-                  store_concept_to(dr, spec_from(all_specs, s)) if target == :source
+                  store_concept_to(dr, spec_from(all_specs, s))
                 end
               end
             end

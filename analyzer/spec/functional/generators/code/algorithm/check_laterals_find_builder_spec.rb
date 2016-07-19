@@ -48,12 +48,12 @@ module VersatileDiamond
     sidepiece->eachSymmetry([](LateralSpec *symmetricDimer1) {
         Atom *atoms1[2] = { symmetricDimer1->atom(3), symmetricDimer1->atom(0) };
         eachNeighbours<2>(atoms1, &Diamond::cross_100, [&symmetricDimer1](Atom **neighbours1) {
-            if (neighbours1[0]->is(#{aib_ct}) && neighbours1[1]->is(#{ab_ct}))
+            if (neighbours1[0]->is(#{ab_ct}) && neighbours1[1]->is(#{aib_ct}))
             {
-                BridgeCTsi *bridgeCTsi1 = neighbours1[0]->specByRole<BridgeCTsi>(#{aib_ct});
+                BridgeCTsi *bridgeCTsi1 = neighbours1[1]->specByRole<BridgeCTsi>(#{aib_ct});
                 if (bridgeCTsi1)
                 {
-                    BridgeCTs *bridgeCTs1 = neighbours1[1]->specByRole<BridgeCTs>(#{ab_ct});
+                    BridgeCTs *bridgeCTs1 = neighbours1[0]->specByRole<BridgeCTs>(#{ab_ct});
                     if (bridgeCTs1)
                     {
                         SpecificSpec *targets[2] = { bridgeCTs1, bridgeCTsi1 };
@@ -95,12 +95,12 @@ module VersatileDiamond
     sidepiece->eachSymmetry([](LateralSpec *symmetricDimer1) {
         Atom *atoms1[2] = { symmetricDimer1->atom(3), symmetricDimer1->atom(0) };
         eachNeighbours<2>(atoms1, &Diamond::cross_100, [&symmetricDimer1](Atom **neighbours1) {
-            if (neighbours1[0]->is(#{aib_ct}) && neighbours1[1]->is(#{ab_ct}))
+            if (neighbours1[0]->is(#{ab_ct}) && neighbours1[1]->is(#{aib_ct}))
             {
-                BridgeCTsi *bridgeCTsi1 = neighbours1[0]->specByRole<BridgeCTsi>(#{aib_ct});
+                BridgeCTsi *bridgeCTsi1 = neighbours1[1]->specByRole<BridgeCTsi>(#{aib_ct});
                 if (bridgeCTsi1)
                 {
-                    BridgeCTs *bridgeCTs1 = neighbours1[1]->specByRole<BridgeCTs>(#{ab_ct});
+                    BridgeCTs *bridgeCTs1 = neighbours1[0]->specByRole<BridgeCTs>(#{ab_ct});
                     if (bridgeCTs1)
                     {
                         SpecificSpec *targets[2] = { bridgeCTs1, bridgeCTsi1 };

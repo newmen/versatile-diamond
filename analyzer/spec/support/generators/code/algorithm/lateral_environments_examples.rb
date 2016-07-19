@@ -59,6 +59,7 @@ module VersatileDiamond
 
               let(:t) { :'bridge(ct: *)__0__ct' }
               let(:ts) { :'bridge(ct: *)__1__ct' }
+              let(:ts2) { :'bridge(ct: *)__2__ct' }
               let(:cb0) { :'bridge(ct: *)__0__ct' }
               let(:cb1) { :'bridge(ct: *)__1__ct' }
               let(:fb0) { :'bridge(ct: *)__0__ct' }

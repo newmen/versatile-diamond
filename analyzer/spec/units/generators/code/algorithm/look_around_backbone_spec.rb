@@ -14,7 +14,7 @@ module VersatileDiamond
                 let(:lateral_reactions) { [dept_end_lateral_df] }
                 let(:final_graph) do
                   {
-                    [t1, t2] => [[[:cl, :cr], param_100_cross]]
+                    [t1, t2] => [[[:cr, :cl], param_100_cross]]
                   }
                 end
               end
@@ -24,7 +24,7 @@ module VersatileDiamond
                 let(:final_graph) do
                   {
                     [t1] => [[[b], param_100_front]],
-                    [t1, t2] => [[[:cl, :cr], param_100_cross]]
+                    [t1, t2] => [[[:cr, :cl], param_100_cross]]
                   }
                 end
               end
@@ -133,7 +133,7 @@ module VersatileDiamond
               describe 'just cross sidepieces' do
                 let(:ordered_graph) do
                   [
-                    [[t1, t2], [[[:cl, :cr], param_100_cross]]]
+                    [[t1, t2], [[[:cr, :cl], param_100_cross]]]
                   ]
                 end
 
@@ -173,7 +173,7 @@ module VersatileDiamond
                   let(:entry_node) { backbone.entry_nodes.first }
                   let(:ordered_graph) do
                     [
-                      [[t1, t2], [[[:cl, :cr], param_100_cross]]]
+                      [[t1, t2], [[[:cr, :cl], param_100_cross]]]
                     ]
                   end
                 end

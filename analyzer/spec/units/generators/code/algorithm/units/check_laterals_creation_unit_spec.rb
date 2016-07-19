@@ -25,12 +25,11 @@ module VersatileDiamond
               let(:spec) { lateral_dimer }
               let(:code) do
                 <<-CODE
-SpecificSpec *targets[2] = { species1[1], species1[0] };
 ChainFactory<
     DuoLateralFactory,
     ForwardDimerFormationEndLateral,
     ForwardDimerFormation
-> factory(dimer1, targets);
+> factory(dimer1, species1);
 factory.checkoutReactions<ForwardDimerFormationEndLateral>();
                 CODE
               end
