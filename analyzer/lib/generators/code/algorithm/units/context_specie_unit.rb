@@ -281,7 +281,9 @@ module VersatileDiamond
               if atom_used_many_times?
                 context_prop = all_popular_atoms_nodes.first.properties
                 parent_props = all_popular_atoms_nodes.map(&:sub_properties)
-                parent_props *= count_possible_atom_usages unless totally_popular?
+                if parent_props.one? && !totally_popular?
+                  parent_props *= count_possible_atom_usages
+                end
                 parent_props.reduce(:safe_plus) == context_prop
               else
                 false
@@ -297,7 +299,8 @@ module VersatileDiamond
           # @return [Boolean]
           def totally_splitten?(inner_units)
             inner_units.empty? || inner_units != [unit] ||
-              !atom_many_usages_like_in_context? || totally_popular?
+              !atom_many_usages_like_in_context? || (totally_popular? &&
+                inner_units.flat_map(&:species).map(&:original).uniq.one?)
           end
 
           # @param [Array] checking_nodes

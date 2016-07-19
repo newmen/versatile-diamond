@@ -1390,6 +1390,120 @@ module VersatileDiamond
                   end
                 end
               end
+
+              describe 'with main reactions and cross bridge on dimers' do
+                let(:base_specs) do
+                  [
+                    dept_bridge_base,
+                    dept_dimer_base,
+                    dept_methyl_on_bridge_base,
+                    dept_methyl_on_dimer_base,
+                    dept_cross_bridge_on_dimers_base,
+                    subject
+                  ]
+                end
+                it_behaves_like :check_code do
+                  subject { dept_intermed_migr_down_common_base }
+                  let(:typical_reactions) { [dept_intermed_migr_dc_drop] }
+                  let(:find_algorithm) do
+                    <<-CODE
+    if (anchor->is(#{role_cm}))
+    {
+        if (!anchor->hasRole(INTERMED_MIGR_DOWN_COMMON, #{role_cm}))
+        {
+            anchor->eachSpecByRole<MethylOnDimer>(#{mob_cm}, [&](MethylOnDimer *methylOnDimer1) {
+                Atom *atom1 = methylOnDimer1->atom(1);
+                anchor->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&atom1, &methylOnDimer1](MethylOnBridge *methylOnBridge1) {
+                    if (atom1 != methylOnBridge1->atom(1))
+                    {
+                        methylOnBridge1->eachSymmetry([&atom1, &methylOnDimer1](ParentSpec *symmetricMethylOnBridge1) {
+                            Atom *atom2 = symmetricMethylOnBridge1->atom(2);
+                            eachNeighbour(atom2, &Diamond::cross_100, [&atom1, &methylOnDimer1, &symmetricMethylOnBridge1](Atom *neighbour1) {
+                                if (neighbour1 == atom1)
+                                {
+                                    ParentSpec *parents[2] = { methylOnDimer1, symmetricMethylOnBridge1 };
+                                    create<IntermedMigrDownCommon>(parents);
+                                }
+                            });
+                        });
+                    }
+                });
+            });
+        }
+    }
+                    CODE
+                  end
+                end
+
+                it_behaves_like :check_code do
+                  subject { dept_intermed_migr_down_half_base }
+                  let(:typical_reactions) { [dept_intermed_migr_dh_drop] }
+                  let(:find_algorithm) do
+                    <<-CODE
+    if (anchor->is(#{role_cm}))
+    {
+        if (!anchor->hasRole(INTERMED_MIGR_DOWN_HALF, #{role_cm}))
+        {
+            anchor->eachSpecByRole<MethylOnDimer>(#{mob_cm}, [&](MethylOnDimer *methylOnDimer1) {
+                Atom *atoms1[2] = { methylOnDimer1->atom(4), methylOnDimer1->atom(1) };
+                anchor->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&atoms1, &methylOnDimer1](MethylOnBridge *methylOnBridge1) {
+                    if (atoms1[1] != methylOnBridge1->atom(1))
+                    {
+                        methylOnBridge1->eachSymmetry([&atoms1, &methylOnDimer1](ParentSpec *symmetricMethylOnBridge1) {
+                            Atom *atoms2[2] = { symmetricMethylOnBridge1->atom(3), symmetricMethylOnBridge1->atom(2) };
+                            eachNeighbours<2>(atoms2, &Diamond::cross_100, [&atoms1, &methylOnDimer1, &symmetricMethylOnBridge1](Atom **neighbours1) {
+                                if (neighbours1[0] != atoms1[0])
+                                {
+                                    if (neighbours1[1] == atoms1[1])
+                                    {
+                                        ParentSpec *parents[2] = { methylOnDimer1, symmetricMethylOnBridge1 };
+                                        create<IntermedMigrDownHalf>(parents);
+                                    }
+                                }
+                            });
+                        });
+                    }
+                });
+            });
+        }
+    }
+                    CODE
+                  end
+                end
+
+                it_behaves_like :check_code do
+                  subject { dept_intermed_migr_down_full_base }
+                  let(:typical_reactions) { [dept_intermed_migr_df_drop] }
+                  let(:find_algorithm) do
+                    <<-CODE
+    if (anchor->is(#{role_cm}))
+    {
+        if (!anchor->hasRole(INTERMED_MIGR_DOWN_FULL, #{role_cm}))
+        {
+            anchor->eachSpecByRole<MethylOnDimer>(#{mob_cm}, [&](MethylOnDimer *methylOnDimer1) {
+                Atom *atoms1[2] = { methylOnDimer1->atom(4), methylOnDimer1->atom(1) };
+                anchor->eachSpecByRole<MethylOnBridge>(#{mob_cm}, [&atoms1, &methylOnDimer1](MethylOnBridge *methylOnBridge1) {
+                    if (atoms1[1] != methylOnBridge1->atom(1))
+                    {
+                        methylOnBridge1->eachSymmetry([&atoms1, &methylOnDimer1](ParentSpec *symmetricMethylOnBridge1) {
+                            Atom *atoms2[2] = { symmetricMethylOnBridge1->atom(3), symmetricMethylOnBridge1->atom(2) };
+                            eachNeighbours<2>(atoms2, &Diamond::cross_100, [&atoms1, &methylOnDimer1, &symmetricMethylOnBridge1](Atom **neighbours1) {
+                                if (neighbours1[0] == atoms1[0] && neighbours1[1] == atoms1[1])
+                                {
+                                    ParentSpec *parents[2] = { methylOnDimer1, symmetricMethylOnBridge1 };
+                                    create<IntermedMigrDownFull>(parents);
+                                }
+                            });
+                        });
+                    }
+                });
+            });
+        }
+    }
+                    CODE
+                  end
+                end
+              end
             end
           end
         end

@@ -5,6 +5,13 @@ module VersatileDiamond
 
         # Creates pure units for specie find algorithm
         class SpeciePureUnitsFactory < BasePureUnitsFactory
+
+          # @param [Nodes::BaseNode] node
+          # @return [Units::MonoPureUnit]
+          def original_unit(node)
+            original_mono_unit(node)
+          end
+
         private
 
           # @param [Array] args

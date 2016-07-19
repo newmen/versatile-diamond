@@ -157,7 +157,7 @@ module VersatileDiamond
           def check_symmetries(&block)
             if !symmetric?
               block.call
-            elsif atoms.one? && defined_symmetric_units.size > 1
+            elsif atoms.one?
               call_procs(check_inner_symmetries_procs, &block)
             else
               check_symmetry_with_atom(&block)
