@@ -193,6 +193,13 @@ module VersatileDiamond
         end
 
         it_behaves_like :check_anchors do
+          let(:base_specs) { [subject, dept_extended_bridge_base] }
+          let(:specific_specs) { [dept_right_activated_extended_bridge, target_spec] }
+          let(:target_spec) { dept_bottom_activated_incoherent_extended_bridge }
+          let(:keynames) { [:cr] }
+        end
+
+        it_behaves_like :check_anchors do
           let(:base_specs) { [subject, dept_methyl_on_right_bridge_base, target_spec] }
           let(:target_spec) { dept_lower_methyl_on_half_extended_bridge_base }
           let(:keynames) { [:cr, :cbr] }

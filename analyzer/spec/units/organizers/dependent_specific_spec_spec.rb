@@ -137,6 +137,35 @@ module VersatileDiamond
           end
         end
 
+        describe 'activated bridge' do
+          let(:similars) do
+            [
+              dept_bridge_base,
+              dept_extended_bridge_base,
+              dept_right_activated_extended_bridge,
+              dept_bottom_activated_incoherent_extended_bridge
+            ]
+          end
+
+          it_behaves_like :organize_and_check do
+            subject { dept_extended_bridge_base }
+            let(:parent) { dept_bridge_base }
+            let(:children) { [dept_right_activated_extended_bridge] }
+          end
+
+          it_behaves_like :organize_and_check do
+            subject { dept_right_activated_extended_bridge }
+            let(:parent) { dept_extended_bridge_base }
+            let(:children) { [dept_bottom_activated_incoherent_extended_bridge] }
+          end
+
+          it_behaves_like :organize_and_check do
+            subject { dept_bottom_activated_incoherent_extended_bridge }
+            let(:parent) { dept_right_activated_extended_bridge }
+            let(:children) { [] }
+          end
+        end
+
         describe 'methyl on bridge' do
           let(:similars) do
             [

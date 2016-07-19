@@ -100,12 +100,14 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_code do
+            describe 'different activated methyl on bridge' do
               subject { dept_activated_methyl_on_incoherent_bridge }
-              let(:base_specs) { [dept_methyl_on_bridge_base] }
-              let(:specific_specs) { [subject] }
-              let(:find_algorithm) do
-                <<-CODE
+              let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+
+              it_behaves_like :check_code do
+                let(:specific_specs) { [subject] }
+                let(:find_algorithm) do
+                  <<-CODE
     Atom *atoms1[2] = { parent->atom(1), parent->atom(0) };
     if (atoms1[0]->is(#{role_cb}) && atoms1[1]->is(#{role_cm}))
     {
@@ -114,7 +116,24 @@ module VersatileDiamond
             create<MethylOnBridgeCBiCMs>(parent);
         }
     }
-                CODE
+                  CODE
+                end
+              end
+
+              it_behaves_like :check_code do
+                let(:specific_specs) { [dept_activated_methyl_on_bridge, subject] }
+                let(:find_algorithm) do
+                  <<-CODE
+    Atom *atom1 = parent->atom(1);
+    if (atom1->is(#{role_cb}))
+    {
+        if (!atom1->hasRole(METHYL_ON_BRIDGE_CBi_CMs, #{role_cb}))
+        {
+            create<MethylOnBridgeCBiCMs>(parent);
+        }
+    }
+                  CODE
+                end
               end
             end
 

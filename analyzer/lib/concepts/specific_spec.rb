@@ -192,7 +192,7 @@ module VersatileDiamond
         external_bonds_after_extend unless @extended_spec
 
         spec = self.class.new(@extended_spec)
-        spec.reduced = self
+        spec.reduced = self # @reduced assign
         @specific_atoms.each do |keyname, old_atom|
           spec.specific_atoms[keyname] =
             SpecificAtom.new(@extended_spec.atom(keyname), ancestor: old_atom)

@@ -83,6 +83,10 @@ module VersatileDiamond
         end
       end
 
+      describe '#specific_atoms' do
+        it { expect(dept_bridge_base.specific_atoms).to be_empty }
+      end
+
       describe '#same?' do
         describe 'bridge_base' do
           it { expect(dept_bridge_base.same?(dept_bridge_base_dup)).to be_truthy }

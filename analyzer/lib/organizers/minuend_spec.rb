@@ -54,7 +54,6 @@ module VersatileDiamond
         Mcs::SpeciesComparator.make_mirror(self, spec)
       end
 
-
     protected
 
       # Counts the relations number in current links

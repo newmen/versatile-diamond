@@ -96,6 +96,7 @@ module VersatileDiamond
           :activated_bridge_with_dimer,
           :activated_incoherent_hydrogenated_bridge_with_dimer,
           :bottom_activated_incoherent_extended_bridge,
+          :right_activated_extended_bridge,
           :bridge,
           :chlorigenated_bridge,
           :dimer,

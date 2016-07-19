@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Organizers
 
     # Contain some specific spec and set of dependent specs
@@ -10,6 +12,28 @@ module VersatileDiamond
       # @return [Symbol] the name of base spec
       def base_name
         spec.spec.name
+      end
+
+      # Gets anchors of specific specie
+      # @return [Array] the array of anchor atoms
+      # @override
+      def anchors
+        @_anchors ||=
+        if source?
+          atoms
+        else
+          self_ptas = specific_props_from(self).zip(specific_atoms.values)
+          parent_props = specific_props_from(parents.first)
+
+          variants = self_ptas.permutation.map do |awps_perm|
+            parent_props.reduce(awps_perm) do |acc, pr|
+              result = acc.dup
+              result.delete_one { |p, _| pr == p } ? result : acc
+            end
+          end
+
+          variants.min_by(&:size).map(&:last)
+        end
       end
 
       # Contain specific atoms or not
@@ -41,10 +65,18 @@ module VersatileDiamond
         similar_specs = similar_specs.uniq.reject { |s| s == self || self < s }
         similar_specs.sort! { |a, b| b <=> a }
 
+        self_props = specific_props_from(self)
+        props_to_atoms = self_props.zip(specific_atoms.values)
         parent = similar_specs.find do |possible_parent|
-          possible_parent.specific_atoms.all? do |keyname, parent_atom|
-            child_atom = specific_atoms[keyname]
-            child_atom && is?(possible_parent, child_atom, parent_atom)
+          pp_props = specific_props_from(possible_parent)
+          are_props_identical = lists_are_identical?(self_props, pp_props, &:like?)
+          anchor_props = self_props - pp_props
+          next if !are_props_identical && anchor_props == self_props
+
+          rest_props = self_props - anchor_props
+          rest_props.empty? || self_props.permutation.any? do |sps|
+            total = anchor_props + rest_props
+            sps.all? { |ap| total.delete_one(&ap.public_method(:include?)) }
           end
         end
 
@@ -143,6 +175,12 @@ module VersatileDiamond
             [mirror[atom] || atom, relation]
           end
         end
+      end
+
+      # @param [DependentSpecificSpec] spec
+      # @return [Array]
+      def specific_props_from(spec)
+        spec.specific_atoms.map { |_, atom| AtomProperties.new(spec, atom) }
       end
 
       # Compares two specific atoms and checks that own atom could include other atom

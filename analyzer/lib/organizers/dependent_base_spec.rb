@@ -6,6 +6,11 @@ module VersatileDiamond
     # Contain some spec and set of dependent specs
     class DependentBaseSpec < DependentWrappedSpec
 
+      # @return [Array]
+      def specific_atoms
+        []
+      end
+
       # Checks that spec is excess
       # @return [Boolean] is excess spec or not
       # @override

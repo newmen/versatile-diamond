@@ -186,6 +186,18 @@ module VersatileDiamond
               end
             end
 
+            it_behaves_like :check_finite_graph do
+              subject { dept_bottom_activated_incoherent_extended_bridge }
+              let(:base_specs) { [dept_bridge_base] }
+              let(:specific_specs) { [dept_right_activated_extended_bridge, subject] }
+              let(:typical_reactions) { [dept_high_bridge_stand_to_incoherent_bridge] }
+              let(:final_graph) do
+                {
+                  [:cr] => []
+                }
+              end
+            end
+
             describe 'different lower methyl on half extended bridge' do
               subject { dept_lower_methyl_on_half_extended_bridge_base }
 
