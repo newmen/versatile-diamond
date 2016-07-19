@@ -104,16 +104,30 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_finite_graph do
+            describe 'different methyl on dimer' do
               subject { dept_methyl_on_dimer_base }
-              let(:base_specs) do
-                [dept_bridge_base, dept_methyl_on_bridge_base, subject]
-              end
               let(:final_graph) do
                 {
                   [:cr] => [[[:cl], param_100_front]],
                   [:cl] => [[[:cr], param_100_front]]
                 }
+              end
+
+              it_behaves_like :check_finite_graph do
+                let(:base_specs) do
+                  [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+                end
+              end
+
+              it_behaves_like :check_finite_graph do
+                let(:base_specs) do
+                  [
+                    dept_bridge_base,
+                    dept_methyl_on_bridge_base,
+                    dept_cross_bridge_on_dimers_base,
+                    subject
+                  ]
+                end
               end
             end
 
@@ -238,15 +252,29 @@ module VersatileDiamond
                 end
               end
 
-              it_behaves_like :check_finite_graph do
-                let(:base_specs) do
-                  [dept_dimer_base, dept_methyl_on_dimer_base, subject]
-                end
+              describe 'fixed methyl without relations' do
                 let(:final_graph) do
                   {
                     [:cm] => [],
                     [:csl, :ctl] => [[[:csr, :ctr], param_100_cross]]
                   }
+                end
+
+                it_behaves_like :check_finite_graph do
+                  let(:base_specs) do
+                    [dept_dimer_base, dept_methyl_on_dimer_base, subject]
+                  end
+                end
+
+                it_behaves_like :check_finite_graph do
+                  let(:base_specs) do
+                    [
+                      dept_dimer_base,
+                      dept_methyl_on_bridge_base,
+                      dept_methyl_on_dimer_base,
+                      subject
+                    ]
+                  end
                 end
               end
             end
@@ -261,32 +289,68 @@ module VersatileDiamond
                 ]
               end
 
-              it_behaves_like :check_finite_graph do
-                subject { dept_intermed_migr_down_common_base }
-                let(:final_graph) do
-                  {
-                    [:cm] => [],
-                    [:cbr] => [[[:cdr], param_100_cross]],
-                    [:cdr] => [[[:cm], param_amorph]]
-                  }
+              describe 'without reactions' do
+                it_behaves_like :check_finite_graph do
+                  subject { dept_intermed_migr_down_common_base }
+                  let(:final_graph) do
+                    {
+                      [:cm] => [],
+                      [:cbr] => [[[:cdr], param_100_cross]],
+                      [:cdr] => [[[:cm], param_amorph]]
+                    }
+                  end
+                end
+
+                describe 'both lower atoms are related' do
+                  let(:final_graph) do
+                    {
+                      [:cm] => [],
+                      [:cbr, :cbl] => [[[:cdr, :cdl], param_100_cross]],
+                      [:cdr] => [[[:cm], param_amorph]]
+                    }
+                  end
+
+                  it_behaves_like :check_finite_graph do
+                    subject { dept_intermed_migr_down_half_base }
+                  end
+
+                  it_behaves_like :check_finite_graph do
+                    subject { dept_intermed_migr_down_full_base }
+                  end
                 end
               end
 
-              describe 'both lower atoms are related' do
-                let(:final_graph) do
-                  {
-                    [:cm] => [],
-                    [:cbr, :cbl] => [[[:cdr, :cdl], param_100_cross]],
-                    [:cdr] => [[[:cm], param_amorph]]
-                  }
+              describe 'with reactions' do
+                it_behaves_like :check_finite_graph do
+                  subject { dept_intermed_migr_down_common_base }
+                  let(:typical_reactions) { [dept_intermed_migr_dc_drop] }
+                  let(:final_graph) do
+                    {
+                      [:cm] => [],
+                      [:cbr] => [[[:cdr], param_100_cross]],
+                      [:cdr] => [[[:cbr], param_100_cross]]
+                    }
+                  end
                 end
 
-                it_behaves_like :check_finite_graph do
-                  subject { dept_intermed_migr_down_half_base }
-                end
+                describe 'both lower atoms are related' do
+                  let(:final_graph) do
+                    {
+                      [:cm] => [],
+                      [:cbr, :cbl] => [[[:cdr, :cdl], param_100_cross]]
+                      # may be wrong that the reverse relation is not presented
+                    }
+                  end
 
-                it_behaves_like :check_finite_graph do
-                  subject { dept_intermed_migr_down_full_base }
+                  it_behaves_like :check_finite_graph do
+                    subject { dept_intermed_migr_down_half_base }
+                    let(:typical_reactions) { [dept_intermed_migr_dh_drop] }
+                  end
+
+                  it_behaves_like :check_finite_graph do
+                    subject { dept_intermed_migr_down_full_base }
+                    let(:typical_reactions) { [dept_intermed_migr_df_drop] }
+                  end
                 end
               end
             end
@@ -518,7 +582,7 @@ module VersatileDiamond
               end
             end
 
-            describe 'different cross bridge on dimers_ ase' do
+            describe 'different cross bridge on dimers' do
               subject { dept_cross_bridge_on_dimers_base }
 
               it_behaves_like :check_ordered_graph do
@@ -528,6 +592,23 @@ module VersatileDiamond
                     [[:ctl], [[[:cm], param_amorph]]],
                     [[:ctl, :csl], [[[:ctr, :csr], param_100_cross]]],
                     [[:ctr], [[[:cm], param_amorph]]]
+                  ]
+                end
+              end
+
+              it_behaves_like :check_ordered_graph do
+                let(:base_specs) do
+                  [
+                    dept_bridge_base,
+                    dept_methyl_on_bridge_base,
+                    dept_methyl_on_dimer_base,
+                    subject
+                  ]
+                end
+                let(:ordered_graph) do
+                  [
+                    [[:cm], []],
+                    [[:ctl, :csl], [[[:ctr, :csr], param_100_cross]]]
                   ]
                 end
               end
@@ -648,64 +729,122 @@ module VersatileDiamond
               describe 'both lower atoms are half related' do
                 subject { dept_intermed_migr_down_common_base }
 
-                it_behaves_like :check_ordered_graph do
+                describe 'without reactions' do
+                  it_behaves_like :check_ordered_graph do
+                    let(:entry_node) { backbone.entry_nodes.first }
+                    let(:ordered_graph) do
+                      [
+                        [[:cdr], [[[:cm], param_amorph]]],
+                        [[:cm], []],
+                        [[:cbr], [[[:cdr], param_100_cross]]]
+                      ]
+                    end
+                  end
+
+                  it_behaves_like :check_ordered_graph do
+                    let(:entry_node) { backbone.entry_nodes.last }
+                    let(:ordered_graph) do
+                      [
+                        [[:cm], []],
+                        [[:cbr], [[[:cdr], param_100_cross]]],
+                        [[:cdr], [[[:cm], param_amorph]]]
+                      ]
+                    end
+                  end
+                end
+
+                describe 'with reactions' do
+                  let(:typical_reactions) { [dept_intermed_migr_dc_drop] }
+                  it_behaves_like :check_ordered_graph do
+                    let(:ordered_graph) do
+                      [
+                        [[:cm], []],
+                        [[:cbr], [[[:cdr], param_100_cross]]]
+                      ]
+                    end
+                  end
+                end
+              end
+
+              describe 'without reactions' do
+                describe 'both lower atoms are related from dimer' do
                   let(:entry_node) { backbone.entry_nodes.first }
                   let(:ordered_graph) do
                     [
                       [[:cdr], [[[:cm], param_amorph]]],
                       [[:cm], []],
-                      [[:cbr], [[[:cdr], param_100_cross]]]
+                      [[:cbl, :cbr], [[[:cdl, :cdr], param_100_cross]]]
                     ]
+                  end
+
+                  it_behaves_like :check_ordered_graph do
+                    subject { dept_intermed_migr_down_half_base }
+                  end
+
+                  it_behaves_like :check_ordered_graph do
+                    subject { dept_intermed_migr_down_full_base }
                   end
                 end
 
-                it_behaves_like :check_ordered_graph do
+                describe 'both lower atoms are related from adsorbed methyl' do
                   let(:entry_node) { backbone.entry_nodes.last }
                   let(:ordered_graph) do
                     [
                       [[:cm], []],
-                      [[:cbr], [[[:cdr], param_100_cross]]],
+                      [[:cbl, :cbr], [[[:cdl, :cdr], param_100_cross]]],
                       [[:cdr], [[[:cm], param_amorph]]]
                     ]
+                  end
+
+                  it_behaves_like :check_ordered_graph do
+                    subject { dept_intermed_migr_down_half_base }
+                  end
+
+                  it_behaves_like :check_ordered_graph do
+                    subject { dept_intermed_migr_down_full_base }
                   end
                 end
               end
 
-              describe 'both lower atoms are related from dimer' do
-                let(:entry_node) { backbone.entry_nodes.first }
-                let(:ordered_graph) do
-                  [
-                    [[:cdr], [[[:cm], param_amorph]]],
-                    [[:cm], []],
-                    [[:cbl, :cbr], [[[:cdl, :cdr], param_100_cross]]]
-                  ]
+              describe 'with reactions' do
+                describe 'both lower atoms are related from dimer' do
+                  let(:entry_node) { backbone.entry_nodes.first }
+                  let(:ordered_graph) do
+                    [
+                      [[:cm], []],
+                      [[:cbl, :cbr], [[[:cdl, :cdr], param_100_cross]]]
+                    ]
+                  end
+
+                  it_behaves_like :check_ordered_graph do
+                    subject { dept_intermed_migr_down_half_base }
+                    let(:typical_reactions) { [dept_intermed_migr_dh_drop] }
+                  end
+
+                  it_behaves_like :check_ordered_graph do
+                    subject { dept_intermed_migr_down_full_base }
+                    let(:typical_reactions) { [dept_intermed_migr_df_drop] }
+                  end
                 end
 
-                it_behaves_like :check_ordered_graph do
-                  subject { dept_intermed_migr_down_half_base }
-                end
+                describe 'both lower atoms are related from adsorbed methyl' do
+                  let(:entry_node) { backbone.entry_nodes.last }
+                  let(:ordered_graph) do
+                    [
+                      [[:cm], []],
+                      [[:cbl, :cbr], [[[:cdl, :cdr], param_100_cross]]]
+                    ]
+                  end
 
-                it_behaves_like :check_ordered_graph do
-                  subject { dept_intermed_migr_down_full_base }
-                end
-              end
+                  it_behaves_like :check_ordered_graph do
+                    subject { dept_intermed_migr_down_half_base }
+                    let(:typical_reactions) { [dept_intermed_migr_dh_drop] }
+                  end
 
-              describe 'both lower atoms are related from adsorbed methyl' do
-                let(:entry_node) { backbone.entry_nodes.last }
-                let(:ordered_graph) do
-                  [
-                    [[:cm], []],
-                    [[:cbl, :cbr], [[[:cdl, :cdr], param_100_cross]]],
-                    [[:cdr], [[[:cm], param_amorph]]]
-                  ]
-                end
-
-                it_behaves_like :check_ordered_graph do
-                  subject { dept_intermed_migr_down_half_base }
-                end
-
-                it_behaves_like :check_ordered_graph do
-                  subject { dept_intermed_migr_down_full_base }
+                  it_behaves_like :check_ordered_graph do
+                    subject { dept_intermed_migr_down_full_base }
+                    let(:typical_reactions) { [dept_intermed_migr_df_drop] }
+                  end
                 end
               end
             end

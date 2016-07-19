@@ -98,7 +98,7 @@ module VersatileDiamond
             end
           end
 
-          describe 'different dept_two_methyls_on_dimer_base' do
+          describe 'different two methyls on dimer' do
             subject { dept_two_methyls_on_dimer_base }
 
             it_behaves_like :check_cut_links do
@@ -145,16 +145,30 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_cut_links do
+          describe 'different methyl on dimer' do
             subject { dept_methyl_on_dimer_base }
-            let(:base_specs) do
-              [dept_bridge_base, dept_methyl_on_bridge_base, subject]
-            end
             let(:cut_links) do
               {
                 :cr => [[:cl, bond_100_front]],
                 :cl => [[:cr, bond_100_front]]
               }
+            end
+
+            it_behaves_like :check_cut_links do
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+              end
+            end
+
+            it_behaves_like :check_cut_links do
+              let(:base_specs) do
+                [
+                  dept_bridge_base,
+                  dept_methyl_on_bridge_base,
+                  dept_cross_bridge_on_dimers_base,
+                  subject
+                ]
+              end
             end
           end
 
@@ -218,7 +232,7 @@ module VersatileDiamond
             end
           end
 
-          describe 'different dept_lower_methyl_on_half_extended_bridge_base' do
+          describe 'different lower methyl on half extended bridge' do
             subject { dept_lower_methyl_on_half_extended_bridge_base }
 
             it_behaves_like :check_cut_links do
@@ -245,7 +259,7 @@ module VersatileDiamond
             end
           end
 
-          describe 'different dept_cross_bridge_on_bridges_base' do
+          describe 'different cross bridge on bridges' do
             subject { dept_cross_bridge_on_bridges_base }
 
             it_behaves_like :check_cut_links do
@@ -273,7 +287,7 @@ module VersatileDiamond
             end
           end
 
-          describe 'different dept_cross_bridge_on_dimers_base' do
+          describe 'different cross bridge on dimers' do
             subject { dept_cross_bridge_on_dimers_base }
 
             it_behaves_like :check_cut_links do
@@ -289,10 +303,7 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_cut_links do
-              let(:base_specs) do
-                [dept_dimer_base, dept_methyl_on_dimer_base, subject]
-              end
+            describe 'fixed methyl without relations' do
               let(:cut_links) do
                 {
                   :cm => [],
@@ -301,6 +312,23 @@ module VersatileDiamond
                   :csr => [[:csl, position_100_cross]],
                   :csl => [[:csr, position_100_cross]],
                 }
+              end
+
+              it_behaves_like :check_cut_links do
+                let(:base_specs) do
+                  [dept_dimer_base, dept_methyl_on_dimer_base, subject]
+                end
+              end
+
+              it_behaves_like :check_cut_links do
+                let(:base_specs) do
+                  [
+                    dept_dimer_base,
+                    dept_methyl_on_bridge_base,
+                    dept_methyl_on_dimer_base,
+                    subject
+                  ]
+                end
               end
             end
 

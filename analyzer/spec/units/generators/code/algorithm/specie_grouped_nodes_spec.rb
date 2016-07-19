@@ -145,11 +145,8 @@ module VersatileDiamond
             end
           end
 
-          it_behaves_like :check_grouped_nodes_graph do
+          describe 'different methyl on dimer' do
             subject { dept_methyl_on_dimer_base }
-            let(:base_specs) do
-              [dept_bridge_base, dept_methyl_on_bridge_base, subject]
-            end
             let(:flatten_face_grouped_atoms) { [[:cr, :cl]] }
             let(:nodes_list) do
               [
@@ -162,6 +159,24 @@ module VersatileDiamond
                 [:cr] => [[[:cl], param_100_front]],
                 [:cl] => [[[:cr], param_100_front]]
               }
+            end
+
+            it_behaves_like :check_grouped_nodes_graph do
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+              end
+            end
+
+            it_behaves_like :check_grouped_nodes_graph do
+              subject { dept_methyl_on_dimer_base }
+              let(:base_specs) do
+                [
+                  dept_bridge_base,
+                  dept_methyl_on_bridge_base,
+                  dept_cross_bridge_on_dimers_base,
+                  subject
+                ]
+              end
             end
           end
 
@@ -363,10 +378,7 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_grouped_nodes_graph do
-              let(:base_specs) do
-                [dept_dimer_base, dept_methyl_on_dimer_base, subject]
-              end
+            describe 'fixed methyl without relations' do
               let(:nodes_list) do
                 [
                   [Instances::SpeciesScope, :cm],
@@ -382,6 +394,23 @@ module VersatileDiamond
                   [:csr, :ctr] => [[[:csl, :ctl], param_100_cross]],
                   [:csl, :ctl] => [[[:csr, :ctr], param_100_cross]]
                 }
+              end
+
+              it_behaves_like :check_grouped_nodes_graph do
+                let(:base_specs) do
+                  [dept_dimer_base, dept_methyl_on_dimer_base, subject]
+                end
+              end
+
+              it_behaves_like :check_grouped_nodes_graph do
+                let(:base_specs) do
+                  [
+                    dept_bridge_base,
+                    dept_methyl_on_bridge_base,
+                    dept_methyl_on_dimer_base,
+                    subject
+                  ]
+                end
               end
             end
           end

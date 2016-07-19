@@ -105,7 +105,7 @@ module VersatileDiamond
                   dept_uniq_specie
                 ]
               end
-              let(:typical_reactions) { [dept_intermed_migr_dc_drop] }
+              let(:typical_reactions) { [dept_migration_over_111] }
 
               let(:entry_nodes) { amorph_nodes } # override
               let(:amorph_nodes) do
@@ -131,7 +131,6 @@ module VersatileDiamond
 
             shared_context :half_intermed_context do
               include_context :alt_intermed_context
-              let(:typical_reactions) { [dept_intermed_migr_dh_drop] }
               let(:unit_nodes) { ordered_graph.last.last.first.first }
               let(:dept_uniq_specie) { dept_intermed_migr_down_half_base }
             end

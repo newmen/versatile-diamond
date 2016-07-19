@@ -66,11 +66,11 @@ module VersatileDiamond
       describe '#anchors' do
         shared_examples_for :check_anchors do
           before do
-            organize_base_specs_dependencies!(base_specs)
             unless specific_specs.empty?
               base_cache = Hash[base_specs.map { |s| [s.name, s] }]
               organize_specific_specs_dependencies!(base_cache, specific_specs)
             end
+            organize_base_specs_dependencies!(base_specs)
           end
 
           let(:specific_specs) { [] }
@@ -98,10 +98,30 @@ module VersatileDiamond
           let(:keynames) { [:cr, :cl] }
         end
 
-        it_behaves_like :check_anchors do
-          let(:base_specs) { [subject, dept_methyl_on_bridge_base, target_spec] }
+        describe 'different methyl on dimer' do
           let(:target_spec) { dept_methyl_on_dimer_base }
-          let(:keynames) { [:cr, :cl] }
+
+          it_behaves_like :check_anchors do
+            let(:base_specs) { [subject, dept_methyl_on_bridge_base, target_spec] }
+            let(:keynames) { [:cr, :cl] }
+          end
+
+          it_behaves_like :check_anchors do
+            before do
+              dept_cbods.store_reaction(dept_cbod_drop)
+              exchange_specs({}, dept_cbods, dept_cross_bridge_on_dimers_base)
+            end
+            let(:dept_cbods) { DependentSpecificSpec.new(cbod_drop.source.first) }
+            let(:base_specs) do
+              [
+                subject,
+                dept_methyl_on_bridge_base,
+                target_spec,
+                dept_cross_bridge_on_dimers_base
+              ]
+            end
+            let(:keynames) { [:cr, :cl, :cm] }
+          end
         end
 
         describe 'different bases for vinyl on dimer' do
@@ -151,7 +171,7 @@ module VersatileDiamond
           let(:keynames) { [:ctl, :cm, :ctr] }
         end
 
-        describe 'different dept_cross_bridge_on_dimers_base' do
+        describe 'different cross bridge on dimers' do
           let(:target_spec) { dept_cross_bridge_on_dimers_base }
 
           it_behaves_like :check_anchors do

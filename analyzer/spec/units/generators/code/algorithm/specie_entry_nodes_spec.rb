@@ -74,12 +74,26 @@ module VersatileDiamond
             let(:points_list) { [[:cb, :cm]] }
           end
 
-          it_behaves_like :check_entry_nodes do
+          describe 'different methyl on dimer' do
             subject { dept_methyl_on_dimer_base }
-            let(:base_specs) do
-              [dept_bridge_base, dept_methyl_on_bridge_base, subject]
-            end
             let(:points_list) { [[:cr], [:cl]] }
+
+            it_behaves_like :check_entry_nodes do
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+              end
+            end
+
+            it_behaves_like :check_entry_nodes do
+              let(:base_specs) do
+                [
+                  dept_bridge_base,
+                  dept_methyl_on_bridge_base,
+                  dept_cross_bridge_on_dimers_base,
+                  subject
+                ]
+              end
+            end
           end
 
           describe 'different bases for vinyl on dimer' do
@@ -154,11 +168,25 @@ module VersatileDiamond
               let(:points_list) { [[:ctl]] }
             end
 
-            it_behaves_like :check_entry_nodes do
-              let(:base_specs) do
-                [dept_dimer_base, dept_methyl_on_dimer_base, subject]
-              end
+            describe 'methyl is anchor' do
               let(:points_list) { [[:cm]] }
+
+              it_behaves_like :check_entry_nodes do
+                let(:base_specs) do
+                  [dept_dimer_base, dept_methyl_on_dimer_base, subject]
+                end
+              end
+
+              it_behaves_like :check_entry_nodes do
+                let(:base_specs) do
+                  [
+                    dept_dimer_base,
+                    dept_methyl_on_bridge_base,
+                    dept_methyl_on_dimer_base,
+                    subject
+                  ]
+                end
+              end
             end
 
             it_behaves_like :check_entry_nodes do
@@ -237,6 +265,33 @@ module VersatileDiamond
 
               it_behaves_like :check_entry_nodes do
                 subject { dept_intermed_migr_down_full_base }
+              end
+            end
+
+            describe 'just methyl is anchored (when there are reactions)' do
+              let(:base_specs) do
+                [
+                  dept_bridge_base,
+                  dept_methyl_on_bridge_base,
+                  dept_methyl_on_dimer_base,
+                  subject
+                ]
+              end
+              let(:points_list) { [[:cm]] }
+
+              it_behaves_like :check_entry_nodes do
+                subject { dept_intermed_migr_down_common_base }
+                let(:typical_reactions) { [dept_intermed_migr_dc_drop] }
+              end
+
+              it_behaves_like :check_entry_nodes do
+                subject { dept_intermed_migr_down_half_base }
+                let(:typical_reactions) { [dept_intermed_migr_dh_drop] }
+              end
+
+              it_behaves_like :check_entry_nodes do
+                subject { dept_intermed_migr_down_full_base }
+                let(:typical_reactions) { [dept_intermed_migr_df_drop] }
               end
             end
           end

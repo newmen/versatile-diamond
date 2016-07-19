@@ -47,7 +47,9 @@ module VersatileDiamond
       # Gets anchors of internal specie
       # @return [Array] the array of anchor atoms
       def anchors
-        @_anchors ||= main_anchors + (complex? ? skipped_anchors : [])
+        @_anchors ||= main_anchors +
+          (complex? ? skipped_parent_anchors : []) +
+          (source? ? [] : skipped_children_anchors)
       end
 
       # Gets the parent specs of current instance
@@ -186,6 +188,17 @@ module VersatileDiamond
       end
 
     protected
+
+      # Finds parent species by twin the anchors of which belongs to these parents
+      # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
+      #   twin by which parent specs with twins will be found
+      # @return [Array] the list of parent specs
+      def anchored_parents_by(twin)
+        parents.select do |parent|
+          atom = parent.atom_by(twin)
+          atom && main_anchors.include?(atom)
+        end
+      end
 
       # Gets common atoms in case when other is direct parent of self or vice versa
       # @param [DependentWrappedSpec] other
@@ -368,7 +381,8 @@ module VersatileDiamond
       # Gets the list of anchors which were not added to main anchors
       # @return [Array] the list of anchor atoms which were not detected under residual
       #   calculation but are used as anchors for parent species
-      def skipped_anchors
+      def skipped_parent_anchors
+        return @_skipped_parent_anchors if @_skipped_parent_anchors
         result = Set.new
         sorted_skipped_zip.each do |parent, twins_to_atoms|
           twins, atoms = twins_to_atoms.transpose
@@ -383,13 +397,24 @@ module VersatileDiamond
               sort_atoms(parent, twins_to_atoms, &:first).last.last
           end
         end
-        result.to_a
+        @_skipped_parent_anchors = result.to_a
       end
 
       # Gets anchors which are present in target links
       # @return [Array] the list of main anchors
       def main_anchors
         @_main_anchors ||= target.links.keys
+      end
+
+      # Gets the list of atoms which are used in complex children species
+      # @return [Array] the list of atoms which are required for complex children find
+      def skipped_children_anchors
+        return @_skipped_children_anchors if @_skipped_children_anchors
+        rest_atoms = atoms - main_anchors - skipped_parent_anchors
+        rest_anchors = reactant_children.select(&:complex?).flat_map do |child|
+          rest_atoms.select { |atom| child.anchored_parents_by(atom).size > 1 }
+        end
+        @_skipped_children_anchors = rest_anchors.uniq
       end
 
       # Orders passed collection by atom from smallest to bigger
@@ -458,6 +483,7 @@ module VersatileDiamond
       # Resets the internal caches
       def reset_caches!
         @_residual_links, @_main_anchors, @_anchors = nil
+        @_skipped_parent_anchors, @_skipped_children_anchors = nil
         @_similar_theres, @_root_theres = nil
         @_pwts_cache = { true => {}, false => {} }
         @_self_atoms_to_twins, @_all_deep_parents = nil
