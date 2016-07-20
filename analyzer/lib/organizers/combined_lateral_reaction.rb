@@ -7,7 +7,7 @@ module VersatileDiamond
     class CombinedLateralReaction
       extend Forwardable
 
-      def_delegator :parent, :local?
+      def_delegators :parent, :local?, :source
       def_delegator :chunk, :sidepiece_specs
       attr_reader :chunk, :full_rate
 
