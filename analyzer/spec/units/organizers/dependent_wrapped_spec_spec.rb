@@ -74,8 +74,8 @@ module VersatileDiamond
           end
 
           let(:specific_specs) { [] }
-          let(:anchors) { keynames.map { |kn| target_spec.spec.atom(kn) } }
-          it { expect(target_spec.anchors).to match_array(anchors) }
+          let(:akns) { target_spec.anchors.map { |kn| target_spec.spec.keyname(kn) } }
+          it { expect(akns).to match_array(keynames) }
         end
 
         it_behaves_like :check_anchors do

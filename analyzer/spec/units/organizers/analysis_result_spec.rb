@@ -180,7 +180,7 @@ module VersatileDiamond
                 [
                   :bridge,
                   :dimer,
-                  :extended_dimer,
+                  # :extended_dimer, # purged
                   # :extended_methyl_on_bridge, # purged
                   :methyl_on_bridge,
                   :methyl_on_dimer
@@ -241,7 +241,7 @@ module VersatileDiamond
                   :'dimer(cr: i)', # replace dimer(cl: i)
                   :'dimer(cr: *)',
                   # :'extended_methyl_on_bridge(cm: *)', # purged
-                  :"extended_dimer(_cr0: i)", # added by methyl incorporation (product)
+                  :'dimer(_cr0: i)', # added and reduced by methyl incorporation (product)
                   # :'methyl_on_bridge()', # purged
                   :'methyl_on_bridge(cm: *)',
                   :'methyl_on_bridge(cm: H)',
@@ -446,7 +446,7 @@ module VersatileDiamond
             let(:parent) { subject.base_spec(:bridge) }
             let(:children) do
               [
-                subject.base_spec(:extended_dimer),
+                subject.specific_spec(:'dimer(_cr0: i)'),
                 subject.specific_spec(:'dimer(cr: i)')
               ]
             end

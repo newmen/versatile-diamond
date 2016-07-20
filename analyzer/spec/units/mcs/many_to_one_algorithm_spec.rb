@@ -163,13 +163,13 @@ module VersatileDiamond
                 [[spec1, spec3], [
                   [spec1.atom(:cm), spec3.atom(:ct)],
                   [spec1.atom(:cb), spec3.atom(:cr)],
-                  [spec1.atom(:cl), spec3.atom(:_cl1)],
-                  [spec1.atom(:cr), spec3.atom(:_cr1)],
+                  [spec1.atom(:cl), spec3.atom(:_cl1_)],
+                  [spec1.atom(:cr), spec3.atom(:_cr1_)],
                 ]],
                 [[spec2, spec3], [
                   [spec2.atom(:ct), spec3.atom(:cl)],
-                  [spec2.atom(:cl), spec3.atom(:_cl0)],
-                  [spec2.atom(:cr), spec3.atom(:_cr0)],
+                  [spec2.atom(:cl), spec3.atom(:_cl0_)],
+                  [spec2.atom(:cr), spec3.atom(:_cr0_)],
                 ]]
               ]
             end
@@ -201,18 +201,18 @@ module VersatileDiamond
                   [spec1.atom(:cb), spec3.atom(:cl)],
                   [spec1.atom(:cl), spec3.atom(:_cr1)],
                   [spec1.atom(:cr), spec3.atom(:clb)],
-                  [spec1.atom(:_cl0), spec3.atom(:_cl2)],
-                  [spec1.atom(:_cr0), spec3.atom(:_cr4)],
-                  [spec1.atom(:_cl1), spec3.atom(:_cl3)],
-                  [spec1.atom(:_cr1), spec3.atom(:_cr5)],
+                  [spec1.atom(:_cl0_), spec3.atom(:_cl2_)],
+                  [spec1.atom(:_cr0_), spec3.atom(:_cr4_)],
+                  [spec1.atom(:_cl1_), spec3.atom(:_cl3_)],
+                  [spec1.atom(:_cr1_), spec3.atom(:_cr5_)],
                 ]],
                 [[spec2, spec3], [
                   [spec2.atom(:cl), spec3.atom(:crb)],
                   [spec2.atom(:cr), spec3.atom(:_cr0)],
-                  [spec2.atom(:clb), spec3.atom(:_cl0)],
-                  [spec2.atom(:_cr1), spec3.atom(:_cr2)],
-                  [spec2.atom(:crb), spec3.atom(:_cl1)],
-                  [spec2.atom(:_cr0), spec3.atom(:_cr3)],
+                  [spec2.atom(:clb), spec3.atom(:_cl0_)],
+                  [spec2.atom(:_cr1), spec3.atom(:_cr2_)],
+                  [spec2.atom(:crb), spec3.atom(:_cl1_)],
+                  [spec2.atom(:_cr0), spec3.atom(:_cr3_)],
                 ]]
               ]
             end

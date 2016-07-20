@@ -6,7 +6,9 @@ module VersatileDiamond
     describe Spec do
       describe 'self#good_for_reduce?' do
         it { expect(described_class.good_for_reduce?([:cl])).to be_truthy }
-        it { expect(described_class.good_for_reduce?([:_cl])).to be_falsey }
+        it { expect(described_class.good_for_reduce?([:_cl])).to be_truthy }
+        it { expect(described_class.good_for_reduce?([:cl_])).to be_falsey }
+        it { expect(described_class.good_for_reduce?([:_cl_])).to be_falsey }
       end
 
       describe '#simple?' do

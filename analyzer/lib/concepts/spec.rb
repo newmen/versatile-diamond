@@ -16,7 +16,7 @@ module VersatileDiamond
       # @param [Array] keyname the array of atom keyname which will be checked
       # @return [Boolean] all situable or not
       def self.good_for_reduce?(keynames)
-        keynames.all? { |kn| kn =~ /^[^_]/ }
+        keynames.all? { |kn| kn =~ /[^_]$/ }
       end
 
       # Creates [Symbol]Atom as atoms and [Atom][[Atom, Bond]] as links
@@ -241,7 +241,7 @@ module VersatileDiamond
               swap_atoms_in!(@links, ref, atom)
               nil
             else
-              generated_keyname
+              :"#{generated_keyname}_"
             end
           end
         end
@@ -281,16 +281,16 @@ module VersatileDiamond
       # @return [Symbol] generated unique keyname
       def generate_keyname(original_keyname)
         keyname = nil
-        prefix, name, i =
-          original_keyname.to_s.scan(/\A(_)?(\D+)(\d+)?\Z/).first
+        prefix, name, i, suffix =
+          original_keyname.to_s.scan(/\A(_)?(\D+)(\d+)?(_)?\Z/).first
 
         i = i ? i.to_i : 0
         prefix ||= '_'
 
         begin
-          keyname = "#{prefix}#{name}#{i}".to_sym
+          keyname = "#{prefix}#{name}#{i}#{suffix}".to_sym
           i += 1
-        end while atom(keyname)
+        end while atom(keyname) || (!suffix && atom(:"#{keyname}_"))
         keyname
       end
     end
