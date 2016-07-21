@@ -4,9 +4,12 @@ module VersatileDiamond
 
       # Contains logic for generation local reation
       class LocalReaction < BaseReaction
+        extend Forwardable
         include SpeciesUser
         include ReactionWithSimpleGas
         include ReactionWithComplexSpecies
+
+        def_delegator :reaction, :complex_source_spec_and_atom
 
         # Gets the name of base class
         # @return [String] the parent type name
@@ -23,9 +26,10 @@ module VersatileDiamond
         end
 
         # Gets the atom of source complex specie
-        # @return [Concepts::SpecificAtom] the atom that reacts with gas
+        # @return [Concepts::SpecificSpec, Concepts::SpecificAtom] the atom that reacts
+        #   with gas
         def atom_of_complex
-          reaction.complex_source_spec_and_atom.last
+          complex_source_spec_and_atom.last
         end
 
       private
@@ -39,7 +43,7 @@ module VersatileDiamond
         # Gets the complex source specie of current reaction
         # @return [Specie] the complex source specie
         def complex_source_specie
-          specie_class(reaction.complex_source_spec_and_atom.first)
+          specie_class(complex_source_spec_and_atom.first)
         end
 
         # Gets a list of code elements each of which uses in header file

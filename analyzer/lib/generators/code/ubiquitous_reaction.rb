@@ -36,7 +36,7 @@ module VersatileDiamond
         # @override
         def children
           super.sort do |a, b|
-            aa, ba = [a, b].map(&:atom_of_complex).map do |spec, atom|
+            aa, ba = [a, b].map(&:complex_source_spec_and_atom).map do |spec, atom|
               dept_spec = specie_class(spec).spec
               generator.atom_properties(dept_spec, atom)
             end
