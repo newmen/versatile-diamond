@@ -12,11 +12,20 @@ module VersatileDiamond
       attr_reader :atoms # must be protected!! only for SpecificSpec#to_s
       attr_reader :links
 
-      # Checks that atom keyname suitable for reducing
-      # @param [Array] keyname the array of atom keyname which will be checked
-      # @return [Boolean] all situable or not
-      def self.good_for_reduce?(keynames)
-        keynames.all? { |kn| kn =~ /[^_]$/ }
+      class << self
+        # Checks that all atom keynames suitable for reducing
+        # @param [Array] keynames the array of atom keyname which will be checked
+        # @return [Boolean] all situable or not
+        def good_for_reduce?(keynames)
+          !keynames.any?(&method(:extended?))
+        end
+
+        # Checks that atom keyname has been used for extending
+        # @param [Symbol] keyname
+        # @return [Boolean] is keyname suitable for reducing
+        def extended?(keyname)
+          !!(keyname =~ /_$/)
+        end
       end
 
       # Creates [Symbol]Atom as atoms and [Atom][[Atom, Bond]] as links
@@ -26,6 +35,8 @@ module VersatileDiamond
         super(name)
         @atoms, @links = {}, {}
         atoms.each { |k, a| describe_atom(k, a) }
+
+        @is_extended = false
 
         @_keynames_to_atoms = nil
         @_is_extendable = nil
@@ -45,6 +56,11 @@ module VersatileDiamond
       # @return [Boolean] false
       def termination?
         false
+      end
+
+      # @return [Boolean] has been specie extended or not
+      def extended?
+        @is_extended
       end
 
       # Returns a instance of atom by passed atom keyname
@@ -245,6 +261,7 @@ module VersatileDiamond
             end
           end
         end
+        @is_extended = true
       end
 
     private

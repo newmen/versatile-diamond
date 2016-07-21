@@ -10,7 +10,7 @@ module VersatileDiamond
 
       # TODO: own there objects that described below are not used
       collector_methods :there, :child
-      def_delegators :@spec, :external_bonds, :relation_between
+      def_delegators :spec, :external_bonds, :relation_between, :extended?
       attr_reader :links
 
       # Also stores internal graph of links between used atoms
@@ -49,9 +49,7 @@ module VersatileDiamond
       # Gets anchors of internal specie
       # @return [Array] the array of anchor atoms
       def anchors
-        @_anchors ||= main_anchors +
-          (complex? ? skipped_parent_anchors : []) +
-          (source? ? [] : skipped_children_anchors)
+        @_anchors ||= main_anchors + additional_anchors
       end
 
       # Gets the parent specs of current instance
@@ -255,6 +253,16 @@ module VersatileDiamond
       def self_atoms_to_twins
         @_self_atoms_to_twins ||= atoms.flat_map do |atom|
           twins_of(atom).map { |twin| [atom, twin] }
+        end
+      end
+
+      # @return [Array] the list of additional anchors
+      def additional_anchors
+        if extended?
+          []
+        else
+          (complex? ? skipped_parent_anchors : []) +
+            (source? ? [] : skipped_children_anchors)
         end
       end
 

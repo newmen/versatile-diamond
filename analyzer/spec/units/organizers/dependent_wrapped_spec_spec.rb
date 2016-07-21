@@ -147,6 +147,28 @@ module VersatileDiamond
         end
 
         it_behaves_like :check_anchors do
+          let(:base_specs) { [subject, target_spec] }
+          let(:target_spec) { dept_extended_bridge_base }
+          let(:keynames) { [:cl, :cr] }
+        end
+
+        describe 'different extended dimer' do
+          let(:target_spec) { dept_extended_dimer_base }
+
+          it_behaves_like :check_anchors do
+            let(:base_specs) { [subject, dept_dimer_base, target_spec] }
+            let(:keynames) { [:_cr0, :_cr1, :clb, :crb] }
+          end
+
+          it_behaves_like :check_anchors do
+            let(:base_specs) do
+              [subject, dept_dimer_base, dept_extended_bridge_base, target_spec]
+            end
+            let(:keynames) { [:cl, :cr] }
+          end
+        end
+
+        it_behaves_like :check_anchors do
           let(:base_specs) { [subject, dept_methyl_on_dimer_base] }
           let(:specific_specs) { [target_spec] }
           let(:target_spec) { dept_activated_methyl_on_dimer }

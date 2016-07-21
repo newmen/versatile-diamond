@@ -6,9 +6,21 @@ module VersatileDiamond
     describe Spec do
       describe 'self#good_for_reduce?' do
         it { expect(described_class.good_for_reduce?([:cl])).to be_truthy }
+        it { expect(described_class.good_for_reduce?([:cl, :cr])).to be_truthy }
         it { expect(described_class.good_for_reduce?([:_cl])).to be_truthy }
+        it { expect(described_class.good_for_reduce?([:_cl, :cr])).to be_truthy }
+        it { expect(described_class.good_for_reduce?([:cl, :_cr])).to be_truthy }
         it { expect(described_class.good_for_reduce?([:cl_])).to be_falsey }
-        it { expect(described_class.good_for_reduce?([:_cl_])).to be_falsey }
+        it { expect(described_class.good_for_reduce?([:cl_, :_cl_])).to be_falsey }
+        it { expect(described_class.good_for_reduce?([:_cl_, :cr])).to be_falsey }
+        it { expect(described_class.good_for_reduce?([:_cl_, :cr_])).to be_falsey }
+      end
+
+      describe 'self#extended?' do
+        it { expect(described_class.extended?(:cl)).to be_falsey }
+        it { expect(described_class.extended?(:_cl)).to be_falsey }
+        it { expect(described_class.extended?(:cl_)).to be_truthy }
+        it { expect(described_class.extended?(:_cl_)).to be_truthy }
       end
 
       describe '#simple?' do
@@ -124,6 +136,11 @@ module VersatileDiamond
         it { expect(methane_base.extendable?).to be_falsey }
         it { expect(ethylene_base.extendable?).to be_falsey }
         it { expect(bridge_base.extendable?).to be_truthy }
+      end
+
+      describe '#extended?' do
+        it { expect(bridge_base.extended?).to be_falsey }
+        it { expect(extended_bridge_base.extended?).to be_truthy }
       end
 
       describe '#extend_by_references' do

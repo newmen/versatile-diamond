@@ -6,7 +6,7 @@ module VersatileDiamond
     # Contain some specific spec and set of dependent specs
     class DependentSpecificSpec < DependentWrappedSpec
 
-      def_delegators :@spec, :reduced, :could_be_reduced?
+      def_delegators :spec, :reduced, :could_be_reduced?
 
       # Gets name of base spec
       # @return [Symbol] the name of base spec
