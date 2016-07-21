@@ -274,6 +274,31 @@ module VersatileDiamond
             let(:target_spec) { dept_intermed_migr_down_full_base }
           end
         end
+
+        describe '#lateral_anchors' do
+          shared_examples_for :check_lateral_anchors do
+            before do
+              dept_bwd.store_reaction(dept_reaction)
+              exchange_specs({}, dept_bwd, target_spec)
+            end
+
+            let(:dept_there) { dept_reaction.theres.first }
+            let(:dept_bwd) { DependentBaseSpec.new(dept_reaction.source.first) }
+            let(:target_spec) { dept_bridge_with_dimer_base }
+            let(:base_specs) { [subject, dept_dimer_base, target_spec] }
+            let(:keynames) { [:ct, :cr, :cl] }
+
+            it_behaves_like :check_anchors
+          end
+
+          it_behaves_like :check_lateral_anchors do
+            let(:dept_reaction) { dept_end_lateral_ddnb }
+          end
+
+          it_behaves_like :check_lateral_anchors do
+            let(:dept_reaction) { dept_middle_lateral_ddnb }
+          end
+        end
       end
 
       describe '#source? && #complex?' do

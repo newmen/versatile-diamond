@@ -15,24 +15,6 @@ module VersatileDiamond
         spec.spec.name
       end
 
-      # Gets anchors of specific specie
-      # @return [Array] the array of anchor atoms
-      # @override
-      def anchors
-        @_anchors ||=
-          if source?
-            atoms
-          else
-            self_ptas = specific_props_from(self).zip(specific_atoms.values)
-            parent_props = specific_props_from(parents.first)
-            variant = parent_props.reduce(self_ptas) do |acc, pr|
-              result = acc.dup
-              result.delete_one { |p, _| pr == p } ? result : acc
-            end
-            variant.map(&:last)
-          end
-      end
-
       # Contain specific atoms or not
       # @return [Boolean] contain or not
       # @override
@@ -111,6 +93,31 @@ module VersatileDiamond
       end
 
     private
+
+      # Gets anchors of specific specie
+      # @return [Array] the list of main anchors
+      # @override
+      def main_anchors
+        @_main_anchors ||=
+          if source?
+            atoms
+          else
+            self_ptas = specific_props_from(self).zip(specific_atoms.values)
+            parent_props = specific_props_from(parents.first)
+            variant = parent_props.reduce(self_ptas) do |acc, pr|
+              result = acc.dup
+              result.delete_one { |p, _| pr == p } ? result : acc
+            end
+            variant.map(&:last)
+          end
+      end
+
+      # No additional anchors for specific specie
+      # @return [Array] empty
+      # @override
+      def additional_anchors
+        @_additional_anchors ||= []
+      end
 
       # Provides additional comparation by internal properties
       # @param [MinuendSpec] other see at #<=> same argument

@@ -49,7 +49,7 @@ module VersatileDiamond
       # Gets anchors of internal specie
       # @return [Array] the array of anchor atoms
       def anchors
-        @_anchors ||= main_anchors + additional_anchors
+        @_anchors ||= main_anchors + additional_anchors + lateral_anchors
       end
 
       # Gets the parent specs of current instance
@@ -260,12 +260,22 @@ module VersatileDiamond
       def additional_anchors
         # TODO: this is явный костыль for extended species, the find algorithm builder
         # should be checked also
-        if extended?
-          []
-        else
-          (complex? ? skipped_parent_anchors : []) +
-            (source? ? [] : skipped_children_anchors)
+        @_additional_anchors ||=
+          if extended?
+            []
+          else
+            (complex? ? skipped_parent_anchors : []) +
+              (source? ? [] : skipped_children_anchors)
+          end
+      end
+
+      # @return [Array] the list of atoms which are targets for lateral environments
+      def lateral_anchors
+        target_theres = reactions.select(&:lateral?).flat_map(&:theres)
+        target_atoms = target_theres.flat_map do |there|
+          there.targets.to_a.select { |s, _| s == spec }.map(&:last)
         end
+        target_atoms - main_anchors - additional_anchors
       end
 
       # Replaces parent atoms in pairs to own atoms. If parent atom uses many times by
@@ -499,7 +509,7 @@ module VersatileDiamond
 
       # Resets the internal caches
       def reset_caches!
-        @_residual_links, @_main_anchors, @_anchors = nil
+        @_residual_links, @_main_anchors, @_anchors, @_additional_anchors = nil
         @_skipped_parent_anchors, @_skipped_children_anchors = nil
         @_similar_theres, @_root_theres = nil
         @_pwts_cache = { true => {}, false => {} }

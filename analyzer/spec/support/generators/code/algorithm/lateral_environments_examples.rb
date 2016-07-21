@@ -79,9 +79,7 @@ module VersatileDiamond
 
               let(:edge_dimer) { sidepiece_specs.first }
 
-              let(:tdr) { :'dimer(cr: *)__cr' }
               let(:tdl) { :'dimer(cr: *)__cl' }
-              let(:sdr) { :dimer__cr }
               let(:sdl) { :dimer__cl }
             end
 

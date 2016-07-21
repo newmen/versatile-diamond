@@ -99,7 +99,11 @@ module VersatileDiamond
       describe '#swap_source' do
         it_behaves_like :check_links_graph do
           subject { on_end }
-          before { subject.swap_source(dimer, d_dup) }
+          before do
+            subject.swap_source(dimer, d_dup)
+            subject.swap_source(ab, ab_dup)
+          end
+          let(:ab_dup) { ab.dup }
           let(:d_dup) { dimer.dup }
           let(:links) do
             {

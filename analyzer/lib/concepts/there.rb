@@ -71,6 +71,7 @@ module VersatileDiamond
           end
         end
 
+        # TODO: simplify relations to targets if can
         self.class.new(where.dup, reversed_refs)
       end
 

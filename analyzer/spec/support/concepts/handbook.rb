@@ -1160,6 +1160,33 @@ module VersatileDiamond
           dimer_formation.lateral_duplicate('m.w.b. lateral', [on_middle_with_bridge])
         end
 
+        # Provides similar definition of there object for dimer formation reaction
+        def self.dfnb_there(there_name, where_name)
+          set(there_name) do
+            raeb, ab = dfnb_source
+            targets_hash = { one: [raeb, raeb.atom(:cr)], two: [ab, ab.atom(:ct)] }
+            public_send(where_name).concretize(targets_hash)
+          end
+        end
+
+        dfnb_there(:with_bridge_on_end, :at_end)
+        set(:end_lateral_dfnb) do
+          theres = [with_bridge_on_end]
+          dimer_formation_near_bridge.lateral_duplicate('end lateral', theres)
+        end
+
+        dfnb_there(:with_bridge_on_middle, :at_middle)
+        set(:middle_lateral_dfnb) do
+          theres = [with_bridge_on_middle]
+          dimer_formation_near_bridge.lateral_duplicate('middle lateral', theres)
+        end
+
+        set(:end_lateral_ddnb) { end_lateral_dfnb.reverse }
+        set(:bwd_on_end) { end_lateral_ddnb.theres.first }
+
+        set(:middle_lateral_ddnb) { middle_lateral_dfnb.reverse }
+        set(:bwd_on_middle) { middle_lateral_ddnb.theres.first }
+
         set(:there_dimer_edge) do
           dmr = dimer.dup
           w = Where.new(:there_dimer_edge, 'at end of dimers edge', specs: [dmr])

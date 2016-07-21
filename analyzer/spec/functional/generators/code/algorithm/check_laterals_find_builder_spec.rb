@@ -153,6 +153,99 @@ module VersatileDiamond
               end
             end
 
+            describe 'dimer formation near bridge' do
+              it_behaves_like :check_code do
+                let(:typical_reaction) { dept_dimer_formation_near_bridge }
+                let(:lateral_reactions) do
+                  [dept_end_lateral_dfnb, dept_middle_lateral_dfnb]
+                end
+                let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+
+                let(:lateral_dimer) { sidepiece_spec_by_name(:dimer) }
+                let(:spec) { lateral_dimer }
+
+                let(:ab_ct) { role(dept_activated_bridge, :ct) }
+                let(:ab_cr) { role(dept_right_activated_bridge, :cr) }
+
+                let(:find_algorithm) do
+                  <<-CODE
+    sidepiece->eachSymmetry([](LateralSpec *symmetricDimer1) {
+        Atom *atoms1[2] = { symmetricDimer1->atom(3), symmetricDimer1->atom(0) };
+        eachNeighbours<2>(atoms1, &Diamond::cross_100, [&symmetricDimer1](Atom **neighbours1) {
+            if (neighbours1[0]->is(#{ab_ct}) && neighbours1[1]->is(#{ab_cr}))
+            {
+                BridgeCRs *bridgeCRs1 = neighbours1[1]->specByRole<BridgeCRs>(#{ab_cr});
+                if (bridgeCRs1)
+                {
+                    BridgeCTs *bridgeCTs1 = neighbours1[0]->specByRole<BridgeCTs>(#{ab_ct});
+                    if (bridgeCTs1)
+                    {
+                        SpecificSpec *targets[2] = { bridgeCRs1, bridgeCTs1 };
+                        ChainFactory<
+                            DuoLateralFactory,
+                            ForwardDimerFormationNearBridgeEndLateral,
+                            ForwardDimerFormationNearBridge
+                        > factory(symmetricDimer1, targets);
+                        factory.checkoutReactions<ForwardDimerFormationNearBridgeEndLateral>();
+                    }
+                }
+            }
+        });
+    });
+                  CODE
+                end
+              end
+            end
+
+            describe 'dimer drop near bridge' do
+              it_behaves_like :check_code do
+                let(:typical_reaction) { dept_dimer_drop_near_bridge }
+                let(:lateral_reactions) do
+                  [dept_end_lateral_ddnb, dept_middle_lateral_ddnb]
+                end
+                let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+
+                let(:lateral_dimer) { sidepiece_spec_by_name(:dimer) }
+                let(:spec) { lateral_dimer }
+
+                let(:bwd_cc) { role(dept_bridge_with_dimer_base, :cr) }
+                let(:bwd_cl) { role(dept_bridge_with_dimer_base, :cl) }
+
+                let(:find_algorithm) do
+                  <<-CODE
+    sidepiece->eachSymmetry([](LateralSpec *symmetricDimer1) {
+        Atom *atoms1[2] = { symmetricDimer1->atom(3), symmetricDimer1->atom(0) };
+        eachNeighbours<2>(atoms1, &Diamond::cross_100, [&symmetricDimer1](Atom **neighbours1) {
+            if (neighbours1[0]->is(#{bwd_cl}) && neighbours1[1]->is(#{bwd_cc}))
+            {
+                if (neighbours1[0]->hasBondWith(neighbours1[1]))
+                {
+                    BridgeWithDimer *bridgeWithDimer1 = neighbours1[1]->specByRole<BridgeWithDimer>(#{bwd_cc});
+                    if (bridgeWithDimer1)
+                    {
+                        BridgeWithDimer *bridgeWithDimer2 = neighbours1[0]->specByRole<BridgeWithDimer>(#{bwd_cl});
+                        if (bridgeWithDimer2)
+                        {
+                            if (bridgeWithDimer1 == bridgeWithDimer2)
+                            {
+                                ChainFactory<
+                                    UnoLateralFactory,
+                                    ReverseDimerFormationNearBridgeEndLateral,
+                                    ReverseDimerFormationNearBridge
+                                > factory(symmetricDimer1, bridgeWithDimer2);
+                                factory.checkoutReactions<ReverseDimerFormationNearBridgeEndLateral>();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+                  CODE
+                end
+              end
+            end
+
             describe 'symmetric incoherent dimer drop' do
               it_behaves_like :check_code do
                 let(:typical_reaction) { dept_incoherent_dimer_drop }
@@ -162,20 +255,19 @@ module VersatileDiamond
                 let(:lateral_dimer) { sidepiece_spec_by_name(:dimer) }
                 let(:spec) { lateral_dimer }
                 let(:id_cr) { role(dept_twise_incoherent_dimer, :cr) }
-                let(:id_cl) { role(dept_twise_incoherent_dimer, :cl) }
 
                 let(:find_algorithm) do
                   <<-CODE
     Atom *atoms1[2] = { sidepiece->atom(3), sidepiece->atom(0) };
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [&sidepiece](Atom **neighbours1) {
-        if (neighbours1[0]->is(#{id_cr}) && neighbours1[1]->is(#{id_cl}))
+        if (neighbours1[0]->is(#{id_cr}) && neighbours1[1]->is(#{id_cr}))
         {
             if (neighbours1[0]->hasBondWith(neighbours1[1]))
             {
                 DimerCLiCRi *dimerCLiCRi1 = neighbours1[1]->specByRole<DimerCLiCRi>(#{id_cr});
                 if (dimerCLiCRi1)
                 {
-                    DimerCLiCRi *dimerCLiCRi2 = neighbours1[0]->specByRole<DimerCLiCRi>(#{id_cl});
+                    DimerCLiCRi *dimerCLiCRi2 = neighbours1[0]->specByRole<DimerCLiCRi>(#{id_cr});
                     if (dimerCLiCRi2)
                     {
                         if (dimerCLiCRi1 == dimerCLiCRi2)
@@ -336,39 +428,26 @@ module VersatileDiamond
         eachNeighbour(atoms1[0], &Diamond::cross_110, [&atoms1, &symmetricDimer1](Atom *neighbour1) {
             if (neighbour1->is(#{admr_cl}))
             {
-                eachNeighbour(neighbour1, &Diamond::front_100, [&atoms1, &neighbour1, &symmetricDimer1](Atom *neighbour2) {
-                    if (neighbour2->is(#{admr_cr}))
-                    {
-                        if (neighbour1->hasBondWith(neighbour2))
+                DimerCRs *dimerCRs1 = neighbour1->specByRole<DimerCRs>(#{admr_cl});
+                if (dimerCRs1)
+                {
+                    eachNeighbour(atoms1[1], &Diamond::cross_100, [&dimerCRs1, &symmetricDimer1](Atom *neighbour2) {
+                        if (neighbour2->is(#{amob_cb}))
                         {
-                            DimerCRs *dimerCRs1 = neighbour2->specByRole<DimerCRs>(#{admr_cr});
-                            if (dimerCRs1)
+                            MethylOnBridgeCMs *methylOnBridgeCMs1 = neighbour2->specByRole<MethylOnBridgeCMs>(#{amob_cb});
+                            if (methylOnBridgeCMs1)
                             {
-                                eachNeighbour(atoms1[1], &Diamond::cross_100, [&dimerCRs1, &symmetricDimer1](Atom *neighbour3) {
-                                    if (neighbour3->is(#{amob_cb}))
-                                    {
-                                        neighbour3->eachAmorphNeighbour([&dimerCRs1, &symmetricDimer1](Atom *amorph1) {
-                                            if (amorph1->is(#{amob_cm}))
-                                            {
-                                                MethylOnBridgeCMs *methylOnBridgeCMs1 = amorph1->specByRole<MethylOnBridgeCMs>(#{amob_cm});
-                                                if (methylOnBridgeCMs1)
-                                                {
-                                                    SpecificSpec *targets[2] = { methylOnBridgeCMs1, dimerCRs1 };
-                                                    ChainFactory<
-                                                        DuoLateralFactory,
-                                                        ForwardMethylIncorporationMiEdgeLateral,
-                                                        ForwardMethylIncorporation
-                                                    > factory(symmetricDimer1, targets);
-                                                    factory.checkoutReactions<ForwardMethylIncorporationMiEdgeLateral>();
-                                                }
-                                            }
-                                        });
-                                    }
-                                });
+                                SpecificSpec *targets[2] = { methylOnBridgeCMs1, dimerCRs1 };
+                                ChainFactory<
+                                    DuoLateralFactory,
+                                    ForwardMethylIncorporationMiEdgeLateral,
+                                    ForwardMethylIncorporation
+                                > factory(symmetricDimer1, targets);
+                                factory.checkoutReactions<ForwardMethylIncorporationMiEdgeLateral>();
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
     });

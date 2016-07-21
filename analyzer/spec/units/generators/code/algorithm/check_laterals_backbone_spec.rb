@@ -65,9 +65,7 @@ module VersatileDiamond
                 let(:final_graph) do
                   {
                     [sdl] => [[[:cb], param_100_cross]],
-                    [sdr] => [[[tdl], param_110_cross]],
-                    [tdl] => [[[tdr], param_100_front]],
-                    [:cb] => [[[:cm], param_amorph]]
+                    [:cr] => [[[tdl], param_110_cross]]
                   }
                 end
               end
@@ -272,10 +270,8 @@ module VersatileDiamond
                 let(:spec) { edge_dimer }
                 let(:ordered_graph) do
                   [
-                    [[sdr], [[[tdl], param_110_cross]]],
-                    [[tdl], [[[tdr], param_100_front]]],
-                    [[sdl], [[[:cb], param_100_cross]]],
-                    [[:cb], [[[:cm], param_amorph]]]
+                    [[:cr], [[[tdl], param_110_cross]]],
+                    [[sdl], [[[:cb], param_100_cross]]]
                   ]
                 end
               end
