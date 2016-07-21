@@ -19,21 +19,21 @@ module VersatileDiamond
       # @override
       def anchors
         @_anchors ||=
-        if source?
-          atoms
-        else
-          self_ptas = specific_props_from(self).zip(specific_atoms.values)
-          parent_props = specific_props_from(parents.first)
+          if source?
+            atoms
+          else
+            self_ptas = specific_props_from(self).zip(specific_atoms.values)
+            parent_props = specific_props_from(parents.first)
 
-          variants = self_ptas.permutation.map do |awps_perm|
-            parent_props.reduce(awps_perm) do |acc, pr|
-              result = acc.dup
-              result.delete_one { |p, _| pr == p } ? result : acc
+            variants = self_ptas.permutation.map do |awps_perm|
+              parent_props.reduce(awps_perm) do |acc, pr|
+                result = acc.dup
+                result.delete_one { |p, _| pr == p } ? result : acc
+              end
             end
-          end
 
-          variants.min_by(&:size).map(&:last)
-        end
+            variants.min_by(&:size).map(&:last)
+          end
       end
 
       # Contain specific atoms or not
@@ -62,21 +62,23 @@ module VersatileDiamond
       # @param [Array] similar_specs the array of specs where each spec has
       #   same basic spec
       def organize_dependencies!(base_cache, similar_specs)
-        similar_specs = similar_specs.uniq.reject { |s| s == self || self < s }
-        similar_specs.sort! { |a, b| b <=> a }
+        small_specs = similar_specs.uniq.reject { |s| s == self || self < s }
+        small_specs.sort! { |a, b| b <=> a }
 
         self_props = specific_props_from(self)
         props_to_atoms = self_props.zip(specific_atoms.values)
-        parent = similar_specs.find do |possible_parent|
+        parent = small_specs.find do |possible_parent|
           pp_props = specific_props_from(possible_parent)
           are_props_identical = lists_are_identical?(self_props, pp_props, &:include?)
           anchor_props = self_props - pp_props
           next if !are_props_identical && anchor_props == self_props
 
           rest_props = self_props - anchor_props
-          rest_props.empty? || self_props.permutation.any? do |sps|
+          rest_props.empty? || pp_props.permutation.any? do |pps|
             total = anchor_props + rest_props
-            sps.all? { |ap| total.delete_one(&ap.public_method(:include?)) }
+            pps.all? do |ap|
+              total.delete_one { |rp| rp.include?(ap) }
+            end
           end
         end
 

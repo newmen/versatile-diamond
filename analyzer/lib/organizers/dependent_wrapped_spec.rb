@@ -258,6 +258,8 @@ module VersatileDiamond
 
       # @return [Array] the list of additional anchors
       def additional_anchors
+        # TODO: this is явный костыль for extended species, the find algorithm builder
+        # should be checked also
         if extended?
           []
         else

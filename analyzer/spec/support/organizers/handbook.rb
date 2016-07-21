@@ -116,6 +116,7 @@ module VersatileDiamond
           :right_hydrogenated_bridge,
           :right_activated_bridge,
           :twise_incoherent_dimer,
+          :twise_bottom_incoherent_dimer,
           :ea_dimer_near_ea_mob,
           :top_activated_methyl_on_activated_half_extended_bridge,
           :lower_activated_methyl_on_activated_half_extended_bridge,
