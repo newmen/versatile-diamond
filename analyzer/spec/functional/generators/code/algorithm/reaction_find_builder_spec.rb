@@ -145,6 +145,16 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_code do
+              subject { dept_dimer_drop_near_bridge }
+              let(:target_spec) { dept_bridge_with_dimer_base }
+              let(:find_algorithm) do
+                <<-CODE
+    create<ReverseDimerFormationNearBridge>(target);
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
               subject { dept_dimer_formation }
               let(:target_spec) { dept_activated_incoherent_bridge }
               let(:other_spec) { dept_activated_bridge }
@@ -181,6 +191,56 @@ module VersatileDiamond
             {
                 SpecificSpec *targets[2] = { target, bridgeCTsi1 };
                 create<ForwardDimerFormation>(targets);
+            }
+        }
+    });
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              subject { dept_dimer_formation_near_bridge }
+              let(:target_spec) { dept_right_activated_bridge }
+              let(:other_spec) { dept_activated_bridge }
+              let(:find_algorithm) do
+                <<-CODE
+    Atom *atom1 = target->atom(2);
+    eachNeighbour(atom1, &Diamond::front_100, [&target](Atom *neighbour1) {
+        if (neighbour1 != target->atom(1))
+        {
+            if (neighbour1->is(#{other_role_ct}))
+            {
+                BridgeCTs *bridgeCTs1 = neighbour1->specByRole<BridgeCTs>(#{other_role_ct});
+                if (bridgeCTs1)
+                {
+                    SpecificSpec *targets[2] = { target, bridgeCTs1 };
+                    create<ForwardDimerFormationNearBridge>(targets);
+                }
+            }
+        }
+    });
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              subject { dept_dimer_formation_near_bridge }
+              let(:target_spec) { dept_activated_bridge }
+              let(:other_spec) { dept_right_activated_bridge }
+              let(:find_algorithm) do
+                <<-CODE
+    Atom *atom1 = target->atom(0);
+    eachNeighbour(atom1, &Diamond::front_100, [&](Atom *neighbour1) {
+        if (neighbour1->is(#{other_role_cr}))
+        {
+            BridgeCRs *bridgeCRs1 = neighbour1->specByRole<BridgeCRs>(#{other_role_cr});
+            if (bridgeCRs1)
+            {
+                if (atom1 != bridgeCRs1->atom(1))
+                {
+                    SpecificSpec *targets[2] = { bridgeCRs1, target };
+                    create<ForwardDimerFormationNearBridge>(targets);
+                }
             }
         }
     });

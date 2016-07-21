@@ -146,6 +146,7 @@ module VersatileDiamond
           :intermed_migr_df_formation,
           :intermed_migr_dmod_formation,
           :dimer_formation,
+          :dimer_formation_near_bridge,
           :bhad_activation,
           :symmetric_dimer_formation,
           :incoherent_dimer_drop,
@@ -162,6 +163,7 @@ module VersatileDiamond
         ])
         define_dependent_reverse_reactions(DependentTypicalReaction, [
           [:dimer_drop, :dimer_formation],
+          [:dimer_drop_near_bridge, :dimer_formation_near_bridge],
           [:sierpinski_formation, :sierpinski_drop],
           [:intermed_migr_db_drop, :intermed_migr_db_formation],
           [:intermed_migr_dc_drop, :intermed_migr_dc_formation],

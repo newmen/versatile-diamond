@@ -481,6 +481,9 @@ module VersatileDiamond
           s.link(s.atom(:tt), s.atom(:cr), bond_110_cross)
           s.link(s.atom(:tt), s.atom(:ct), bond_110_cross); s
         end
+        set(:bridge_with_dimer) do
+          SpecificSpec.new(bridge_with_dimer_base)
+        end
         set(:activated_bridge_with_dimer) do
           SpecificSpec.new(bridge_with_dimer_base, ct: activated_cd)
         end
@@ -763,6 +766,22 @@ module VersatileDiamond
         set(:symmetric_dimer_formation) do
           Reaction.new(:forward, 'symmetric dimer formation',
             sdf_source, sdf_products, sdf_atom_map)
+        end
+
+        set(:dfnb_source) do
+          [right_activated_extended_bridge.dup, activated_bridge.dup]
+        end
+        set(:dfnb_products) { [bridge_with_dimer.dup] }
+        set(:dfnb_names_to_specs) do {
+          source: [[:br, dfnb_source.first], [:bt, dfnb_source.last]],
+          products: [[:bwd, dfnb_products.first]]
+        } end
+        set(:dfnb_atom_map) do
+          Mcs::AtomMapper.map(dfnb_source, dfnb_products, dfnb_names_to_specs)
+        end
+        set(:dimer_formation_near_bridge) do
+          Reaction.new(:forward, 'dimer formation near bridge',
+            dfnb_source, dfnb_products, dfnb_atom_map)
         end
 
         set(:htm_source) { [high_bridge.dup, activated_bridge.dup] }
