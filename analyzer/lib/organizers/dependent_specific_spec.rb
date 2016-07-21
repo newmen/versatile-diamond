@@ -5,6 +5,7 @@ module VersatileDiamond
 
     # Contain some specific spec and set of dependent specs
     class DependentSpecificSpec < DependentWrappedSpec
+      include Modules::GraphDupper
 
       def_delegators :spec, :reduced, :could_be_reduced?
 
@@ -24,15 +25,11 @@ module VersatileDiamond
           else
             self_ptas = specific_props_from(self).zip(specific_atoms.values)
             parent_props = specific_props_from(parents.first)
-
-            variants = self_ptas.permutation.map do |awps_perm|
-              parent_props.reduce(awps_perm) do |acc, pr|
-                result = acc.dup
-                result.delete_one { |p, _| pr == p } ? result : acc
-              end
+            variant = parent_props.reduce(self_ptas) do |acc, pr|
+              result = acc.dup
+              result.delete_one { |p, _| pr == p } ? result : acc
             end
-
-            variants.min_by(&:size).map(&:last)
+            variant.map(&:last)
           end
       end
 
@@ -137,7 +134,6 @@ module VersatileDiamond
         update_reactions(mirror)
         update_theres(mirror)
         update_atoms(mirror)
-        update_relations(mirror)
       end
 
       # Updates atoms that uses in reactions which depends from current spec
@@ -158,25 +154,11 @@ module VersatileDiamond
         end
       end
 
-      # Updates keys of internal links graph
-      # @param [Hash] mirror where keys are atoms of old base specie and values are
-      #   atoms of new base specie
-      def update_atoms(mirror)
-        links.keys.each do |atom|
-          other_atom = mirror[atom]
-          links[other_atom] = links.delete(atom) if other_atom
-        end
-      end
-
       # Updates internal atoms in relations in links graph
       # @param [Hash] mirror where keys are atoms of old base specie and values are
       #   atoms of new base specie
-      def update_relations(mirror)
-        links.values.each do |relations|
-          relations.map! do |atom, relation|
-            [mirror[atom] || atom, relation]
-          end
-        end
+      def update_atoms(mirror)
+        @links = dup_graph(@links) { |atom| mirror[atom] || atom }
       end
 
       # @param [DependentSpecificSpec] spec
