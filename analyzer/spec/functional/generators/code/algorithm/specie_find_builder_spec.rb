@@ -1176,7 +1176,7 @@ module VersatileDiamond
                         eachNeighbour(atoms1[0], &Diamond::cross_100, [&atoms1, &s, &species1, &symmetricMethylOnBridge1](Atom *neighbour1) {
                             if (neighbour1 == atoms1[1])
                             {
-                                ParentSpec *parents[2] = { species1[1 - s], symmetricMethylOnBridge1 };
+                                ParentSpec *parents[2] = { symmetricMethylOnBridge1, species1[1 - s] };
                                 create<IntermedMigrDownBridge>(parents);
                             }
                         });

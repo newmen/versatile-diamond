@@ -18,6 +18,24 @@ module VersatileDiamond
           @_original_sequence, @_short_sequence, @_major_atoms, @_addition_atoms = nil
         end
 
+        # @return [Array]
+        def sorted_parents
+          spec.parents.sort do |*parents|
+            a, b = parents
+            cmp = (a <=> b)
+            if cmp == 0
+              seq1, seq2 = parents.map do |parent|
+                parent_seq = get(parent.original).original
+                self_seq = parent_seq.map(&parent.public_method(:atom_by))
+                self_seq.map(&spec.spec.public_method(:keyname))
+              end
+              seq1 <=> seq2
+            else
+              cmp
+            end
+          end
+        end
+
         # Makes original sequence of atoms which will be used for get an atom index
         # @return [Array] the original sequence of atoms of current specie
         # TODO: should be protected
@@ -116,24 +134,6 @@ module VersatileDiamond
         # @return [Organizers::AtomProperties]
         def atom_properties_for(atom)
           Organizers::AtomProperties.new(spec, atom)
-        end
-
-        # @return [Array]
-        def sorted_parents
-          spec.parents.sort do |*parents|
-            a, b = parents
-            cmp = (a <=> b)
-            if cmp == 0
-              seq1, seq2 = parents.map do |parent|
-                parent_seq = get(parent.original).original
-                self_seq = parent_seq.map(&parent.public_method(:atom_by))
-                self_seq.map(&spec.spec.public_method(:keyname))
-              end
-              seq1 <=> seq2
-            else
-              cmp
-            end
-          end
         end
       end
 

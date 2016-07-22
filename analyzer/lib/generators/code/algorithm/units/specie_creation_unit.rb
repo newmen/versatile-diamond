@@ -11,6 +11,7 @@ module VersatileDiamond
           # @param [Specie] specie
           def initialize(*, specie)
             super
+            @ordered_parents = specie.sequence.sorted_parents
             @major_atoms = specie.sequence.short
             @addition_atoms = specie.sequence.addition_atoms
           end
@@ -28,6 +29,15 @@ module VersatileDiamond
           end
 
         private
+
+          # @return [Array]
+          # @override
+          def source_species
+            @_source_species ||=
+              grep_context_species.sort_by do |uniq_specie|
+                @ordered_parents.index(uniq_specie.spec)
+              end
+          end
 
           # @return [String]
           def source_specie_name
