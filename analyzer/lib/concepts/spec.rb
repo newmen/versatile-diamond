@@ -58,6 +58,11 @@ module VersatileDiamond
         false
       end
 
+      # @return [Boolean]
+      def specific?
+        false
+      end
+
       # @return [Boolean] has been specie extended or not
       def extended?
         @is_extended

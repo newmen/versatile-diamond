@@ -25,6 +25,12 @@ module VersatileDiamond
         self.class == other.class && spec.same?(other.spec)
       end
 
+      # Simple spec without parents
+      # @return [Array] the empty array
+      def parents
+        spec.specific? ? [spec.spec] : []
+      end
+
       # Simple spec without anchors
       # @return [Array] the empty array
       def anchors
@@ -59,6 +65,11 @@ module VersatileDiamond
       # @return [Boolean] false
       def specific?
         true
+      end
+
+      # @return [Boolean]
+      def deep_reactant?
+        reactions.any? { |r| r.source.include?(spec) }
       end
 
       # Simple species are not excess

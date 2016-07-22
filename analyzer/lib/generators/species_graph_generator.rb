@@ -6,6 +6,8 @@ module VersatileDiamond
 
       BASE_REACTANT_SPEC_COLOR = 'black'
       BASE_SUPPLY_SPEC_COLOR = 'gray85'
+      GAS_BASE_SPEC_COLOR = 'darkslategrey'
+      GAS_SPECIFIC_SPEC_COLOR = 'deeppink1'
       SPECIFIC_REACTANT_SPEC_COLOR = 'blue'
       SPECIFIC_SUPPLY_SPEC_COLOR = 'lightsteelblue1'
       TERMINATION_SPEC_COLOR = 'chocolate'
@@ -22,9 +24,11 @@ module VersatileDiamond
 
       # Draws basic species and dependencies between them
       # @option [Boolean] :no_includes if true then includes doesn't shown
-      def draw_base_specs(specs = base_surface_specs, no_includes: false)
+      def draw_base_specs(specs = base_specs, no_includes: false)
         deps_method = !no_includes && method(:multiparents_deps)
-        reactants, supply = split_reactants(specs)
+        gas_specs = specs.select(&:gas?)
+        reactants, supply = split_reactants(specs.reject(&:gas?))
+        draw_specs(gas_specs, GAS_BASE_SPEC_COLOR, deps_method)
         draw_specs(reactants, BASE_REACTANT_SPEC_COLOR, deps_method)
         draw_specs(supply, BASE_SUPPLY_SPEC_COLOR, deps_method)
       end
@@ -33,10 +37,12 @@ module VersatileDiamond
       # draw dependencies from basic species
       #
       # @option [Boolean] :no_includes if true then includes doesn't shown
-      def draw_specific_specs(specs = specific_surface_specs, no_includes: false)
+      def draw_specific_specs(specs = specific_specs, no_includes: false)
         deps_method = !no_includes && method(:monoparent_deps)
         name_method = method(:split_specific_name)
-        reactants, supply = split_reactants(specs)
+        gas_specs, _ = split_reactants(specs.select(&:gas?))
+        reactants, supply = split_reactants(specs.reject(&:gas?))
+        draw_specs(gas_specs, GAS_SPECIFIC_SPEC_COLOR, deps_method, name_method)
         draw_specs(reactants, SPECIFIC_REACTANT_SPEC_COLOR, deps_method, name_method)
         draw_specs(supply, SPECIFIC_SUPPLY_SPEC_COLOR, deps_method, name_method)
       end
@@ -77,7 +83,7 @@ module VersatileDiamond
         specs.each do |spec|
           child_node = spec_node(spec)
           parent = spec.parents.first
-          parent_node = spec_node(parent)
+          parent_node = parent && spec_node(parent)
           if parent_node
             edge = graph.add_edges(child_node, parent_node)
             edge.set(&setup_block)

@@ -110,7 +110,7 @@ module VersatileDiamond
         end
 
         result ||
-          if spec.class == Concepts::SpecificSpec
+          if spec.specific?
             dept_spec_spec = Organizers::DependentSpecificSpec.new(spec)
             dept_spec_spec.specific? ? dept_spec_spec : dept_base_spec(spec.spec)
           else

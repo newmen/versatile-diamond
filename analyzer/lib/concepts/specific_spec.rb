@@ -55,6 +55,11 @@ module VersatileDiamond
         reset_caches!
       end
 
+      # @return [Boolean]
+      def specific?
+        true
+      end
+
       # Updates base spec from which dependent current specific spec
       # @param [Spec] new_spec the new base spec
       def replace_base_spec(new_spec)
