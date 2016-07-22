@@ -72,6 +72,10 @@ module VersatileDiamond
       # @param [Concepts::Lattice] lattice the lattice, to be set
       def change_lattice!(atom, lattice)
         return if atom.lattice == lattice
+
+        prev_changed = @changed_vertices.invert
+        return if prev_changed[atom] && prev_changed[atom].lattice == lattice
+
         new_atom = atom.dup
         new_atom.lattice = lattice
         exchange_atoms!(atom, new_atom)
@@ -231,7 +235,6 @@ module VersatileDiamond
       def exchange_atoms!(from, to)
         swap_atoms_in!(@edges, from, to)
 
-        @changed_vertices ||= {}
         @changed_vertices[to] = from
         @atom_alias[to] = @atom_alias.delete(from) if @atom_alias && @atom_alias[from]
       end

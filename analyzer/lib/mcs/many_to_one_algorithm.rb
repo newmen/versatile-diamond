@@ -137,7 +137,7 @@ module VersatileDiamond
             lattices_variants ||= detect_lattices_variants
 
             if lattices_variants.empty?
-              # assoc_graph.save('assoc_error') # TODO: it's not necessarily
+              # assoc_graph.save('assoc_error') # just for debug sometimes
               raise AtomMapper::CannotMap
             else
               new_lattices = lattices_variants.pop

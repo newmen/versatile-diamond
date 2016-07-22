@@ -173,7 +173,7 @@ module VersatileDiamond
           # @param [Hash] graph from which the nodes will be collected
           # @return [Set] the set of all used nodes
           def nodes_set(graph)
-            collect_nodes(graph).reduce(:+).to_set
+            graph.empty? ? Set[] : collect_nodes(graph).reduce(:+).to_set
           end
 
           # Gets the nodes list which uses in relations of passed graph
