@@ -104,6 +104,12 @@ module VersatileDiamond
           uniq_complex_source_species
         end
 
+        # The body of typical reaction depends from children lateral reactions
+        # @return [Array] the list of children lateral reactions
+        def body_include_objects
+          concretizable? ? (sidepiece_species + children) : []
+        end
+
         # Gets the arguments of find reaction method
         # @param [Specie] specie from which the reaction will be found
         # @return [String] the string with signature of find method
