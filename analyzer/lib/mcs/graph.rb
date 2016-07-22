@@ -71,14 +71,12 @@ module VersatileDiamond
       # @param [Concepts::Atom] atom the atom for which lattice will be changed
       # @param [Concepts::Lattice] lattice the lattice, to be set
       def change_lattice!(atom, lattice)
-        return if atom.lattice == lattice
+        curr_atom = vertex_changed_to(atom) || atom
+        return if curr_atom.lattice == lattice
 
-        prev_changed = @changed_vertices.invert
-        return if prev_changed[atom] && prev_changed[atom].lattice == lattice
-
-        new_atom = atom.dup
+        new_atom = curr_atom.dup
         new_atom.lattice = lattice
-        exchange_atoms!(atom, new_atom)
+        exchange_atoms!(curr_atom, new_atom)
       end
 
       # Finds changed atom by replaced atom
