@@ -23,6 +23,7 @@ Options:
   --out=PATH         Setup output path into which results will be placed [default: results]
   --cache-dir=PATH   No check cache when parse config [default: cache]
 
+  --products         Generate some info about reaction products
   --base-specs       Generate some info about base specs
   --spec-specs       Generate some info about specific specs
   --term-specs       Generate some info about termination specs
@@ -62,7 +63,7 @@ unless Dir.exist?(opt['--out'])
   FileUtils.mkdir_p(opt['--out'])
 end
 
-props = %w(base-specs spec-specs term-specs reactions includes transitions
+props = %w(products base-specs spec-specs term-specs reactions includes transitions
   no-base-specs no-spec-specs no-term-specs no-reactions no-chunks
   no-includes no-transitions)
 

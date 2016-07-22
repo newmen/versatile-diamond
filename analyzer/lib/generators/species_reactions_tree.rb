@@ -13,7 +13,7 @@ module VersatileDiamond
       # @option [Boolean] :no_chunks show or not termination species set
       # @option [Boolean] :no_reactions if set to true then reactions doesn't shown
       def generate(no_base_specs: false, no_spec_specs: false, no_term_specs: false,
-        no_chunks: false, no_reactions: false)
+        no_chunks: false, no_reactions: false, products: false)
 
         # draw calls order is important!
         draw_base_specs unless no_base_specs
@@ -26,7 +26,7 @@ module VersatileDiamond
           draw_ubiquitous_reactions
           draw_lateral_reactions
 
-          draw_all_reactions_deps
+          draw_all_reactions_deps(products: products)
         end
 
         generate_graph

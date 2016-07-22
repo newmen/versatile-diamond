@@ -11,6 +11,8 @@ module VersatileDiamond
 
       REACTION_DEPENDENT_EDGE_COLOR = 'red'
 
+      PRODUCTS_EDGE_COLOR = 'burlywood4'
+
     private
 
       # Draws chunks and dependencies between them, and also will
@@ -65,10 +67,10 @@ module VersatileDiamond
       end
 
       # Draws dependencies between reactions
-      def draw_all_reactions_deps
-        multicomplexes_deps(ubiquitous_reactions, &method(:ubiquitous_setup))
-        multicomplexes_deps(typical_reactions, &method(:typical_setup))
-        multicomplexes_deps(lateral_reactions, &method(:lateral_setup))
+      def draw_all_reactions_deps(**kwargs)
+        multicomplexes_deps(ubiquitous_reactions, **kwargs, &method(:ubiquitous_setup))
+        multicomplexes_deps(typical_reactions, **kwargs, &method(:typical_setup))
+        multicomplexes_deps(lateral_reactions, **kwargs, &method(:lateral_setup))
       end
 
       # Draw dependencies between reactions and their more complex analogies and to
@@ -76,13 +78,19 @@ module VersatileDiamond
       #
       # @param [Array] reactions the reactions set dependencies for which will be show
       # @yield [Edge] do with each drawn edge
-      def multicomplexes_deps(reactions, &setup_block)
+      def multicomplexes_deps(reactions, products: false, &setup_block)
         complexes_setup = -> x { x.color = REACTION_DEPENDENT_EDGE_COLOR }
         multi_deps(:children, reactions, method(:reaction_node), &complexes_setup)
 
         if @spec_to_node
-          multi_deps(:source, reactions.select { |rc| !rc.parent || rc.local? },
-            method(:reaction_node), method(:spec_node), &setup_block)
+          target_reactions = reactions.select { |rc| !rc.parent || rc.local? }
+          node_procs = [method(:reaction_node), method(:spec_node)]
+          multi_deps(:source, target_reactions, *node_procs, &setup_block)
+          if products
+            multi_deps(:products, target_reactions, *node_procs) do |x|
+              x.color = PRODUCTS_EDGE_COLOR
+            end
+          end
         end
       end
 
