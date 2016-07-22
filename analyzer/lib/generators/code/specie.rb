@@ -46,6 +46,7 @@ module VersatileDiamond
           end
 
           @_class_name, @_enum_name, @_file_name, @_used_iterators = nil
+          @_action_reactions = nil
           @_find_builder = nil
         end
 
@@ -167,6 +168,13 @@ module VersatileDiamond
           generator.classifier.index(spec, atom)
         end
 
+        # Gets outer template name of specie class
+        # @return [String] the outer specie file name
+        # @override
+        def outer_base_name
+          symmetric? ? 'overall' : super
+        end
+
         # The printable name which will be shown when debug calculation output
         # @return [String] the name of specie which used by user in DSL config file
         def print_name
@@ -183,6 +191,13 @@ module VersatileDiamond
       private
 
         def_delegator :sequence, :delta
+
+        # Gets the name of directory where will be stored result file
+        # @return [String] the name of result directory
+        # @override
+        def outer_dir_name
+          symmetric? ? 'symmetrics' : super
+        end
 
         # Specie class has find algorithms by default
         # @return [Boolean] true
@@ -215,11 +230,17 @@ module VersatileDiamond
           !children.empty?
         end
 
+        # @return [Array] the list of reactions where the current specie is source
+        def action_reactions
+          @_action_reactions ||=
+            spec.reactions.select { |r| r.source.include?(spec.spec) }
+        end
+
         # Gets list of local reactions for current specie
         # @return [Array] the list of local reactions
         def local_reactions
           if generator.handbook.ubiquitous_reactions_exists?
-            reaction_classes(spec.reactions.select(&:local?))
+            reaction_classes(action_reactions.select(&:local?))
           else
             []
           end
@@ -228,7 +249,7 @@ module VersatileDiamond
         # Gets list of typical reactions for current specie
         # @return [Array] the list of typical reactions
         def typical_reactions
-          all_reactions = reaction_classes(spec.reactions)
+          all_reactions = reaction_classes(action_reactions)
           (all_reactions - local_reactions - lateral_reactions).uniq
         end
 
@@ -242,7 +263,7 @@ module VersatileDiamond
         # Gets list of lateral reactions for current specie
         # @return [Array] the list of lateral reactions
         def lateral_reactions
-          reaction_classes(spec.reactions.select(&:lateral?)).uniq
+          reaction_classes(action_reactions.select(&:lateral?)).uniq
         end
 
         # Checks that ubiquitous reactions prestented and specie have local reactions

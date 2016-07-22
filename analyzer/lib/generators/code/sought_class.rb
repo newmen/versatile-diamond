@@ -15,6 +15,13 @@ module VersatileDiamond
           ['file', :downcase, '_'],
         ].freeze
 
+        # The list of common files which are used by current class generator
+        # @return [Array] list with base class file path
+        # @override
+        def using_common_files
+          common_base_class_files.map(&:full_file_path)
+        end
+
         # Provides classes list from which occur inheritance when template renders
         # @return [Array] the array of cpp class names
         # TODO: must be private
@@ -69,13 +76,19 @@ module VersatileDiamond
         # Gets a list of code elements each of which will be included in header file
         # @return [Array] the array of header including objects
         def head_include_objects
-          head_used_objects + used_iterators + [common_base_class_file]
+          head_used_objects + used_iterators + common_base_class_files
         end
 
-        # Provides common file which is base class for current instance
-        # @return [CommonFile] the common file for current specie
-        def common_base_class_file
-          CommonFile.new("#{template_additional_path}/#{outer_base_name}.h")
+        # Provides common files which is base class for current instance
+        # @return [Array] the common files for current instance
+        def common_base_class_files
+          [common_file(outer_base_name)]
+        end
+
+        # @param [String] file_name
+        # @return [CommonFile]
+        def common_file(file_name)
+          CommonFile.new("#{template_additional_path}/#{file_name}.h")
         end
 
         # Gets the name of directory where will be stored result file

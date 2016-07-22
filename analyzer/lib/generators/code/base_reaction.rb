@@ -82,8 +82,20 @@ module VersatileDiamond
 
         # By default gets the unwrapped parent type
         # @return [String] the unwrapped parent type of reaction
+        # @override
         def outer_base_class_name
           reaction_type
+        end
+
+        # Provides common files which is base class for current instance
+        # @return [Array] the common files for current reaction
+        # @override
+        def common_base_class_files
+          if outer_base_class_name == reaction_type
+            super
+          else
+            super + [common_file(reaction_type.underscore)]
+          end
         end
 
         # Gets the name of directory where will be stored result file

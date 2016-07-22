@@ -28,6 +28,12 @@ module VersatileDiamond
           write_file(sdr, 'cpp') if File.exist?(template_path('cpp'))
         end
 
+        # The list of common files which are used by current class generator
+        # @return [Array] empty by default
+        def using_common_files
+          []
+        end
+
         # Gets default name of file which will be generated
         # @return [String] the default name of result file without extention
         def file_name
