@@ -8,6 +8,22 @@ module VersatileDiamond
         subject { active_bond }
       end
 
+      describe '#hash' do
+        it { expect(active_bond.hash).to eq(described_class.new.hash) }
+      end
+
+      describe '#==' do
+        it { expect(active_bond).to eq(described_class.new) }
+        it { expect(active_bond).not_to eq(adsorbed_h) }
+        it { expect(active_bond).not_to eq(bridge) }
+      end
+
+      describe '#<=>' do
+        it { expect(active_bond <=> active_bond).to eq(0) }
+        it { expect(active_bond <=> adsorbed_h).to eq(-1) }
+        it { expect(adsorbed_h <=> active_bond).to eq(1) }
+      end
+
       describe '#name' do
         it { expect(active_bond.name).to eq(:*) }
       end
@@ -26,6 +42,10 @@ module VersatileDiamond
         let(:atom) { SpecificAtom.new(cd) }
         before { subject.apply_to(atom) }
         it { expect(atom.actives).to eq(1) }
+      end
+
+      describe '#termination?' do
+        it { expect(active_bond.termination?).to be_truthy }
       end
 
       describe '#hydrogen?' do

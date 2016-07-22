@@ -20,7 +20,7 @@ Options:
   --code             Generate code for engine
 
   --name=NAME        Set the name of output generation file or another entity
-  --out=PATH         Setup output path into which results will placed [default: results]
+  --out=PATH         Setup output path into which results will be placed [default: results]
   --cache-dir=PATH   No check cache when parse config [default: cache]
 
   --base-specs       Generate some info about base specs
@@ -74,7 +74,10 @@ props_to_ops = Hash[props_to_ops.compact]
 
 doit = -> generator { generator.generate(props_to_ops) }
 define_generator = -> key, generator_class, *args do
-  doit[generator_class.new(analysis_result, *args)] if opt[key]
+  if opt[key]
+    kwargs = { config_path: opt['<path_to_config>'] }
+    doit[generator_class.new(analysis_result, *args, **kwargs)]
+  end
 end
 
 out = -> filename { (Pathname.new(opt['--out']) + (opt['--name'] || filename)).to_s }

@@ -25,7 +25,7 @@ dirs:
 
 $(OBJS_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
- 
+
 clean:
 	rm -rf $(OBJS_DIR)
 	rm -rf $(LIB_DIR)

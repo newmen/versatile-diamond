@@ -8,9 +8,7 @@ module VersatileDiamond
         subject { dept_activated_methyl_on_bridge }
         let(:bigger) { dept_activated_methyl_on_incoherent_bridge }
 
-        [:cm, :cb, :cr, :cl].each do |kn|
-          let(kn) { activated_methyl_on_bridge.atom(kn) }
-        end
+        let_atoms_of(:activated_methyl_on_bridge, [:cm, :cb, :cr, :cl])
 
         let(:atom) { cm }
         let(:atom_relations) { [free_bond, active_bond] }
@@ -26,7 +24,8 @@ module VersatileDiamond
 
       it_behaves_like :wrapped_spec do
         subject { dept_activated_methyl_on_bridge }
-        let(:child) { dept_activated_methyl_on_incoherent_bridge }
+        let(:reaction) { dept_methyl_to_gap }
+        let(:child) { described_class.new(mg_source.first) }
       end
 
       it_behaves_like :count_atoms_and_relations_and_parents do
@@ -103,8 +102,8 @@ module VersatileDiamond
       describe '#organize_dependencies!' do
         shared_examples_for :organize_and_check do
           it_behaves_like :organize_dependencies do
-            let(:others) { [parent] + children + similars }
-            it { expect(subject.parents.first.original).to eq(parent) }
+            let(:others) { parents + children + similars }
+            it { expect(subject.parents.map(&:original)).to eq(parents) }
             it { expect(subject.children).to match_array(children) }
           end
         end
@@ -121,20 +120,69 @@ module VersatileDiamond
 
           it_behaves_like :organize_and_check do
             subject { dept_activated_bridge }
-            let(:parent) { dept_bridge_base }
+            let(:parents) { [dept_bridge_base] }
             let(:children) { [dept_activated_incoherent_bridge] }
           end
 
           it_behaves_like :organize_and_check do
             subject { dept_activated_incoherent_bridge }
-            let(:parent) { dept_activated_bridge }
+            let(:parents) { [dept_activated_bridge] }
             let(:children) { [dept_extra_activated_bridge] }
           end
 
           it_behaves_like :organize_and_check do
             subject { dept_extra_activated_bridge }
-            let(:parent) { dept_activated_incoherent_bridge }
+            let(:parents) { [dept_activated_incoherent_bridge] }
             let(:children) { [] }
+          end
+        end
+
+        describe 'activated bridge' do
+          let(:similars) do
+            [
+              dept_bridge_base,
+              dept_extended_bridge_base,
+              dept_right_activated_extended_bridge,
+              dept_bottom_activated_incoherent_extended_bridge
+            ]
+          end
+
+          it_behaves_like :organize_and_check do
+            subject { dept_extended_bridge_base }
+            let(:parents) { [dept_bridge_base] * 3 }
+            let(:children) { [dept_right_activated_extended_bridge] }
+          end
+
+          it_behaves_like :organize_and_check do
+            subject { dept_right_activated_extended_bridge }
+            let(:parents) { [dept_extended_bridge_base] }
+            let(:children) { [dept_bottom_activated_incoherent_extended_bridge] }
+          end
+
+          it_behaves_like :organize_and_check do
+            subject { dept_bottom_activated_incoherent_extended_bridge }
+            let(:parents) { [dept_right_activated_extended_bridge] }
+            let(:children) { [] }
+          end
+        end
+
+        describe 'right activated bridge' do
+          let(:similars) do
+            [
+              dept_bridge_base,
+              dept_activated_bridge,
+              dept_right_activated_bridge
+            ]
+          end
+          let(:parents) { [dept_bridge_base] }
+          let(:children) { [] }
+
+          it_behaves_like :organize_and_check do
+            subject { dept_activated_bridge }
+          end
+
+          it_behaves_like :organize_and_check do
+            subject { dept_right_activated_bridge }
           end
         end
 
@@ -153,37 +201,37 @@ module VersatileDiamond
 
           it_behaves_like :organize_and_check do
             subject { dept_activated_methyl_on_bridge }
-            let(:parent) { dept_methyl_on_bridge_base }
+            let(:parents) { [dept_methyl_on_bridge_base] }
             let(:children) { [dept_activated_methyl_on_incoherent_bridge] }
           end
 
           it_behaves_like :organize_and_check do
             subject { dept_unfixed_activated_methyl_on_incoherent_bridge }
-            let(:parent) { dept_activated_methyl_on_incoherent_bridge }
+            let(:parents) { [dept_activated_methyl_on_incoherent_bridge] }
             let(:children) { [] }
           end
 
           it_behaves_like :organize_and_check do
             subject { dept_unfixed_methyl_on_bridge }
-            let(:parent) { dept_methyl_on_bridge_base }
+            let(:parents) { [dept_methyl_on_bridge_base] }
             let(:children) { [] }
           end
 
           it_behaves_like :organize_and_check do
             subject { dept_activated_methyl_on_incoherent_bridge }
-            let(:parent) { dept_activated_methyl_on_bridge }
+            let(:parents) { [dept_activated_methyl_on_bridge] }
             let(:children) { [dept_unfixed_activated_methyl_on_incoherent_bridge] }
           end
 
           it_behaves_like :organize_and_check do
             subject { dept_methyl_on_incoherent_bridge }
-            let(:parent) { dept_methyl_on_bridge_base }
+            let(:parents) { [dept_methyl_on_bridge_base] }
             let(:children) { [dept_methyl_on_activated_bridge] }
           end
 
           it_behaves_like :organize_and_check do
             subject { dept_methyl_on_activated_bridge }
-            let(:parent) { dept_methyl_on_incoherent_bridge }
+            let(:parents) { [dept_methyl_on_incoherent_bridge] }
             let(:children) { [] }
           end
         end
@@ -193,7 +241,52 @@ module VersatileDiamond
 
           it_behaves_like :organize_and_check do
             subject { dept_activated_dimer }
-            let(:parent) { dept_dimer_base }
+            let(:parents) { [dept_dimer_base] }
+            let(:children) { [] }
+          end
+        end
+
+        describe 'incoherent dimer' do
+          let(:similars) do
+            [
+              dept_bridge_base,
+              dept_dimer_base,
+              dept_activated_incoherent_dimer,
+              dept_twise_incoherent_dimer,
+              dept_twise_bottom_incoherent_dimer,
+              dept_bottom_hydrogenated_activated_dimer
+            ]
+          end
+
+          it_behaves_like :organize_and_check do
+            subject { dept_dimer_base }
+            let(:parents) { [dept_bridge_base] * 2 }
+            let(:children) do
+              [dept_twise_incoherent_dimer, dept_twise_bottom_incoherent_dimer]
+            end
+          end
+
+          it_behaves_like :organize_and_check do
+            subject { dept_twise_incoherent_dimer }
+            let(:parents) { [dept_dimer_base] }
+            let(:children) { [dept_activated_incoherent_dimer] }
+          end
+
+          it_behaves_like :organize_and_check do
+            subject { dept_twise_bottom_incoherent_dimer }
+            let(:parents) { [dept_dimer_base] }
+            let(:children) { [dept_bottom_hydrogenated_activated_dimer] }
+          end
+
+          it_behaves_like :organize_and_check do
+            subject { dept_activated_incoherent_dimer }
+            let(:parents) { [dept_twise_incoherent_dimer] }
+            let(:children) { [] }
+          end
+
+          it_behaves_like :organize_and_check do
+            subject { dept_bottom_hydrogenated_activated_dimer }
+            let(:parents) { [dept_twise_bottom_incoherent_dimer] }
             let(:children) { [] }
           end
         end

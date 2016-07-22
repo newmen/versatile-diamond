@@ -67,22 +67,22 @@ module VersatileDiamond
         it { expect(surface_activation.reverse.gases_num).to eq(1) }
       end
 
-      describe '#each_source' do
-        let(:collected_source) { surface_deactivation.each_source.to_a }
-        it { expect(surface_deactivation.each_source).to be_a(Enumerable) }
+      describe '#each' do
+        let(:collected_source) { surface_deactivation.each(:source).to_a }
+        it { expect(surface_deactivation.each(:source)).to be_a(Enumerable) }
         it { expect(collected_source).to match_array([active_bond, hydrogen_ion]) }
       end
 
-      describe '#use_similar_source?' do
+      describe '#use_similar?' do
         subject { surface_activation }
-        it { expect(subject.use_similar_source?(hydrogen_ion)).to be_truthy }
-        it { expect(subject.use_similar_source?(hydrogen_ion.dup)).to be_falsey}
-        it { expect(subject.use_similar_source?(active_bond)).to be_falsey }
+        it { expect(subject.use_similar?(:source, hydrogen_ion)).to be_truthy }
+        it { expect(subject.use_similar?(:source, hydrogen_ion.dup)).to be_falsey}
+        it { expect(subject.use_similar?(:source, active_bond)).to be_falsey }
       end
 
-      describe '#swap_source' do
+      describe '#swap_on' do
         let(:dup) { hydrogen_ion.dup }
-        before(:each) { surface_deactivation.swap_source(hydrogen_ion, dup) }
+        before { surface_deactivation.swap_on(:source, hydrogen_ion, dup) }
         it { expect(surface_deactivation.source).to include(dup) }
         it { expect(surface_deactivation.source).not_to include(hydrogen_ion) }
       end
@@ -99,7 +99,7 @@ module VersatileDiamond
         it { expect(surface_deactivation.same?(surface_activation)).to be_falsey }
       end
 
-      describe '#full_rate' do
+      describe '#full_rate && #significant?' do
         before do
           Tools::Config.gas_temperature(1000, 'K')
           Tools::Config.gas_concentration(hydrogen_ion, 0.1, 'mol/cm3')
@@ -108,6 +108,8 @@ module VersatileDiamond
         end
 
         it { expect(surface_deactivation.full_rate.round(10)).to eq(0.1773357811) }
+        it { expect(surface_deactivation.significant?).to be_truthy }
+        it { expect(surface_activation.significant?).to be_falsey }
       end
 
       describe '#changes_num' do

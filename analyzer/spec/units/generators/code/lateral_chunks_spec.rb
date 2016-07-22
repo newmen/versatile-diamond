@@ -16,7 +16,10 @@ module VersatileDiamond
         let(:typical_reaction) { generator.reaction_class(target_reaction.name) }
         let(:sidepiece_specs) { subject.sidepiece_specs.to_a }
         let(:lateral_bridge) do
-          sidepiece_specs.select { |spec| spec.name == :bridge }.first
+          sidepiece_specs.find { |spec| spec.name == :bridge }
+        end
+        let(:lateral_dimer) do
+          sidepiece_specs.find { |spec| spec.name == :dimer }
         end
 
         describe '#total_chunk' do
@@ -77,6 +80,23 @@ module VersatileDiamond
           end
         end
 
+        describe '#side_keys' do
+          let(:lateral_reactions) { [dept_ewb_lateral_df] }
+          it 'check spec-atom pairs' do
+            specs_atoms = subject.side_keys
+            expect(specs_atoms.size).to eq(3)
+
+            uniq_side_specs = specs_atoms.map(&:first).uniq
+            expect(uniq_side_specs).to match_array([lateral_bridge, lateral_dimer])
+
+            atoms = specs_atoms.map(&:last)
+            expect(atoms.uniq).to match_array(atoms)
+
+            expect(specs_atoms.select { |s, _| s == lateral_bridge }.size).to eq(1)
+            expect(specs_atoms.select { |s, _| s == lateral_dimer }.size).to eq(2)
+          end
+        end
+
         describe '#select_reaction' do
           let(:lateral_reactions) { [dept_ewb_lateral_df] }
           let(:spec_atom) { [lateral_bridge, lateral_bridge.atom(:ct)] }
@@ -95,16 +115,6 @@ module VersatileDiamond
           it 'check affixes' do
             expect(affixes.size).to eq(1)
             expect(affixes.map(&:chunk).any?(&:original?)).to be_truthy
-          end
-        end
-
-        describe '#root_affixes_for' do
-          let(:lateral_reactions) { [dept_ewb_lateral_df] }
-          let(:specie) { generator.specie_class(lateral_bridge.name) }
-          let(:affixes) { subject.root_affixes_for(specie) }
-          it 'check affixes' do
-            expect(affixes.size).to eq(1)
-            expect(affixes.map(&:chunk).any?(&:original?)).to be_falsey
           end
         end
       end

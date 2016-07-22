@@ -108,6 +108,16 @@ module VersatileDiamond
           target || raise('Used crystal atom was not found!')
         end
 
+        # Gets the name of method which will build each atom under crystal creation
+        # @return [String] the builder method name
+        def builder_method_name
+          name = instance.major_crystal_atom[:atom_name]
+          valence = instance.major_crystal_atom[:valence]
+          concept = Concepts::Atom.new(name, valence)
+          code_class = Code::Atom.new(concept)
+          AtomBuilder.method_name(code_class, @lattice)
+        end
+
         # Gets the list of objects which headers should be included in body file
         # @return [Array] the list of including objects
         # @override

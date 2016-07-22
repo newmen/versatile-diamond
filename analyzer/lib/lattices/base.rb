@@ -21,6 +21,24 @@ module VersatileDiamond
         end
       end
 
+      # @return [Integer]
+      def hash
+        self.class.hash
+      end
+
+      # @param [Base] other comparing lattice instance
+      # @return [Boolean] is same lattice or not
+      def ==(other)
+        self.class == other.class
+      end
+      alias :eql? :==
+
+      # @param [Base] other comparing lattice instance
+      # @return [Integer] the comparation result
+      def <=>(other)
+        self.class.to_s <=> other.class.to_s
+      end
+
       # Checks other lattice and gives an edge corresponding to inverse
       # relation between atoms in the lattice
       #

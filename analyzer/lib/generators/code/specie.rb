@@ -12,10 +12,16 @@ module VersatileDiamond
         extend Forwardable
 
         ANCHOR_ATOM_NAME = 'anchor'.freeze
-        ANCHOR_SPECIE_NAME = 'parent'.freeze
+        AMORPH_ATOM_NAME = 'amorph'.freeze
+        INTER_ATOM_NAME = 'atom'.freeze
+        NBR_ATOM_NAME = 'neighbour'.freeze
+        ADD_ATOM_NAME = 'additionalAtom'.freeze
 
-        def_delegators :@detector, :symmetric_atom?, :symmetric_atoms
-        def_delegator :@_find_builder, :using_atoms # error if no find algorithm
+        ANCHOR_SPECIE_NAME = 'parent'.freeze
+        TARGET_SPECIE_NAME = 'target'.freeze
+        INTER_SPECIE_NAME = 'specie'.freeze
+        SIDE_SPECIE_NAME = 'sidepiece'.freeze
+
         attr_reader :spec, :original, :sequence, :essence
 
         # Initialize specie code generator
@@ -27,7 +33,7 @@ module VersatileDiamond
 
           @spec = spec
           if spec.simple?
-            # for this species should not be called methods that dependent from these
+            # for these species should not be called methods that dependent from these
             # instance variables
             # TODO: separate for AbstractSpecie which will contain methods for getting
             # class name of simple species, because class name using in env.yml config
@@ -36,7 +42,7 @@ module VersatileDiamond
           else
             @original = OriginalSpecie.new(generator, self)
             @sequence = generator.sequences_cacher.get(spec)
-            @essence = Essence.new(self)
+            @essence = Essence.new(spec)
           end
 
           @_class_name, @_enum_name, @_file_name, @_used_iterators = nil
@@ -63,12 +69,34 @@ module VersatileDiamond
           super
         end
 
+        # Checks that specie have typical reactions
+        # @return [Boolean] is specific or not
+        def specific?
+          !typical_reactions.empty?
+        end
+
         # Is symmetric specie? If children species uses same as own atom and it atom
         # has symmetric analogy
         #
         # @return [Boolean] is symmetric specie or not
         def symmetric?
           !@symmetrics.empty?
+        end
+
+        # Delegates call to detector if it exists
+        # @param [Concepts::Atom | Concepts::AtomRefernce | Concepts::SpecificAtom]
+        #   atom which will be checked
+        # @return [Boolean]
+        def symmetric_atom?(atom)
+          @detector && @detector.symmetric_atom?(atom)
+        end
+
+        # Delegates call to detector if it exists
+        # @param [Concepts::Atom | Concepts::AtomRefernce | Concepts::SpecificAtom]
+        #   atom which symmetries will be gotten
+        # @return [Array]
+        def symmetric_atoms(atom)
+          @detector ? @detector.symmetric_atoms(atom) : []
         end
 
         PREF_METD_SEPS.each do |prefix, method, separator|
@@ -171,7 +199,7 @@ module VersatileDiamond
         # Gets the children specie classes
         # @return [Array] the array of children specie class generators
         def children
-          specie_classes(spec.non_term_children)
+          specie_classes(spec.reactant_children)
         end
 
         # Gets children species without species which are find algorithm roots
@@ -221,12 +249,6 @@ module VersatileDiamond
         # @return [Boolean] is local or not
         def local?
           !local_reactions.empty?
-        end
-
-        # Checks that specie have typical reactions
-        # @return [Boolean] is specific or not
-        def specific?
-          !typical_reactions.empty?
         end
 
         # Checks that specie have there objects

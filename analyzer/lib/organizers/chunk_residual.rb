@@ -38,7 +38,7 @@ module VersatileDiamond
       # Checks that current chunk residual is fully matched
       # @return [Boolean] is fully matched residual or not
       def fully_matched?
-        parents.empty? || lists_are_identical?(links.keys, targets.to_a, &:==)
+        parents.empty? || lists_are_identical?(links.keys, targets.to_a)
       end
 
       # Also checks that parents are equal too
@@ -47,7 +47,7 @@ module VersatileDiamond
       def same?(other)
         # TODO: owners do not comparing
         super && (self.class != other.class || (self.class == other.class &&
-          lists_are_identical?(parents, other.parents, &:==)))
+          lists_are_identical?(parents, other.parents)))
       end
 
     protected

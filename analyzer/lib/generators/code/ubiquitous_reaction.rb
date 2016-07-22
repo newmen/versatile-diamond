@@ -6,6 +6,7 @@ module VersatileDiamond
 
       # Contains logic for generation ubiquitous reation
       class UbiquitousReaction < BaseReaction
+        include SpeciesUser
         include SourceFileCopier
         include ReactionWithSimpleGas
 
@@ -31,12 +32,13 @@ module VersatileDiamond
       private
 
         # Gets the list of more complex reactions
-        # @return [Array] the list of children reactions
+        # @return [Array] the sorted list of children reactions
         # @override
         def children
           super.sort do |a, b|
-            aa, ba = [a, b].map(&:atom_of_complex).map do |atom|
-              Organizers::AtomProperties.new(atom)
+            aa, ba = [a, b].map(&:complex_source_spec_and_atom).map do |spec, atom|
+              dept_spec = specie_class(spec).spec
+              generator.atom_properties(dept_spec, atom)
             end
 
             aa <=> ba

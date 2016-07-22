@@ -9,17 +9,18 @@ module VersatileDiamond
       # for select the children atom properties
       #
       # @param [AtomClassifier] classifier of atom properties
-      # @param [Array] methods by which children properties will be got
-      def initialize(classifier, *methods)
+      # @param [Array] method_names by which children properties will be got
+      def initialize(classifier, *method_names)
         @classifier = classifier
-
         @prop_vector = classifier.props
-        @prop_to_index = Hash[@prop_vector.zip(@prop_vector.size.times.to_a)]
-        @matrix = Patches::SetableMatrix.build(@prop_vector.size) { false }
 
-        @prop_vector.each_with_index do |prop, i|
-          tcR(i, i, *methods)
-        end
+        @prop_to_index = Hash[@prop_vector.zip(@prop_vector.size.times.to_a)]
+        @index_to_prop = @prop_to_index.invert
+
+        @matrix = Patches::SetableMatrix.build(@prop_vector.size) { false }
+        @prop_vector.each_with_index { |prop, i| tcR(i, i, *method_names) }
+
+        @_source_props, @_source_indexes = nil
       end
 
       # Makes specification for some atom properties
@@ -27,61 +28,60 @@ module VersatileDiamond
       # @result [AtomProperties] the result of maximal specification
       def specification_for(prop)
         idx = index(prop)
+        column_idx_enum = @matrix.column(idx).map.with_index
+        cells_with_idxs = column_idx_enum.select do |b, j|
+          b && source_index?(j) && prop.same_internal?(@index_to_prop[j])
+        end
 
-        source_indexes = source_props.map { |p| index(p) }
-        curr_source_indexes =
-          @matrix.column(idx).map.with_index.select do |b, j|
-            b && source_indexes.include?(j)
-          end
-
-        curr_source_indexes.map!(&:last)
-
-        result = curr_source_indexes.empty? ?
-          idx : select_best_index(prop, curr_source_indexes)
-
-        @prop_vector[result]
+        source_idxs = cells_with_idxs.map(&:last)
+        best_index = source_idxs.empty? ? idx : select_best_index(prop, source_idxs)
+        @prop_vector[best_index]
       end
 
-      def [] (prop1, prop2)
-        v, w = index(prop1), index(prop2)
-        @matrix[v, w]
+      # Gets item of matrix by passed properties
+      # @param [Array] props_pair by which crossing the cell will be gotten
+      # @return [Boolean] the value of crossing cell
+      def [](*props_pair)
+        @matrix[*indexes(props_pair)]
       end
 
       def to_a
-        @matrix.to_a
+        @matrix.to_a.map do |row|
+          row.map { |x| x ? 1 : 0 }
+        end
       end
 
     private
 
-      # Transitive closure on DFS
+      # Transitive closure on DFS (why not multiplication to transparent??)
       # @param [Integer] v the v vertex
       # @param [Integer] w the w vertex
-      # @param [Array] methods wich will be called for get children
-      def tcR(v, w, *methods)
+      # @param [Array] method_names wich will be called for get children
+      def tcR(v, w, *method_names)
         @matrix[v, w] = true
-        children = methods.reduce([]) do |acc, method|
-          prop = @prop_vector[w]
-          cds = prop.send(method)
+        children = method_names.reduce([]) do |acc, method|
+          cds = @prop_vector[w].public_send(method)
           cds ? acc + cds.to_a : acc
         end
 
         children.uniq.each do |prop|
           t = index(prop)
-          tcR(v, t, *methods) unless @matrix[v, t]
+          tcR(v, t, *method_names) unless @matrix[v, t]
         end
       end
 
-      # Selects only source properties from transitive closure matrix builded
+      # Selects only source properties from transitive closure matrix built
       # for :smallests dependencies
       def source_props
-        @matrix.column_vectors.map(&:to_a).map.with_index.
-          reduce(Set.new) do |acc, (col, i)|
-            children_num = col.map { |t| t ? 1 : 0 }.reduce(:+)
-            prop = @prop_vector[i]
-            children_num == 1 &&
-              (prop.incoherent? || prop.dangling_hydrogens_num > 0) ?
-                acc << prop : acc
+        return @_source_props if @_source_props
+        columns_idx_enum = @matrix.column_vectors.map(&:to_a).map.with_index
+        @_source_props = columns_idx_enum.each_with_object(Set.new) do |(col, i), acc|
+          children_num = col.select(&:itself).size
+          prop = @prop_vector[i]
+          if children_num == 1 && (prop.incoherent? || prop.dangling_hydrogens_num > 0)
+            acc << prop
           end
+        end
       end
 
       # Gets the index of atom properties
@@ -89,6 +89,26 @@ module VersatileDiamond
       # @return [Integer] the index of properties
       def index(prop)
         @prop_to_index[prop]
+      end
+
+      # Gets the list of indexes for passed atom properties list
+      # @param [Array] props_list for which the indexes will be gotten
+      # @return [Array] the list of indexes
+      def indexes(props_list)
+        props_list.map(&method(:index))
+      end
+
+      # Gets list of source indexes
+      # @return [Array] the list of source atom properties indexes
+      def source_indexes
+        @_source_indexes ||= indexes(source_props)
+      end
+
+      # Checks that passed index is source
+      # @param [Integer] idx the cheking index
+      # @return [Boolean] is source index or not
+      def source_index?(idx)
+        source_indexes.include?(idx)
       end
 
       # Selects the best index of passed prop from presented array
@@ -99,16 +119,13 @@ module VersatileDiamond
       #   select properties with maximal dangling hydogen atoms number
       # @return [Integer] the best index
       def select_best_index(prop, indexes, check_hydros: true)
-        if indexes.size == 1
+        if indexes.one?
           indexes.first
         elsif check_hydros
           maximal_hydro_indexes = select_by_max_hydros(indexes)
           select_best_index(prop, maximal_hydro_indexes, check_hydros: false)
         else
-          lengths = indexes.map do |j|
-            [path_length(@prop_vector[j], prop), j]
-          end
-
+          lengths = indexes.map { |j| [path_length(@prop_vector[j], prop), j] }
           lengths.min_by(&:first).last
         end
       end
@@ -138,7 +155,8 @@ module VersatileDiamond
           curr = queue.shift
           return n if curr == to
 
-          break unless curr.smallests
+          ### commented 29.11.15 (remove over year!)
+          # break unless curr.smallests
 
           n += 1
           curr.smallests.each do |small|

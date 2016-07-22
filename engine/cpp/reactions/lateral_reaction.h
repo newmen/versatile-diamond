@@ -19,7 +19,7 @@ protected:
 public:
     CentralReaction *parent() { return _parent; }
 
-    void doIt();
+    void doIt() override;
 
     void store() override;
     void remove() override;

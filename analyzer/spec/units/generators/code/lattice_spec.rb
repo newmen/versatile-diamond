@@ -30,7 +30,7 @@ module VersatileDiamond
         end
 
         describe '#major_atom_index' do
-          before { empty_generator.classifier.analyze(dept_three_bridges_base) }
+          before { empty_generator.classifier.analyze!(dept_three_bridges_base) }
           it { expect { subject.major_atom_index }.not_to raise_error }
         end
       end

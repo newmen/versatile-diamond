@@ -13,7 +13,8 @@ class Neighbours : public ManyItemsResult<Atom, NUM>
     typedef ManyItemsResult<Atom, NUM> ParentType;
 
 public:
-    template <class... Args> Neighbours(Args... args) : ParentType(args...) {}
+    template <class... Args>
+    Neighbours(Args... args) : ParentType(args...) {}
 };
 
 }

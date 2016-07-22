@@ -16,7 +16,7 @@ module VersatileDiamond
         subject { on_end.dup }
         it { should_not == on_end }
         it { expect(subject.links).not_to eq(on_end.links) }
-        it { expect(subject.links.object_id).not_to eq(on_end.links.object_id) }
+        it { expect(subject.links).not_to equal(on_end.links) }
 
         describe "target swapping doesn't change duplicate" do
           before { subject.swap_target(aib, aib_dup) }
@@ -88,22 +88,27 @@ module VersatileDiamond
         let(:method) { :env_specs }
       end
 
-      describe '#use_similar_source?' do
+      describe '#use_similar?' do
         subject { on_end }
-        it { expect(subject.use_similar_source?(dimer)).to be_truthy }
-        it { expect(subject.use_similar_source?(dimer.dup)).to be_falsey}
-        it { expect(subject.use_similar_source?(ab)).to be_truthy }
+        it { expect(subject.use_similar?(:source, dimer)).to be_truthy }
+        it { expect(subject.use_similar?(:source, dimer.dup)).to be_falsey}
+        it { expect(subject.use_similar?(:source, ab)).to be_truthy }
+        it { expect(subject.use_similar?(:products, ab)).to be_falsey }
       end
 
       describe '#swap_source' do
         it_behaves_like :check_links_graph do
           subject { on_end }
-          before { subject.swap_source(dimer, d_dup) }
+          before do
+            subject.swap_source(dimer, d_dup)
+            subject.swap_source(ab, ab_dup)
+          end
+          let(:ab_dup) { ab.dup }
           let(:d_dup) { dimer.dup }
           let(:links) do
             {
-              [ab, ab.atom(:ct)] => [[[d_dup, d_dup.atom(:cl)], position_100_cross]],
-              [aib, aib.atom(:ct)] => [[[d_dup, d_dup.atom(:cr)], position_100_cross]]
+              [ab, ab.atom(:ct)] => [[[d_dup, d_dup.atom(:cr)], position_100_cross]],
+              [aib, aib.atom(:ct)] => [[[d_dup, d_dup.atom(:cl)], position_100_cross]]
             }
           end
         end

@@ -92,7 +92,7 @@ module VersatileDiamond
       # Reduce all species from current instance and from all parent instances
       # @return [Array] the result of reduce
       def all_specs
-        specs + parents.reduce([]) { |acc, parent| acc + parent.all_specs }
+        specs + parents.flat_map(&:all_specs)
       end
 
       # Concretize current instance by creating there object
@@ -122,7 +122,7 @@ module VersatileDiamond
           rels.each { |(s, a), _| acc << a if s == spec }
         end
 
-        atoms += parents.reduce([]) { |acc, parent| acc + parent.used_atoms_of(spec) }
+        atoms += parents.flat_map { |parent| parent.used_atoms_of(spec) }
         atoms.uniq
       end
     end

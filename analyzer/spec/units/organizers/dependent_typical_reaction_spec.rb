@@ -7,7 +7,7 @@ module VersatileDiamond
       describe '#source_covered_by' do
         describe 'methyl activation' do
           subject { dept_methyl_activation }
-          let(:spec) { subject.each_source.to_a.first }
+          let(:spec) { subject.each(:source).to_a.first }
 
           it { expect(subject.source_covered_by(active_bond)).to be_nil }
           it { expect(subject.source_covered_by(adsorbed_h)).to eq(spec) }
@@ -15,7 +15,7 @@ module VersatileDiamond
 
         describe 'methyl deactivation' do
           subject { dept_methyl_deactivation }
-          let(:spec) { subject.each_source.to_a.first }
+          let(:spec) { subject.each(:source).to_a.first }
 
           it { expect(subject.source_covered_by(active_bond)).to eq(spec) }
           it { expect(subject.source_covered_by(adsorbed_h)).to eq(spec) }

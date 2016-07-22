@@ -16,8 +16,13 @@ gas
   spec :methane
     atoms c: C
 
+  spec :ethylene
+    atoms c1: C, c2: C
+    dbond :c1, :c2
+
   concentration hydrogen(h: *), 1e-10
   concentration methane(c: *), 1e-10
+  concentration ethylene(c1: *), 1e-11
   temperature 1200
 
 surface
@@ -36,6 +41,10 @@ surface
   spec :methyl_on_111
     atoms cm: methane(:c), cb: bridge(:cr)
     bond :cm, :cb
+
+  spec :vinyl_on_111
+    atoms c1: ethylene(:c1), cb: bridge(:cr)
+    bond :c1, :cb
 
   spec :dimer
     atoms cl: bridge(:ct), cr: bridge(:ct)
@@ -76,14 +85,19 @@ events
     activation 0
     reverse_rate 5.4e6
 
-  reaction 'methyl activation'
-    equation methyl_on_dimer + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
-      incoherent methyl_on_dimer(:cm)
+  reaction 'vinyl adsorption to 111'
+    equation ethylene(c1: *) + bridge(cr: *) = vinyl_on_111
+    activation 22.9
+    forward_rate 6.9e7, 'cm3/(mol * s)'
+    reverse_rate 1.7e9
+
+  reaction 'methyl activation (changed for tests)'
+    equation methyl_on_dimer(cm: u) + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
 
     activation 37.5
     forward_rate 2.8e8 * T ** 3.5, 'cm3/(mol * s)'
 
-  reaction 'methyl deactivation'
+  reaction 'methyl deactivation (changed for tests)'
     equation methyl_on_dimer(cm: *) + hydrogen(h: *) = methyl_on_dimer
       incoherent methyl_on_dimer(:cm)
 

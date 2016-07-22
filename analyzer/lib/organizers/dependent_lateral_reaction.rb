@@ -17,7 +17,7 @@ module VersatileDiamond
         reaction.theres.flat_map(&:env_specs)
       end
 
-      # Gets the chunk which builded for current lateral reaction
+      # Gets the chunk which built for current lateral reaction
       # @return [Chunk] the chunk which fully describes lateral environment
       def chunk
         @_chunk ||= Chunk.new(self, theres)
@@ -30,14 +30,15 @@ module VersatileDiamond
       end
 
       # Also swap targets of depending chunk
+      # @param [Symbol] target the type of swapping species
       # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] from
       #   the spec from which need to swap
       # @param [Concepts::Spec | Concepts::SpecificSpec | Concepts::VeiledSpec] to
       #   the spec to which need to swap
       # @override
-      def swap_source(from, to)
+      def swap_on(target, from, to)
         super
-        chunk.swap_spec(from, to) if @_chunk
+        chunk.swap_spec(from, to) if target == :source && @_chunk
       end
 
     private

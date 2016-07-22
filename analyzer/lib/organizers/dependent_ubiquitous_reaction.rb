@@ -28,8 +28,8 @@ module VersatileDiamond
       def organize_dependencies!(not_ubiquitous_reactions, terms_cache, specs_cache)
         not_ubiquitous_reactions.each do |possible|
           next unless simples_are_identical?(possible) &&
-            (possible.products.size == 1 ||
-              (possible.products.size == 2 && possible.simple_products.size == 1))
+            (possible.products.one? ||
+              (possible.products.size == 2 && possible.simple_products.one?))
 
           spec = possible.source_covered_by(termination)
           if spec

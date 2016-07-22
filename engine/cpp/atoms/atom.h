@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <unordered_set>
 #include <unordered_map>
+#include <vector>
 #include "../species/base_spec.h"
 #include "../tools/common.h"
 #include "lattice.h"
@@ -50,6 +51,7 @@ public:
 
     template <class L> void eachNeighbour(const L &lambda) const;
     template <class L> void eachAmorphNeighbour(const L &lambda);
+    template <class L> void eachCrystalNeighbour(const L &lambda);
 
     Atom *firstCrystalNeighbour() const;
     ushort crystalNeighboursNum() const;
@@ -57,6 +59,8 @@ public:
     Lattice *lattice() const { return _lattice; }
     void setLattice(Crystal *crystal, const int3 &coords);
     void unsetLattice();
+
+    void eraseFromCrystal();
 
     void describe(ushort role, BaseSpec *spec);
     void forget(ushort role, BaseSpec *spec);
@@ -96,6 +100,8 @@ protected:
     void setType(ushort type) { _type = type; }
 
 private:
+    template <class L, class P> void eachNeighbourBy(const L &lambda, const P &predicate);
+
     BaseSpec *specByRole(ushort sid, ushort role);
 
     float3 relativePosition() const;
@@ -123,29 +129,42 @@ void Atom::eachNeighbour(const L &lambda) const
 template <class L>
 void Atom::eachAmorphNeighbour(const L &lambda)
 {
+    eachNeighbourBy(lambda, [](const Atom *neighbour) {
+       return !neighbour->lattice();
+    });
+}
+
+template <class L>
+void Atom::eachCrystalNeighbour(const L &lambda)
+{
+    eachNeighbourBy(lambda, [](const Atom *neighbour) {
+       return neighbour->lattice();
+    });
+}
+
+template <class L, class P>
+void Atom::eachNeighbourBy(const L &lambda, const P &predicate)
+{
     Atom **visited = new Atom *[_relatives.size()];
     ushort n = 0;
     for (Atom *neighbour : _relatives)
     {
-        if (!neighbour->lattice())
+        if (predicate(neighbour))
         {
             // Skip multibonds
-            bool hasSame = false;
             for (ushort i = 0; i < n; ++i)
             {
                 if (visited[i] == neighbour)
                 {
-                    hasSame = true;
-                    break;
+                    goto next_main_iteration;
                 }
             }
 
-            if (!hasSame)
-            {
-                lambda(neighbour);
-                visited[n++] = neighbour;
-            }
+            lambda(neighbour);
+            visited[n++] = neighbour;
         }
+
+        next_main_iteration :;
     }
     delete [] visited;
 }

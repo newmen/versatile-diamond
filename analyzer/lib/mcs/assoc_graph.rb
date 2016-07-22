@@ -14,9 +14,10 @@ module VersatileDiamond
       # @param [Graph] g2 the second graph
       # @option [Proc] :comparer the comparer of vertices for creating
       #   associated vertices, if nil then will used default comparer
+      # @option [Proc] :bonds_checker
       # @yield [[Concepts::Atom, Concepts::Atom], [Concepts::Atom, Concepts::Atom]]
       #   if given checks vertices for custrom comparing case
-      def initialize(g1, g2, comparer: nil, &block)
+      def initialize(g1, g2, comparer: nil, bonds_checker: nil, &block)
         @g1, @g2 = g1, g2
 
         comparer ||= -> _, _, v, w { v.same?(w) }
@@ -33,27 +34,41 @@ module VersatileDiamond
 
         # setup corresponding edges
         cache = EdgeCache.new
-        each_vertex do |v_v|
-          each_vertex do |w_w|
-            v1, v2 = v_v
-            w1, w2 = w_w
+        each_vertex do |vw1|
+          each_vertex do |vw2|
+            v1, w1 = vw1
+            v2, w2 = vw2
 
             # without loop at each associated vertex
-            next if v1 == w1 && v2 == w2
+            next if v1 == v2 && w1 == w2
 
-            edge = [v_v, w_w]
+            edge = [vw1, vw2]
             next if cache.has?(*edge) # without dual reverse edges
             # TODO: may not be worth adding edges to add and back edge, and use the current overlooked property of the set of vertices
             cache.add(*edge)
 
-            e1 = @g1.edge(v1, w1)
-            e2 = @g2.edge(v2, w2)
+            e1 = @g1.edge(v1, v2)
+            e2 = @g2.edge(w1, w2)
 
-            if e1 && e2 && (e1 == e2 ||
-              (block_given? && e1.same?(e2) && block[[v1, w1], [v2, w2]]))
+            possible_same, realy_not_same =
+              if block_given?
+                cmp = block[[v1, v2], [w1, w2]]
+                [cmp, !cmp]
+              else
+                [false, false]
+              end
 
+            similar_edges =
+              (e1 && e2 && (e1 == e2 || (possible_same && e1.same?(e2)))) ||
+                (realy_not_same &&
+                          ((!e1 && e2 && !e2.exist?) || (!e2 && e1 && !e1.exist?))) ||
+                (bonds_checker && possible_same &&
+                            ((!e2 && e1 && e1.bond? && bonds_checker[w1, w2]) ||
+                              (!e1 && e2 && e2.bond? && bonds_checker[v1, v2])))
+
+            if similar_edges
               add_edge(@ext, *edge)
-            elsif e1 || e2 || v1 == w1 || v2 == w2 # modified condition
+            elsif e1 || e2 || v1 == v2 || w1 == w2 # modified condition
               add_edge(@fbn, *edge)
             end
           end
@@ -96,10 +111,8 @@ module VersatileDiamond
       # Adds the couple vertices where each pair has one vertex from
       # first graph and second vertex from second graph
       #
-      # @param [Concepts::Atom] v the first vertice
-      # @param [Concepts::Atom] w the second vertice
-      def add_vertex(v, w)
-        vertex = [v, w]
+      # @param [Array] vertex
+      def add_vertex(*vertex)
         @fbn[vertex] ||= []
         @ext[vertex] ||= []
       end

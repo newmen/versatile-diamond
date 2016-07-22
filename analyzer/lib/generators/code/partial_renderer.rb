@@ -5,7 +5,7 @@ module VersatileDiamond
       # Provides methods for render partials of templates
       module PartialRenderer
 
-        PARTIAL_PREFIX = '_'
+        PARTIAL_PREFIX = '_'.freeze
 
       private
 

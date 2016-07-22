@@ -5,6 +5,7 @@ module VersatileDiamond
     module ReactionRefinements
       include Interpreter::AtomMatcher
       include Interpreter::PositionErrorsCatcher
+      include Interpreter::RelevantErrorsCatcher
 
       # Defines two methods for setup an instance of specific spec which found
       # specs by spec name
@@ -15,13 +16,15 @@ module VersatileDiamond
         define_method(state) do |*used_atom_strs|
           used_atom_strs.each do |atom_str|
             find_all_specs(atom_str) do |specific_spec, atom_keyname|
-              old_atom = specific_spec.atom(atom_keyname)
-              unless old_atom.send(:"#{state}?")
-                specific_spec.send(:"#{state}!", atom_keyname)
-              end
-              new_atom = specific_spec.atom(atom_keyname)
+              catch_relevant_errors(specific_spec, atom_keyname, state) do
+                old_atom = specific_spec.atom(atom_keyname)
+                unless old_atom.send(:"#{state}?")
+                  specific_spec.send(:"#{state}!", atom_keyname)
+                end
+                new_atom = specific_spec.atom(atom_keyname)
 
-              @reaction.apply_relevants(specific_spec, old_atom, new_atom)
+                @reaction.apply_relevants(specific_spec, old_atom, new_atom)
+              end
             end
           end
         end

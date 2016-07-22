@@ -7,15 +7,20 @@ module VersatileDiamond
           module BackboneExamples
             shared_examples_for :check_entry_nodes do
               it 'atoms of nodes' do
-                atoms_lists = backbone.entry_nodes.map(&method(:grub_atoms))
-                expect(atoms_lists).to eq(points_list)
+                keyname_lists = backbone.entry_nodes.map(&method(:grep_keynames))
+                expect(keyname_lists).to eq(points_list)
               end
             end
 
+            shared_examples_for :check_action_nodes do
+              it { expect(grep_keynames(backbone.action_nodes)).to eq(atoms_lists) }
+            end
+
             shared_examples_for :check_finite_graph do
+              it { expect(backbone.big_graph).to be_a(Hash) }
               it 'translate to atomic graph and check' do
-                atomic_graph = translate_to_atomic_graph(backbone.final_graph)
-                expect(atomic_graph).to match_graph(final_graph)
+                keyname_graph = translate_to_keyname_graph(backbone.final_graph)
+                expect(keyname_graph).to match_graph(final_graph)
               end
             end
 
@@ -29,8 +34,8 @@ module VersatileDiamond
                   end
 
                 original_ordered_graph = backbone.ordered_graph_from(entry)
-                atomic_list = translate_to_atomic_list(original_ordered_graph)
-                expect(atomic_list).to eq(ordered_graph)
+                keyname_list = translate_to_keyname_list(original_ordered_graph)
+                expect(keyname_list).to eq(ordered_graph)
               end
             end
           end

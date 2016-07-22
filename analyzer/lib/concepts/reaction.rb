@@ -27,6 +27,8 @@ module VersatileDiamond
         @children = []
 
         @mapping.find_positions_for(self)
+
+        reset_changes_caches!
       end
 
       def_delegator :mapping, :complex_source_spec_and_atom
@@ -88,7 +90,7 @@ module VersatileDiamond
           mirrors.each(&block)
 
           mirror = mirrors[:source]
-          # here there objects which was used for creating a duplicate, will be
+          # here there objects which were used for creating a duplicate, will be
           # changed by swapping target species
           theres.each do |there|
             there.target_specs.each do |spec|
@@ -110,13 +112,15 @@ module VersatileDiamond
       end
 
       # Also changes atom mapping result
+      # @param [Symbol] target the type of swapping species
       # @param [TerminationSpec | SpecificSpec] from which spec will be deleted
       # @param [TerminationSpec | SpecificSpec] to which spec will be added
       # @override
-      def swap_source(from, to)
+      def swap_on(target, from, to, **)
         super
         @links = swap_in_links(:swap, @links, from, to)
-        mapping.swap_source(from, to)
+        mapping.swap(target, from, to)
+        reset_changes_caches!
       end
 
       # Swaps using atoms of passed spec
@@ -127,6 +131,7 @@ module VersatileDiamond
       def swap_atom(spec, from, to)
         swap_atom_in_positions(spec, from, to)
         mapping.swap_atom(spec, from, to)
+        reset_changes_caches!
       end
 
       # Applies relevant states for other side atom
@@ -175,6 +180,15 @@ module VersatileDiamond
         false
       end
 
+      # Also checks that children are presented and they are significant too
+      # @return [Boolean] is significant or not
+      # @override
+      def significant?
+        return true if super
+        significant_children = children.select(&:significant?)
+        !significant_children.empty? && significant_children.all?(&:lateral?)
+      end
+
       # Checks that all atoms belongs to lattice
       # @return [Array] atoms the array of checking atoms
       # @return [Boolean] all or not
@@ -183,25 +197,36 @@ module VersatileDiamond
         a && a == b
       end
 
+      # Gets full atom changes list
+      # @return [Hash] the hash of changes where keys are spec-atom of source and
+      #   values are spec-atom of products
+      def full_mapping
+        @_full_mapping ||=
+          MappingResult.rezip(mapping.full).select { |(_, sa), (_, pa)| sa && pa }.to_h
+      end
+
       # Gets atom changes list
       # @return [Hash] the hash of changes where keys are spec-atom of source and
       #   values are spec-atom of products
       def changes
-        Hash[MappingResult.rezip(mapping.changes)]
+        @_changes ||=
+          (MappingResult.rezip(mapping.changes) + gas_mapping.to_a).uniq.to_h
       end
 
       # Gets number of changed atoms
       # @return [Integer] the number of changed atoms
       # @override
       def changes_num
-        mapping.changes.reduce(0) { |acc, (_, atoms_zip)| acc + atoms_zip.size }
+        changes.size
       end
 
       # Reorganizes the specs of children reactions
       def reorganize_children_specs!
         children.each do |child|
           if same_specs?(child) && same_positions?(child)
-            swap_by_map!(child, map_to_specs_of(child, :source))
+            [:source, :products].each do |target|
+              swap_by_map!(target, child, map_to_specs_of(child, target))
+            end
           end
         end
       end
@@ -230,8 +255,15 @@ module VersatileDiamond
 
       attr_reader :mapping
 
+      # @return [Hash]
+      def gas_mapping
+        full_mapping.select do |(s, _), (p, _)|
+          (s.gas? && !p.gas?) || (!s.gas? && p.gas?)
+        end
+      end
+
       # Makes the mirror of current specs to specs of child
-      # @param [Reaction] child to which specs the map will builded
+      # @param [Reaction] child to which specs the map will built
       # @param [Symbol] method for get a list of specs
       # @return [Array] the map of specs
       def map_to_specs_of(child, method)
@@ -243,12 +275,13 @@ module VersatileDiamond
       end
 
       # Swaps specs of child reaction by passed map
+      # @param [Symbol] target the type of swapping species
       # @param [Reaction] child which specs will be swapped
       # @param [Hash] specs_map which will used for get correspond specs of current
       #   reaction
-      def swap_by_map!(child, specs_map)
+      def swap_by_map!(target, child, specs_map)
         specs_map.each do |self_spec, child_spec|
-          child.swap_source(child_spec, self_spec)
+          child.swap_on(target, child_spec, self_spec)
         end
       end
 
@@ -359,6 +392,10 @@ module VersatileDiamond
       def swap_atom_in_positions(spec, from, to)
         return if from == to
         @links = swap_in_links(:swap_only_atoms, @links, spec, from, to)
+      end
+
+      def reset_changes_caches!
+        @_full_mapping, @_changes = nil
       end
     end
 

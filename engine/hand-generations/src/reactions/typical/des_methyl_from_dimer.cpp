@@ -23,12 +23,13 @@ void DesMethylFromDimer::doIt()
     assert(a->is(23));
     assert(b->is(25));
 
+    Handbook::amorph().erase(b);
+
     a->unbondFrom(b);
 
     a->changeType(21);
 
     b->prepareToRemove();
-    Handbook::amorph().erase(b);
     Handbook::scavenger().markAtom(b);
 
     Finder::findAll(atoms, 2);

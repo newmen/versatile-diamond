@@ -6,190 +6,227 @@ module VersatileDiamond
       module Algorithm
 
         describe ReactionGroupedNodes, type: :algorithm do
+          def node_to_vertex(node)
+            node.spec_atom
+          end
+
+          let(:source) { subject.source.reject(&:gas?).reject(&:simple?) }
           let(:generator) { stub_generator(typical_reactions: [subject]) }
           let(:reaction) { generator.reaction_class(subject.name) }
           let(:grouped_nodes) { described_class.new(generator, reaction) }
 
           let(:big_links_method) { :links }
-          def node_to_vertex(node); [node.dept_spec.spec, node.atom] end
 
           describe 'without positions && just one atom' do
             let(:flatten_face_grouped_atoms) { [[atom]] }
-            let(:nodes_list) { [[UniqueSpecie, atom]] }
+            let(:nodes_list) { [[Instances::UniqueReactant, atom]] }
             let(:grouped_graph) { { [atom] => [] } }
 
             it_behaves_like :check_grouped_nodes_graph do
               subject { dept_methyl_activation }
-              let(:atom) { methyl_on_bridge_base.atom(:cm) }
+              let(:atom) { :cm }
             end
 
             it_behaves_like :check_grouped_nodes_graph do
               subject { dept_methyl_desorption }
-              let(:atom) { methyl_on_bridge_base.atom(:cb) }
+              let(:atom) { :cb }
             end
           end
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_sierpinski_drop }
-            let(:a1) { cross_bridge_on_bridges_base.atom(:ctl) }
-            let(:a2) { cross_bridge_on_bridges_base.atom(:cm) }
-            let(:a3) { cross_bridge_on_bridges_base.atom(:ctr) }
 
-            let(:flatten_face_grouped_atoms) { [[a1, a2, a3]] }
+            let(:flatten_face_grouped_atoms) { [[:ctl, :cm, :ctr]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, a1],
-                [UniqueSpecie, a2],
-                [UniqueSpecie, a3]
+                [Instances::UniqueReactant, :ctl],
+                [Instances::UniqueReactant, :cm],
+                [Instances::UniqueReactant, :ctr]
               ]
             end
             let(:grouped_graph) do
               {
-                [a1, a2, a3] => []
+                [:ctl, :cm, :ctr] => []
               }
             end
           end
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_dimer_formation }
-            let(:a1) { df_source.first.atom(:ct) }
-            let(:a2) { df_source.last.atom(:ct) }
 
-            let(:flatten_face_grouped_atoms) { [[a1, a2]] }
+            let(:flatten_face_grouped_atoms) { [[:ct, :ct]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, a1],
-                [UniqueSpecie, a2]
+                [Instances::UniqueReactant, :ct],
+                [Instances::UniqueReactant, :ct]
+              ]
+            end
+
+            let(:ab) { :'bridge(ct: *)__ct' }
+            let(:aib) { :'bridge(ct: *, ct: i)__ct' }
+            let(:grouped_graph) do
+              {
+                [ab] => [[[aib], param_100_front]],
+                [aib] => [[[ab], param_100_front]]
+              }
+            end
+          end
+
+          it_behaves_like :check_grouped_nodes_graph do
+            subject { dept_incoherent_dimer_drop }
+
+            let(:flatten_face_grouped_atoms) { [[:cr, :cl]] }
+            let(:nodes_list) do
+              [
+                [Instances::UniqueReactant, :cr],
+                [Instances::UniqueReactant, :cl]
               ]
             end
             let(:grouped_graph) do
               {
-                [a1] => [[[a2], param_100_front]],
-                [a2] => [[[a1], param_100_front]]
+                [:cr, :cl] => []
               }
             end
           end
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_sierpinski_formation }
-            let(:a1) { crm_products.last.atom(:ct) }
-            let(:a2) { crm_products.first.atom(:cb) }
 
-            let(:flatten_face_grouped_atoms) { [[a1, a2]] }
+            let(:flatten_face_grouped_atoms) { [[:ct, :cb]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, a1],
-                [UniqueSpecie, a2]
+                [Instances::UniqueReactant, :ct],
+                [Instances::UniqueReactant, :cb]
               ]
             end
             let(:grouped_graph) do
               {
-                [a1] => [[[a2], param_100_cross]],
-                [a2] => [[[a1], param_100_cross]]
+                [:ct] => [[[:cb], param_100_cross]],
+                [:cb] => [[[:ct], param_100_cross]]
               }
             end
           end
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_intermed_migr_dc_formation }
-            let(:abr) { imdcf_source.first }
-            let(:amod) { imdcf_source.last }
-            let(:ab) { abr.atom(:cr) }
-            let(:ad) { amod.atom(:cr) }
 
-            let(:flatten_face_grouped_atoms) { [[ab, ad]] }
+            let(:flatten_face_grouped_atoms) { [[:cr, :cr]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, ab],
-                [UniqueSpecie, ad]
+                [Instances::UniqueReactant, :cr],
+                [Instances::UniqueReactant, :cr]
               ]
             end
+
+            let(:modr) { :'methyl_on_dimer(cm: *)__cr' }
+            let(:br) { :'bridge(ct: *)__cr' }
             let(:grouped_graph) do
               {
-                [ab] => [[[ad], param_100_cross]],
-                [ad] => [[[ab], param_100_cross]]
+                [modr] => [[[br], param_100_cross]],
+                [br] => [[[modr], param_100_cross]]
               }
             end
           end
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_intermed_migr_dh_formation }
-            let(:abr) { imdhf_source.first }
-            let(:amod) { imdhf_source.last }
-            let(:ab) { abr.atom(:cr) }
-            let(:ob) { abr.atom(:cl) }
-            let(:ad) { amod.atom(:cr) }
-            let(:od) { amod.atom(:cl) }
 
-            let(:flatten_face_grouped_atoms) { [[ad, od], [ab, ob]] }
+            let(:flatten_face_grouped_atoms) { [[:cr, :cl], [:cr, :cl]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, ab],
-                [UniqueSpecie, ob],
-                [UniqueSpecie, ad],
-                [UniqueSpecie, od]
+                [Instances::UniqueReactant, :cr],
+                [Instances::UniqueReactant, :cl],
+                [Instances::UniqueReactant, :cr],
+                [Instances::UniqueReactant, :cl]
               ]
             end
+
+            let(:modr) { :'methyl_on_dimer(cm: *)__cr' }
+            let(:modl) { :'methyl_on_dimer(cm: *)__cl' }
+            let(:br) { :'bridge(ct: *)__cr' }
+            let(:bl) { :'bridge(ct: *)__cl' }
             let(:grouped_graph) do
               {
-                [ab, ob] => [[[ad, od], param_100_cross]],
-                [ad, od] => [[[ab, ob], param_100_cross]]
+                [modr, modl] => [[[br, bl], param_100_cross]],
+                [br, bl] => [[[modr, modl], param_100_cross]]
               }
             end
           end
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_methyl_incorporation }
-            let(:amob) { subject.source.first }
-            let(:ad) { subject.source.last }
-            let(:am1) { amob.atom(:cr) }
-            let(:am2) { amob.atom(:cl) }
-            let(:ad1) { ad.atom(:cr) }
-            let(:ad2) { ad.atom(:cl) }
 
-            let(:flatten_face_grouped_atoms) { [[am1, am2], [ad1, ad2]] }
+            let(:flatten_face_grouped_atoms) { [[:cr, :cl], [:cr, :cl]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, am1],
-                [UniqueSpecie, am2],
-                [UniqueSpecie, ad1],
-                [UniqueSpecie, ad2]
+                [Instances::UniqueReactant, :cr],
+                [Instances::UniqueReactant, :cl],
+                [Instances::UniqueReactant, :cr],
+                [Instances::UniqueReactant, :cl]
               ]
             end
+
+            let(:dr) { :'dimer(cr: *)__cr' }
+            let(:dl) { :'dimer(cr: *)__cl' }
+            let(:mobr) { :'methyl_on_bridge(cm: *)__cr' }
+            let(:mobl) { :'methyl_on_bridge(cm: *)__cl' }
             let(:grouped_graph) do
               {
-                [am1, am2] => [[[ad2, ad1], param_100_cross]],
-                [ad2, ad1] => [[[am1, am2], param_100_cross]]
+                [dr, dl] => [[[mobl, mobr], param_100_cross]],
+                [mobl, mobr] => [[[dr, dl], param_100_cross]]
               }
             end
           end
 
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_methyl_to_gap }
-            let(:amob) { subject.source.first }
-            let(:br1) { subject.source[1] }
-            let(:br2) { subject.source[2] }
 
-            let(:amr) { amob.atom(:cr) }
-            let(:aml) { amob.atom(:cl) }
-            let(:cr1) { br1.atom(:cr) }
-            let(:cr2) { br2.atom(:cr) }
-
-            let(:flatten_face_grouped_atoms) { [[aml, amr], [cr2, cr1]] }
+            let(:flatten_face_grouped_atoms) { [[:cr, :cl], [:cr, :cr]] }
             let(:nodes_list) do
               [
-                [UniqueSpecie, amr],
-                [UniqueSpecie, aml],
-                [UniqueSpecie, cr1],
-                [UniqueSpecie, cr2]
+                [Instances::UniqueReactant, :cl],
+                [Instances::UniqueReactant, :cr],
+                [Instances::UniqueReactant, :cr],
+                [Instances::UniqueReactant, :cr]
               ]
             end
+
+            let(:br0) { :'bridge(cr: *)__0__cr' }
+            let(:br1) { :'bridge(cr: *)__1__cr' }
+            let(:mobr) { :'methyl_on_bridge(cm: *, cm: *)__cr' }
             let(:grouped_graph) do
               {
-                [cr1] => [[[cr2], param_100_front]],
-                [cr2] => [[[cr1], param_100_front]],
-                [aml, amr] => [[[cr2, cr1], param_100_cross]],
-                [cr2, cr1] => [[[aml, amr], param_100_cross]]
+                [br0] => [[[br1], param_100_front]],
+                [br1] => [[[br0], param_100_front]],
+                [br0, br1] => [[[:cl, mobr], param_100_cross]],
+                [:cl, mobr] => [[[br0, br1], param_100_cross]]
+              }
+            end
+          end
+
+          it_behaves_like :check_grouped_nodes_graph do
+            subject { dept_two_side_dimers_formation }
+
+            let(:flatten_face_grouped_atoms) { [[:cr, :cl], [:cr, :cl]] }
+            let(:nodes_list) do
+              [
+                [Instances::UniqueReactant, :cr],
+                [Instances::UniqueReactant, :cl],
+                [Instances::UniqueReactant, :cr],
+                [Instances::UniqueReactant, :cl]
+              ]
+            end
+
+            let(:dl) { :'dimer(cl: *, cr: i)__cl' }
+            let(:br) { :'bridge(cr: *)__cr' }
+            let(:mobl) { :'methyl_on_bridge(cm: *, cm: *)__cl' }
+            let(:mobr) { :'methyl_on_bridge(cm: *, cm: *)__cr' }
+            let(:grouped_graph) do
+              {
+                [br] => [[[dl], param_100_front]],
+                [dl] => [[[br], param_100_front]],
+                [br, dl] => [[[mobr, mobl], param_100_cross]],
+                [mobr, mobl] => [[[br, dl], param_100_cross]]
               }
             end
           end

@@ -69,64 +69,80 @@ module VersatileDiamond
               end
               let(:select_algorithm) do
                 <<-CODE
-    if (num == 6)
+    if (num == 1)
+    {
+        return chunks[0];
+    }
+    else if (num == 6)
     {
         return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs(chunks);
     }
     else
     {
         std::unordered_map<ushort, ushort> counter = countReactions(chunks, num);
-        if (num == 1 && (counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 1 || counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 1))
+        if (num == 2)
         {
-            return chunks[0];
+            if (counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 2)
+            {
+                return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTs(chunks);
+            }
+            else if (counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 1 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 1)
+            {
+                return new ForwardSymmetricDimerFormationSmall(chunks);
+            }
+            else
+            {
+                assert(counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 2);
+                return new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTsAnd100FrontBridgeCTs(chunks);
+            }
         }
-        else if (num == 2 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 2)
+        else if (num == 3)
         {
-            return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTs(chunks);
+            if (counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 3)
+            {
+                return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs(chunks);
+            }
+            else if (counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 2 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 1)
+            {
+                return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs(chunks);
+            }
+            else
+            {
+                assert(counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 1 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 2);
+                return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs(chunks);
+            }
         }
-        else if (num == 2 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 1 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 1)
+        else if (num == 4)
         {
-            return new ForwardSymmetricDimerFormationSmall(chunks);
+            if (counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 4)
+            {
+                return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs(chunks);
+            }
+            else if (counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 3 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 1)
+            {
+                return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs(chunks);
+            }
+            else
+            {
+                assert(counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 2 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 2);
+                return new ForwardSymmetricDimerFormationBig(chunks);
+            }
         }
-        else if (num == 2 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 2)
+        else if (num == 5)
         {
-            return new CombinedForwardSymmetricDimerFormationWith100FrontBridgeCTsAnd100FrontBridgeCTs(chunks);
+            if (counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 4 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 1)
+            {
+                return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs(chunks);
+            }
+            else
+            {
+                assert(counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 3 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 2);
+                return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs(chunks);
+            }
         }
-        else if (num == 3 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 3)
-        {
-            return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs(chunks);
-        }
-        else if (num == 3 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 1 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 2)
-        {
-            return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs(chunks);
-        }
-        else if (num == 3 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 1 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 2)
-        {
-            return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs(chunks);
-        }
-        else if (num == 4 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 4)
-        {
-            return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTs(chunks);
-        }
-        else if (num == 4 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 1 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 3)
-        {
-            return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs(chunks);
-        }
-        else if (num == 4 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 2 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 2)
-        {
-            return new ForwardSymmetricDimerFormationBig(chunks);
-        }
-        else if (num == 5 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 1 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 4)
-        {
-            return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTs(chunks);
-        }
-        else if (num == 5 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_FRONT_BRIDGE_C_TS] == 2 && counter[COMBINED_FORWARD_SYMMETRIC_DIMER_FORMATION_WITH_100_CROSS_BRIDGE_C_TS] == 3)
-        {
-            return new CombinedForwardSymmetricDimerFormationWith100CrossBridgeCTsAnd100CrossBridgeCTsAnd100CrossBridgeCTsAnd100FrontBridgeCTsAnd100FrontBridgeCTs(chunks);
-        }
-        assert(false);
-        return nullptr;
     }
+    assert(false);
+    return nullptr;
                 CODE
               end
             end

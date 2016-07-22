@@ -5,7 +5,7 @@ module VersatileDiamond
     # between all wrapped base species
     class BaseSpeciesTable
 
-      # Initialize table by array of entities for which the table will be builded
+      # Initialize table by array of entities for which the table will be built
       # @param [Array] entities the array of entities
       def initialize(entities)
         @column_keys = sort(entities)

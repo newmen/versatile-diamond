@@ -64,7 +64,7 @@ module VersatileDiamond
       end
 
       # Checks that reverse reaction was created
-      # @return [Boolean] was created reverse reaction or not
+      # @return [Boolean] is created reverse reaction or not
       def has_reverse?
         !!@reverse
       end
@@ -79,13 +79,12 @@ module VersatileDiamond
       %w(source products).each do |target|
         # Selects and caches simple specs from #{target} array
         # @return [Array] cached array of simple #{target} specs
-        name = "simple_#{target}"
+        name = :"simple_#{target}"
         define_method(name) do
           var = instance_variable_get(:"@#{name}")
           return var if var
 
-          specs = instance_variable_get(:"@#{target}").
-            select { |specific_spec| specific_spec.simple? }
+          specs = instance_variable_get(:"@#{target}").select(&:simple?)
           instance_variable_set(:"@#{name}", specs)
         end
       end
@@ -107,26 +106,35 @@ module VersatileDiamond
         @source.select(&:gas?).size
       end
 
-      # Iterates each source spec
+      # Iterates each target spec
+      # @param [Symbol] target the type of swapping species
       # @yield [TerminationSpec] do for each reactant
       # @return [Enumerator] if block is not given
-      def each_source(&block)
-        @source.each(&block)
+      def each(target, &block)
+        instance_variable_get(:"@#{target}").each(&block)
       end
 
       # Checks that passed spec is used in current reaction
+      # @param [Symbol] target the type of swapping species
       # @param [SpecificSpec] spec which will be checked
       # @return [Boolan] is used similar source spec or not
-      def use_similar_source?(spec)
-        @source.any? { |s| s == spec }
+      def use_similar?(target, spec)
+        instance_variable_get(:"@#{target}").any? { |s| s == spec }
       end
 
       # Swaps source spec to another same source spec
+      # @param [Symbol] target the type of swapping species
       # @param [TerminationSpec | SpecificSpec] from which spec will be deleted
       # @param [TerminationSpec | SpecificSpec] to which spec will be added
-      def swap_source(from, to)
-        idx = @source.index(from)
-        @source[idx] = to
+      def swap_on(target, from, to, reverse_too: true)
+        var = instance_variable_get(:"@#{target}")
+        idx = var.index(from)
+        var[idx] = to if idx
+
+        if reverse_too && has_reverse?
+          reverse_target = (target == :source) ? :products : :source
+          reverse.swap_on(reverse_target, from, to, reverse_too: false)
+        end
       end
 
       # Compares two reactions and their source and products are same then
@@ -149,7 +157,13 @@ module VersatileDiamond
       # Calculate full rate of reaction
       # @return [Float] the full raction rate
       def full_rate
-        @activation && @rate ? Tools::Config.rate(self) : 0
+        @rate ? Tools::Config.rate(self) : 0
+      end
+
+      # Checks that current reaction has not zero rate
+      # @return [Boolean] is significant or not
+      def significant?
+        full_rate > 0
       end
 
       # Gets number of changed atoms

@@ -5,11 +5,12 @@ module VersatileDiamond
     # used in reactions
     class SpecificSpec
       include Modules::RelationBetweenChecker
+      include Modules::GraphDupper
       include BondsCounter
       extend Forwardable
 
       attr_reader :spec, :specific_atoms
-      def_delegators :spec, :extendable?, :gas?, :simple?
+      def_delegators :spec, :extendable?, :termination?, :gas?, :simple?
 
       # Initialize specific spec instalce. Checks specified atom for correct
       # valence value
@@ -120,6 +121,26 @@ module VersatileDiamond
         reset_caches!
       end
 
+      # Swaps from own to new
+      # @param [Atom | SpecificAtom | AtomReference] from
+      # @param [Atom | SpecificAtom | AtomReference] to
+      def swap_atom(from, to)
+        original_links = dup_graph(links, &:itself)
+        find_proc = -> atom { @specific_atoms.find { |_, a| a == atom } }
+        pair = find_proc[from]
+        if pair
+          raise ArgumentError, 'Incorrect swapping' if find_proc[to]
+          @specific_atoms[pair.first] = to
+        elsif to.specific?
+          @specific_atoms[spec.keyname(from)] = to
+        else
+          spec.swap_atom(from, to)
+        end
+
+        reset_caches!
+        @links = dup_graph(original_links) { |atom| atom == from ? to : atom }
+      end
+
       # Returns original links of base spec but exchange correspond atoms to
       # specific atoms
       #
@@ -171,7 +192,7 @@ module VersatileDiamond
         external_bonds_after_extend unless @extended_spec
 
         spec = self.class.new(@extended_spec)
-        spec.reduced = self
+        spec.reduced = self # @reduced assign
         @specific_atoms.each do |keyname, old_atom|
           spec.specific_atoms[keyname] =
             SpecificAtom.new(@extended_spec.atom(keyname), ancestor: old_atom)
@@ -290,17 +311,7 @@ module VersatileDiamond
       # Updates current links to correct atoms from some other base spec
       # @param [Hash] mirror of atoms from prev base to some other new base spec
       def update_links(mirror)
-        # before build curret links cache by calling #links method
-        new_links = links.map do |atom_key, atoms_ref_list|
-          new_atom_key = mirror[atom_key] || atom_key
-          new_atoms_ref_list = atoms_ref_list.map do |a, r|
-            [mirror[a] || a, r]
-          end
-
-          [new_atom_key, new_atoms_ref_list]
-        end
-
-        @links = Hash[new_links]
+        @links = dup_graph(links) { |a| mirror[a] || a }
       end
 
       # Collect all relevant states for passed atom

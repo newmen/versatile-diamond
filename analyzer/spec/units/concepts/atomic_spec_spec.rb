@@ -4,6 +4,23 @@ module VersatileDiamond
   module Concepts
 
     describe AtomicSpec, use: :atom_properties do
+      describe '#hash' do
+        it { expect(adsorbed_h.hash).to eq(described_class.new(h).hash) }
+        it { expect(adsorbed_h.hash).not_to eq(adsorbed_cl.hash) }
+      end
+
+      describe '#<=>' do
+        it { expect(adsorbed_h <=> adsorbed_h).to eq(0) }
+        it { expect(adsorbed_cl <=> adsorbed_h).to eq(-1) }
+        it { expect(adsorbed_h <=> adsorbed_cl).to eq(1) }
+      end
+
+      describe '#apply_to' do
+        let(:atom) { SpecificAtom.new(cd) }
+        before { adsorbed_h.apply_to(atom) }
+        it { expect(atom.monovalents).to eq([adsorbed_h]) }
+      end
+
       describe 'bond?' do
         it { expect(adsorbed_h.bond?).to be_falsey }
       end
@@ -16,8 +33,12 @@ module VersatileDiamond
         it { expect(adsorbed_h.external_bonds).to eq(1) }
       end
 
+      describe '#termination?' do
+        it { expect(adsorbed_h.termination?).to be_truthy }
+      end
+
       describe '#hydrogen?' do
-        it { adsorbed_h.hydrogen? }
+        it { expect(adsorbed_h.hydrogen?).to be_truthy }
       end
 
       describe '#terminations_num' do
@@ -26,18 +47,18 @@ module VersatileDiamond
         it { expect(adsorbed_h.terminations_num(ehb_ct)).to eq(2) }
       end
 
-      describe '#== && #same?' do
+      describe '#== && :eql? && #same?' do
+        let(:h_dup) { AtomicSpec.new(h.dup) }
         [:==, :same?].each do |method|
-          it { expect(adsorbed_h.send(method, AtomicSpec.new(h.dup))).to be_truthy }
-          it { expect(adsorbed_h.send(method, active_bond)).to be_falsey }
-          it { expect(adsorbed_h.send(method, bridge)).to be_falsey }
+          it { expect(adsorbed_h.public_send(method, h_dup)).to be_truthy }
+          it { expect(adsorbed_h.public_send(method, active_bond)).to be_falsey }
+          it { expect(adsorbed_h.public_send(method, bridge)).to be_falsey }
         end
       end
 
       describe '#cover?' do
         it { expect(adsorbed_h.cover?(bridge, cd)).to be_truthy }
-        it { expect(adsorbed_h.cover?(activated_bridge, activated_cd)).
-          to be_truthy }
+        it { expect(adsorbed_h.cover?(activated_bridge, activated_cd)).to be_truthy }
         it { expect(adsorbed_h.cover?(chlorigenated_bridge, cd_chloride)).
           to be_truthy }
         it { expect(adsorbed_h.cover?(activated_methyl_on_bridge, activated_c)).

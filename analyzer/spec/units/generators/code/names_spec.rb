@@ -15,7 +15,7 @@ module VersatileDiamond
         subject { generator.names }
 
         describe '#base_species_num' do
-          it { expect(subject.base_species_num).to eq(3) }
+          it { expect(subject.base_species_num).to eq(4) }
         end
 
         describe '#specific_species_num' do

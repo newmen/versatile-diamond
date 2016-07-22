@@ -7,6 +7,7 @@ namespace vd
 {
 
 // Uses for symmetry
+// Like DependentSpec but without some unnecessary methods
 template <class B, ushort PARENTS_NUM = 1>
 class ChildSpec : public B
 {

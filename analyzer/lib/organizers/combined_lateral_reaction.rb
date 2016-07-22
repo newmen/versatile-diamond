@@ -7,7 +7,7 @@ module VersatileDiamond
     class CombinedLateralReaction
       extend Forwardable
 
-      def_delegator :parent, :local?
+      def_delegators :parent, :local?, :source
       def_delegator :chunk, :sidepiece_specs
       attr_reader :chunk, :full_rate
 
@@ -38,17 +38,19 @@ module VersatileDiamond
       end
 
       # Gets iterator of source specs
+      # @param [Symbol] target the type of iterating species
       # @yield [Concepts::Spec | Concepts::SpecificSpec] do for each reactant
       # @return [Enumerator] if block is not given
-      def each_source(&block)
-        typical_source = parent.each_source.to_a
-        targets = chunk.targets
-        if typical_source.size == targets.size
-          targets.map(&:first).each(&block)
-        elsif typical_source.size > targets.size
-          adopted_source.each(&block)
-        elsif typical_source.size < targets.size
-          raise 'Typical source specs number less than chunks targets number'
+      def each(target, &block)
+        typical_target_specs = parent.each(target).to_a
+        if target == :source
+          if typical_target_specs.size < chunk.targets.size
+            raise 'Typical source specs number less than chunks targets number'
+          else
+            (adopted_source + chunk.sidepiece_specs.to_a).each(&block)
+          end
+        else
+          typical_target_specs.each(&block)
         end
       end
 
@@ -88,8 +90,8 @@ module VersatileDiamond
       def adopted_source
         return @_adopted_source if @_adopted_source
 
-        specs = chunk.targets.to_a.map(&:first)
-        srcs = parent.each_source.to_a.map do |spec|
+        specs = chunk.target_specs.to_a
+        srcs = parent.each(:source).map do |spec|
           specs.delete_one { |ts| spec.same?(ts) } || spec
         end
 

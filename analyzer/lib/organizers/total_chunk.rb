@@ -54,27 +54,22 @@ module VersatileDiamond
 
       # Adsorbs all adsorbing links and gets total links
       # @param [Set] targets from which the edges cannot be duplicated
-      # @param [Hash] original_links which will be extended in result
+      # @param [Hash] initial_links which will be extended in result
       # @param [Hash] adsorbing_links which will extend the original links
       # @return [Hash] the extended original links
-      def adsorb_links(targets, original_links, adsorbing_links)
-        adsorbing_links.each_with_object(original_links) do |(spec_atom, rels), acc|
-          if acc[spec_atom] && targets.include?(spec_atom)
-            new_rels = rels.reject do |sa, _|
-              acc[spec_atom].any? { |x, _| sa == x }
-            end
-            acc[spec_atom] += dup_rels(new_rels)
-          elsif !acc[spec_atom]
-            acc[spec_atom] = dup_rels(rels)
-          end
-        end
+      def adsorb_links(targets, initial_links, adsorbing_links)
+        dup_graph(raw_merge_total_links(targets, initial_links, adsorbing_links))
       end
 
-      # Dups passed rels and all internal spec_atom pairs
-      # @param [Array] rels which will be dupped
-      # @return [Array] the dupped rels
-      def dup_rels(rels)
-        rels.map { |sa, r| [sa.dup, r] }
+      # @param [Set] targets from which the edges cannot be duplicated
+      # @param [Hash] initial_links which will be extended in result
+      # @param [Hash] adsorbing_links which will extend the original links
+      # @return [Hash] the extended original links
+      def raw_merge_total_links(targets, initial_links, adsorbing_links)
+        adsorbing_links.each_with_object(initial_links) do |(spec_atom, rels), acc|
+          acc[spec_atom] ||= []
+          acc[spec_atom] = (acc[spec_atom] + rels).uniq
+        end
       end
     end
 

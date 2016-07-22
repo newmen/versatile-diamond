@@ -9,7 +9,7 @@ module VersatileDiamond
 
       collector_methods :child
       attr_reader :reaction, :parent
-      def_delegators :reaction, :name, :full_rate, :swap_source, :use_similar_source?,
+      def_delegators :reaction, :name, :full_rate, :swap_on, :use_similar?,
         :changes_num
 
       # Stores wrappable reaction
@@ -19,10 +19,11 @@ module VersatileDiamond
         @parent = nil
       end
 
-      # Iterates each not simple specific source spec
+      # Iterates each not simple specific spec
+      # @param [Symbol] target the type of iterating species
       # @yield [Concepts::SpecificSpec] do with each one
-      def each_source(&block)
-        source.dup.each(&block)
+      def each(target, &block)
+        send(target).dup.each(&block)
       end
 
       # Checks that reactions are identical

@@ -159,7 +159,7 @@ module VersatileDiamond
         [variants, presented_cmbs]
       end
 
-      # Checks previos found chunks for similar as chunk and if them exist and their
+      # Checks previous found chunks for similar as chunk and if them exist and their
       # targets are different then swaps to chunk which targets most frequently used
       #
       # @param [Hash] variants of all found chunks
@@ -220,7 +220,7 @@ module VersatileDiamond
       # @return [Array] the lists of common targets
       def common_targets(chunks)
         uniq_chunks = chunks.uniq
-        if uniq_chunks.size == 1
+        if uniq_chunks.one?
           chunks.first.targets.to_a
         else
           targets = uniq_chunks.map(&:targets)
@@ -386,9 +386,9 @@ module VersatileDiamond
       def similar_mergeable(chunks, same_targets)
         iterate_permutations(chunks, same_targets) do |chunks_groups, targets_maps|
           result = targets_maps.zip(chunks_groups).map do |ts_map, cs_group|
-            ts_map.reduce([]) do |acc, (k, v)|
+            ts_map.flat_map do |k, v|
               selected_chunks = cs_group.select { |ch| ch.targets.include?(k) }
-              acc + map_chunks_to_targets(selected_chunks, k, v)
+              map_chunks_to_targets(selected_chunks, k, v)
             end
           end
 
@@ -397,7 +397,7 @@ module VersatileDiamond
       end
 
       # Maps selected chunks to using targets
-      # @param [Array] chunks which was selected
+      # @param [Array] chunks which were selected
       # @param [Array] original_target which uses in chunks
       # @param [Array] same_target which should be used for merge chunks
       # @return [Array] list of mapped chunk to using targets

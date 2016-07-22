@@ -36,76 +36,70 @@ module VersatileDiamond
         let(:veiled_dimer) do
           (mrg_chunk.links.keys.map(&:first) - [ab, aib, dimer_base]).first
         end
+
+        let(:merged_links) do
+          spec_name_proc = -> sa { sa.first.name }
+          translate_to_keyname_graph(mrg_chunk.links, spec_name_proc) do |s, a|
+            s.keyname(a)
+          end
+        end
+
         let(:links) do
           {
-            [ab, ab.atom(:ct)] => [
-              [[dimer_base, dimer_base.atom(:cl)], position_100_cross],
-              [[veiled_dimer, veiled_dimer.atom(:cl)], position_100_cross],
+            :'bridge(ct: *)__ct' => [
+              [:dimer__0__cl, position_100_cross], [:dimer__1__cl, position_100_cross]
             ],
-            [aib, aib.atom(:ct)] => [
-              [[dimer_base, dimer_base.atom(:cr)], position_100_cross],
-              [[veiled_dimer, veiled_dimer.atom(:cr)], position_100_cross],
+            :'bridge(ct: *, ct: i)__ct' => [
+              [:dimer__0__cr, position_100_cross], [:dimer__1__cr, position_100_cross]
             ],
-            [dimer_base, dimer_base.atom(:cr)] => [
-              [[aib, aib.atom(:ct)], position_100_cross],
-              [[dimer_base, dimer_base.atom(:cl)], bond_100_front],
-              [[dimer_base, dimer_base.atom(:crb)], bond_110_cross],
-              [[dimer_base, dimer_base.atom(:_cr0)], bond_110_cross]
+            :dimer__0__cr => [
+              [:dimer__0__crb, bond_110_cross], [:dimer__0___cr0, bond_110_cross],
+              [:dimer__0__cl, bond_100_front],
+              [:"bridge(ct: *, ct: i)__ct", position_100_cross]
             ],
-            [dimer_base, dimer_base.atom(:crb)] => [
-              [[dimer_base, dimer_base.atom(:cr)], bond_110_front],
-              [[dimer_base, dimer_base.atom(:_cr0)], position_100_front]
+            :dimer__0__crb => [
+              [:dimer__0__cr, bond_110_front], [:dimer__0___cr0, position_100_front]
             ],
-            [dimer_base, dimer_base.atom(:_cr0)] => [
-              [[dimer_base, dimer_base.atom(:cr)], bond_110_front],
-              [[dimer_base, dimer_base.atom(:crb)], position_100_front]
+            :dimer__0___cr0 => [
+              [:dimer__0__cr, bond_110_front], [:dimer__0__crb, position_100_front]
+              ],
+            :dimer__0__cl => [
+              [:dimer__0__clb, bond_110_cross], [:dimer__0___cr1, bond_110_cross],
+              [:dimer__0__cr, bond_100_front],
+              [:"bridge(ct: *)__ct", position_100_cross]
             ],
-            [dimer_base, dimer_base.atom(:cl)] => [
-              [[ab, ab.atom(:ct)], position_100_cross],
-              [[dimer_base, dimer_base.atom(:cr)], bond_100_front],
-              [[dimer_base, dimer_base.atom(:clb)], bond_110_cross],
-              [[dimer_base, dimer_base.atom(:_cr1)], bond_110_cross]
+            :dimer__0__clb => [
+              [:dimer__0__cl, bond_110_front], [:dimer__0___cr1, position_100_front]
             ],
-            [dimer_base, dimer_base.atom(:clb)] => [
-              [[dimer_base, dimer_base.atom(:cl)], bond_110_front],
-              [[dimer_base, dimer_base.atom(:_cr1)], position_100_front]
+            :dimer__0___cr1 => [
+              [:dimer__0__cl, bond_110_front], [:dimer__0__clb, position_100_front]
             ],
-            [dimer_base, dimer_base.atom(:_cr1)] => [
-              [[dimer_base, dimer_base.atom(:cl)], bond_110_front],
-              [[dimer_base, dimer_base.atom(:clb)], position_100_front],
+            :dimer__1__cr => [
+              [:dimer__1__crb, bond_110_cross], [:dimer__1___cr0, bond_110_cross],
+              [:dimer__1__cl, bond_100_front],
+              [:"bridge(ct: *, ct: i)__ct", position_100_cross]
             ],
-            [veiled_dimer, veiled_dimer.atom(:cr)] => [
-              [[aib, aib.atom(:ct)], position_100_cross],
-              [[veiled_dimer, veiled_dimer.atom(:cl)], bond_100_front],
-              [[veiled_dimer, veiled_dimer.atom(:crb)], bond_110_cross],
-              [[veiled_dimer, veiled_dimer.atom(:_cr0)], bond_110_cross]
+            :dimer__1__crb => [
+              [:dimer__1__cr, bond_110_front], [:dimer__1___cr0, position_100_front]
             ],
-            [veiled_dimer, veiled_dimer.atom(:crb)] => [
-              [[veiled_dimer, veiled_dimer.atom(:cr)], bond_110_front],
-              [[veiled_dimer, veiled_dimer.atom(:_cr0)], position_100_front]
+            :dimer__1___cr0 => [
+              [:dimer__1__cr, bond_110_front], [:dimer__1__crb, position_100_front]
             ],
-            [veiled_dimer, veiled_dimer.atom(:_cr0)] => [
-              [[veiled_dimer, veiled_dimer.atom(:cr)], bond_110_front],
-              [[veiled_dimer, veiled_dimer.atom(:crb)], position_100_front]
+            :dimer__1__cl => [
+              [:dimer__1__clb, bond_110_cross], [:dimer__1___cr1, bond_110_cross],
+              [:dimer__1__cr, bond_100_front],
+              [:"bridge(ct: *)__ct", position_100_cross]
             ],
-            [veiled_dimer, veiled_dimer.atom(:cl)] => [
-              [[ab, ab.atom(:ct)], position_100_cross],
-              [[veiled_dimer, veiled_dimer.atom(:cr)], bond_100_front],
-              [[veiled_dimer, veiled_dimer.atom(:clb)], bond_110_cross],
-              [[veiled_dimer, veiled_dimer.atom(:_cr1)], bond_110_cross]
+            :dimer__1__clb => [
+              [:dimer__1__cl, bond_110_front], [:dimer__1___cr1, position_100_front]
             ],
-            [veiled_dimer, veiled_dimer.atom(:clb)] => [
-              [[veiled_dimer, veiled_dimer.atom(:cl)], bond_110_front],
-              [[veiled_dimer, veiled_dimer.atom(:_cr1)], position_100_front]
-            ],
-            [veiled_dimer, veiled_dimer.atom(:_cr1)] => [
-              [[veiled_dimer, veiled_dimer.atom(:cl)], bond_110_front],
-              [[veiled_dimer, veiled_dimer.atom(:clb)], position_100_front],
-            ],
+            :dimer__1___cr1 => [
+              [:dimer__1__cl, bond_110_front], [:dimer__1__clb, position_100_front]
+            ]
           }
         end
 
-        it { expect(mrg_chunk.links).to match_graph(links) }
+        it { expect(merged_links).to match_graph(links) }
       end
 
       describe '#<=>' do

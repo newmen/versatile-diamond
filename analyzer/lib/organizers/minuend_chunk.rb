@@ -36,14 +36,13 @@ module VersatileDiamond
         targets.include?(key) || super
       end
 
-      # Checks that passed neibhour key is the same as cheking key
+      # Anytime false for chunks
       # @param [Array] _ does not used
-      # @param [Array] neighbour_key the neighbour key of first argument
-      # @param [Array] cheking_key the key which checks that it used
+      # @param [Array] _ does not used
       # @param [Concepts::Bond] _ does not used
-      # @return [Boolean] are same neighbour key and cheking key or not
-      def neighbour?(_, neighbour_key, checking_key, _)
-        neighbour_key == checking_key
+      # @return [Boolean] false
+      def excess_neighbour?(*)
+        false
       end
     end
 

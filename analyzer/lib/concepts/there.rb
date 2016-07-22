@@ -71,6 +71,7 @@ module VersatileDiamond
           end
         end
 
+        # TODO: simplify relations to targets if can
         self.class.new(where.dup, reversed_refs)
       end
 
@@ -81,13 +82,15 @@ module VersatileDiamond
       end
 
       # Checks that passed spec is used in internal where object
+      # @param [Symbol] target the type of swapping species
       # @param [SpecificSpec] spec which will be checked
       # @return [Boolan] is used similar spec or not
-      def use_similar_source?(spec)
-        target_refs.values.any? { |(s, _)| s == spec } ||
-          where.total_links.any? do |_, rels|
-            rels.any? { |(s, _), _| s == spec }
-          end
+      def use_similar?(target, spec)
+        target == :source &&
+          target_refs.values.any? { |(s, _)| s == spec } ||
+            where.total_links.any? do |_, rels|
+              rels.any? { |(s, _), _| s == spec }
+            end
       end
 
       # Provides target species

@@ -7,7 +7,7 @@ module VersatileDiamond
       # The base methods for templates generation
       module TemplateFile
 
-        TEMPLATES_DIR = 'templates'
+        TEMPLATES_DIR = 'templates'.freeze
 
         # Gets the name of template file without extention
         # @return [String] the underscored name of current class instance

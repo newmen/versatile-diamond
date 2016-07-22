@@ -14,12 +14,16 @@ module VersatileDiamond
       def swap(spec_atom, from, to)
         return spec_atom unless spec_atom[0] == from
 
-        # TODO: move #specific? method from Organizers to swap_in_linksConcepts
-        if !from.specific_atoms.empty? && to.specific_atoms.empty?
-          raise ArgumentError, 'Swapping specific spec loses specification'
-        end
+        # TODO: move #specific? method from Organizers to swap_in_links in Concepts
+        mirror =
+          if !from.specific_atoms.empty? && to.specific_atoms.empty?
+            Mcs::SpeciesComparator.make_mirror(from, to) do |_, _, a1, a2|
+              a1.original_same?(a2) # TODO: same as in DependentSpecificSpec
+            end
+          else
+            Mcs::SpeciesComparator.make_mirror(from, to)
+          end
 
-        mirror = Mcs::SpeciesComparator.make_mirror(from, to)
 
         if mirror.size < to.links.size
           raise ArgumentError, 'Intersection less than swapped specs'

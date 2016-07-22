@@ -35,8 +35,7 @@ void AbsHydrogenFromGap::doIt()
     Atom *atoms[2] = { target(0)->atom(1), target(1)->atom(1) };
     Atom *a = atoms[0], *b = atoms[1];
 
-    assert(a->lattice()->crystal() == b->lattice()->crystal());
-    assert(!crystalBy(a)->atom(Diamond::front_110_at(a, b)));
+    assert(!neighbourFrom(atoms, &Diamond::front_110_at));
 
     changeAtom(a);
     changeAtom(b);

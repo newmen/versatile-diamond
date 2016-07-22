@@ -46,7 +46,8 @@ module VersatileDiamond
       end
 
       # Clears caches and delegates call to super class
-      def swap_source(*)
+      # @override
+      def swap_on(*)
         clear_caches!
         super
       end
@@ -67,7 +68,7 @@ module VersatileDiamond
     private
 
       # Checks that positions between reactants is setted
-      # @raise [SystemError] if positions was not setted
+      # @raise [SystemError] if positions were not setted
       def check_positions!
         if surface_source.size > 1 && reaction.links.empty?
           raise %Q(No positions between atoms of reaction "#{name}")

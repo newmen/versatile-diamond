@@ -17,8 +17,8 @@ module VersatileDiamond
         puts @atoms_format % %w(Image Index Lattice Name Parents)
         print_atoms('Atoms', classifier.props)
         puts
-        puts "Total number of different atom types: #{classifier.all_types_num}"
-        puts "Total number of different atom types without relevant properties: #{classifier.notrelevant_types_num}"
+        puts "Total number of different atom types: #{classifier.props.size}"
+        puts "Total number of different atom types without relevant properties: #{classifier.props.reject(&:relevant?).size}"
 
         puts
 
@@ -105,7 +105,7 @@ module VersatileDiamond
         return if specs.empty?
 
         puts "\n#{name}: [#{specs.size}]"
-        specs.sort.each do |spec|
+        specs.sort_by(&:external_bonds).each do |spec|
           puts @non_term_specs_format % [
             spec.name,
             spec.external_bonds,
@@ -121,7 +121,7 @@ module VersatileDiamond
         return if reactions.empty?
 
         puts "\n#{name}: [#{reactions.size}]"
-        reactions.sort.each do |reaction|
+        reactions.sort_by(&:full_rate).reverse.each do |reaction|
           puts @reactions_format % [
             reaction.formula,
             reaction.changes_num,

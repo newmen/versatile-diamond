@@ -19,10 +19,8 @@ module VersatileDiamond
                 lists_are_identical?(rels, expected_rels, &rels_cmpr)
               end
           else
-            lists_are_identical?(actual_keys, expected_keys, &:==) &&
-              actual.all? do |key, rels|
-                lists_are_identical?(rels, expected[key], &:==)
-              end
+            lists_are_identical?(actual_keys, expected_keys) &&
+              actual.all? { |key, rels| lists_are_identical?(rels, expected[key]) }
           end
         end
 
@@ -71,7 +69,7 @@ module VersatileDiamond
             end
           else
             actual.each_with_object({}) do |(v, rels), acc|
-              next if expected[v] && lists_are_identical?(rels, expected[v], &:==)
+              next if expected[v] && lists_are_identical?(rels, expected[v])
               if expected[v]
                 ed, rd = expected[v].dup, rels.dup
                 rd.delete_one(ed.pop) until ed.empty? || rd.empty?
@@ -133,7 +131,7 @@ module VersatileDiamond
         # @param [Array] keys2 the second comparing list
         # @return [Boolean] are identical lists or not
         def identical_multidim_keys?(keys1, keys2)
-          lists_are_identical?(keys1, keys2, &:==)
+          lists_are_identical?(keys1, keys2)
         end
 
         # Provides lambda function for compare relations of passed keys
@@ -168,14 +166,13 @@ module VersatileDiamond
 
       RSpec::Matchers.define :match_multidim_array do |expected|
         match do |actual|
-          lists_are_identical?(actual, expected) do |a, b|
-            lists_are_identical?(a, b, &:==)
-          end
+          lists_are_identical?(actual, expected, &method(:deep_identical?))
         end
 
         failure_message do |actual|
           "expected that\n#{multidim_array_to_s(actual)}\n" \
-            "should be like\n#{multidim_array_to_s(expected)}"
+            "should be like\n#{multidim_array_to_s(expected)}\n" \
+            "difference\n#{difference(actual, expected)}"
         end
 
         # Transforms matrix to string
@@ -185,6 +182,40 @@ module VersatileDiamond
           lines = matrix.map { |values| "    #{values.inspect}" }
           content = lines.join("\n")
           "[\n#{content}\n]"
+        end
+
+        # @param [Array] instances
+        # @return [Array]
+        def difference(actual, expected)
+          cutten_expected = expected.dup
+          cutten_actual = actual.reject do |ai|
+            same = cutten_expected.find { |ei| deep_identical?(ai, ei) }
+            cutten_expected.delete_one(same) if same
+          end
+          prechars(:+, cutten_actual) + prechars(:-, cutten_expected)
+        end
+
+        # @param [Symbol] sym
+        # @param [Object] instance
+        # @return [String]
+        def prechars(sym, instance)
+          "  #{sym} #{instance.inspect}\n"
+        end
+
+        # @param [Array] items
+        # @return [Boolean]
+        def deep_identical?(*items)
+          if arrays?(items)
+            lists_are_identical?(*items, &method(:deep_identical?))
+          else
+            items.uniq.one?
+          end
+        end
+
+        # @param [Array] items
+        # @return [Boolean]
+        def arrays?(items)
+          items.map(&:class).uniq == [Array]
         end
       end
 

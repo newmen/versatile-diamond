@@ -10,8 +10,8 @@ module VersatileDiamond
       # @param [Organizers::AnalysisResult] analysis_result see at super same argument
       # @param [String] filename the name of result image file
       # @param [String] ext the extention of result image file
-      def initialize(analysis_result, filename, ext = 'png')
-        super(analysis_result)
+      def initialize(analysis_result, filename, ext = 'png', **opts)
+        super(analysis_result, **opts)
         init_graph(filename, ext)
       end
     end

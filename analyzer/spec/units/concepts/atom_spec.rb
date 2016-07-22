@@ -30,6 +30,11 @@ module VersatileDiamond
         it { expect(cd.lattice).to eq(diamond) }
       end
 
+      describe '#clean' do
+        it { expect(c.clean).to eq(c) }
+        it { expect(cd.clean).to eq(cd) }
+      end
+
       describe '#reference?' do
         it { expect(c.reference?).to be_falsey }
       end

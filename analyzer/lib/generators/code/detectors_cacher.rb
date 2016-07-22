@@ -23,7 +23,7 @@ module VersatileDiamond
             raise 'Specie code generator is not found!' unless specie
 
             @detectors[spec] = SymmetriesDetector.new(@generator, specie)
-            @detectors[spec].collect_symmetries
+            @detectors[spec].collect_symmetries!
           end
           @detectors[spec]
         end

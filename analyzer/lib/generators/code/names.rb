@@ -5,7 +5,6 @@ module VersatileDiamond
       # Generates names.h file that contains enum names of all used species and
       # reactions. In fact instance of it class is not a cpp class.
       class Names < CppClassWithGen
-        include SpeciesUser
         include ReactionsUser
 
         INST_NAMES = %w(base_specie specific_specie
@@ -82,56 +81,58 @@ module VersatileDiamond
         # Gets the list of base specie code generator instances
         # @return [Array] the list of base species
         def base_species
-          @_base_species ||= species_classes(generator.base_surface_specs)
+          @_base_species ||= species_classes(:reject, &:specific?)
         end
 
         # Gets the list of specific specie code generator instances
         # @return [Array] the list of specific species
         def specific_species
-          @_specific_species ||= species_classes(generator.specific_surface_specs)
+          @_specific_species ||= species_classes(&:specific?)
         end
 
         # Gets the list of ubiquitous reaction code generator instances
         # @return [Array] the list of ubiquitous reactions
         def ubiquitous_reactions
-          @_ubiquitous_reactions ||= reactions_classes(
-            generator.ubiquitous_reactions + generator.spec_reactions.select(&:local?))
+          @_ubiquitous_reactions ||=
+            reaction_classes(generator.ubiquitous_reactions) +
+              reactions_classes(&:local?)
         end
 
         # Gets the list of typical reaction code generator instances
         # @return [Array] the list of typical reactions
         def typical_reactions
           @_typical_reactions ||=
-            reactions_classes(generator.spec_reactions.reject(&:local?)) -
-              lateral_reactions
+            reactions_classes(:reject, &:local?) - lateral_reactions
         end
 
         # Gets the list of lateral reactions code generator instances
         # @return [Array] the list of lateral reactionss
         def lateral_reactions
-          @_lateral_reactions ||=
-            reactions_classes(generator.spec_reactions.select(&:lateral?))
+          @_lateral_reactions ||= reactions_classes(&:lateral?)
         end
 
-        # Transforms the list of dependent species to code generator instances
-        # @param [Array] list of dependent species
+        # Gets specie class generators by block condition
+        # @param [Symbol] method_name which will be used for select species
+        # @yield [Specie] should return a boolean value
         # @return [Array] the sorted list of code generators
-        def species_classes(list)
-          specie_classes(sort(list))
+        def species_classes(method_name = :select, &block)
+          sort(generator.surface_reactants.public_send(method_name, &block))
         end
 
         # Transforms the list of dependent reactions to code generator instances
-        # @param [Array] list of dependent reactions
+        # @param [Symbol] method_name which will be used for select reactions
+        # @yield [Specie] should return a boolean value
         # @return [Array] the sorted list of code generators
-        def reactions_classes(list)
-          reaction_classes(sort(list))
+        def reactions_classes(method_name = :select, &block)
+          dept_reacts = generator.spec_reactions.public_send(method_name, &block)
+          sort(reaction_classes(dept_reacts))
         end
 
         # Sorts the items of passed list by names of them
         # @param [Array] list which will be sorted
         # @return [Array] the sorted list
         def sort(list)
-          list.sort_by { |item| item.name }
+          list.sort_by(&:print_name)
         end
       end
 

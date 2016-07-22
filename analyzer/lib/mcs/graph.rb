@@ -5,6 +5,7 @@ module VersatileDiamond
     # position)
     class Graph
       include Modules::ExcessPositionChecker
+      include Concepts::AtomsSwapper
       extend Forwardable
 
       # Initialize instance by links hash of original spec graph
@@ -70,10 +71,12 @@ module VersatileDiamond
       # @param [Concepts::Atom] atom the atom for which lattice will be changed
       # @param [Concepts::Lattice] lattice the lattice, to be set
       def change_lattice!(atom, lattice)
-        return if atom.lattice == lattice
-        new_atom = atom.dup
+        curr_atom = vertex_changed_to(atom) || atom
+        return if curr_atom.lattice == lattice
+
+        new_atom = curr_atom.dup
         new_atom.lattice = lattice
-        exchange_atoms!(atom, new_atom)
+        exchange_atoms!(curr_atom, new_atom)
       end
 
       # Finds changed atom by replaced atom
@@ -185,24 +188,15 @@ module VersatileDiamond
         relations_detector = -> pair { pair.last.relation? }
         states = list.reject(&relations_detector)
         relations = list.select(&relations_detector)
-        groups = relations.group_by { |atom, _| atom }
+        groups = relations.group_by(&:first)
         pairs = groups.map do |atom, group|
-          if group.size == 1
+          if group.one?
             group.first
           else
             bonds = group.map(&:last)
-            check_bond_is_same(bonds)
+            check_bonds_are_same(bonds)
             check_bond_is_correct(bonds.first)
-
-            pair = [atom]
-            if group.size == 2
-              pair << :dbond
-            elsif group.size == 3
-              pair << :tbond
-            else
-              raise 'Incorrect bonds num'
-            end
-            pair
+            [atom, Concepts::MultiBond[group.size]]
           end
         end
 
@@ -211,7 +205,7 @@ module VersatileDiamond
 
       # Checks that list contain same item few times
       # @raise [RuntimeError] if it is not
-      def check_bond_is_same(bonds)
+      def check_bonds_are_same(bonds)
         first = nil
         bonds.each do |bond|
           if !first
@@ -225,12 +219,10 @@ module VersatileDiamond
       # Checks that bond is correct (it is not position and haven't face or
       # direction)
       #
-      # @param [Bond] relation the checking bond
+      # @param [Concepts::Bond] relation the checking bond
       # @raise [RuntimeError] if bond is incorrect
       def check_bond_is_correct(relation)
-        if !relation.bond? || relation.belongs_to_crystal?
-          raise 'Incorrect multi-bond'
-        end
+        raise 'Incorrect multi-bond' if !relation.bond? || relation.belongs_to_crystal?
       end
 
       # Changes atoms with each other by replacing internal state of edges hash
@@ -239,20 +231,10 @@ module VersatileDiamond
       # @param [Concepts::Atom] from the old atom
       # @param [Concepts::Atom] to the new atom
       def exchange_atoms!(from, to)
-        links = @edges.delete(from)
-        links.each do |atom, _|
-          @edges[atom].map! do |a, link|
-            [(a == from ? to : a), link]
-          end
-        end
-        @edges[to] = links
+        swap_atoms_in!(@edges, from, to)
 
-        @changed_vertices ||= {}
         @changed_vertices[to] = from
-
-        if @atom_alias && @atom_alias[from]
-          @atom_alias[to] = @atom_alias.delete(from)
-        end
+        @atom_alias[to] = @atom_alias.delete(from) if @atom_alias && @atom_alias[from]
       end
 
       # Iterate edges by pass each edge and correspond vertices to block

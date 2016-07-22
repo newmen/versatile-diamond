@@ -130,15 +130,15 @@ module VersatileDiamond
         end
       end
 
-      describe '#each_source' do
-        it { expect(subject.each_source).to be_a(Enumerator) }
-        it { expect(subject.each_source.to_a).to eq([methyl_on_bridge]) }
+      describe '#each' do
+        it { expect(subject.each(:source)).to be_a(Enumerator) }
+        it { expect(subject.each(:source).to_a).to eq([methyl_on_bridge]) }
       end
 
-      describe '#swap_source' do
+      describe '#swap_on' do
         let(:mob_dup) { methyl_on_bridge.dup }
-        before { subject.swap_source(methyl_on_bridge, mob_dup) }
-        it { expect(subject.each_source.to_a).to eq([mob_dup]) }
+        before { subject.swap_on(:source, methyl_on_bridge, mob_dup) }
+        it { expect(subject.each(:source).to_a).to eq([mob_dup]) }
       end
 
       describe '#used_atoms_of' do

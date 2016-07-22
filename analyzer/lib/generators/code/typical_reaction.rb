@@ -34,15 +34,15 @@ module VersatileDiamond
         # @return [Integer] the index of passed specie or nil if reaction have just one
         #   reactant
         def target_index(spec)
-          concept_source_species.size == 1 ? nil : concept_source_species.index(spec)
+          concept_source_species.one? ? nil : concept_source_species.index(spec)
         end
 
         # Gets builder of check lateral algorighm from passed specie
         # @param [Specie] specie from which the algorithm will build
-        # @return [ReactionCheckLateralsBuilder] the builder of checkLaterals method
+        # @return [CheckLateralsFindBuilder] the builder of checkLaterals method
         #   code
         def check_laterals_builder_from(specie)
-          builder_class = Algorithm::ReactionCheckLateralsBuilder
+          builder_class = Algorithm::CheckLateralsFindBuilder
           builder_class.new(generator, lateral_chunks, specie)
         end
 
@@ -51,8 +51,9 @@ module VersatileDiamond
         # Verifies that passed species belongs to source species set
         # @param [Array] species which will be checked
         def check_all_source!(specs)
-          unless lists_are_identical?(concept_source_species, specs, &:==)
-            fail 'The passed species do not belongs to set of source species'
+          unless lists_are_identical?(concept_source_species, specs)
+            msg = 'The passed species do not belongs to set of source species'
+            raise ArgumentError, msg
           end
         end
 
@@ -107,7 +108,7 @@ module VersatileDiamond
         # @param [Specie] specie from which the reaction will be found
         # @return [String] the string with signature of find method
         def find_arguments_str(specie)
-          "#{specie.class_name} *#{ANCHOR_SPECIE_NAME}"
+          "#{specie.class_name} *#{Specie::TARGET_SPECIE_NAME}"
         end
 
         # Builds find algorithm of current reaction from passed specie
@@ -126,21 +127,22 @@ module VersatileDiamond
         # Gets the string by which chunks of lateral reactions define
         # @return [String] the string with null defined chunks of lateral reactions
         def define_lateral_chunks
+          var_name = "#{LATERAL_CHUNKS_NAME}[#{lateral_chunks_num}]"
           ptrs = (['nullptr'] * lateral_chunks_num).join(', ')
-          "SingleLateralReaction *chunks[#{lateral_chunks_num}] = { #{ptrs} }"
+          "SingleLateralReaction *#{var_name} = { #{ptrs} }"
         end
 
         # Builds look around algorithm for find all possible lateral reactions
         # @return [String] the string with cpp code of look around algorithm
         def look_around_algorithm
-          Algorithm::ReactionLookAroundBuilder.new(generator, lateral_chunks).build
+          Algorithm::LookAroundFindBuilder.new(generator, lateral_chunks).build
         end
 
         # Gets the arguments of check laterals method
         # @param [Specie] specie from which lateral reaction can be found
         # @return [String] the string with signature of find method
         def check_laterals_arguments_str(specie)
-          "#{specie.class_name} *{SIDEPIECE_SPECIE_NAME}"
+          "#{specie.class_name} *#{Specie::SIDE_SPECIE_NAME}"
         end
 
         # Builds check laterals algorithm of current reaction from passed specie
@@ -157,6 +159,12 @@ module VersatileDiamond
         #   available set of chunks
         def select_from_algorithm
           Algorithm::LateralReactionSelectBuilder.new(generator, lateral_chunks).build
+        end
+
+        # Builds reaction applying algorithm
+        # @return [String] the cpp code string with algorithm of reaction applying
+        def do_it_algorithm
+          Algorithm::ReactionDoItBuilder.new(generator, self).build
         end
       end
 

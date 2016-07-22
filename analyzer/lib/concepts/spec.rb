@@ -5,17 +5,27 @@ module VersatileDiamond
     # @abstract
     class Spec < Named
       include Modules::RelationBetweenChecker
+      include AtomsSwapper
       include BondsCounter
       include Linker
 
       attr_reader :atoms # must be protected!! only for SpecificSpec#to_s
       attr_reader :links
 
-      # Checks that atom keyname suitable for reducing
-      # @param [Array] keyname the array of atom keyname which will be checked
-      # @return [Boolean] all situable or not
-      def self.good_for_reduce?(keynames)
-        keynames.all? { |kn| kn =~ /^[^_]/ }
+      class << self
+        # Checks that all atom keynames suitable for reducing
+        # @param [Array] keynames the array of atom keyname which will be checked
+        # @return [Boolean] all situable or not
+        def good_for_reduce?(keynames)
+          !keynames.any?(&method(:extended?))
+        end
+
+        # Checks that atom keyname has been used for extending
+        # @param [Symbol] keyname
+        # @return [Boolean] is keyname suitable for reducing
+        def extended?(keyname)
+          !!(keyname =~ /_$/)
+        end
       end
 
       # Creates [Symbol]Atom as atoms and [Atom][[Atom, Bond]] as links
@@ -26,6 +36,8 @@ module VersatileDiamond
         @atoms, @links = {}, {}
         atoms.each { |k, a| describe_atom(k, a) }
 
+        @is_extended = false
+
         @_keynames_to_atoms = nil
         @_is_extendable = nil
       end
@@ -33,7 +45,22 @@ module VersatileDiamond
       # If spec is simple (H2 or HCl for example) then true or false overwise
       # @return [Boolean] is current spec simple?
       def simple?
-        @is_simple
+        if @atoms.empty?
+          raise 'The specie does not contain any atom and cannot be simple or complex'
+        else
+          @atoms.values.all? { |a| a.valence == 1 }
+        end
+      end
+
+      # The spec is not termination by default
+      # @return [Boolean] false
+      def termination?
+        false
+      end
+
+      # @return [Boolean] has been specie extended or not
+      def extended?
+        @is_extended
       end
 
       # Returns a instance of atom by passed atom keyname
@@ -57,7 +84,14 @@ module VersatileDiamond
       def describe_atom(atom_keyname, atom)
         @atoms[atom_keyname] = atom
         @links[atom] = []
-        @is_simple = (@atoms.size == 1 && atom_instances.first.valence == 1)
+      end
+
+      # Swaps from own to new
+      # @param [Atom | AtomReference] from
+      # @param [Atom | AtomReference] to
+      def swap_atom(from, to)
+        raise ArgumentError, 'Incorrect swapping' if @links[from] && @links[to]
+        swap_atoms_in!(@links, from, to) if @links[from] && !@links[to]
       end
 
       # Renames the atom from some keyname to some new keyname (used only in
@@ -86,7 +120,7 @@ module VersatileDiamond
               @atoms[keyname] ? generate_keyname(keyname) : keyname
             end
 
-          # if block was given and returned keyname or block is not given
+          # if block given and returned keyname or block is not given
           describe_atom(current_keyname, atom) if current_keyname
         end
         adsorb_links(other, duplicates)
@@ -113,30 +147,19 @@ module VersatileDiamond
         link_together(*atoms, instance)
       end
 
-      # Returns links container with replaced atoms by passed hash of atoms and
+      # Returns links container with replacing atoms by passed hash of atoms and
       # their keynames
       #
-      # @param [Hash] keynames_to_new_atoms the hash which contain keyname
+      # @param [Hash] kns_to_new_atoms the hash which contain keyname
       #   Symbol of atom key and specific atom as value
-      # @return [Hash] links container with replaced atoms
-      def links_with_replace_by(keynames_to_new_atoms)
+      # @return [Hash] links container with replacing atoms
+      def links_with_replace_by(kns_to_new_atoms)
         # deep dup @links
-        replaced_links = Hash[@links.map do |atom, links|
-          [atom, links.map.to_a]
-        end]
-
-        keynames_to_new_atoms.each do |replaced_atom_keyname, new_atom|
-          replaced_atom = @atoms[replaced_atom_keyname]
-          local_links = replaced_links.delete(replaced_atom)
-          local_links.each do |linked_atom, _|
-            replaced_links[linked_atom].map! do |atom, link|
-              [(atom == replaced_atom ? new_atom : atom), link]
-            end
-          end
-          replaced_links[new_atom] = local_links
+        chg_links = @links.map { |atom, rels| [atom, rels.map(&:dup)] }.to_h
+        kns_to_new_atoms.each_with_object(chg_links) do |(kn, to), acc|
+          from = @atoms[kn]
+          swap_atoms_in!(acc, from, to) if from && !acc[to]
         end
-
-        replaced_links
       end
 
       # Summarizes external bonds of all internal atoms
@@ -231,19 +254,14 @@ module VersatileDiamond
             if keyname == ref.keyname
               # exchange old atom (reference) to new atom
               @atoms[original_keyname] = atom
-              links = @links.delete(ref)
-              links.each do |another_atom, link|
-                @links[another_atom].map! do |at, li|
-                  [(at == ref ? atom : at), li]
-                end
-              end
-              @links[atom] = links
+              swap_atoms_in!(@links, ref, atom)
               nil
             else
-              generated_keyname
+              :"#{generated_keyname}_"
             end
           end
         end
+        @is_extended = true
       end
 
     private
@@ -280,16 +298,16 @@ module VersatileDiamond
       # @return [Symbol] generated unique keyname
       def generate_keyname(original_keyname)
         keyname = nil
-        prefix, name, i =
-          original_keyname.to_s.scan(/\A(_)?(\D+)(\d+)?\Z/).first
+        prefix, name, i, suffix =
+          original_keyname.to_s.scan(/\A(_)?(\D+)(\d+)?(_)?\Z/).first
 
         i = i ? i.to_i : 0
         prefix ||= '_'
 
         begin
-          keyname = "#{prefix}#{name}#{i}".to_sym
+          keyname = "#{prefix}#{name}#{i}#{suffix}".to_sym
           i += 1
-        end while atom(keyname)
+        end while atom(keyname) || (!suffix && atom(:"#{keyname}_"))
         keyname
       end
     end

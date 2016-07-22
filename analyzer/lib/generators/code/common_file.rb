@@ -5,7 +5,7 @@ module VersatileDiamond
       # Wraps common files
       class CommonFile
 
-        COMMON_FILES_DIR = 'common_files'
+        COMMON_FILES_DIR = 'common_files'.freeze
 
         # Initialize common file by path to it
         # @param [String] path_to_common_file

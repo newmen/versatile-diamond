@@ -7,15 +7,19 @@ module VersatileDiamond
       describe Specie, type: :code do
         let(:base_specs) { [] }
         let(:specific_specs) { [] }
+        let(:ubiquitous_reactions) { [] }
         let(:typical_reactions) { [] }
         let(:lateral_reactions) { [] }
         let(:generator) do
           stub_generator(
             base_specs: base_specs,
             specific_specs: specific_specs,
+            ubiquitous_reactions: ubiquitous_reactions,
             typical_reactions: typical_reactions,
             lateral_reactions: lateral_reactions)
         end
+
+        let(:classifier) { generator.classifier }
 
         describe '#spec' do
           it { expect(code_bridge_base.spec).to eq(dept_bridge_base) }
@@ -23,6 +27,18 @@ module VersatileDiamond
 
         describe '#original' do
           it { expect(code_bridge_base.original).to be_a(OriginalSpecie) }
+        end
+
+        describe 'default symmetric atoms' do
+          let(:ct) { bridge_base.atom(:ct) }
+
+          describe '#symmetric_atom?' do
+            it { expect(code_bridge_base.symmetric_atom?(ct)).to be_falsey }
+          end
+
+          describe '#symmetric_atoms' do
+            it { expect(code_bridge_base.symmetric_atoms(ct)).to be_empty }
+          end
         end
 
         describe '#template_name' do
@@ -137,7 +153,10 @@ module VersatileDiamond
         end
 
         describe '#wrapped_base_class_name' do
-          before { generator }
+          before do
+            generator
+            subject.find_symmetries!
+          end
 
           shared_examples_for :parent_bridge_name do
             let(:parent_bridge) { specie_class(bridge_base) }
@@ -151,36 +170,66 @@ module VersatileDiamond
           end
 
           describe 'empty base specie' do
+            subject { specie_class(bridge_base) }
             let(:base_specs) { [dept_bridge_base] }
 
             it_behaves_like :check_classes_names do
-              subject { specie_class(bridge_base) }
               let(:base_class_names) { [name, 'DiamondAtomsIterator'] }
               let(:name) { 'Base<SourceSpec<BaseSpec, 3>, BRIDGE, 3>' }
             end
           end
 
-          describe 'only one child specie' do
+          describe 'not reactant specie with one child' do
+            subject { specie_class(methyl_on_bridge_base) }
             let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+            let(:typical_reactions) { [dept_methyl_activation] }
 
             it_behaves_like :parent_bridge_name
             it_behaves_like :check_classes_names do
-              subject { specie_class(methyl_on_bridge_base) }
               let(:base_class_names) { [name] }
               let(:name) do
-                'Base<AdditionalAtomsWrapper<DependentSpec<BaseSpec, 1>, 1>, ' \
-                  'METHYL_ON_BRIDGE, 2>'
+                'Base<AdditionalAtomsWrapper<DependentSpec<ParentSpec, 1>, 1>, METHYL_ON_BRIDGE, 2>'
+              end
+            end
+          end
+
+          describe 'no children reactant specie' do
+            subject { specie_class(hydrogenated_methyl_on_bridge) }
+            let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+            let(:typical_reactions) { [dept_methyl_activation] }
+
+            it_behaves_like :parent_bridge_name
+            it_behaves_like :check_classes_names do
+              let(:base_class_names) { [name] }
+              let(:name) do
+                'Specific<Base<DependentSpec<BaseSpec, 1>, METHYL_ON_BRIDGE_CMH, 1>>'
+              end
+            end
+          end
+
+          describe 'local reactant specie' do
+            subject { specie_class(hydrogenated_methyl_on_bridge) }
+            let(:base_specs) { [dept_bridge_base, dept_methyl_on_bridge_base] }
+            let(:ubiquitous_reactions) { [dept_surface_activation] }
+            let(:typical_reactions) { [dept_methyl_activation] }
+
+            it_behaves_like :parent_bridge_name
+            it_behaves_like :check_classes_names do
+              let(:base_class_names) { [name] }
+              let(:cmix) { subject.index(subject.spec.spec.atom(:cm)) }
+              let(:name) do
+                "Base<LocalableRole<DependentSpec<BaseSpec, 1>, #{cmix}>, METHYL_ON_BRIDGE_CMH, 1>"
               end
             end
           end
 
           describe 'sidepiece and multi child specie' do
-            let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
+            subject { specie_class(dimer_base) }
+            let(:base_specs) { [dept_dimer_base] }
             let(:lateral_reactions) { [dept_middle_lateral_df] }
 
             it_behaves_like :parent_bridge_name
             it_behaves_like :check_classes_names do
-              subject { specie_class(dimer_base) }
               let(:base_class_names) { [name, 'DiamondAtomsIterator'] }
               let(:name) { 'Sidepiece<Base<DependentSpec<BaseSpec, 2>, DIMER, 2>>' }
             end
@@ -188,10 +237,7 @@ module VersatileDiamond
 
           describe 'specific specie' do
             shared_examples_for :check_activated_bridge do
-              let(:base_specs) { [dept_bridge_base] }
-              let(:specific_specs) do
-                [dept_activated_bridge, dept_extra_activated_bridge]
-              end
+              let(:specific_specs) { [dept_extra_activated_bridge] }
               let(:typical_reactions) { [dept_dimer_formation] }
 
               it_behaves_like :parent_bridge_name
@@ -214,9 +260,6 @@ module VersatileDiamond
           end
 
           describe 'symmetric specie' do
-            let(:base_specs) do
-              [dept_methyl_on_bridge_base, dept_cross_bridge_on_bridges_base]
-            end
             let(:typical_reactions) { [dept_sierpinski_drop] }
 
             it_behaves_like :check_classes_names do
@@ -246,14 +289,16 @@ module VersatileDiamond
         describe '#symmetric?' do
           describe 'bridges' do
             let(:base_specs) { [dept_bridge_base] }
-            let(:specific_specs) { [dept_right_hydrogenated_bridge] }
+            let(:typical_reactions) { [dept_hydrogen_abs_from_gap] }
             it { expect(specie_class(bridge_base).symmetric?).to be_truthy }
-            it { expect(specie_class(right_hydrogenated_bridge).symmetric?).to be_falsey }
+
+            let(:dept_rhb) { specie_class(right_hydrogenated_bridge) }
+            it { expect(dept_rhb.symmetric?).to be_falsey }
           end
 
           describe 'dimers' do
             let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
-            let(:specific_specs) { [dept_activated_bridge, dept_activated_dimer] }
+            let(:typical_reactions) { [dept_dimer_formation, dept_hydrogen_migration] }
             it { expect(specie_class(bridge_base).symmetric?).to be_falsey }
             it { expect(specie_class(dimer_base).symmetric?).to be_truthy }
             it { expect(specie_class(activated_dimer).symmetric?).to be_falsey }
@@ -264,6 +309,7 @@ module VersatileDiamond
             let(:specific_specs) do
               [dept_activated_dimer, dept_bottom_hydrogenated_activated_dimer]
             end
+            let(:typical_reactions) { [dept_hydrogen_migration, dept_bhad_activation] }
             it { expect(specie_class(dimer_base).symmetric?).to be_truthy }
             it { expect(specie_class(activated_dimer).symmetric?).to be_truthy }
 
@@ -274,20 +320,25 @@ module VersatileDiamond
 
         describe 'rise and endpoint' do
           let(:base_specs) { [dept_bridge_base, dept_dimer_base] }
-          let(:specific_specs) { [dept_activated_bridge, dept_activated_dimer] }
+          let(:specific_specs) do
+            [dept_activated_incoherent_bridge, dept_activated_dimer]
+          end
+          let(:typical_reactions) { [dept_dimer_formation, dept_hydrogen_migration] }
 
           describe '#find_root?' do
             it { expect(specie_class(bridge_base).find_root?).to be_truthy }
             it { expect(specie_class(dimer_base).find_root?).to be_truthy }
-            it { expect(specie_class(activated_bridge).find_root?).to be_falsey }
             it { expect(specie_class(activated_dimer).find_root?).to be_falsey }
+            it { expect(specie_class(activated_incoherent_bridge).find_root?).
+              to be_falsey }
           end
 
           describe '#find_endpoint?' do
             it { expect(specie_class(bridge_base).find_endpoint?).to be_falsey }
             it { expect(specie_class(dimer_base).find_endpoint?).to be_falsey }
-            it { expect(specie_class(activated_bridge).find_endpoint?).to be_truthy }
             it { expect(specie_class(activated_dimer).find_endpoint?).to be_truthy }
+            it { expect(specie_class(activated_incoherent_bridge).find_endpoint?).
+              to be_truthy }
           end
         end
 
@@ -316,8 +367,7 @@ module VersatileDiamond
         end
 
         describe '#role' do
-          let(:classifier) { generator.classifier }
-          before { classifier.analyze(subject.spec) }
+          before { classifier.analyze!(subject.spec) }
 
           subject { code_bridge_base }
           it { expect(subject.role(bridge_base.atom(:ct))).to eq(0) }

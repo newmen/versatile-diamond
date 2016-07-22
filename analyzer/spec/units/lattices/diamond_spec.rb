@@ -3,6 +3,26 @@ require 'spec_helper'
 describe Diamond do
   subject(:diamond) { described_class.new }
 
+  describe '#hash' do
+    it { expect(subject.hash).to eq(described_class.new.hash) }
+    it { expect(described_class.new.hash).to eq(subject.hash) }
+  end
+
+  describe '#eql?' do
+    it { expect(subject.eql?(described_class.new)).to be_truthy }
+    it { expect(described_class.new.eql?(subject)).to be_truthy }
+  end
+
+  describe '#==' do
+    it { expect(subject).to eq(described_class.new) }
+    it { expect(described_class.new).to eq(subject) }
+  end
+
+  describe '#<=>' do
+    it { expect(subject <=> described_class.new).to eq(0) }
+    it { expect(described_class.new <=> subject).to eq(0) }
+  end
+
   describe '#opposite_relation' do
     describe 'same lattice' do
       describe 'bonds' do
@@ -65,8 +85,7 @@ describe Diamond do
 
       describe 'in three bridges' do
         let(:links) { three_bridges_base.links }
-        let(:a1) { three_bridges_base.atom(:cc) }
-        let(:a2) { three_bridges_base.atom(:ct) }
+        let_atoms_of(:three_bridges_base, [:cc, :ct], [:a1, :a2])
 
         it { expect(diamond.positions_between(a1, a2, links)).to match_array(poss) }
         it { expect(diamond.positions_between(a2, a1, links)).to match_array(poss) }

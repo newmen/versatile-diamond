@@ -7,6 +7,26 @@ module VersatileDiamond
         include SpeciesOrganizer
         include ReactionsOrganizer
 
+        # The mock of analysis results
+        class ResultsMock
+          def initialize(depts)
+            @depts = depts
+          end
+
+          def method_missing(*args)
+            if args.size == 1 && @depts.include?(args.first)
+              @depts[args.first]
+            else
+              key = :"#{args.first}s"
+              if args.size == 2 && args.first =~ /_spec/ && @depts.include?(key)
+                @depts[key].find { |s| s.name == args.last }
+              else
+                super
+              end
+            end
+          end
+        end
+
         # Stubs analysis results and allow to call methods with same names as keys of
         # passed hash
         #
@@ -18,24 +38,22 @@ module VersatileDiamond
             reorganize_children_specs!(depts[:typical_reactions].map(&:reaction))
           end
 
-          fixed_depts = fix(depts).each_with_object({}) do |(method_name, list), acc|
-            acc[method_name] = list
-          end
-
-          results = double('pseudo_analysis_results')
-          sort_depts(fixed_depts).each do |method_name, list|
-            has_orig_depts =
-              !list.empty? && depts[method_name] && !depts[method_name].empty?
-
-            if has_orig_depts && organization_keys.include?(method_name)
-              orgres = send(:"organize_#{method_name}", fixed_depts)
-              list += orgres if method_name == :lateral_reactions
+          fixed_depts =
+            fix(depts).each_with_object({}) do |(method_name, list), acc|
+              acc[method_name] = list
             end
 
-            allow(results).to receive(method_name).and_return(list)
-          end
+          mocking_depts =
+            sort_depts(fixed_depts).each_with_object({}) do |(method_name, list), acc|
+              if organization_keys.include?(method_name)
+                orgres = send(:"organize_#{method_name}", fixed_depts)
+                list += orgres if method_name == :lateral_reactions
+              end
 
-          results
+              acc[method_name] = list
+            end
+
+          ResultsMock.new(mocking_depts)
         end
 
       private
@@ -108,20 +126,22 @@ module VersatileDiamond
         def fix_reactants(depts_cache, all_specs)
           [:ubiquitous_reactions, :typical_reactions, :lateral_reactions].each do |k|
             depts_cache[k].each do |dr|
-              dr.reaction.each_source do |s|
-                if all_specs.include?(s.name)
-                  swap_source_carefully(dr, s, spec_from(all_specs, s).spec)
-                else
-                  if s.is_a?(Concepts::TerminationSpec)
-                    dt = DependentTermination.new(s)
-                    depts_cache[:term_specs] << dt
-                    all_specs[dt.name] = dt
+              [:source, :products].each do |target|
+                dr.reaction.each(target) do |s|
+                  if all_specs.include?(s.name)
+                    swap_carefully(target, dr, s, spec_from(all_specs, s).spec)
                   else
-                    store_reactant(dr, depts_cache, all_specs, s)
+                    if s.termination?
+                      dt = DependentTermination.new(s)
+                      depts_cache[:term_specs] << dt
+                      all_specs[dt.name] = dt
+                    else
+                      store_reactant(dr, depts_cache, all_specs, s)
+                    end
                   end
-                end
 
-                store_concept_to(dr, spec_from(all_specs, s))
+                  store_concept_to(dr, spec_from(all_specs, s))
+                end
               end
             end
           end
@@ -131,14 +151,16 @@ module VersatileDiamond
         def fix_sidepieces(depts_cache, all_specs)
           depts_cache[:lateral_reactions].each do |reaction|
             reaction.theres.each do |there|
-              there.each_source do |s|
-                if all_specs.include?(s.name)
-                  swap_source_carefully(there, s, spec_from(all_specs, s).spec)
-                else
-                  store_reactant(there, depts_cache, all_specs, s)
-                end
+              [:source, :products].each do |target|
+                there.each(target) do |s|
+                  if all_specs.include?(s.name)
+                    swap_carefully(target, there, s, spec_from(all_specs, s).spec)
+                  else
+                    store_reactant(there, depts_cache, all_specs, s)
+                  end
 
-                store_concept_to(there, spec_from(all_specs, s))
+                  store_concept_to(there, spec_from(all_specs, s)) if target == :source
+                end
               end
             end
           end
@@ -175,7 +197,9 @@ module VersatileDiamond
             else
               dbs = depts_cache[:base_specs].find { |bs| bs.name == spec.spec.name }
               dbs ||= DependentBaseSpec.new(spec.spec)
-              swap_source_carefully(dcont, spec, dbs.spec)
+              [:source, :products].each do |target|
+                swap_carefully(target, dcont, spec, dbs.spec)
+              end
               unless all_specs.include?(dbs.name)
                 depts_cache[:base_specs] << dbs
                 all_specs[dbs.name] = dbs

@@ -4,7 +4,7 @@ module VersatileDiamond
     # Provides methods for reactions graph generation
     module ReactionsGraphGenerator
 
-      UBIQUITOUS_REACTION_COLOR = 'lightblue'
+      UBIQUITOUS_REACTION_COLOR = 'greenyellow'
       TYPICAL_REACTION_COLOR = 'darkgreen'
       LATERAL_REACTION_COLOR = 'lightpink'
       CHUNK_COLOR = 'darkviolet'

@@ -58,8 +58,8 @@ module VersatileDiamond
           else
             mapping = nil
             check_balance(source, products) do |ext_src, ext_prd|
-              # there could be raised CannotMap exception which will be rescued
-              # in check balance method
+              # CannotMap exception can be raised here and then will be rescued
+              # in #check_balance method
               mapping = Mcs::AtomMapper.map(ext_src, ext_prd, names_and_specs)
 
               # if source or products need (and can) to be extended then
@@ -139,8 +139,7 @@ module VersatileDiamond
       # @param [Array] products the array of product specs
       # @return [Boolean] has or not
       def has_termination_spec?(source, products)
-        check = -> specific_spec { specific_spec.is_a?(TerminationSpec) }
-        source.find(&check) || products.find(&check)
+        source.find(&:termination?) || products.find(&:termination?)
       end
 
       # Checks compliance of source and product specs for both directions
@@ -251,7 +250,7 @@ module VersatileDiamond
       # @param [Array] specs the list which items will be combinated between each other
       # @return [Array] the list of combinations
       def combinations(specs)
-        specs.size.times.reduce([]) { |acc, i| acc + specs.combination(i + 1).to_a }
+        specs.size.times.flat_map { |i| specs.combination(i + 1).to_a }
       end
     end
 

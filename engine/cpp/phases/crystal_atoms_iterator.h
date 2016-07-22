@@ -18,6 +18,12 @@ protected:
 
     static C *crystalBy(Atom *atom);
 
+    template <class RL>
+    static Atom *neighbourFrom(Atom **anchors, const RL &atRelationMethod);
+
+    template <class RL, class AL>
+    static void neighbourFrom(Atom **anchors, const RL &atRelationMethod, const AL &actionLambda);
+
     template <class RL, class AL>
     static void eachNeighbour(Atom *anchor, const RL &relationsMethod, const AL &actionLambda);
 
@@ -39,6 +45,28 @@ C *CrystalAtomsIterator<C>::crystalBy(Atom *atom)
 {
     assert(atom->lattice());
     return static_cast<C *>(atom->lattice()->crystal());
+}
+
+template <class C>
+template <class RL>
+Atom *CrystalAtomsIterator<C>::neighbourFrom(Atom **anchors, const RL &atRelationMethod)
+{
+    C *crystal = crystalBy(anchors[0]);
+    assert(crystal == crystalBy(anchors[1]));
+
+    int3 coords = (*atRelationMethod)(anchors);
+    return crystal->atom(coords);
+}
+
+template <class C>
+template <class RL, class AL>
+void CrystalAtomsIterator<C>::neighbourFrom(Atom **anchors, const RL &atRelationMethod, const AL &actionLambda)
+{
+    Atom *atom = neighbourFrom(anchors, atRelationMethod);
+    if (atom)
+    {
+        actionLambda(atom);
+    }
 }
 
 template <class C>

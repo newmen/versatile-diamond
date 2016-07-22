@@ -11,6 +11,7 @@ end
 
 group :ruby, :test do
   gem 'rspec'
+  gem 'parallel_tests'
   gem 'coveralls', require: false
 end
 

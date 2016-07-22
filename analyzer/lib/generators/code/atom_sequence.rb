@@ -22,13 +22,11 @@ module VersatileDiamond
         # @return [Array] the original sequence of atoms of current specie
         # TODO: should be protected
         def original
-          return @_original_sequence if @_original_sequence
-
-          @_original_sequence =
+          @_original_sequence ||=
             if spec.source?
               sort_atoms(atoms)
             else
-              spec.parents.sort.reduce(addition_atoms) do |acc, parent|
+              sorted_parents.reduce(addition_atoms) do |acc, parent|
                 acc + get(parent.original).original.map do |atom|
                   parent.atom_by(atom)
                 end
@@ -51,14 +49,11 @@ module VersatileDiamond
         # Detects additional atoms which are not presented in parent species
         # @return [Array] the array of additional atoms
         def addition_atoms
-          return @_addition_atoms if @_addition_atoms
-
-          @_addition_atoms =
+          @_addition_atoms ||=
             if spec.source?
               []
             else
-              adds = spec.anchors.select { |atom| spec.twins_of(atom).empty? }
-              sort_atoms(adds)
+              sort_atoms(spec.anchors.select { |a| spec.twins_of(a).empty? })
             end
         end
 
@@ -79,7 +74,17 @@ module VersatileDiamond
           original.index(atom)
         end
 
-      protected
+        def to_s
+          concept = spec.spec
+          inner_str = original.map { |atom| ":#{concept.keyname(atom)}" }.join(' ')
+          "(#{inner_str})"
+        end
+
+        def inspect
+          to_s
+        end
+
+      private
 
         attr_reader :spec, :cacher
 
@@ -89,20 +94,65 @@ module VersatileDiamond
         #   in returned sequence
         # @return [Array] sorted array of atoms
         def sort_atoms(atoms, amorph_before: true)
-          atoms.sort do |a, b|
-            # a < b => -1
-            # a == b => 0
-            # a > b => 1
-            if a.lattice == b.lattice
-              a_size, b_size = spec.spec.links[a].size, spec.spec.links[b].size
-              a_size == b_size ?
-                spec.links[a].size <=> spec.links[b].size :
-                b_size <=> a_size
-            elsif (amorph_before && !a.lattice && b.lattice) ||
-                (!amorph_before && a.lattice && !b.lattice)
-              -1
+          atoms.sort do |*as|
+            a, b = as
+            if as.map(&:lattice).uniq.size > 1
+              amorph_to_begin = amorph_before && !a.lattice && b.lattice
+              crystal_to_begin = !amorph_before && a.lattice && !b.lattice
+              amorph_to_begin || crystal_to_begin ? -1 : 1
+            elsif as.map(&:specific?).uniq.size > 1
+              a.specific? && !b.specific? ? -1 : 1
+            elsif as.map(&:reference?).uniq.size > 1
+              !a.reference? && b.reference? ? -1 : 1
             else
-              1
+              order_similar(as, amorph_before: amorph_before)
+            end
+          end
+        end
+
+        # @param [Array] atoms the pair of sorting atoms
+        # @return [Integer] the result of comparation
+        def order_similar(atoms, amorph_before: true)
+          ap, bp = atoms.map(&method(:atom_properties_for))
+          if ap == bp
+            ak, bk = atoms.map(&method(:keyname_for))
+            ak <=> bk
+          elsif ap.lattice && bp.lattice
+            bp <=> ap
+          else
+            cmp = (ap <=> bp)
+            amorph_before ? cmp : -cmp
+          end
+        end
+
+        # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+        #   atom from which the atom properties will be combined
+        # @return [Organizers::AtomProperties]
+        def atom_properties_for(atom)
+          Organizers::AtomProperties.new(spec, atom)
+        end
+
+        # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+        #   atom from which the keyname will be resolved
+        # @return [Symbol]
+        def keyname_for(atom)
+          spec.spec.keyname(atom)
+        end
+
+        # @return [Array]
+        def sorted_parents
+          spec.parents.sort do |*parents|
+            a, b = parents
+            cmp = (a <=> b)
+            if cmp == 0
+              seq1, seq2 = parents.map do |parent|
+                parent_seq = get(parent.original).original
+                self_seq = parent_seq.map(&parent.public_method(:atom_by))
+                self_seq.map(&spec.spec.public_method(:keyname))
+              end
+              seq1 <=> seq2
+            else
+              cmp
             end
           end
         end

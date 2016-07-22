@@ -163,13 +163,13 @@ module VersatileDiamond
                 [[spec1, spec3], [
                   [spec1.atom(:cm), spec3.atom(:ct)],
                   [spec1.atom(:cb), spec3.atom(:cr)],
-                  [spec1.atom(:cl), spec3.atom(:_cl1)],
-                  [spec1.atom(:cr), spec3.atom(:_cr1)],
+                  [spec1.atom(:cl), spec3.atom(:_cl1_)],
+                  [spec1.atom(:cr), spec3.atom(:_cr1_)],
                 ]],
                 [[spec2, spec3], [
                   [spec2.atom(:ct), spec3.atom(:cl)],
-                  [spec2.atom(:cl), spec3.atom(:_cl0)],
-                  [spec2.atom(:cr), spec3.atom(:_cr0)],
+                  [spec2.atom(:cl), spec3.atom(:_cl0_)],
+                  [spec2.atom(:cr), spec3.atom(:_cr0_)],
                 ]]
               ]
             end
@@ -201,18 +201,18 @@ module VersatileDiamond
                   [spec1.atom(:cb), spec3.atom(:cl)],
                   [spec1.atom(:cl), spec3.atom(:_cr1)],
                   [spec1.atom(:cr), spec3.atom(:clb)],
-                  [spec1.atom(:_cl0), spec3.atom(:_cl2)],
-                  [spec1.atom(:_cr0), spec3.atom(:_cr4)],
-                  [spec1.atom(:_cl1), spec3.atom(:_cl3)],
-                  [spec1.atom(:_cr1), spec3.atom(:_cr5)],
+                  [spec1.atom(:_cl0_), spec3.atom(:_cl2_)],
+                  [spec1.atom(:_cr0_), spec3.atom(:_cr4_)],
+                  [spec1.atom(:_cl1_), spec3.atom(:_cl3_)],
+                  [spec1.atom(:_cr1_), spec3.atom(:_cr5_)],
                 ]],
                 [[spec2, spec3], [
                   [spec2.atom(:cl), spec3.atom(:crb)],
                   [spec2.atom(:cr), spec3.atom(:_cr0)],
-                  [spec2.atom(:clb), spec3.atom(:_cl0)],
-                  [spec2.atom(:_cr1), spec3.atom(:_cr2)],
-                  [spec2.atom(:crb), spec3.atom(:_cl1)],
-                  [spec2.atom(:_cr0), spec3.atom(:_cr3)],
+                  [spec2.atom(:clb), spec3.atom(:_cl0_)],
+                  [spec2.atom(:_cr1), spec3.atom(:_cr2_)],
+                  [spec2.atom(:crb), spec3.atom(:_cl1_)],
+                  [spec2.atom(:_cr0), spec3.atom(:_cr3_)],
                 ]]
               ]
             end
@@ -261,6 +261,51 @@ module VersatileDiamond
                   [spec3.atom(:ct), spec4.atom(:crht)],
                   [spec3.atom(:cl), spec4.atom(:crhb)],
                 ]],
+              ]
+            end
+
+            it_behaves_like :check_mapping_result
+          end
+
+          describe 'next level dimer formation over activated dimer' do
+            let(:ab) { activated_bridge }
+            let(:ead_n_eamob) { ea_dimer_near_ea_mob }
+            let(:tl_bot_ad) { two_next_level_dimers_with_bottom_activated }
+
+            let(:source) { [ab, ead_n_eamob] }
+            let(:products) { [tl_bot_ad] }
+
+            let(:changed) do
+              [
+                [[ab, tl_bot_ad], [
+                  [ab.atom(:ct), tl_bot_ad.atom(:cbt)]
+                ]],
+                [[ead_n_eamob, tl_bot_ad], [
+                  [ead_n_eamob.atom(:cm), tl_bot_ad.atom(:ctr)],
+                  [ead_n_eamob.atom(:ctl), tl_bot_ad.atom(:ctl)],
+                  [ead_n_eamob.atom(:cdd), tl_bot_ad.atom(:cdd)]
+                ]]
+              ]
+            end
+            let(:full) do
+              [
+                [[ab, tl_bot_ad], [
+                  [ab.atom(:ct), tl_bot_ad.atom(:cbt)],
+                  [ab.atom(:cr), tl_bot_ad.atom(:clr)],
+                  [ab.atom(:cl), tl_bot_ad.atom(:cll)]
+                ]],
+                [[ead_n_eamob, tl_bot_ad], [
+                  [ead_n_eamob.atom(:cm), tl_bot_ad.atom(:ctr)],
+                  [ead_n_eamob.atom(:ctl), tl_bot_ad.atom(:ctl)],
+                  [ead_n_eamob.atom(:cmr), tl_bot_ad.atom(:cmr)],
+                  [ead_n_eamob.atom(:cml), tl_bot_ad.atom(:cml)],
+                  [ead_n_eamob.atom(:cdd), tl_bot_ad.atom(:cdd)],
+                  [ead_n_eamob.atom(:cdr), tl_bot_ad.atom(:cdr)],
+                  [ead_n_eamob.atom(:clb), tl_bot_ad.atom(:clb)],
+                  [ead_n_eamob.atom(:_cr1), tl_bot_ad.atom(:_cr1)],
+                  [ead_n_eamob.atom(:crb), tl_bot_ad.atom(:crb)],
+                  [ead_n_eamob.atom(:_cr0), tl_bot_ad.atom(:_cr0)]
+                ]]
               ]
             end
 

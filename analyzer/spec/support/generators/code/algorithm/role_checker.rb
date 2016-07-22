@@ -11,7 +11,7 @@ module VersatileDiamond
               :c1, :c2,
               :ctl, :ctr,
               :csl, :csr,
-              :cbr, :cbl, :cdr, :cdl
+              :cbr, :cbl, :cbt, :cdr, :cdl
             ].freeze
 
             # @param [DependentWrappedSpec] spec

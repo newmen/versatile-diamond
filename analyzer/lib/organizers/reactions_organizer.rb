@@ -41,7 +41,7 @@ module VersatileDiamond
       # Organize dependencies between typical and lateral reactions
       # @param [Array] typical_rs the list of dependent typical reactions
       # @param [Array] lateral_rs the list of dependent lateral reactions
-      # @return [Array] the list of new combined lateral reactions which was missed by
+      # @return [Array] the list of new combined lateral reactions which were missed by
       #   user
       def organize_complex_reactions_deps!(typical_rs, lateral_rs)
         typical_rs.each { |reaction| reaction.organize_dependencies!(lateral_rs) }

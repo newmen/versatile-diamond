@@ -82,6 +82,7 @@ events
 
   reaction 'surface deactivation'
     equation * + hydrogen(h: *) = H
+    activation 6.31
     forward_rate 2e13, 'cm3/(mol * s)'
 
   reaction 'methyl adsorption to dimer'
@@ -91,7 +92,6 @@ events
     reverse_rate 5.3e3
 
   reaction 'methyl activation'
-    # TODO: need to know that methyl_on_dimer on left side should have H at :cm
     equation methyl_on_dimer(cm: H) + hydrogen(h: *) = methyl_on_dimer(cm: *) + hydrogen
       incoherent methyl_on_dimer(:cm)
 

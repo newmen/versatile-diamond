@@ -1,10 +1,13 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Organizers
 
     # Contain some specific spec and set of dependent specs
     class DependentSpecificSpec < DependentWrappedSpec
+      include Modules::GraphDupper
 
-      def_delegators :@spec, :reduced, :could_be_reduced?
+      def_delegators :spec, :reduced, :could_be_reduced?
 
       # Gets name of base spec
       # @return [Symbol] the name of base spec
@@ -38,13 +41,23 @@ module VersatileDiamond
       # @param [Array] similar_specs the array of specs where each spec has
       #   same basic spec
       def organize_dependencies!(base_cache, similar_specs)
-        similar_specs = similar_specs.reject { |s| s == self || self < s }
-        similar_specs.sort! { |a, b| b <=> a }
+        small_specs = similar_specs.uniq.reject { |s| s == self || self < s }
+        small_specs.sort! { |a, b| b <=> a }
 
-        parent = similar_specs.find do |possible_parent|
-          possible_parent.specific_atoms.all? do |keyname, parent_atom|
-            child_atom = specific_atoms[keyname]
-            child_atom && is?(possible_parent, child_atom, parent_atom)
+        self_props = specific_props_from(self)
+        props_to_atoms = self_props.zip(specific_atoms.values)
+        parent = small_specs.find do |possible_parent|
+          pp_props = specific_props_from(possible_parent)
+          are_props_identical = lists_are_identical?(self_props, pp_props, &:include?)
+          anchor_props = self_props - pp_props
+          next if !are_props_identical && anchor_props == self_props
+
+          rest_props = self_props - anchor_props
+          rest_props.empty? || pp_props.permutation.any? do |pps|
+            total = anchor_props + rest_props
+            pps.all? do |ap|
+              total.delete_one { |rp| rp.include?(ap) }
+            end
           end
         end
 
@@ -59,7 +72,7 @@ module VersatileDiamond
       # @override
       def mirror_to(other)
         Mcs::SpeciesComparator.make_mirror(spec, other.spec) do |_, _, a1, a2|
-          a1.original_same?(a2)
+          a1.original_same?(a2) # TODO: same as in SpecAtomSwapper
         end
       end
 
@@ -81,18 +94,40 @@ module VersatileDiamond
 
     private
 
+      # Gets anchors of specific specie
+      # @return [Array] the list of main anchors
+      # @override
+      def main_anchors
+        @_main_anchors ||=
+          if source?
+            atoms
+          else
+            self_ptas = specific_props_from(self).zip(specific_atoms.values)
+            parent_props = specific_props_from(parents.first)
+            variant = parent_props.reduce(self_ptas) do |acc, pr|
+              result = acc.dup
+              result.delete_one { |p, _| pr == p } ? result : acc
+            end
+            variant.map(&:last)
+          end
+      end
+
+      # No additional anchors for specific specie
+      # @return [Array] empty
+      # @override
+      def additional_anchors
+        @_additional_anchors ||= []
+      end
+
       # Provides additional comparation by internal properties
       # @param [MinuendSpec] other see at #<=> same argument
       # @return [Integer] the result of comparation
       # @override
-      def order_relations(other, &block)
-        super(other) do
-          order(self, other, :specific_atoms, :size) do
-            order(self, other, :dangling_bonds_num) do
-              order(self, other, :relevants_num, &block)
-            end
-          end
-        end
+      def inlay_orders(nest, other, **kwargs)
+        super(nest, other, **kwargs)
+        nest[:order, self, other, :specific_atoms, :size]
+        nest[:order, self, other, :dangling_bonds_num]
+        nest[:order, self, other, :relevants_num]
       end
 
       # Updates links by new base specie. Replaces correspond atoms in internal
@@ -106,7 +141,6 @@ module VersatileDiamond
         update_reactions(mirror)
         update_theres(mirror)
         update_atoms(mirror)
-        update_relations(mirror)
       end
 
       # Updates atoms that uses in reactions which depends from current spec
@@ -127,25 +161,17 @@ module VersatileDiamond
         end
       end
 
-      # Updates keys of internal links graph
-      # @param [Hash] mirror where keys are atoms of old base specie and values are
-      #   atoms of new base specie
-      def update_atoms(mirror)
-        links.keys.each do |atom|
-          other_atom = mirror[atom]
-          links[other_atom] = links.delete(atom) if other_atom
-        end
-      end
-
       # Updates internal atoms in relations in links graph
       # @param [Hash] mirror where keys are atoms of old base specie and values are
       #   atoms of new base specie
-      def update_relations(mirror)
-        links.values.each do |relations|
-          relations.map! do |atom, relation|
-            [mirror[atom] || atom, relation]
-          end
-        end
+      def update_atoms(mirror)
+        @links = dup_graph(@links) { |atom| mirror[atom] || atom }
+      end
+
+      # @param [DependentSpecificSpec] spec
+      # @return [Array]
+      def specific_props_from(spec)
+        spec.specific_atoms.map { |_, atom| AtomProperties.new(spec, atom) }
       end
 
       # Compares two specific atoms and checks that own atom could include other atom

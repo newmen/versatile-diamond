@@ -11,21 +11,21 @@ module VersatileDiamond
       # Compares two minuend instances
       # @param [Minuend] other the comparable minuend instance
       # @return [Integer] the result of comparation
-      def <=> (other)
+      def <=>(other)
         compare_with(other)
       end
 
       # Checks that current instance is less than other
       # @param [Minuend] other the comparable minuend instance
       # @return [Boolean] is less or not
-      def < (other)
+      def <(other)
         compare_with(other, strong_types_order: false) < 0
       end
 
       # Checks that current instance is less than other or equal
       # @param [Minuend] other the comparable minuend instance
       # @return [Boolean] is less or equal or not
-      def <= (other)
+      def <=(other)
         self == other || self < other
       end
 
@@ -54,13 +54,12 @@ module VersatileDiamond
         Mcs::SpeciesComparator.make_mirror(self, spec)
       end
 
-
     protected
 
       # Counts the relations number in current links
       # @return [Integer] the number of relations
       def relations_num
-        links.values.map(&:size).reduce(:+)
+        erase_excess_positions(links).values.map(&:size).reduce(:+)
       end
 
       # Gets the array of used relations without excess position relations
@@ -94,35 +93,32 @@ module VersatileDiamond
 
       # Compares two minuend instances
       # @param [Minuend] other the comparable minuend instance
-      # @option [Boolean] :strong_types_order is the flag which if set then types info
-      #   also used for ordering
+      # @param [Hash] kwargs
       # @return [Integer] the result of comparation
-      def compare_with(other, strong_types_order: true)
-        procs = []
-        procs << -> &block { order(self, other, :links, :size, &block) }
-        procs << -> &block { order_classes(other, &block) } if strong_types_order
-        procs << -> &block { order_relations(other, &block) }
-
-        reduce_procs(procs, &comparing_core(other)).call
+      def compare_with(other, **kwargs)
+        core_proc = -> { comparing_core(other) }
+        inlay_procs(core_proc) do |nest|
+          inlay_orders(nest, other, **kwargs)
+        end
       end
 
-      # Provides comparison by number of relations
-      # @param [Minuend] other see at #<=> same argument
-      # @return [Integer] the result of comparation
-      def order_relations(other, &block)
-        order(self, other, :relations_num, &block)
+      # Provides the first checking order between self and other minuends
+      # @param [Proc] nest to which the call will be nested
+      # @param [Minuend] other comparing item
+      # @option [Boolean] :strong_types_order is the flag which if set then types info
+      #   also used for ordering
+      def inlay_orders(nest, other, strong_types_order: true)
+        nest[:order_classes, other] if strong_types_order
+        nest[:order, self, other, :relations_num]
+        nest[:order, self, other, :links, :size]
       end
 
       # Provides the lowest level of comparing two minuend instances
       # @param [MinuendSpec] other comparing instance
-      # @return [Proc] the core of comparison
+      # @return [Integer] the result of comparation
       def comparing_core(other)
-        -> do
-          order(self, other, :parents, :size) do
-            order(self, other, :name) do
-              order(self, other, :object_id)
-            end
-          end
+        order(self, other, :parents, :size) do
+          order(self, other, :name)
         end
       end
 
@@ -137,20 +133,25 @@ module VersatileDiamond
         end
       end
 
-      # Checks that passed neibhour key is the same as cheking key and relation between
-      # them is not excess
-      #
-      # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-      #   iterable_key the key which was not mapped
+      # Gets the links without excess positions
+      # @param [Hash] links between atoms
+      # @return [Hash] the links without excess positions
+      # @override
+      def erase_excess_positions(links)
+        erase_excess_relations_if(super(links)) do |_, v, w|
+          excess_parent_relation?(v, w)
+        end
+      end
+
+      # Checks that passed relation between atoms is not excess
       # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #   neighbour_key the neighbour key of iterable key
       # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #   checking_key the key which checks that it used
       # @param [Concepts::Bond] relation between iterable key and neighbour key
       # @return [Boolean] is realy used checking key or not
-      def neighbour?(iterable_key, neighbour_key, checking_key, relation)
-        neighbour_key == checking_key &&
-          !excess_position?(relation, checking_key, iterable_key)
+      def excess_neighbour?(neighbour_key, checking_key, relation)
+        excess_position?(relation, checking_key, neighbour_key)
       end
     end
 

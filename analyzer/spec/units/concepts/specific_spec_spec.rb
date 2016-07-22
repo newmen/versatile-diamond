@@ -30,7 +30,7 @@ module VersatileDiamond
       describe '#replace_base_spec' do
         before { activated_dimer.replace_base_spec(dimer_base_dup) }
         it { expect(activated_dimer.spec).to eq(dimer_base_dup) }
-        it { expect(activated_dimer.name).to eq(:'dimer(r: *)') }
+        it { expect(activated_dimer.name).to eq(:'dimer(l: *)') }
 
         describe 'intersec is not full' do
           let(:spec) { activated_methyl_on_bridge }
@@ -155,6 +155,12 @@ module VersatileDiamond
         it { expect(extra_activated_bridge.simple?).to be_falsey }
       end
 
+      describe '#termination?' do
+        it { expect(hydrogen.termination?).to be_falsey }
+        it { expect(hydrogen_ion.termination?).to be_falsey }
+        it { expect(bridge.termination?).to be_falsey }
+      end
+
       describe '#incoherent!' do
         before { activated_bridge.incoherent!(:ct) }
         it { expect(activated_cd.incoherent?).to be_truthy }
@@ -166,8 +172,7 @@ module VersatileDiamond
       end
 
       describe '#relation_between' do
-        let(:ct) { activated_bridge.atom(:ct) }
-        let(:cr) { activated_bridge.atom(:cr) }
+        let_atoms_of(:activated_bridge, [:ct, :cr])
         it { expect(activated_bridge.relation_between(ct, cr)).to eq(bond_110_cross) }
         it { expect(activated_bridge.relation_between(cr, ct)).to eq(bond_110_front) }
       end

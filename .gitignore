@@ -19,11 +19,11 @@ vde-*s.o*
 vde-*s.e*
 
 .DS_Store
-.idea
-*.dump
+.idea/
 .bundle/
 .what_to_run/
 coverage/
+*.dump
 
 Gemfile.lock
 
@@ -34,4 +34,4 @@ Gemfile.lock
 *.sls
 *.xyz
 
-TODO
+TODO*

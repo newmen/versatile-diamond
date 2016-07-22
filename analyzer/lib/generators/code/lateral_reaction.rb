@@ -6,6 +6,7 @@ module VersatileDiamond
 
       # Contains logic for generation lateal reation
       class LateralReaction < SpeciesReaction
+        extend Forwardable
 
         def_delegator :reaction, :chunk
         def_delegator :chunk, :internal_chunks
@@ -43,8 +44,9 @@ module VersatileDiamond
         # Verifies that passed species belongs to sidepiece species set
         # @param [Array] species which will be checked
         def check_all_source!(specs)
-          unless lists_are_identical?(reaction.sidepiece_specs, specs, &:==)
-            fail 'The passed species do not belongs to set of sidepiece species'
+          unless lists_are_identical?(reaction.sidepiece_specs, specs)
+            msg = 'The passed species do not belongs to set of sidepiece species'
+            raise ArgumentError, msg
           end
         end
 

@@ -9,7 +9,7 @@ module VersatileDiamond
       # @param [Object] other the subtrahend entity
       # @return [SpecResidual | ChunkResidual] the residual of diference between
       #   arguments or nil if it doesn't exist
-      def - (other)
+      def -(other)
         mirror = mirror_to(other)
         other.links.size == mirror.size ? subtract(other, mirror) : nil
       end
@@ -23,12 +23,9 @@ module VersatileDiamond
       # @return [SpecResidual | ChunkResidual] substraction result
       def rest_links(other, mirror, &block)
         pairs_from(mirror).each_with_object({}) do |(own_key, other_key), rest|
-          unless other_key
+          if !other_key
             rest[own_key] = links[own_key] # <-- same as bottom
-            next
-          end
-
-          if different_or_used?(other, own_key, other_key, mirror.keys)
+          elsif different_or_used?(other, own_key, other_key, mirror.keys)
             rest[own_key] = links[own_key] # <-- same as top
             block[own_key] if block_given?
           end
@@ -64,7 +61,7 @@ module VersatileDiamond
       # @return [Boolean] are different or not
       def different_by?(method, other, own_key, other_key)
         srs, ors = send(method, own_key), other.send(method, other_key)
-        !lists_are_identical?(srs, ors, &:==)
+        !lists_are_identical?(srs, ors)
       end
 
       # Checks that bonds of both key have same relations sets
@@ -77,12 +74,14 @@ module VersatileDiamond
       end
 
       # Checks whether the key is used in current links
-      # @param [Array] mirrored_keys the keys which was mapped to keys of subtrahend
+      # @param [Array] mirrored_keys the keys which were mapped to keys of subtrahend
       # @param [Object] key the checkable key
       # @return [Boolean] is used or not
       def used?(mirrored_keys, key)
         (links.keys - mirrored_keys).any? do |k|
-          links[k].any? { |neighbour, r| neighbour?(k, neighbour, key, r) }
+          links[k].any? do |neighbour, r|
+            neighbour == key && !excess_neighbour?(key, k, r)
+          end
         end
       end
     end

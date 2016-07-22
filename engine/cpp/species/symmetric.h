@@ -46,6 +46,7 @@ void Symmetric<OS, FSS, OSSS...>::findChildren()
 {
     for (ushort i = 0; i < SYMMETRICS_NUM; ++i)
     {
+        // Symmetric specie can have own children which also should call findChildren() method
         _symmetrics[i]->findChildren();
     }
     OS::findChildren();

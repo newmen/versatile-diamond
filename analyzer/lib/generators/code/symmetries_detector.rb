@@ -24,18 +24,18 @@ module VersatileDiamond
         end
 
         # Collects symmetric atoms by children of internal specie
-        def collect_symmetries
+        def collect_symmetries!
           return if @_children_collected
           @_children_collected = true
 
-          spec.non_term_children.each { |child| get(child).collect_symmetries }
+          spec.reactant_children.each { |child| get(child).collect_symmetries! }
 
           distrib_twins_to_parents(spec.anchors).each do |parent, twins|
-            get(parent).add_symmetries_for(twins)
+            get(parent).add_symmetries_for!(twins, complex_child: spec.complex?)
           end
 
           (spec.reactions.reject(&:local?) + spec.theres).each do |dept_user|
-            add_symmetries_for(dept_user.used_atoms_of(spec))
+            add_symmetries_for!(dept_user.used_atoms_of(spec))
           end
         end
 
@@ -75,14 +75,15 @@ module VersatileDiamond
 
         # Adds symmetric atoms pairs
         # @param [Array] atoms which symmetries will be stored if them exists
-        def add_symmetries_for(atoms)
-          overlaps_for(atoms).each do |overlap|
+        # @param [Hash] kwargs
+        def add_symmetries_for!(atoms, **kwargs)
+          overlaps_for(atoms, **kwargs).each do |overlap|
             next if @symmetries.keys.any? do |pairs|
               pairs.size == overlap.size && pairs.all?(&presented_in(overlap))
             end
 
             dps =
-              overlap.size == 1 && !spec.source? && !spec.complex? &&
+              overlap.one? && !spec.source? && !spec.complex? &&
               deep_parents_swapper(overlap.to_a.first)
 
             if dps
@@ -142,8 +143,10 @@ module VersatileDiamond
 
         # Gets all overlaps of atoms to internal specie atoms sequence
         # @param [Array] atoms which will be checked for existing symmetric pair
+        # @option [Boolean] :complex_child the flag which reject overlaps which are
+        #   same as passed atoms
         # @return [Array] the array of all unique overlaps
-        def overlaps_for(atoms)
+        def overlaps_for(atoms, complex_child: false)
           @self_insec.each_with_object([]) do |intersec, all_overlaps|
             overlap = {}
             check_lambda = presented_in(overlap)
@@ -155,7 +158,7 @@ module VersatileDiamond
             end
 
             next if overlap.empty?
-            next if lists_are_identical?(overlap.flatten, atoms, &:==)
+            next if !complex_child && lists_are_identical?(overlap.flatten, atoms)
             next if all_overlaps.any? { |pairs| pairs.all?(&check_lambda) }
 
             all_overlaps << overlap
@@ -283,14 +286,15 @@ module VersatileDiamond
 
         # Finds parent index and atom index in it
         # @param [Integer] index of atom in original sequence
-        # @return [Array] two values where the first is parent index and second is
-        #   atom index in it
+        # @return [Array] two values where the first is index of parent specie and
+        #   second is atom index in it
         def parent_atom_index(index)
           pi = nil
-          ai = index - @specie.sequence.delta
+          ai = index
+          delta = @specie.sequence.delta
           spec.parents.sort.each_with_index do |parent, i|
             panum = parent.links.size
-            if ai < panum
+            if ai < panum + delta
               pi = i
               break
             else
