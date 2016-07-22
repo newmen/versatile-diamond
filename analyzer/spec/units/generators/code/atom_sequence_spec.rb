@@ -50,15 +50,56 @@ module VersatileDiamond
           let(:addition_atoms) { [] }
         end
 
-        it_behaves_like :apply_all do
-          subject { dept_methyl_on_bridge_base }
-          let(:bases) { [dept_bridge_base, subject] }
-          let(:specifics) { [dept_activated_methyl_on_bridge] }
-
+        describe 'like methyl on bridge' do
           let(:original) { %i(cm cb cl cr) }
           let(:short) { %i(cb cm) }
           let(:major_atoms) { %i(cb) }
           let(:addition_atoms) { %i(cm) }
+
+          it_behaves_like :apply_all do
+            subject { dept_methyl_on_bridge_base }
+            let(:bases) { [dept_bridge_base, subject] }
+            let(:specifics) { [dept_activated_methyl_on_bridge] }
+          end
+
+          it_behaves_like :apply_all do
+            subject { dept_high_bridge_base }
+            let(:bases) { [dept_bridge_base, subject] }
+            let(:specifics) { [] }
+          end
+        end
+
+        describe 'like vinyl on bridge' do
+          let(:original) { %i(c2 c1 cb cl cr) }
+          let(:short) { %i(c1 c2) }
+          let(:major_atoms) { %i(c1) }
+          let(:addition_atoms) { %i(c2) }
+
+          it_behaves_like :apply_all do
+            subject { dept_vinyl_on_bridge_base }
+            let(:bases) { [dept_bridge_base, dept_methyl_on_bridge_base, subject] }
+            let(:specifics) { [] }
+          end
+
+          it_behaves_like :apply_all do
+            subject { dept_very_high_bridge_base }
+            let(:bases) { [dept_bridge_base, dept_high_bridge_base, subject] }
+            let(:specifics) { [] }
+          end
+        end
+
+        it_behaves_like :apply_all do
+          subject { dept_incoherent_very_high_bridge }
+          before { subject.replace_base_spec(dept_high_bridge_base) }
+          let(:specifics) { [subject] }
+          let(:bases) do
+            [dept_bridge_base, dept_high_bridge_base, dept_vinyl_on_bridge_base]
+          end
+
+          let(:original) { %i(c2 cm cb cl cr) }
+          let(:short) { %i(cm c2) }
+          let(:major_atoms) { %i(cm) }
+          let(:addition_atoms) { %i(c2) }
         end
 
         it_behaves_like :apply_all do

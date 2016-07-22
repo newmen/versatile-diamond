@@ -87,9 +87,47 @@ module VersatileDiamond
         end
 
         it_behaves_like :check_anchors do
+          let(:base_specs) { [subject] }
+          let(:specific_specs) { [target_spec] }
+          let(:target_spec) { dept_right_activated_bridge }
+          let(:keynames) { [:cr] }
+        end
+
+        it_behaves_like :check_anchors do
+          let(:base_specs) { [subject] }
+          let(:specific_specs) { [dept_right_activated_bridge, target_spec] }
+          let(:target_spec) { dept_bottom_activated_incoherent_bridge }
+          let(:keynames) { [:cr] }
+        end
+
+        it_behaves_like :check_anchors do
           let(:base_specs) { [subject, target_spec] }
           let(:target_spec) { dept_methyl_on_bridge_base }
           let(:keynames) { [:cb, :cm] }
+        end
+
+        it_behaves_like :check_anchors do
+          let(:base_specs) { [subject, dept_methyl_on_bridge_base, target_spec] }
+          let(:target_spec) { dept_high_bridge_base }
+          let(:keynames) { [:cb, :cm] }
+        end
+
+        it_behaves_like :check_anchors do
+          let(:base_specs) do
+            [subject, dept_methyl_on_bridge_base, dept_high_bridge_base, target_spec]
+          end
+          let(:target_spec) { dept_very_high_bridge_base }
+          let(:keynames) { [:c1, :c2] }
+        end
+
+        it_behaves_like :check_anchors do
+          before { target_spec.replace_base_spec(dept_high_bridge_base) }
+          let(:base_specs) do
+            [subject, dept_high_bridge_base, dept_very_high_bridge_base]
+          end
+          let(:specific_specs) { [target_spec] }
+          let(:target_spec) { dept_incoherent_very_high_bridge }
+          let(:keynames) { [:cm, :c2] }
         end
 
         it_behaves_like :check_anchors do

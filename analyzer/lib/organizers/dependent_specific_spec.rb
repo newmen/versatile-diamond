@@ -94,29 +94,55 @@ module VersatileDiamond
 
     private
 
+      # @return [Array]
+      def self_props_with_atoms
+        specific_props_from(self).zip(specific_atoms.values)
+      end
+
+      # @return [Array]
+      def parent_props_with_atoms
+        parent = parents.first
+        if parent
+          specific_props_from(parent).zip(parent.specific_atoms.map(&:last))
+        else
+          []
+        end
+      end
+
+      # @return [Array]
+      def parent_props
+        @_parent_props ||= parent_props_with_atoms.map(&:first)
+      end
+
+      # @return [Array]
+      def parent_atoms_without(ptas)
+        variant = parent_props.reduce(ptas) do |acc, pr|
+          result = acc.dup
+          result.delete_one { |p, _| pr == p } ? result : acc
+        end
+        variant.map(&:last)
+      end
+
       # Gets anchors of specific specie
       # @return [Array] the list of main anchors
       # @override
       def main_anchors
         @_main_anchors ||=
-          if source?
-            atoms
-          else
-            self_ptas = specific_props_from(self).zip(specific_atoms.values)
-            parent_props = specific_props_from(parents.first)
-            variant = parent_props.reduce(self_ptas) do |acc, pr|
-              result = acc.dup
-              result.delete_one { |p, _| pr == p } ? result : acc
-            end
-            variant.map(&:last)
-          end
+          source? ? atoms : parent_atoms_without(self_props_with_atoms)
       end
 
       # No additional anchors for specific specie
       # @return [Array] empty
       # @override
       def additional_anchors
-        @_additional_anchors ||= []
+        @_additional_anchors ||=
+          if source? || parents.first.links.size == links.size
+            []
+          else
+            skipped_anchors = @rest ? (@rest.links.keys - main_anchors) : []
+            skipped_ptas = skipped_anchors.map { |a| [AtomProperties.new(self, a), a] }
+            @_additional_anchors = parent_atoms_without(skipped_ptas)
+          end
       end
 
       # Provides additional comparation by internal properties
@@ -183,6 +209,11 @@ module VersatileDiamond
         own_prop = AtomProperties.new(self, own_atom)
         other_prop = AtomProperties.new(other, other_atom)
         own_prop.include?(other_prop)
+      end
+
+      def reset_caches!
+        super
+        @_parent_props = nil
       end
     end
 

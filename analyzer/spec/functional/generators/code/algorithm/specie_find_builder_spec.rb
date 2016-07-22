@@ -179,6 +179,54 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_code do
+              subject { dept_very_high_bridge_base }
+              let(:base_specs) { [dept_bridge_base, dept_high_bridge_base, subject] }
+              let(:find_algorithm) do
+                <<-CODE
+    Atom *amorph1 = parent->atom(0);
+    if (amorph1->is(#{role_c1}))
+    {
+        if (!amorph1->hasRole(VERY_HIGH_BRIDGE, #{role_c1}))
+        {
+            amorph1->eachAmorphNeighbour([&parent](Atom *amorph2) {
+                if (amorph2->is(#{role_c2}))
+                {
+                    create<VeryHighBridge>(amorph2, parent);
+                }
+            });
+        }
+    }
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
+              before { subject.replace_base_spec(dept_high_bridge_base) }
+              subject { dept_incoherent_very_high_bridge }
+              let(:base_specs) do
+                [dept_bridge_base, dept_high_bridge_base, dept_very_high_bridge_base]
+              end
+              let(:specific_specs) { [subject] }
+              let(:find_algorithm) do
+                <<-CODE
+    Atom *amorph1 = parent->atom(0);
+    if (amorph1->is(#{role_cm}))
+    {
+        if (!amorph1->hasRole(VERY_HIGH_BRIDGE_C2i, #{role_cm}))
+        {
+            amorph1->eachAmorphNeighbour([&parent](Atom *amorph2) {
+                if (amorph2->is(#{role_c2}))
+                {
+                    create<VeryHighBridgeC2i>(amorph2, parent);
+                }
+            });
+        }
+    }
+                CODE
+              end
+            end
+
+            it_behaves_like :check_code do
               subject { dept_vinyl_on_bridge_base }
               let(:base_specs) { [dept_bridge_base, subject] }
               let(:find_algorithm) do
@@ -194,7 +242,7 @@ module VersatileDiamond
                     amorph1->eachAmorphNeighbour([&amorph1, &parent](Atom *amorph2) {
                         if (amorph2->is(#{role_c2}))
                         {
-                            Atom *additionalAtoms[2] = { amorph2, amorph1 };
+                            Atom *additionalAtoms[2] = { amorph1, amorph2 };
                             create<VinylOnBridge>(additionalAtoms, parent);
                         }
                     });
@@ -578,7 +626,7 @@ module VersatileDiamond
                             {
                                 if (neighbours1[0]->hasBondWith(neighbours1[1]))
                                 {
-                                    Dimer *dimer2 = neighbours1[1]->specByRole<Dimer>(#{d_cr});
+                                    Dimer *dimer2 = neighbours1[0]->specByRole<Dimer>(#{d_cr});
                                     if (dimer2)
                                     {
                                         if (neighbours1[0]->hasBondWith(amorph1))
@@ -701,7 +749,7 @@ module VersatileDiamond
                                 {
                                     if (atoms1[0]->hasBondWith(neighbours1[0]) && atoms1[1]->hasBondWith(neighbours1[1]))
                                     {
-                                        CrossBridgeOnBridges *crossBridgeOnBridges1 = neighbours1[1]->specByRole<CrossBridgeOnBridges>(#{cbob_ctr});
+                                        CrossBridgeOnBridges *crossBridgeOnBridges1 = neighbours1[0]->specByRole<CrossBridgeOnBridges>(#{cbob_ctr});
                                         if (crossBridgeOnBridges1)
                                         {
                                             crossBridgeOnBridges1->eachSymmetry([&bridge1, &bridge2, &neighbours1](ParentSpec *symmetricCrossBridgeOnBridges1) {

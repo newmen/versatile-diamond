@@ -264,10 +264,10 @@ module VersatileDiamond
         {
             if (neighbours1[0]->hasBondWith(neighbours1[1]))
             {
-                DimerCLiCRi *dimerCLiCRi1 = neighbours1[1]->specByRole<DimerCLiCRi>(#{id_cr});
+                DimerCLiCRi *dimerCLiCRi1 = neighbours1[0]->specByRole<DimerCLiCRi>(#{id_cr});
                 if (dimerCLiCRi1)
                 {
-                    DimerCLiCRi *dimerCLiCRi2 = neighbours1[0]->specByRole<DimerCLiCRi>(#{id_cr});
+                    DimerCLiCRi *dimerCLiCRi2 = neighbours1[1]->specByRole<DimerCLiCRi>(#{id_cr});
                     if (dimerCLiCRi2)
                     {
                         if (dimerCLiCRi1 == dimerCLiCRi2)
@@ -276,7 +276,7 @@ module VersatileDiamond
                                 UnoLateralFactory,
                                 ForwardIncoherentDimerDropEndLateral,
                                 ForwardIncoherentDimerDrop
-                            > factory(sidepiece, dimerCLiCRi2);
+                            > factory(sidepiece, dimerCLiCRi1);
                             factory.checkoutReactions<ForwardIncoherentDimerDropEndLateral>();
                         }
                     }

@@ -47,15 +47,15 @@ module VersatileDiamond
         {
             if (neighbours1[0]->hasBondWith(neighbours1[1]))
             {
-                Dimer *dimer1 = neighbours1[1]->specByRole<Dimer>(#{dimer_cr});
+                Dimer *dimer1 = neighbours1[0]->specByRole<Dimer>(#{dimer_cr});
                 if (dimer1)
                 {
-                    Dimer *dimer2 = neighbours1[0]->specByRole<Dimer>(#{dimer_cr});
+                    Dimer *dimer2 = neighbours1[1]->specByRole<Dimer>(#{dimer_cr});
                     if (dimer2)
                     {
                         if (dimer1 == dimer2)
                         {
-                            chunks[index++] = new #{class_name}(this, dimer2);
+                            chunks[index++] = new #{class_name}(this, dimer1);
                         }
                     }
                 }
@@ -87,15 +87,15 @@ module VersatileDiamond
         {
             if (neighbours1[0]->hasBondWith(neighbours1[1]))
             {
-                Dimer *dimer1 = neighbours1[1]->specByRole<Dimer>(#{dimer_cr});
+                Dimer *dimer1 = neighbours1[0]->specByRole<Dimer>(#{dimer_cr});
                 if (dimer1)
                 {
-                    Dimer *dimer2 = neighbours1[0]->specByRole<Dimer>(#{dimer_cr});
+                    Dimer *dimer2 = neighbours1[1]->specByRole<Dimer>(#{dimer_cr});
                     if (dimer2)
                     {
                         if (dimer1 == dimer2)
                         {
-                            chunks[index++] = new ForwardDimerFormationEndLateral(this, dimer2);
+                            chunks[index++] = new ForwardDimerFormationEndLateral(this, dimer1);
                         }
                     }
                 }

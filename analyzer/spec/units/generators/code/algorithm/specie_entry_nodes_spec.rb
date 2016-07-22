@@ -46,6 +46,38 @@ module VersatileDiamond
             end
           end
 
+
+          it_behaves_like :check_entry_nodes do
+            subject { dept_high_bridge_base }
+            let(:base_specs) do
+              [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+            end
+            let(:points_list) { [[:cb]] }
+          end
+
+          it_behaves_like :check_entry_nodes do
+            subject { dept_very_high_bridge_base }
+            let(:base_specs) do
+              [
+                dept_bridge_base,
+                dept_methyl_on_bridge_base,
+                dept_high_bridge_base,
+                subject
+              ]
+            end
+            let(:points_list) { [[:c1]] }
+          end
+
+          it_behaves_like :check_entry_nodes do
+            before { subject.replace_base_spec(dept_high_bridge_base) }
+            subject { dept_incoherent_very_high_bridge }
+            let(:base_specs) do
+              [dept_bridge_base, dept_high_bridge_base, dept_very_high_bridge_base]
+            end
+            let(:specific_specs) { [subject] }
+            let(:points_list) { [[:cm]] }
+          end
+
           it_behaves_like :check_entry_nodes do
             subject { dept_dimer_base }
             let(:base_specs) { [dept_bridge_base, subject] }

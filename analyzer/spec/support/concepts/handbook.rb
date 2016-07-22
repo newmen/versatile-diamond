@@ -297,6 +297,15 @@ module VersatileDiamond
           SpecificSpec.new(high_bridge_base, cm: incoherent_c_hydride)
         end
 
+        set(:very_high_bridge_base) do
+          s = SurfaceSpec.new(:very_high_bridge)
+          s.adsorb(vinyl_on_bridge_base)
+          s.link(s.atom(:c1), s.atom(:cb), free_bond); s
+        end
+        set(:incoherent_very_high_bridge) do
+          SpecificSpec.new(very_high_bridge_base, c2: incoherent_c)
+        end
+
         set(:dimer_base) do
           s = SurfaceSpec.new(:dimer)
           s.adsorb(bridge_base)

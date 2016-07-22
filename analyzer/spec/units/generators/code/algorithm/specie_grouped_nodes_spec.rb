@@ -87,6 +87,57 @@ module VersatileDiamond
             end
           end
 
+          describe 'like vinyl on bridge' do
+            let(:flatten_face_grouped_atoms) { [[:c1], [:c2]] }
+            let(:nodes_list) do
+              [
+                [Instances::UniqueParent, :c1],
+                [Instances::NoneSpecie, :c2]
+              ]
+            end
+            let(:grouped_graph) do
+              {
+                [:c1] => [[[:c2], param_amorph]],
+                [:c2] => [[[:c1], param_amorph]]
+              }
+            end
+
+            it_behaves_like :check_grouped_nodes_graph do
+              subject { dept_vinyl_on_bridge_base }
+              let(:base_specs) do
+                [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+              end
+            end
+
+            it_behaves_like :check_grouped_nodes_graph do
+              subject { dept_very_high_bridge_base }
+              let(:base_specs) { [dept_bridge_base, dept_high_bridge_base, subject] }
+            end
+          end
+
+          it_behaves_like :check_grouped_nodes_graph do
+            subject { dept_incoherent_very_high_bridge }
+            before { subject.replace_base_spec(dept_high_bridge_base) }
+            let(:specific_specs) { [subject] }
+            let(:base_specs) do
+              [dept_bridge_base, dept_high_bridge_base, dept_vinyl_on_bridge_base]
+            end
+
+            let(:flatten_face_grouped_atoms) { [[:cm], [:c2]] }
+            let(:nodes_list) do
+              [
+                [Instances::UniqueParent, :cm],
+                [Instances::NoneSpecie, :c2]
+              ]
+            end
+            let(:grouped_graph) do
+              {
+                [:cm] => [[[:c2], param_amorph]],
+                [:c2] => [[[:cm], param_amorph]]
+              }
+            end
+          end
+
           it_behaves_like :check_grouped_nodes_graph do
             subject { dept_dimer_base }
             let(:base_specs) { [dept_bridge_base, subject] }

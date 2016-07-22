@@ -381,7 +381,7 @@ module VersatileDiamond
                   <<-CODE
     SpecificSpec *vinylOnBridgeC1iC2i1 = target();
     assert(vinylOnBridgeC1iC2i1->type() == VINYL_ON_BRIDGE_C1i_C2i);
-    Atom *atoms1[3] = { vinylOnBridgeC1iC2i1->atom(2), vinylOnBridgeC1iC2i1->atom(1), vinylOnBridgeC1iC2i1->atom(0) };
+    Atom *atoms1[3] = { vinylOnBridgeC1iC2i1->atom(2), vinylOnBridgeC1iC2i1->atom(0), vinylOnBridgeC1iC2i1->atom(1) };
     assert(atoms1[0]->is(#{role_cb}));
     assert(atoms1[1]->is(#{cv_i}));
     assert(atoms1[2]->is(#{cw_i}));
@@ -402,7 +402,7 @@ module VersatileDiamond
                   <<-CODE
     SpecificSpec *vinylOnBridgeC1iC2i1 = target();
     assert(vinylOnBridgeC1iC2i1->type() == VINYL_ON_BRIDGE_C1i_C2i);
-    Atom *atoms1[3] = { vinylOnBridgeC1iC2i1->atom(2), vinylOnBridgeC1iC2i1->atom(1), vinylOnBridgeC1iC2i1->atom(0) };
+    Atom *atoms1[3] = { vinylOnBridgeC1iC2i1->atom(2), vinylOnBridgeC1iC2i1->atom(0), vinylOnBridgeC1iC2i1->atom(1) };
     assert(atoms1[0]->is(#{role_cb}));
     assert(atoms1[1]->is(#{cv_i}));
     assert(atoms1[2]->is(#{cw_i}));

@@ -77,6 +77,32 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_cut_links do
+            subject { dept_very_high_bridge_base }
+            let(:base_specs) { [dept_bridge_base, dept_high_bridge_base, subject] }
+            let(:cut_links) do
+              {
+                :c1 => [[:c2, free_bond]],
+                :c2 => [[:c1, free_bond]]
+              }
+            end
+          end
+
+          it_behaves_like :check_cut_links do
+            before { subject.replace_base_spec(dept_high_bridge_base) }
+            subject { dept_incoherent_very_high_bridge }
+            let(:base_specs) do
+              [dept_bridge_base, dept_high_bridge_base, dept_vinyl_on_bridge_base]
+            end
+            let(:specific_specs) { [subject] }
+            let(:cut_links) do
+              {
+                :cm => [[:c2, free_bond]],
+                :c2 => [[:cm, free_bond]]
+              }
+            end
+          end
+
+          it_behaves_like :check_cut_links do
             subject { dept_dimer_base }
             let(:base_specs) { [dept_bridge_base, subject] }
             let(:cut_links) do
@@ -274,8 +300,8 @@ module VersatileDiamond
           it_behaves_like :check_cut_links do
             subject { dept_bottom_activated_incoherent_bridge }
             let(:base_specs) { [dept_bridge_base] }
-            let(:specific_specs) {
-              [dept_right_activated_extended_bridge, subject] }
+            let(:specific_specs) { [dept_right_activated_bridge, subject] }
+            let(:typical_reactions) { [dept_methyl_to_gap] }
             let(:cut_links) do
               {
                 :cr => []

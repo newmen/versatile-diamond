@@ -30,13 +30,21 @@ module VersatileDiamond
               end
             end
 
-            it_behaves_like :check_finite_graph do
-              subject { dept_methyl_on_bridge_base }
-              let(:base_specs) { [dept_bridge_base, subject] }
+            describe 'like methyl on bridge' do
               let(:final_graph) do
                 {
                   [:cb] => [[[:cm], param_amorph]]
                 }
+              end
+
+              it_behaves_like :check_finite_graph do
+                subject { dept_methyl_on_bridge_base }
+                let(:base_specs) { [dept_bridge_base, subject] }
+              end
+
+              it_behaves_like :check_finite_graph do
+                subject { dept_high_bridge_base }
+                let(:base_specs) { [dept_bridge_base, subject] }
               end
             end
 
@@ -47,6 +55,40 @@ module VersatileDiamond
                 {
                   [:cb] => [[[:c1], param_amorph]],
                   [:c1] => [[[:c2], param_amorph]],
+                }
+              end
+            end
+
+            describe 'like vinyl on bridge' do
+              let(:final_graph) do
+                {
+                  [:c1] => [[[:c2], param_amorph]]
+                }
+              end
+
+              it_behaves_like :check_finite_graph do
+                subject { dept_vinyl_on_bridge_base }
+                let(:base_specs) do
+                  [dept_bridge_base, dept_methyl_on_bridge_base, subject]
+                end
+              end
+
+              it_behaves_like :check_finite_graph do
+                subject { dept_very_high_bridge_base }
+                let(:base_specs) { [dept_bridge_base, dept_high_bridge_base, subject] }
+              end
+            end
+
+            it_behaves_like :check_finite_graph do
+              subject { dept_incoherent_very_high_bridge }
+              before { subject.replace_base_spec(dept_high_bridge_base) }
+              let(:specific_specs) { [subject] }
+              let(:base_specs) do
+                [dept_bridge_base, dept_high_bridge_base, dept_vinyl_on_bridge_base]
+              end
+              let(:final_graph) do
+                {
+                  [:cm] => [[[:c2], param_amorph]]
                 }
               end
             end

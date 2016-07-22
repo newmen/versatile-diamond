@@ -535,15 +535,15 @@ module VersatileDiamond
     eachNeighbours<2>(atoms1, &Diamond::cross_100, [&target](Atom **neighbours1) {
         if (neighbours1[0]->is(#{other_role_cr}) && neighbours1[1]->is(#{other_role_cr}))
         {
-            BridgeCRs *bridgeCRs1 = neighbours1[1]->specByRole<BridgeCRs>(#{other_role_cr});
+            BridgeCRs *bridgeCRs1 = neighbours1[0]->specByRole<BridgeCRs>(#{other_role_cr});
             if (bridgeCRs1)
             {
-                if (neighbours1[0] != bridgeCRs1->atom(1))
+                if (neighbours1[1] != bridgeCRs1->atom(1))
                 {
-                    BridgeCRs *bridgeCRs2 = neighbours1[0]->specByRole<BridgeCRs>(#{other_role_cr});
+                    BridgeCRs *bridgeCRs2 = neighbours1[1]->specByRole<BridgeCRs>(#{other_role_cr});
                     if (bridgeCRs2)
                     {
-                        if (neighbours1[1] != bridgeCRs2->atom(1))
+                        if (neighbours1[0] != bridgeCRs2->atom(1))
                         {
                             SpecificSpec *targets[3] = { bridgeCRs1, bridgeCRs2, target };
                             create<ForwardMethylToGap>(targets);

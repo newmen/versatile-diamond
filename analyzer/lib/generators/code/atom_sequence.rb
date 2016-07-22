@@ -94,35 +94,21 @@ module VersatileDiamond
         #   in returned sequence
         # @return [Array] sorted array of atoms
         def sort_atoms(atoms, amorph_before: true)
-          atoms.sort do |*as|
-            a, b = as
-            if as.map(&:lattice).uniq.size > 1
-              amorph_to_begin = amorph_before && !a.lattice && b.lattice
-              crystal_to_begin = !amorph_before && a.lattice && !b.lattice
-              amorph_to_begin || crystal_to_begin ? -1 : 1
-            elsif as.map(&:specific?).uniq.size > 1
-              a.specific? && !b.specific? ? -1 : 1
-            elsif as.map(&:reference?).uniq.size > 1
-              !a.reference? && b.reference? ? -1 : 1
-            else
-              order_similar(as, amorph_before: amorph_before)
-            end
-          end
+          usages = atoms.map { |a| -major_bonds_num(a) }
+          props = atoms.map(&method(:atom_properties_for))
+          keynames = atoms.map(&spec.spec.public_method(:keyname))
+          triple = usages.zip(props, keynames)
+          sorteds = triple.zip(atoms).sort_by(&:first).map(&:last)
+          amorphs = sorteds.reject(&:lattice)
+          surfaces = sorteds.select(&:lattice)
+          amorph_before ? amorphs + surfaces : surfaces + amorphs
         end
 
-        # @param [Array] atoms the pair of sorting atoms
-        # @return [Integer] the result of comparation
-        def order_similar(atoms, amorph_before: true)
-          ap, bp = atoms.map(&method(:atom_properties_for))
-          if ap == bp
-            ak, bk = atoms.map(&method(:keyname_for))
-            ak <=> bk
-          elsif ap.lattice && bp.lattice
-            bp <=> ap
-          else
-            cmp = (ap <=> bp)
-            amorph_before ? cmp : -cmp
-          end
+        # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+        #   atom which bond relations will be counted
+        # @return [Integer] the number of exist bond relations
+        def major_bonds_num(atom)
+          spec.spec.links[atom].map(&:last).select(&:exist?).select(&:bond?).size
         end
 
         # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
@@ -130,13 +116,6 @@ module VersatileDiamond
         # @return [Organizers::AtomProperties]
         def atom_properties_for(atom)
           Organizers::AtomProperties.new(spec, atom)
-        end
-
-        # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
-        #   atom from which the keyname will be resolved
-        # @return [Symbol]
-        def keyname_for(atom)
-          spec.spec.keyname(atom)
         end
 
         # @return [Array]

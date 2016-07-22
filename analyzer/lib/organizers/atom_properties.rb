@@ -101,7 +101,9 @@ module VersatileDiamond
       # @param [AtomProperties] other comparing atom properties
       # @return [Integer] the comparing result
       def <=>(other)
-        if include?(other)
+        if self == other
+          0
+        elsif include?(other)
           1
         elsif other.include?(self)
           -1
