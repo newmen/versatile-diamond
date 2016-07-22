@@ -46,6 +46,11 @@ surface
     atoms ch: C, ct: basis(:ct), cr: basis(:cr)
     dbond :ch, :ct
 
+  spec :very_high_bridge
+    aliases basis: high_bridge
+    atoms c2: C, c1: basis(:ch), ct: basis(:ct)
+    dbond :c1, :c2
+
   spec :dimer
     atoms cl: bridge(:ct), cr: bridge(:ct)
     bond :cl, :cr, face: 100, dir: :front
@@ -75,7 +80,7 @@ surface
 
   spec :vinyl_on_dimer
     aliases vob: vinyl_on_bridge
-    atoms cl: bridge(:ct), cr: vob(:cb), c1: vob(:c1)
+    atoms cl: bridge(:ct), cr: vob(:cb), c1: vob(:c1), c2: vob(:c2)
     bond :cl, :cr, face: 100, dir: :front
 
   spec :bridge_with_dimer
@@ -88,6 +93,12 @@ surface
     atoms ctr: C%d, cbr: bridge(:ct), cc: bridge(:cr)
     bond :ctr, :cbr, face: 110, dir: :cross
     bond :ctr, :cc, face: 110, dir: :cross
+
+  # более правильно было бы использовать :two_bridges
+  spec :two_bridges_with_high_bridge
+    aliases tbs: three_bridges
+    atoms ch: C, ctr: tbs(:ctr), cbr: tbs(:cbr)
+    dbond :ch, :ctr
 
   spec :cross_bridge_on_dimers
     atoms ct: C, cl: dimer(:cr), cr: dimer(:cr)
@@ -326,7 +337,7 @@ events
 
   reaction 'high bridge is stand to incoherent bridge'
     aliases source: bridge, product: bridge
-    equation high_bridge + source(ct: *, ct: i) = product(cr: *)
+    equation high_bridge(ct: i) + source(ct: *, ct: i) = product(cr: *)
 
       refinement 'without chain neighbour methyl'
         forward_activation 12.3
@@ -343,7 +354,7 @@ events
     reverse_rate 6.1e13
 
   reaction 'high bridge to bridge and dimer'
-    equation high_bridge + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *)
+    equation high_bridge(ct: i) + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *)
 
       refinement 'without chain neighbour methyl'
         activation 14.9
@@ -357,15 +368,16 @@ events
     reverse_rate 4.2e8
 
   reaction 'high bridge to two bridges on three'
-    equation high_bridge + bridge(cr: *) = three_bridges(cbr: *)
+    equation high_bridge(ct: i) + bridge(cr: *) = three_bridges(cbr: *)
       refinement 'without chain neighbour methyl'
         activation 3.2
+        forward_rate 2.9e11
 
       lateral :high_neighbour, target_atom: high_bridge(:ct)
       there :near_methyl
+        forward_activation 999 # deny
         reverse_activation 5.3
 
-    forward_rate 2.9e11
     reverse_rate 1.1e8
 
   reaction 'migration along row'
@@ -409,9 +421,7 @@ events
 
       lateral :dimers_row, one_atom: dimer(:cr), two_atom: dimer(:cl)
       there :end_row
-        # activation :inf
-        forward_activation 500 # 1.135590e-80
-        # TODO: проработать момент запрета реакций
+        forward_activation 999 # deny
 
     # значения также выдуманы
     forward_rate 2.8e11
@@ -464,11 +474,24 @@ events
         forward_rate 2.8e8
         reverse_rate 3e7
 
-  # TODO: не определяются изменённые атомы!
-  reaction 'vinyl incorporion'
-    # TODO: сделать поэтапно, поскольку всё-равно нужна миграция (не изменяемые атомы тоже следует починить)
-    equation vinyl_on_dimer(c1: *) = high_bridge(cr: *)
-    forward_activation 40.1
-    reverse_activation 7.5
-    forward_rate 9.4e13
+  # TODO: все значения для преобразования винила – выдуманы!
+  reaction 'vinyl to very high bridge'
+    equation vinyl_on_dimer(c1: *, c2: i) = very_high_bridge + bridge(ct: *)
+    forward_activation 20.1
+    reverse_activation 5.9
+    forward_rate 9.4e12
     reverse_rate 8.1e10
+
+  reaction 'very high bridge stand to incoherent bridge'
+    equation very_high_bridge(c2: i) + bridge(ct: *, ct: i) = high_bridge(cr: *)
+    forward_activation 18.4
+    reverse_activation 37.5
+    forward_rate 9.7e11
+    reverse_rate 1.1e13
+
+  reaction 'very high bridge stand to fixed bridge'
+    equation very_high_bridge(c2: i) + bridge(cr: *) = two_bridges_with_high_bridge(cbr: *)
+    forward_activation 10.9
+    reverse_activation 32.2
+    forward_rate 1.5e11
+    reverse_rate 5.2e7
