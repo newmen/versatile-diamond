@@ -114,7 +114,7 @@ module VersatileDiamond
           def latticed_relation_params_of(node)
             neighbour_spec_atoms(node.product).each_with_object([]) do |sa, acc|
               nbr = @prd_to_src_mirror[sa]
-              if nbr.lattice
+              if nbr && nbr.lattice
                 prd_rel = relation_between_products(nbr, node)
                 if prd_rel
                   acc << [nbr, prd_rel.params] if prd_rel.exist?
