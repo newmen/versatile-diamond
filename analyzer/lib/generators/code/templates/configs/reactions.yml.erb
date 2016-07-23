@@ -1,13 +1,23 @@
 ---
-# Units of measurement:
-# A - 1/s
-# Ea - J/mol
+# The Arrhenius equation is a formula for the temperature dependence of reaction rates.
+# The extended formula is:
+#
+#   r = k * (t^Tp) * e^(-Ea/(R * t)) * [concentrations]
+#
+# where:
+# r - full rate of reaction
+# t - temperature   # <%= Tools::Dimension::DEFAULT_TEMPERATURE %>   (env.yml)
+# R - universal gas constant: <%= Tools::Dimension::R %>   # <%= Tools::Dimension::R_DIMENSION %>   (env.yml)
+# e - base of natural logarithm: 2.718
+#
+# k - pre-exponential factor of Arrenius' equation
+# Ea - activation energy
 # Tp - just the degree of temperature value
 
 <% reactions.each do |enum_name, reaction| %>
 <%= enum_name %>:
-  A: <%= fix_value(reaction.rate) %>
-  Ea: <%= fix_value(reaction.activation) %>
+  k: <%= fix_value(reaction.rate) %>   # <%= Tools::Dimension::DEFAULT_RATE %>
+  Ea: <%= fix_value(reaction.activation) %>   # <%= Tools::Dimension::DEFAULT_ENERGY %>
   Tp: <%= fix_value(reaction.temp_power) %>
 
 <% end %>

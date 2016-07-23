@@ -14,9 +14,9 @@ module VersatileDiamond
           @generator = generator
         end
 
-        # Also generates YAML config file
+        # Generates YAML config file
         # @param [String] root_dir the generation directory
-        # @return [Array] common files of current class
+        # @return [Array] common files of rates reader class
         # @override
         def generate(root_dir)
           ReactionsRatesYaml.new(self).generate(root_dir) +

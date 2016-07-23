@@ -33,7 +33,7 @@ module VersatileDiamond
         # Gets all used gas species
         # @return [Array] the array of used gas species
         def gas_specs
-          generator.specific_gas_specs
+          generator.specific_gas_specs.select(&:deep_reactant?)
         end
 
       private
