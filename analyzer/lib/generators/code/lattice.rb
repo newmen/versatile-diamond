@@ -52,11 +52,14 @@ module VersatileDiamond
 
         # Also copies relations cpp template class which own for each lattice
         # @param [String] root_dir see at #super same argument
+        # @return [Array] no common files required for lattice class
+        # @override
         def generate(root_dir)
           super
           copy_file(root_dir, crystal_properties_file_name)
           copy_file(root_dir, relations_file_name)
           iterator.generate(root_dir)
+          []
         end
 
         # Get the cpp class name

@@ -12,9 +12,12 @@ module VersatileDiamond
 
         # Also copies using data file
         # @param [String] root_dir see at #super same argument
+        # @return [Array] the list of required common files
+        # @override
         def generate(root_dir)
           super
           copy_file(root_dir, full_data_path)
+          [base_class_file]
         end
 
         # Gets the name of base class
@@ -65,6 +68,12 @@ module VersatileDiamond
         # @return [String] the path to using data file
         def full_data_path
           "data/#{data_file_name}.h"
+        end
+
+        # Gets the full path to data file
+        # @return [String] the path to using data file
+        def base_class_file
+          common_file('ubiquitous')
         end
 
         # Gets the list of reaction class generators which are dependent from current

@@ -35,16 +35,9 @@ module VersatileDiamond
         :ubiquitous_reactions, :spec_reactions
 
       # Generates source code and configuration files
-      def generate(**params)
-        [
-          major_code_instances,
-          unique_pure_atoms,
-          lattices.compact,
-          surface_reactants,
-          reactions
-        ].each do |collection|
-          collection.each { |code_class| code_class.generate(@out_path) }
-        end
+      def generate(**)
+        common_files = generating_instances.flat_map { |cc| cc.generate(@out_path) }
+        (common_files.uniq + [common_main_file]).each { |f| f.copy_to(@out_path) }
       end
 
       MAIN_CODE_INST_NAMES.each do |name|
@@ -155,6 +148,22 @@ module VersatileDiamond
         MAIN_CODE_INST_NAMES.map { |name| send(name.to_sym) }
       end
 
+      # @return [CommonFile]
+      def common_main_file
+        CommonFile.new('main.cpp')
+      end
+
+      # @return [Array] the flatten list of all generating instances
+      def generating_instances
+        [
+          major_code_instances,
+          unique_pure_atoms,
+          lattices.compact,
+          surface_reactants,
+          reactions
+        ].map(&:to_a).reduce(:+)
+      end
+
       # Finds and drops not unique items which are compares by block
       # @param [Array] list of unificable elements
       # @yield [Object, Object] compares two elements
@@ -174,7 +183,11 @@ module VersatileDiamond
       # @return [Hash] the mirror of lattices to code generator
       def collect_code_lattices
         classifier.used_lattices.each_with_object({}) do |concept, acc|
-          acc[concept.name] = Code::Lattice.new(self, concept) if concept
+          if concept
+            acc[concept.name] = Code::Lattice.new(self, concept)
+          else
+            acc[nil] = nil
+          end
         end
       end
 

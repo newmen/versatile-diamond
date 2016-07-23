@@ -23,13 +23,19 @@ module VersatileDiamond
 
       private
 
+        # The list of common files which are used by atom class generator
+        # @return [Array] the list with specific atom class file item
+        def using_common_files
+          head_include_objects
+        end
+
         # Gets the list of objects which headers should be included in header file
         # of current class
         #
         # @return [Array] the list of including objects
         # @override
         def head_include_objects
-          [CommonFile.new('atoms/specified_atom.h')]
+          [common_file('specified_atom')]
         end
 
         # Atoms stored in atoms directory

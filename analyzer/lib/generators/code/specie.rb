@@ -61,13 +61,10 @@ module VersatileDiamond
 
         # Generates source code for specie
         # @param [String] root_dir see at #super same argument
+        # @return [Array] the list of required common files
         # @override
         def generate(root_dir)
-          if symmetric?
-            @original.generate(root_dir)
-            @symmetrics.each { |symmetric| symmetric.generate(root_dir) }
-          end
-          super
+          build_satelites(root_dir) + super
         end
 
         # Checks that specie have typical reactions
@@ -191,6 +188,18 @@ module VersatileDiamond
       private
 
         def_delegator :sequence, :delta
+
+        # Generates code for supply species
+        # @param [String] root_dir see at #generate same argument
+        # @return [Array] the list of all required common files
+        def build_satelites(root_dir)
+          if symmetric?
+            @original.generate(root_dir) +
+              @symmetrics.flat_map { |symmetric| symmetric.generate(root_dir) }
+          else
+            []
+          end
+        end
 
         # Gets the name of directory where will be stored result file
         # @return [String] the name of result directory

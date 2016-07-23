@@ -15,13 +15,6 @@ module VersatileDiamond
           ['file', :downcase, '_'],
         ].freeze
 
-        # The list of common files which are used by current class generator
-        # @return [Array] list with base class file path
-        # @override
-        def using_common_files
-          common_base_class_files.map(&:full_file_path)
-        end
-
         # Provides classes list from which occur inheritance when template renders
         # @return [Array] the array of cpp class names
         # TODO: must be private
@@ -44,6 +37,13 @@ module VersatileDiamond
         end
 
       private
+
+        # The list of common files which are used by current generating class
+        # @return [Array] list with base class file path
+        # @override
+        def using_common_files
+          common_base_class_files
+        end
 
         # By default sought instance doesn't use lattice atom iterators
         # @return [Array] the empty array by default
@@ -83,12 +83,6 @@ module VersatileDiamond
         # @return [Array] the common files for current instance
         def common_base_class_files
           [common_file(outer_base_name)]
-        end
-
-        # @param [String] file_name
-        # @return [CommonFile]
-        def common_file(file_name)
-          CommonFile.new("#{template_additional_path}/#{file_name}.h")
         end
 
         # Gets the name of directory where will be stored result file

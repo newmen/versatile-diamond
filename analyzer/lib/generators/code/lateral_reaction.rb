@@ -41,6 +41,13 @@ module VersatileDiamond
 
       private
 
+        # The list of common files which are used by lateral reaction class
+        # @return [Array] list with base class file path
+        # @override
+        def using_common_files
+          super + [common_file('lateral')]
+        end
+
         # Verifies that passed species belongs to sidepiece species set
         # @param [Array] species which will be checked
         def check_all_source!(specs)

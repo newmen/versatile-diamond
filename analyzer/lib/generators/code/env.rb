@@ -7,10 +7,12 @@ module VersatileDiamond
 
         # Also generates yaml config file
         # @param [String] root_dir the generation directory
+        # @return [Array] no common files required for env class
         # @override
         def generate(root_dir)
           super
           EnvYaml.new(self).generate(root_dir)
+          []
         end
 
         # Makes yaml concentration name for gas specie

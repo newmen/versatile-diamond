@@ -24,6 +24,12 @@ module VersatileDiamond
 
         def_delegators :generator, :classifier, :lattices
 
+        # The list of common files which are used by handbook class generator
+        # @return [Array] the list with amorph phase class file item
+        def using_common_files
+          lattices.all? ? [] : [amorph_phase_file]
+        end
+
         # Check that results contain amorph phase
         # @return [Boolean] contain or not
         def amorph_phase_exists?
@@ -109,9 +115,12 @@ module VersatileDiamond
         # Gets all usable phases of atoms (lattices and amorphous if need)
         # @param [Array] the array of string names of generated dependent entities
         def phases
-          lattices.map do |lattice|
-            lattice || CommonFile.new('phases/phase_boundary.h')
-          end
+          lattices.map { |lattice| lattice || amorph_phase_file }
+        end
+
+        # @return [CommonFile]
+        def amorph_phase_file
+          common_file('phases/phase_boundary')
         end
 
         # Gets the list of objects which headers should be included in header file

@@ -53,6 +53,13 @@ module VersatileDiamond
 
       private
 
+        # The list of common files which are used by reaction class
+        # @return [Array] list with base class file path
+        # @override
+        def using_common_files
+          super + [common_file('registrator'), common_file('rates_reader')]
+        end
+
         # Gets the parents of current reaction
         # @return [BaseReaction] the parents of current reaction
         def parent
