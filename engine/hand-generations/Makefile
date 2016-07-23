@@ -6,13 +6,14 @@ ENGINE_OBJS_DIR	:= $(ENGINE_DIR)/obj
 ENGINE_OBJECT_DIRS := $(shell find $(ENGINE_OBJS_DIR) -type d)
 ENGINE_OBJECTS	:= $(wildcard $(addsuffix /*.o, $(ENGINE_OBJECT_DIRS)))
 
-ARKSFLAGS	:= -DNDEBUG
+ARKSFLAGS	:= -DNDEBUG -O2
+#ARKSFLAGS	:= -O0
 STANDART	:= -std=c++11
 
 GCC_PATH	:= /usr
 CXX		:= $(GCC_PATH)/bin/g++
 DFLAGS		:= $(STANDART) -I$(ENGINE_SRC_DIR)
-CFLAGS		:= $(DFLAGS) -O2 -I$(GCC_PATH)/include
+CFLAGS		:= $(DFLAGS) $(ARKSFLAGS) -I$(GCC_PATH)/include
 LFLAGS		:= $(STANDART) -L$(GCC_PATH)/lib -lyaml-cpp
 
 HGEN_SRC_DIR	:= src

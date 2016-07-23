@@ -1,11 +1,12 @@
 NAME		:= libengine
 
-ARKSFLAGS	:= -DNDEBUG
+ARKSFLAGS	:= -DNDEBUG -O2
+#ARKSFLAGS	:= -O0
 STANDART	:= -std=c++11
 
 GCC_PATH	:= /usr
 CXX		:= $(GCC_PATH)/bin/g++
-CFLAGS		:= $(STANDART) $(ARKSFLAGS) -O2 -I$(GCC_PATH)/include
+CFLAGS		:= $(STANDART) $(ARKSFLAGS) -I$(GCC_PATH)/include
 
 SRC_DIR		:= cpp
 OBJS_DIR	:= obj
