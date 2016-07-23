@@ -77,15 +77,16 @@ module VersatileDiamond
           # @param [Array] names
           # @return [Array]
           def references_of(names)
-            reorder_vars(names).map(&OpRef.public_method(:[]))
+            names_dup = names.dup
+            this = names_dup.delete_one { |name| name.code == This::NAME }
+            refs = reorder_vars(names_dup).map(&OpRef.public_method(:[]))
+            this ? [this] + refs : refs
           end
 
           # @param [Array] names
           # @return [Array]
           def reorder_vars(names)
-            sorted_names = names.sort_by(&:code)
-            this = sorted_names.delete_one { |name| name.code == This::NAME }
-            this ? [this] + sorted_names : sorted_names
+            names.sort_by(&:code)
           end
         end
 

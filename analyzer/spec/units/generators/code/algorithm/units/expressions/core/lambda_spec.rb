@@ -46,7 +46,7 @@ module VersatileDiamond
                 let(:defined_vars) { [inst, this, scv] }
                 let(:code) do
                   <<-CODE
-[&this, &inst](Yo *obj) {
+[this, &inst](Yo *obj) {
     obj->hello(this, inst);
 }
                   CODE
