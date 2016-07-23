@@ -16,7 +16,7 @@ public:
     typedef <%= relations_class_name %><Crystal> Relations;
 #endif // NDEBUG
 
-    <%= class_name %>(const dim3 &sizes, int defaultSurfaceHeight = <%= default_surface_height %>);
+    <%= class_name %>(const dim3 &sizes, const Behavior *behavior, int defaultSurfaceHeight = <%= default_surface_height %>);
     ~<%= class_name %>();
 
 protected:

@@ -101,7 +101,7 @@ module VersatileDiamond
         # Gets a list of code elements each of which uses in header file
         # @return [Array] the array of using objects in header file
         def head_used_objects
-          uniq_complex_source_species
+          uniq_complex_source_species + sidepiece_species
         end
 
         # The body of typical reaction depends from children lateral reactions

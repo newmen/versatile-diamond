@@ -19,6 +19,10 @@ public:
     void doIt() override;
 <% if concretizable? %>
 
+<% sidepiece_species.each do |specie| %>
+    static void checkLaterals(<%= check_laterals_arguments_str(specie) %>);
+<% end %>
+
     LateralReaction *selectFrom(SingleLateralReaction **chunks, ushort num) const override;
 
 protected:

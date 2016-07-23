@@ -123,6 +123,16 @@ module VersatileDiamond
           common_file('phases/phase_boundary')
         end
 
+        # @return [Lattice]
+        def surface_crystal
+          crystal_lattices = lattices.compact
+          if crystal_lattices.one?
+            crystal_lattices.first
+          else
+            raise 'Cannot determine the surface crystal between presented lattices'
+          end
+        end
+
         # Gets the list of objects which headers should be included in header file
         # @return [Array] the list of including objects
         # @override

@@ -287,6 +287,19 @@ module VersatileDiamond
           !spec.theres.empty?
         end
 
+        # Provides common files which is base class for current instance
+        # @return [Array] the common files for current instance
+        def common_base_class_files
+          outers = []
+          if symmetric?
+            outers << 'overall'
+          else
+            outers << (specific? ? 'specific' : 'base')
+            outers << 'sidepiece' if sidepiece?
+          end
+          outers.map(&method(:common_file))
+        end
+
         # Makes base classes for current specie class instance
         # @return [String] combined base classes of engine framework
         def base_class_name
