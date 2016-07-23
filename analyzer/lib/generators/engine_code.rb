@@ -7,7 +7,8 @@ module VersatileDiamond
     # Generates program code based on engine framework for each interpreted entities
     class EngineCode < Base
 
-      MAIN_CODE_INST_NAMES = %w(atom_builder env finder handbook names).freeze
+      MAIN_CODE_INST_NAMES =
+        %w(atom_builder env finder handbook names rates_reader).freeze
 
       attr_reader :sequences_cacher, :detectors_cacher
 
@@ -62,6 +63,12 @@ module VersatileDiamond
 
         raise 'No unique atoms found!' if pure_atoms.empty?
         pure_atoms.map { |atom| Code::Atom.new(atom) }
+      end
+
+      # Gets all reactions which were collected
+      # @return [Array] the list of reaction code generators
+      def reactions
+        @reactions.values
       end
 
       # Gets all used lattices
@@ -265,12 +272,6 @@ module VersatileDiamond
       # @return [Boolean] is interesed spec or not
       def skipping?(spec)
         spec.simple? || spec.gas? || spec.termination?
-      end
-
-      # Gets all reactions which were collected
-      # @return [Array] the list of reaction code generators
-      def reactions
-        @reactions.values
       end
 
       # Provides general classification of anchors of all species

@@ -2,20 +2,19 @@ module VersatileDiamond
   module Generators
     module Code
 
-      # Creates Env class and yaml config file
+      # Creates Env class and YAML config file
       class Env < CppClassWithGen
 
-        # Also generates yaml config file
+        # Also generates YAML config file
         # @param [String] root_dir the generation directory
         # @return [Array] no common files required for env class
         # @override
         def generate(root_dir)
           super
           EnvYaml.new(self).generate(root_dir)
-          []
         end
 
-        # Makes yaml concentration name for gas specie
+        # Makes YAML concentration name for gas specie
         # @param [Concepts::SpecificSpec | Organizers::DependentSpecificSpec] gas_spec
         #   the gas specie for which name will generated
         # @return [String] the result name

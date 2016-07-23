@@ -57,7 +57,7 @@ module VersatileDiamond
         # @return [Array] list with base class file path
         # @override
         def using_common_files
-          super + [common_file('registrator'), common_file('rates_reader')]
+          super + [common_file('registrator')]
         end
 
         # Gets the parents of current reaction

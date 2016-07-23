@@ -1,0 +1,13 @@
+---
+# Units of measurement:
+# A - 1/s
+# Ea - J/mol
+# Tp - just the degree of temperature value
+
+<% reactions.each do |enum_name, reaction| %>
+<%= enum_name %>:
+  A: <%= fix_value(reaction.rate) %>
+  Ea: <%= fix_value(reaction.activation) %>
+  Tp: <%= fix_value(reaction.temp_power) %>
+
+<% end %>

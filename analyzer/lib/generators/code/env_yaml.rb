@@ -7,17 +7,12 @@ module VersatileDiamond
       class EnvYaml < YamlFile
         extend Forwardable
 
-        def_delegators :@env_class, :concentration_name, :gas_specs,
-          :file_name, :template_name
+        def_delegators :code_class,
+          :concentration_name, :gas_specs, :file_name, :template_name
 
-        def_delegators :'VersatileDiamond::Tools::Config', :concentration_value,
-          :gas_temperature_value, :surface_temperature_value
+        def_delegators :'VersatileDiamond::Tools::Config',
+          :concentration_value, :gas_temperature_value, :surface_temperature_value
 
-        # Initialize configs/env.yml file generator
-        # @param [Env] env_class the instance env class files generator
-        def initialize(env_class)
-          @env_class = env_class
-        end
       end
 
     end
