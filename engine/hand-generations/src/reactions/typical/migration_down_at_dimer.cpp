@@ -53,13 +53,12 @@ void MigrationDownAtDimer::doIt()
         hMigratedDown = true;
     }
 
+    Handbook::amorph().erase(a);
+    crystalBy(b)->insert(a, Diamond::front_110_at({ b, c }));
+
     b->unbondFrom(c);
     a->bondWith(b);
     a->bondWith(c);
-
-    Handbook::amorph().erase(a);
-    assert(b->lattice()->crystal() == c->lattice()->crystal());
-    crystalBy(b)->insert(a, Diamond::front_110_at(b, c));
 
     if (z->is(8)) z->changeType(21);
     else z->changeType(20);

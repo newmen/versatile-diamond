@@ -13,9 +13,6 @@ run
   total_time 1
 
 gas
-  spec :hydrogen
-    atoms h: H # the second atom is H too by default
-
   spec :ethylene
     atoms c1: C, c2: C
     dbond :c1, :c2
@@ -24,7 +21,6 @@ gas
     atoms c1: C, c2: C
     tbond :c1, :c2
 
-  concentration hydrogen(h: *), 1e-9
   concentration ethylene(c1: *), 1e-11
 
   temperature 1200

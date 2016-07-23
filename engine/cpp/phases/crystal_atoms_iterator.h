@@ -7,6 +7,9 @@
 namespace vd
 {
 
+#define DECL_NBRS_TYPE(C, relationsMethod) \
+    typename std::result_of<decltype(relationsMethod)(C *, const Atom *)>::type
+
 template <class C>
 class CrystalAtomsIterator
 {
@@ -15,11 +18,24 @@ protected:
 
     static C *crystalBy(Atom *atom);
 
+    template <class RL>
+    static Atom *neighbourFrom(Atom **anchors, const RL &atRelationMethod);
+
+    template <class RL, class AL>
+    static void neighbourFrom(Atom **anchors, const RL &atRelationMethod, const AL &actionLambda);
+
     template <class RL, class AL>
     static void eachNeighbour(Atom *anchor, const RL &relationsMethod, const AL &actionLambda);
 
     template <ushort ATOMS_NUM, class RL, class AL>
     static void eachNeighbours(Atom **anchors, const RL &relationsMethod, const AL &actionLambda);
+
+    template <class RL, class AL>
+    static void allNeighbours(Atom *anchor, const RL &relationsMethod, const AL &actionLambda);
+
+private:
+    template <ushort ATOMS_NUM, class RL, class BL>
+    static void resolveAllNeighbours(Atom **anchors, const RL &relationsMethod, const BL &bodyLambda);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -29,6 +45,28 @@ C *CrystalAtomsIterator<C>::crystalBy(Atom *atom)
 {
     assert(atom->lattice());
     return static_cast<C *>(atom->lattice()->crystal());
+}
+
+template <class C>
+template <class RL>
+Atom *CrystalAtomsIterator<C>::neighbourFrom(Atom **anchors, const RL &atRelationMethod)
+{
+    C *crystal = crystalBy(anchors[0]);
+    assert(crystal == crystalBy(anchors[1]));
+
+    int3 coords = (*atRelationMethod)(anchors);
+    return crystal->atom(coords);
+}
+
+template <class C>
+template <class RL, class AL>
+void CrystalAtomsIterator<C>::neighbourFrom(Atom **anchors, const RL &atRelationMethod, const AL &actionLambda)
+{
+    Atom *atom = neighbourFrom(anchors, atRelationMethod);
+    if (atom)
+    {
+        actionLambda(atom);
+    }
 }
 
 template <class C>
@@ -44,41 +82,77 @@ template <class C>
 template <ushort ATOMS_NUM, class RL, class AL>
 void CrystalAtomsIterator<C>::eachNeighbours(Atom **anchors, const RL &relationsMethod, const AL &actionLambda)
 {
+    typedef DECL_NBRS_TYPE(C, relationsMethod) NeighboursType;
+    resolveAllNeighbours<ATOMS_NUM>(anchors, relationsMethod, [&actionLambda](NeighboursType *arrOfNeighbours) {
+        Atom *neighbours[ATOMS_NUM];
+        for (ushort i = 0; i < NeighboursType::QUANTITY; ++i)
+        {
+            bool allVisited = true;
+            for (ushort n = 0; n < ATOMS_NUM; ++n)
+            {
+                Atom *neighbour = arrOfNeighbours[n][i];
+                if (neighbour)
+                {
+                    neighbours[n] = neighbour;
+                    allVisited &= neighbour->isVisited();
+                }
+                else
+                {
+                    goto next_main_iteration;
+                }
+            }
+
+            // If many neighbours are unvisited then iterates just in one side
+            // because the iteration to the back side will be done by one of neighbour
+            if (i == 0 || allVisited)
+            {
+                actionLambda(neighbours);
+            }
+
+            next_main_iteration :;
+        }
+    });
+}
+
+template <class C>
+template <class RL, class AL>
+void CrystalAtomsIterator<C>::allNeighbours(Atom *anchor, const RL &relationsMethod, const AL &actionLambda)
+{
+    typedef DECL_NBRS_TYPE(C, relationsMethod) NeighboursType;
+    resolveAllNeighbours<1>(&anchor, relationsMethod, [&actionLambda](NeighboursType *arrOfNeighbours) {
+        Atom *neighbours[NeighboursType::QUANTITY];
+        for (ushort i = 0; i < NeighboursType::QUANTITY; ++i)
+        {
+            Atom *neighbour = arrOfNeighbours[0][i];
+            if (neighbour)
+            {
+                neighbours[i] = neighbour;
+            }
+            else
+            {
+                return; // go out from iterator!
+            }
+        }
+
+        actionLambda(neighbours);
+    });
+}
+
+template <class C>
+template <ushort ATOMS_NUM, class RL, class BL>
+void CrystalAtomsIterator<C>::resolveAllNeighbours(Atom **anchors, const RL &relationsMethod, const BL &bodyLambda)
+{
     static_assert(ATOMS_NUM > 0, "Invalid number of atoms");
 
-    C *crystal = nullptr;
-    typedef decltype((crystal->*relationsMethod)(nullptr)) NeighboursType;
-
+    typedef DECL_NBRS_TYPE(C, relationsMethod) NeighboursType;
     NeighboursType arrOfNeighbours[ATOMS_NUM];
     for (ushort n = 0; n < ATOMS_NUM; ++n)
     {
-        crystal = crystalBy(anchors[n]);
+        C *crystal = crystalBy(anchors[n]);
         arrOfNeighbours[n] = (crystal->*relationsMethod)(anchors[n]);
     }
 
-    Atom *neighbours[ATOMS_NUM];
-    for (ushort i = 0; i < NeighboursType::QUANTITY; ++i)
-    {
-        bool allVisited = true;
-        for (ushort n = 0; n < ATOMS_NUM; ++n)
-        {
-            Atom *neighbour = arrOfNeighbours[n][i];
-            if (!neighbour)
-            {
-                goto next_main_iteration;
-            }
-
-            neighbours[n] = neighbour;
-            allVisited &= neighbour->isVisited();
-        }
-
-        if (i == 0 || allVisited)
-        {
-            actionLambda(neighbours);
-        }
-
-        next_main_iteration :;
-    }
+    bodyLambda(arrOfNeighbours);
 }
 
 }

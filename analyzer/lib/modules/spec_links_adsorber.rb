@@ -18,7 +18,6 @@ module VersatileDiamond
             spec_atom = [spec, atom]
             acc[spec_atom] ||= []
             acc[spec_atom] += rels.map { |a, r| [[spec, a], r] }
-            acc[spec_atom] = acc[spec_atom].uniq
           end
         end
       end
@@ -26,7 +25,7 @@ module VersatileDiamond
       # Adsorbs the missed links between used atoms in original links
       # @param [Concepts::Named] concept which have #used_atoms_of and #links methods
       # @param [Hash] initial_links which will be cropped
-      # @param [Array] specs which links was used for extending initial links
+      # @param [Array] specs which links were used for extending initial links
       # @return [Hash] the new links graph with links between used atoms of passed
       #   specs
       def adsorb_missed_links(concept, initial_links, specs)

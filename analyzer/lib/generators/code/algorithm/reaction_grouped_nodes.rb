@@ -14,23 +14,23 @@ module VersatileDiamond
             super(ReactionNodesFactory.new(generator))
             @reaction = reaction
 
-            @_big_graph, @_small_graph = nil
+            @_big_ungrouped_graph, @_small_ungrouped_graph = nil
           end
 
           # Makes the nodes graph from original links between interacting atoms of
           # target reaction
           #
           # @return [Hash] the most comprehensive graph of nodes
-          def big_graph
-            @_big_graph ||= transform_links(@reaction.links)
+          def big_ungrouped_graph
+            @_big_ungrouped_graph ||= transform_links(@reaction.links)
           end
 
         private
 
           # Makes the nodes graph from positions of target reaction
           # @return [Hash] the small graph of nodes
-          def small_graph
-            return @_small_graph if @_small_graph
+          def small_ungrouped_graph
+            return @_small_ungrouped_graph if @_small_ungrouped_graph
 
             result = transform_links(@reaction.clean_links)
             if result.empty?
@@ -40,7 +40,7 @@ module VersatileDiamond
               result = transform_links(surf_changes.map { |sa, _| [sa, []] })
             end
 
-            @_small_graph = result
+            @_small_ungrouped_graph = result
           end
 
           # Checks that passed spec is bad
@@ -55,8 +55,7 @@ module VersatileDiamond
           #   will be detected
           # @return [Concepts::Bond] the relation between atoms from passed nodes
           def relation_between(*nodes)
-            specs_atoms = nodes.map { |n| [n.uniq_specie.spec.spec, n.atom] }
-            @reaction.relation_between(*specs_atoms)
+            @reaction.relation_between(*nodes.map(&:spec_atom))
           end
         end
 

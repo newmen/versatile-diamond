@@ -18,8 +18,8 @@ void BaseSpec::remove()
 #ifdef PRINT
     wasForgotten();
 
-    debugPrint([&](std::ostream &os) {
-        os << "Removing " << this->name() << " with atoms of: " << std::endl;
+    debugPrint([&](IndentStream &os) {
+        os << "BaseSpec::remove " << this->name() << " with atoms of: " << std::endl;
         os << std::dec;
         this->eachAtom([&os](Atom *atom) {
             atom->info(os);
@@ -32,7 +32,7 @@ void BaseSpec::remove()
 #ifdef PRINT
 void BaseSpec::wasFound()
 {
-    debugPrint([&](std::ostream &os) {
+    debugPrint([&](IndentStream &os) {
         info(os);
         os << " was found";
     });
@@ -40,7 +40,7 @@ void BaseSpec::wasFound()
 
 void BaseSpec::wasForgotten()
 {
-    debugPrint([&](std::ostream &os) {
+    debugPrint([&](IndentStream &os) {
         info(os);
         os << " was forgotten";
     });

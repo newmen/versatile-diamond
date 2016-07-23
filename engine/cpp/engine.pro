@@ -2,13 +2,21 @@ TEMPLATE = app
 CONFIG -= app_bundle
 CONFIG -= qt
 
+QMAKE_CXX = /usr/local/opt/gcc/bin/g++-6
+QMAKE_LIBDIR += /usr/local/opt/gcc/lib/gcc/6
+QMAKE_LIBDIR += /usr/local/lib
+QMAKE_INCDIR += /usr/local/include
+
 QMAKE_CXXFLAGS_RELEASE += -DNDEBUG
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
 #QMAKE_CXXFLAGS += -DPRINT
-
 QMAKE_CXXFLAGS += -std=c++11
+
 LIBS += -pthread
 LIBS += -lyaml-cpp
+
+QMAKE_CXXFLAGS += -std=c++11 -I../hand-generations/src -w
+LIBS += -lyaml-cpp -w
 
 SOURCES += \
     ../hand-generations/src/atoms/c.cpp \
@@ -18,6 +26,8 @@ SOURCES += \
     ../hand-generations/src/main.cpp \
     ../hand-generations/src/phases/diamond.cpp \
     ../hand-generations/src/phases/phase_boundary.cpp \
+    ../hand-generations/src/reactions/central/dimer_drop.cpp \
+    ../hand-generations/src/reactions/central/dimer_formation.cpp \
     ../hand-generations/src/reactions/lateral/dimer_drop_at_end.cpp \
     ../hand-generations/src/reactions/lateral/dimer_drop_in_middle.cpp \
     ../hand-generations/src/reactions/lateral/dimer_formation_at_end.cpp \
@@ -30,9 +40,7 @@ SOURCES += \
     ../hand-generations/src/reactions/typical/des_methyl_from_111.cpp \
     ../hand-generations/src/reactions/typical/des_methyl_from_bridge.cpp \
     ../hand-generations/src/reactions/typical/des_methyl_from_dimer.cpp \
-    ../hand-generations/src/reactions/typical/dimer_drop.cpp \
     ../hand-generations/src/reactions/typical/dimer_drop_near_bridge.cpp \
-    ../hand-generations/src/reactions/typical/dimer_formation.cpp \
     ../hand-generations/src/reactions/typical/dimer_formation_near_bridge.cpp \
     ../hand-generations/src/reactions/typical/form_two_bond.cpp \
     ../hand-generations/src/reactions/typical/high_bridge_stand_to_dimer.cpp \
@@ -111,7 +119,9 @@ SOURCES += \
     phases/behavior_tor.cpp \
     phases/crystal.cpp \
     phases/saving_crystal.cpp \
+    reactions/central_reaction.cpp \
     reactions/lateral_reaction.cpp \
+    reactions/typical_reaction.cpp \
     reactions/ubiquitous_reaction.cpp \
     savers/accumulator.cpp \
     savers/all_atoms_detector.cpp \
@@ -125,6 +135,7 @@ SOURCES += \
     savers/mol_format.cpp \
     savers/mol_saver.cpp \
     savers/queue/item_wrapper.cpp \
+    savers/queue/out_thread.cpp \
     savers/queue/soul.cpp \
     savers/saver_counter.cpp \
     savers/sdf_saver.cpp \
@@ -137,13 +148,21 @@ SOURCES += \
     species/lateral_spec.cpp \
     species/parent_spec.cpp \
     species/specific_spec.cpp \
-    tools/common.cpp \
+    tools/debug_print.cpp \
+    tools/indent_stream.cpp \
     tools/process_mem_usage.cpp \
     tools/saving_queue.cpp \
     tools/scavenger.cpp \
     tools/traker.cpp \
     tools/yaml_config_reader.cpp \
-    savers/queue/out_thread.cpp
+#    ../tests/units/c_spec.cpp \
+#    ../tests/units/diamond_relations_spec.cpp \
+#    ../tests/units/diamond_spec.cpp \
+#    ../tests/units/find_spec.cpp \
+#    ../tests/units/lattice_spec. \cpp \
+#    ../tests/units/vector3d_spec \.cpp \
+#    ../tests/support/open_diamond.cpp \
+    tools/yaml_config_reader.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -158,16 +177,20 @@ HEADERS += \
     ../hand-generations/src/phases/diamond_crystal_properties.h \
     ../hand-generations/src/phases/diamond_relations.h \
     ../hand-generations/src/phases/phase_boundary.h \
+    ../hand-generations/src/reactions/central.h \
+    ../hand-generations/src/reactions/central/dimer_drop.h \
+    ../hand-generations/src/reactions/central/dimer_formation.h \
     ../hand-generations/src/reactions/concretizable_role.h \
-    ../hand-generations/src/reactions/laterable_role.h \
     ../hand-generations/src/reactions/lateral.h \
     ../hand-generations/src/reactions/lateral/dimer_drop_at_end.h \
     ../hand-generations/src/reactions/lateral/dimer_drop_in_middle.h \
     ../hand-generations/src/reactions/lateral/dimer_formation_at_end.h \
     ../hand-generations/src/reactions/lateral/dimer_formation_in_middle.h \
     ../hand-generations/src/reactions/local.h \
+    ../hand-generations/src/reactions/multi_lateral.h \
     ../hand-generations/src/reactions/rates_reader.h \
     ../hand-generations/src/reactions/registrator.h \
+    ../hand-generations/src/reactions/single_lateral.h \
     ../hand-generations/src/reactions/typical.h \
     ../hand-generations/src/reactions/typical/abs_hydrogen_from_gap.h \
     ../hand-generations/src/reactions/typical/ads_methyl_to_111.h \
@@ -176,9 +199,7 @@ HEADERS += \
     ../hand-generations/src/reactions/typical/des_methyl_from_111.h \
     ../hand-generations/src/reactions/typical/des_methyl_from_bridge.h \
     ../hand-generations/src/reactions/typical/des_methyl_from_dimer.h \
-    ../hand-generations/src/reactions/typical/dimer_drop.h \
     ../hand-generations/src/reactions/typical/dimer_drop_near_bridge.h \
-    ../hand-generations/src/reactions/typical/dimer_formation.h \
     ../hand-generations/src/reactions/typical/dimer_formation_near_bridge.h \
     ../hand-generations/src/reactions/typical/form_two_bond.h \
     ../hand-generations/src/reactions/typical/high_bridge_stand_to_dimer.h \
@@ -281,15 +302,24 @@ HEADERS += \
     phases/behavior_tor.h \
     phases/crystal.h \
     phases/crystal_atoms_iterator.h \
+    phases/crystal_factory.h
     phases/saving_amorph.h \
     phases/saving_crystal.h \
     phases/smart_atoms_vector3d.h \
     phases/templated_amorph.h \
     phases/templated_crystal.h \
+    reactions/central_reaction.h \
     reactions/concrete_lateral_reaction.h \
     reactions/concrete_typical_reaction.h \
+    reactions/lateral_factories/chain_factory.h \
+    reactions/lateral_factories/duo_lateral_factory.h \
+    reactions/lateral_factories/lateral_creation_lambda.h \
+    reactions/lateral_factories/lateral_factory.h \
+    reactions/lateral_factories/uno_lateral_factory.h \
     reactions/lateral_reaction.h \
+    reactions/multi_lateral_reaction.h \
     reactions/reaction.h \
+    reactions/single_lateral_reaction.h \
     reactions/spec_reaction.h \
     reactions/targets.h \
     reactions/typical_reaction.h \
@@ -300,6 +330,7 @@ HEADERS += \
     savers/atom_info.h \
     savers/bond_info.h \
     savers/bundle_saver.h \
+    savers/counter_whith_saver.h \
     savers/crystal_slice_saver.h \
     savers/detector.h \
     savers/detector_factory.h \
@@ -352,18 +383,21 @@ HEADERS += \
     tools/debug_print.h \
     tools/error.h \
     tools/factory.h \
+    tools/indent_facet.h \
+    tools/indent_stream.h \
     tools/init_config.h \
     tools/many_items_result.h \
     tools/process_mem_usage.h \
     tools/runner.h \
     tools/saving_queue.h \
     tools/scavenger.h \
+    tools/short_types.h \
     tools/traker.h \
     tools/typed.h \
     tools/vector3d.h \
     tools/yaml_config_reader.h \
-    savers/counter_whith_saver.h \
-    phases/crystal_factory.h
+#    ../tests/support/open_diamond.h \
+    tools/yaml_config_reader.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \

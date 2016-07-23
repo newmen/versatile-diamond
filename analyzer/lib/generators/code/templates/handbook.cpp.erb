@@ -1,9 +1,5 @@
 #include "handbook.h"
 
-#ifdef PARALLEL
-#include <omp.h>
-#endif // PARALLEL
-
 const ushort Handbook::__atomsNum = <%= atoms_num %>;
 const bool Handbook::__atomsAccordance[Handbook::__atomsNum * Handbook::__atomsNum] =
 {
@@ -63,23 +59,23 @@ Handbook::DMC &Handbook::mc()
     return __mc;
 }
 
-Scavenger Handbook::__scavengers[THREADS_NUM];
+Scavenger Handbook::__scavenger;
 Scavenger &Handbook::scavenger()
 {
-    return selectForThread(__scavengers);
+    return __scavenger;
 }
 
-Handbook::SKeeper Handbook::__specificKeepers[THREADS_NUM];
+Handbook::SKeeper Handbook::__specificKeeper;
 Handbook::SKeeper &Handbook::specificKeeper()
 {
-    return selectForThread(__specificKeepers);
+    return __specificKeeper;
 }
 
 <% if lateral_reactions_exists? %>
-Handbook::LKeeper Handbook::__lateralKeepers[THREADS_NUM];
+Handbook::LKeeper Handbook::__lateralKeeper;
 Handbook::LKeeper &Handbook::lateralKeeper()
 {
-    return selectForThread(__lateralKeepers);
+    return __lateralKeeper;
 }
 <% end %>
 

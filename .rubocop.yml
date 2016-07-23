@@ -1,8 +1,70 @@
+Lint/AssignmentInCondition:
+  Description: Don't use assignment in conditions.
+  StyleGuide: https://github.com/bbatsov/ruby-style-guide#safe-assignment-in-condition
+  Enabled: true
+  AllowSafeAssignment: false
+
+Lint/LiteralInCondition:
+  Description: Checks of literals used in conditions.
+  Enabled: true
+
+Metrics/CyclomaticComplexity:
+  Description: A complexity metric that is strongly correlated to the number of test
+    cases needed to validate a method.
+  Enabled: true
+  Max: 6
+
+Metrics/ClassLength:
+  Enabled: true
+  Max: 250
+
+Metrics/MethodLength:
+  Description: Avoid methods longer than 10 lines of code.
+  StyleGuide: https://github.com/bbatsov/ruby-style-guide#short-methods
+  Enabled: true
+  CountComments: false
+  Max: 13
+
+Metrics/ModuleLength:
+  Enabled: true
+  Max: 200
+
+Metrics/ParameterLists:
+  Description: Avoid parameter lists longer than three or four parameters.
+  StyleGuide: https://github.com/bbatsov/ruby-style-guide#too-many-params
+  Enabled: true
+  Max: 5
+  CountKeywordArgs: true
+
+Metrics/PerceivedComplexity:
+  Description: A complexity metric geared towards measuring complexity for a human
+    reader.
+  Enabled: true
+  Max: 7
+
 Style/AccessModifierIndentation:
   EnforcedStyle: outdent
 
 Style/AlignParameters:
   EnforcedStyle: with_fixed_indentation
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/EmptyLinesAroundAccessModifier:
+  Enabled: true
+
+Style/EmptyLinesAroundBlockBody:
+  Enabled: true
+
+Style/EmptyLinesAroundClassBody:
+  Enabled: false
+
+Style/EmptyLinesAroundMethodBody:
+  Enabled: true
+
+Style/EmptyLinesAroundModuleBody:
+  Enabled: false
 
 Style/CollectionMethods:
   PreferredMethods:
@@ -14,6 +76,9 @@ Style/DotPosition:
 
 Style/FormatString:
   EnforcedStyle: percent
+
+Style/Lambda:
+  EnforcedStyle: literal
 
 Style/LambdaCall:
   EnforcedStyle: braces
@@ -31,3 +96,17 @@ Style/SignalException:
 
 Style/StringLiterals:
   EnforcedStyle: single_quotes
+
+Style/OneLineConditional:
+  Description: Favor the ternary operator(?:) over if/then/else/end constructs.
+  StyleGuide: https://github.com/bbatsov/ruby-style-guide#ternary-operator
+  Enabled: true
+
+Style/RaiseArgs:
+  Description: Checks the arguments passed to raise/fail.
+  StyleGuide: https://github.com/bbatsov/ruby-style-guide#exception-class-messages
+  Enabled: true
+  EnforcedStyle: exploded
+  SupportedStyles:
+  - compact
+  - exploded

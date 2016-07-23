@@ -18,17 +18,33 @@ module VersatileDiamond
           @_original_sequence, @_short_sequence, @_major_atoms, @_addition_atoms = nil
         end
 
+        # @return [Array]
+        def sorted_parents
+          spec.parents.sort do |*parents|
+            a, b = parents
+            cmp = (a <=> b)
+            if cmp == 0
+              seq1, seq2 = parents.map do |parent|
+                parent_seq = get(parent.original).original
+                self_seq = parent_seq.map(&parent.public_method(:atom_by))
+                self_seq.map(&spec.spec.public_method(:keyname))
+              end
+              seq1 <=> seq2
+            else
+              cmp
+            end
+          end
+        end
+
         # Makes original sequence of atoms which will be used for get an atom index
         # @return [Array] the original sequence of atoms of current specie
         # TODO: should be protected
         def original
-          return @_original_sequence if @_original_sequence
-
-          @_original_sequence =
+          @_original_sequence ||=
             if spec.source?
               sort_atoms(atoms)
             else
-              spec.parents.sort.reduce(addition_atoms) do |acc, parent|
+              sorted_parents.reduce(addition_atoms) do |acc, parent|
                 acc + get(parent.original).original.map do |atom|
                   parent.atom_by(atom)
                 end
@@ -51,14 +67,11 @@ module VersatileDiamond
         # Detects additional atoms which are not presented in parent species
         # @return [Array] the array of additional atoms
         def addition_atoms
-          return @_addition_atoms if @_addition_atoms
-
-          @_addition_atoms =
+          @_addition_atoms ||=
             if spec.source?
               []
             else
-              adds = spec.anchors.select { |atom| spec.twins_of(atom).empty? }
-              sort_atoms(adds)
+              sort_atoms(spec.anchors.select { |a| spec.twins_of(a).empty? })
             end
         end
 
@@ -79,7 +92,17 @@ module VersatileDiamond
           original.index(atom)
         end
 
-      protected
+        def to_s
+          concept = spec.spec
+          inner_str = original.map { |atom| ":#{concept.keyname(atom)}" }.join(' ')
+          "(#{inner_str})"
+        end
+
+        def inspect
+          to_s
+        end
+
+      private
 
         attr_reader :spec, :cacher
 
@@ -89,22 +112,28 @@ module VersatileDiamond
         #   in returned sequence
         # @return [Array] sorted array of atoms
         def sort_atoms(atoms, amorph_before: true)
-          atoms.sort do |a, b|
-            # a < b => -1
-            # a == b => 0
-            # a > b => 1
-            if a.lattice == b.lattice
-              a_size, b_size = spec.spec.links[a].size, spec.spec.links[b].size
-              a_size == b_size ?
-                spec.links[a].size <=> spec.links[b].size :
-                b_size <=> a_size
-            elsif (amorph_before && !a.lattice && b.lattice) ||
-                (!amorph_before && a.lattice && !b.lattice)
-              -1
-            else
-              1
-            end
-          end
+          usages = atoms.map { |a| -major_bonds_num(a) }
+          props = atoms.map(&method(:atom_properties_for))
+          keynames = atoms.map(&spec.spec.public_method(:keyname))
+          triple = usages.zip(props, keynames)
+          sorteds = triple.zip(atoms).sort_by(&:first).map(&:last)
+          amorphs = sorteds.reject(&:lattice)
+          surfaces = sorteds.select(&:lattice)
+          amorph_before ? amorphs + surfaces : surfaces + amorphs
+        end
+
+        # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+        #   atom which bond relations will be counted
+        # @return [Integer] the number of exist bond relations
+        def major_bonds_num(atom)
+          spec.spec.links[atom].map(&:last).select(&:exist?).select(&:bond?).size
+        end
+
+        # @param [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
+        #   atom from which the atom properties will be combined
+        # @return [Organizers::AtomProperties]
+        def atom_properties_for(atom)
+          Organizers::AtomProperties.new(spec, atom)
         end
       end
 

@@ -13,7 +13,6 @@ module VersatileDiamond
       def initialize(name)
         @name = name
         @aliases = nil
-        @reverse_was_stored = false
       end
 
       # Stores aliases to internal hash for future checking and instancing
@@ -27,7 +26,7 @@ module VersatileDiamond
 
       # Interpets equation line. Matches source and product specified specs
       # and store it to concept reaction. Where specs is matched then checks
-      # complience matching and checks the balance of reaction. Also will be
+      # compliance matching and checks the balance of reaction. Also will be
       # checked composition of specs and if termination spec contained then
       # creates corresponding concept of reaction.
       #
@@ -59,8 +58,8 @@ module VersatileDiamond
           else
             mapping = nil
             check_balance(source, products) do |ext_src, ext_prd|
-              # there could be raised CannotMap exception which will be rescued
-              # in check balance method
+              # CannotMap exception can be raised here and then will be rescued
+              # in #check_balance method
               mapping = Mcs::AtomMapper.map(ext_src, ext_prd, names_and_specs)
 
               # if source or products need (and can) to be extended then
@@ -68,11 +67,16 @@ module VersatileDiamond
               update_specs_in(names_and_specs[:source], source.zip(ext_src))
               update_specs_in(names_and_specs[:products], products.zip(ext_prd))
 
+              (ext_src + ext_prd).each do |ext_spec|
+                base_spec = ext_spec.spec
+                store(base_spec) if ext_spec.extended? && !Chest.has?(base_spec)
+              end
+
               source, products = ext_src, ext_prd
             end || syntax_error('.wrong_balance')
 
-            reaction = Concepts::Reaction.new(
-              :forward, @name, source, products, mapping)
+            reaction =
+              Concepts::Reaction.new(:forward, @name, source, products, mapping)
 
             # nest only here
             nested(Equation.new(reaction, names_and_specs))
@@ -135,8 +139,7 @@ module VersatileDiamond
       # @param [Array] products the array of product specs
       # @return [Boolean] has or not
       def has_termination_spec?(source, products)
-        check = -> specific_spec { specific_spec.is_a?(TerminationSpec) }
-        source.find(&check) || products.find(&check)
+        source.find(&:termination?) || products.find(&:termination?)
       end
 
       # Checks compliance of source and product specs for both directions
@@ -247,7 +250,7 @@ module VersatileDiamond
       # @param [Array] specs the list which items will be combinated between each other
       # @return [Array] the list of combinations
       def combinations(specs)
-        specs.size.times.reduce([]) { |acc, i| acc + specs.combination(i + 1).to_a }
+        specs.size.times.flat_map { |i| specs.combination(i + 1).to_a }
       end
     end
 

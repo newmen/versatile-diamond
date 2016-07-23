@@ -11,8 +11,8 @@ Reaction *BaseEventsContainer::selectEvent(double r)
     assert(index < _events.size());
 
 #ifdef PRINT
-    debugPrint([&](std::ostream &os) {
-        os << "SELECTED: " << index;
+    debugPrint([&](IndentStream &os) {
+        os << "BaseEventsContainer::selectEvent: " << index;
     });
 #endif // PRINT
 

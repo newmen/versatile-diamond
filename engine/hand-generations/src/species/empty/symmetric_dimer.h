@@ -11,7 +11,7 @@ public:
     SymmetricDimer(OriginalDimer *parent) : ParentsSwapWrapper(parent) {}
 
 #ifdef PRINT
-    const char *name() const final;
+    const char *name() const override;
 #endif // PRINT
 };
 

@@ -18,10 +18,12 @@ engine/hand-generations/simple-diamond
 vde-*s.o*
 vde-*s.e*
 
-.idea
-*.dump
+.DS_Store
+.idea/
 .bundle/
+.what_to_run/
 coverage/
+*.dump
 
 Gemfile.lock
 
@@ -31,3 +33,5 @@ Gemfile.lock
 *.sdf
 *.sls
 *.xyz
+
+TODO*

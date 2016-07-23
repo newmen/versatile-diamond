@@ -27,7 +27,26 @@ module VersatileDiamond
       end
 
       describe '#changes' do
-        describe 'methyl desorption' do
+        shared_examples_for :check_changes do
+          it { expect(atoms_map.changes).to match_array(changes) }
+        end
+
+        it_behaves_like :check_changes do
+          let(:atoms_map) { odhm_atom_map }
+          let(:sd) { odhm_source.first }
+          let(:pd) { odhm_products.first }
+          let(:changes) do
+            [
+              [[sd, pd], [
+                [sd.atom(:cr), pd.atom(:cr)],
+                [sd.atom(:cl), pd.atom(:cl)]
+              ]]
+            ]
+          end
+        end
+
+        it_behaves_like :check_changes do
+          let(:atoms_map) { md_atom_map }
           let(:mod) { md_source.first }
           let(:ab) { md_products.last }
           let(:changes) do
@@ -36,11 +55,10 @@ module VersatileDiamond
               [[mod, methane], [[mod.atom(:cm), methane.atom(:c)]]]
             ]
           end
-
-          it { expect(md_atom_map.changes).to match_array(changes) }
         end
 
-        describe 'methyl incorporation' do
+        it_behaves_like :check_changes do
+          let(:atoms_map) { mi_atom_map }
           let(:amoeb) { mi_source.first }
           let(:ad) { mi_source.last }
           let(:ed) { mi_product.first }
@@ -56,8 +74,6 @@ module VersatileDiamond
               ]]
             ]
           end
-
-          it { expect(mi_atom_map.changes).to match_array(changes) }
         end
       end
 
@@ -225,11 +241,11 @@ module VersatileDiamond
         it { expect(subject.full).not_to eq(df_atom_map.full) }
       end
 
-      describe '#swap_source' do
+      describe '#swap' do
         subject { df_atom_map }
         let(:ab) { df_source.first }
         let(:ab_dup) { activated_bridge.dup }
-        before(:each) { subject.swap_source(ab, ab_dup) }
+        before(:each) { subject.swap(:source, ab, ab_dup) }
 
         it { expect(subject.source).not_to include(ab) }
         it { expect(subject.source).to include(ab_dup) }

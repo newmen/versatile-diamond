@@ -67,6 +67,37 @@ module VersatileDiamond
           let(:dependent_base_species) do
             [
               dept_bridge_base,
+              dept_dimer_base,
+              dept_methyl_on_bridge_base,
+              dept_cross_bridge_on_bridges_base,
+              spec
+            ]
+          end
+          let(:spec) { dept_cross_bridge_on_dimers_base }
+          let(:parents) do
+            [dept_bridge_base, dept_bridge_base, dept_cross_bridge_on_bridges_base]
+          end
+        end
+
+        it_behaves_like :check_optimal_parents do
+          let(:dependent_base_species) do
+            [
+              dept_bridge_base,
+              dept_dimer_base,
+              dept_methyl_on_bridge_base,
+              dept_methyl_on_dimer_base,
+              dept_cross_bridge_on_bridges_base,
+              spec
+            ]
+          end
+          let(:spec) { dept_cross_bridge_on_dimers_base }
+          let(:parents) { [dept_methyl_on_dimer_base] * 2 }
+        end
+
+        it_behaves_like :check_optimal_parents do
+          let(:dependent_base_species) do
+            [
+              dept_bridge_base,
               dept_methyl_on_bridge_base,
               dept_dimer_base,
               dept_methyl_on_dimer_base,

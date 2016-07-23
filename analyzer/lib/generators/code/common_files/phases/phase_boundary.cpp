@@ -6,6 +6,7 @@ PhaseBoundary::~PhaseBoundary()
 }
 
 // TODO: need to move it method to Amorph class?
+// TODO: why to allocate memory with new instead stack using?
 void PhaseBoundary::clear()
 {
     Atom **removingAtoms = new Atom *[atoms().size()];

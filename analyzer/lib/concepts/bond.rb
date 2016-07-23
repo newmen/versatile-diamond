@@ -3,6 +3,7 @@ module VersatileDiamond
 
     # Class for bond instance. The bond can be without face and direction.
     class Bond
+      include BondsOrderer
 
       AMORPH_PARAMS = { face: nil, dir: nil }.freeze
 
@@ -44,8 +45,13 @@ module VersatileDiamond
       # Compares two instances
       # @param [Bond] other relation instance with which comparing will be
       # @return [Boolean] equal or not
-      def == (other)
+      def ==(other)
         self.class == other.class && other.it?(params)
+      end
+
+      # @return [Integer]
+      def arity
+        1
       end
 
       # Makes cross instance of current
@@ -89,6 +95,12 @@ module VersatileDiamond
         true
       end
 
+      # Checks that current bond is really multi
+      # @return [Boolean] false
+      def multi?
+        false
+      end
+
       # Checks that current instance is really relation
       # @return [Boolean] true
       def relation?
@@ -117,6 +129,23 @@ module VersatileDiamond
 
       def inspect
         to_s
+      end
+
+    private
+
+      # Provides comparing core for directed instances
+      # @param [Bond] other comparing instance
+      # @return [Integer] the comparing result
+      def comparing_core(other)
+        if belongs_to_crystal? && other.belongs_to_crystal?
+          order(other, self, :face) do
+            order(other, self, :dir)
+          end
+        elsif belongs_to_crystal?
+          -1
+        else # other.belongs_to_crystal?
+          1
+        end
       end
     end
 

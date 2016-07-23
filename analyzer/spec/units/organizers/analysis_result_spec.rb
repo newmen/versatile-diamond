@@ -9,8 +9,8 @@ module VersatileDiamond
       let(:keyname_error) { Chest::KeyNameError }
 
       def store_base_specs(specific_specs)
-        specific_specs.each do |specific_spec|
-          base_spec = specific_spec.spec
+        specific_specs.each do |reactant|
+          base_spec = reactant.simple? ? reactant : reactant.spec
           Tools::Chest.store(base_spec) unless Tools::Chest.has?(base_spec)
         end
       end
@@ -40,7 +40,7 @@ module VersatileDiamond
         hydrogen_migration.reverse.activation = 1e3
 
         # typical[5]
-        dimer_formation.rate = 4
+        # dimer_formation.rate = 0
         # typical[6]
         dimer_formation.reverse.rate = 5
         dimer_formation.reverse.activation = 2e3
@@ -65,11 +65,12 @@ module VersatileDiamond
 
         (typicals + laterals).each do |reaction|
           store_base_specs(reaction.source)
+          store_base_specs(reaction.products)
         end
 
         laterals.each do |reaction|
           reaction.theres.each do |there|
-            store_base_specs(there.where.specs)
+            store_base_specs(there.env_specs)
           end
         end
 
@@ -102,16 +103,6 @@ module VersatileDiamond
                 let(:quant) { quant }
               end
             end
-        end
-      end
-
-      describe 'lateral entities' do
-        before { store_reactions }
-
-        describe '#theres' do
-          it { expect(subject.theres.map(&:class)).to eq([DependentThere] * 2) }
-          it { expect(subject.theres.map(&:lateral_reaction).map(&:reaction)).
-            to match_array([end_lateral_df, middle_lateral_df]) }
         end
       end
 
@@ -170,12 +161,12 @@ module VersatileDiamond
             it_behaves_like :all_dependent_base_specs do
               let(:names) do
                 [
-                  # :bridge, # purged
+                  :bridge,
                   # :bridge_dup, # purged
-                  # :dimer, # purged
-                  # :high_bridge, # purged
-                  # :methyl_on_dimer, # purged
-                  # :methyl_on_bridge # purged
+                  :dimer,
+                  :high_bridge,
+                  :methyl_on_dimer,
+                  :methyl_on_bridge
                 ]
               end
             end
@@ -202,18 +193,16 @@ module VersatileDiamond
                 subject.base_spec(name)
               end
 
-              describe '.swap_source' do
-                def base(name)
-                  get(name).spec
-                end
-
+              describe '#swap_on' do
                 let(:lateral_reaction) { subject.lateral_reactions.last.reaction }
                 let(:used_there) { lateral_reaction.theres.flat_map(&:env_specs) }
 
                 it { expect(used_there.uniq.size > 1).to be_truthy }
                 it { expect(used_there.map(&:name)).to match_array([:dimer, :dimer]) }
-                it { expect(hydrogen_migration.reverse.source).
-                  to include(base(:dimer)) }
+
+                before { subject }
+                it { expect(hydrogen_migration.reverse.source.map(&:name)).
+                  to match_array([:'dimer(cr: i)', :'methyl_on_dimer(cm: *)']) }
               end
 
               describe '#store_concept_to' do
@@ -222,11 +211,9 @@ module VersatileDiamond
                 end
 
                 it { expect(reactions_for(:bridge)).to be_empty }
+                it { expect(reactions_for(:dimer)).to be_empty }
+                it { expect(reactions_for(:methyl_on_bridge)).to be_empty }
 
-                it { expect(reactions_for(:dimer).map(&:reaction)).
-                  to eq([hydrogen_migration.reverse]) }
-
-                it { expect(reactions_for(:methyl_on_bridge)).not_to be_empty }
                 it { expect(reactions_for(:methyl_on_dimer)).not_to be_empty }
               end
             end
@@ -241,20 +228,23 @@ module VersatileDiamond
           describe 'collection from reactions' do
             before { store_reactions }
 
-            it_behaves_like :each_reactant_dependent do
+            it_behaves_like :each_spec_dependent do
               let(:dependent_class) { DependentSimpleSpec }
               let(:method) { :specific_specs }
               let(:names) do
                 [
+                  :'hydrogen()',
                   :'hydrogen(h: *)',
                   :'bridge(ct: *)',
                   :'bridge(ct: *, ct: i)',
                   # :'dimer()', # purged
-                  :'dimer(cl: i)',
+                  :'dimer(cr: i)', # replace dimer(cl: i)
                   :'dimer(cr: *)',
                   # :'extended_methyl_on_bridge(cm: *)', # purged
+                  :'dimer(_cr0: i)', # added and reduced by methyl incorporation (product)
                   # :'methyl_on_bridge()', # purged
                   :'methyl_on_bridge(cm: *)',
+                  :'methyl_on_bridge(cm: H)',
                   :'methyl_on_bridge(cm: i)',
                   # :'methyl_on_dimer()', # purged
                   :'methyl_on_dimer(cm: *)'
@@ -273,8 +263,16 @@ module VersatileDiamond
                   get(name).reactions
                 end
 
-                it { expect(reactions_for(:'dimer(cl: i)').map(&:reaction)).
-                  to eq([dimer_formation.reverse]) }
+                let(:result) { reactions_for(:'dimer(cr: i)').map(&:reaction) }
+                let(:inner_reactions) do
+                  [
+                    hydrogen_migration, hydrogen_migration.reverse,
+                    dimer_formation, dimer_formation.reverse,
+                    end_lateral_df, middle_lateral_df
+                  ]
+                end
+
+                it { expect(inner_reactions).to match_array(result) }
               end
             end
           end
@@ -287,6 +285,33 @@ module VersatileDiamond
 
             it { expect(get(:'hydrogen(h: *)')).not_to be_nil }
             it { expect(get(:'methane(c: *)')).not_to be_nil }
+          end
+        end
+
+        describe '#exchange_same_used_base_specs!' do
+          before do
+            Tools::Config.surface_temperature(500, 'K')
+
+            incoherent_dimer_drop.rate = 1
+            Tools::Chest.store(incoherent_dimer_drop)
+
+            end_lateral_idd.rate = 2
+            Tools::Chest.store(end_lateral_idd)
+
+            [incoherent_dimer_drop, end_lateral_idd].each do |reaction|
+              store_base_specs(reaction.source)
+            end
+
+            end_lateral_idd.theres.each do |there|
+              store_base_specs(there.env_specs)
+            end
+          end
+
+          it 'all lateral reactions not have original base dimer' do
+            subject.lateral_reactions.each do |lateral_reaction|
+              is_included = lateral_reaction.sidepiece_specs.include?(dimer_base)
+              expect(is_included).to be_falsey
+            end
           end
         end
 
@@ -308,7 +333,6 @@ module VersatileDiamond
             shared_examples_for :duplicate_or_not do
               def store_to_chest(reaction)
                 reaction.rate = 1
-                reaction.activation = 0
                 Tools::Chest.store(reaction)
               end
 
@@ -364,51 +388,53 @@ module VersatileDiamond
           describe '#organize_reactions_dependencies!' do
             before { store_reactions }
 
-            shared_examples_for :expect_complex do
-              it { expect(reaction.complexes).to eq([complex]) }
-            end
-
             describe 'ubiquitous' do
-              it_behaves_like :expect_complex do
-                let(:reaction) { subject.ubiquitous_reactions.first }
-                let(:complex) { subject.typical_reactions.first }
-              end
+              let(:reaction) { subject.ubiquitous_reactions.first }
+              let(:complex) { subject.typical_reactions.first }
+              it { expect(reaction.children).to eq([complex]) }
             end
 
             describe 'typical' do
-              it_behaves_like :expect_complex do
-                # index of reactions see in comments of #store_reactions method
-                let(:reaction) { subject.typical_reactions[5] }
-                let(:complex) { subject.lateral_reactions.first }
-              end
+              # index of reactions see in comments of #store_reactions method
+              let(:reaction) { subject.typical_reactions[5] }
+              it { expect(reaction.children).to eq(subject.lateral_reactions) }
             end
 
             describe 'lateral' do
-              it_behaves_like :expect_complex do
-                # index of reactions see in comments of #store_reactions method
-                let(:reaction) { subject.lateral_reactions.first }
-                let(:complex) { subject.lateral_reactions.last }
+              before do
+                ewb_lateral_df.rate = 8
+                Tools::Chest.store(ewb_lateral_df)
+              end
+
+              it 'check several properties of lateral reactions list' do
+                expect(subject.lateral_reactions.map(&:class).uniq).
+                  to match_array([DependentLateralReaction, CombinedLateralReaction])
+
+                expect(subject.lateral_reactions.map(&:full_rate)).
+                  to match_array([6.0, 7.0, 8.0, 7.0, 0.0])
+
+                common_parents = subject.lateral_reactions.map(&:parent).uniq
+                expect(common_parents.size).to eq(1)
+                expect(common_parents.first).not_to be_nil
               end
             end
 
             describe 'organization termination species dependencies' do
               shared_examples_for :termination_parents do
                 let(:parents) { subject.term_spec(term_name).parents }
-                let(:specific) { subject.public_send(spec_method, spec_name) }
+                let(:specific) { subject.specific_spec(spec_name) }
 
                 it { expect(parents).to eq([specific]) }
               end
 
               it_behaves_like :termination_parents do
                 let(:term_name) { :H }
-                let(:spec_name) { :methyl_on_bridge }
-                let(:spec_method) { :base_spec }
+                let(:spec_name) { :'methyl_on_bridge(cm: H)' }
               end
 
               it_behaves_like :termination_parents do
                 let(:term_name) { :* }
                 let(:spec_name) { :'methyl_on_bridge(cm: *)' }
-                let(:spec_method) { :specific_spec }
               end
             end
           end
@@ -420,8 +446,8 @@ module VersatileDiamond
             let(:parent) { subject.base_spec(:bridge) }
             let(:children) do
               [
-                subject.specific_spec(:'dimer(cr: *)'),
-                subject.specific_spec(:'dimer(cl: i)')
+                subject.specific_spec(:'dimer(_cr0: i)'),
+                subject.specific_spec(:'dimer(cr: i)')
               ]
             end
 

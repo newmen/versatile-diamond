@@ -21,7 +21,7 @@ module VersatileDiamond
       # Compares two lattice instances
       # @param [Latice] other the comparable lattice
       # @return [Boolean] are equal or not
-      def == (other)
+      def ==(other)
         other && klass == other.klass
       end
 

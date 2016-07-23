@@ -11,26 +11,23 @@ module VersatileDiamond
       # @param [Hash] params the parameters of drawing
       def atoms_of_base_specs(**params)
         draw_base_specs(base_surface_specs, params)
-        base_surface_specs.each do |spec|
-          draw_atoms_for(spec, SpeciesGraphGenerator::BASE_SPEC_COLOR)
-        end
+        color = SpeciesGraphGenerator::BASE_REACTANT_SPEC_COLOR
+        base_surface_specs.each { |spec| draw_atoms_for(spec, color) }
       end
 
       # Draws spec nodes and dependencies from classified atoms
       # @param [Hash] params the parameters of drawing
       def atoms_of_specific_specs(**params)
         draw_specific_specs(specific_surface_specs, params)
-        specific_surface_specs.each do |spec|
-          draw_atoms_for(spec, SpeciesGraphGenerator::SPECIFIC_SPEC_COLOR)
-        end
+        color = SpeciesGraphGenerator::SPECIFIC_REACTANT_SPEC_COLOR
+        specific_surface_specs.each { |spec| draw_atoms_for(spec, color) }
       end
 
       # Draws termination specs and dependencies from classified atoms
       def atoms_for_termination_specs
         draw_termination_specs
-        termination_specs.each do |spec|
-          draw_atoms_for(spec, SpeciesGraphGenerator::TERMINATION_SPEC_COLOR)
-        end
+        color = SpeciesGraphGenerator::TERMINATION_SPEC_COLOR
+        term_specs.each { |spec| draw_atoms_for(spec, color) }
       end
 
       # Draw atoms for passed spec with edges from spec to each atom with
@@ -40,7 +37,7 @@ module VersatileDiamond
       # @param [String] color the color of edges
       def draw_atoms_for(spec, color)
         classification = classifier.classify(spec)
-        draw_atoms(classification, @spec_to_node[spec.name])  do |e|
+        draw_atoms(classification, @spec_to_node[spec.name]) do |e|
           e.color = color
         end
       end

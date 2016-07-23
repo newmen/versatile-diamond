@@ -10,20 +10,20 @@ module VersatileDiamond
         DependentTypicalReaction.new(dimer_formation.duplicate('dup'))
       end
 
-      describe '#complexes' do
-        it { expect(subject.complexes).to be_empty }
+      describe '#children' do
+        it { expect(subject.children).to be_empty }
       end
 
-      describe '#store_complex' do
-        before { subject.store_complex(dept_end_lateral_df) }
-        it { expect(subject.complexes).to eq([dept_end_lateral_df]) }
+      describe '#store_child' do
+        before { subject.store_child(dept_end_lateral_df) }
+        it { expect(subject.children).to eq([dept_end_lateral_df]) }
       end
 
       describe '#reaction' do
         it { subject.reaction == target }
       end
 
-      describe '#parent' do
+      describe '#parents' do
         it { expect(subject.parent).to be_nil }
       end
 
@@ -35,21 +35,21 @@ module VersatileDiamond
         it { subject.full_rate == target.full_rate }
       end
 
-      describe '#each_source' do
-        it { expect(subject.each_source).to be_a(Enumerable) }
+      describe '#each' do
+        it { expect(subject.each(:source)).to be_a(Enumerable) }
 
-        it { expect(subject.each_source.to_a).to match_array(df_source) }
-        it { expect(dept_methyl_deactivation.each_source.to_a).
+        it { expect(subject.each(:source).to_a).to match_array(df_source) }
+        it { expect(dept_methyl_deactivation.each(:source).to_a).
           to match_array(dm_source) }
       end
 
-      describe '#swap_source' do
-        let(:source) { subject.each_source.to_a }
+      describe '#swap_on' do
+        let(:source) { subject.each(:source).to_a }
         let(:ab) { df_source.first }
         let(:aib) { df_source.last }
         let(:bridge_dup) { ab.dup }
 
-        before(:each) { subject.swap_source(ab, bridge_dup) }
+        before { subject.swap_on(:source, ab, bridge_dup) }
 
         it { expect(source).not_to include(ab) }
         it { expect(source).to include(bridge_dup) }
@@ -65,7 +65,7 @@ module VersatileDiamond
         it { expect(subject.same?(duplicate)).to be_truthy }
         it { expect(duplicate.same?(subject)).to be_truthy }
 
-        it { expect(subject.same?(lateral_subject)).to be_truthy }
+        it { expect(subject.same?(lateral_subject)).to be_falsey }
         it { expect(lateral_subject.same?(subject)).to be_falsey }
 
         it { expect(subject.same?(dept_methyl_deactivation)).to be_falsey }
@@ -77,7 +77,7 @@ module VersatileDiamond
           let(:ubiq_react) { dept_surface_activation }
           let(:term_cache) { make_cache([dept_adsorbed_h]) }
           let(:non_term_cache) do
-            make_cache([dept_methyl_on_bridge, dept_hydrogen_ion])
+            make_cache([dept_hydrogenated_methyl_on_bridge, dept_hydrogen_ion])
           end
 
           before do

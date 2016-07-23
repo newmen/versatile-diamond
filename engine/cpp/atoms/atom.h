@@ -5,7 +5,6 @@
 #include "../phases/crystal.h"
 #include "../species/base_spec.h"
 #include "base_atom.h"
-#include "contained_species.h"
 
 namespace vd
 {
@@ -44,6 +43,8 @@ public:
     void setLattice(Crystal *crystal, const int3 &coords);
     void unsetLattice();
 
+    void eraseFromCrystal();
+
     void describe(ushort role, BaseSpec *spec);
     void forget(ushort role, BaseSpec *spec);
     bool hasSpec(ushort role, BaseSpec *spec) const;
@@ -51,8 +52,8 @@ public:
     bool hasRole(ushort sid, ushort role) const;
     bool checkAndFind(ushort sid, ushort role);
     template <class S> S *specByRole(ushort role);
-    template <class S, ushort NUM> ContainedSpecies<S, NUM> specsByRole(ushort role);
     template <class S, class L> void eachSpecByRole(ushort role, const L &lambda);
+    template <class S, class L> void eachSpecsPortionByRole(ushort role, ushort portion, const L &lambda);
 
     void setSpecsUnvisited();
     void findUnvisitedChildren();
@@ -61,8 +62,10 @@ public:
     void prepareToRemove();
 
 #ifdef PRINT
-    void info(std::ostream &os);
-    void pos(std::ostream &os);
+    void info(IndentStream &os);
+    void printRoles(IndentStream &os);
+    void printSpecs(IndentStream &os);
+    void pos(IndentStream &os);
 #endif // PRINT
 
 protected:
@@ -75,6 +78,9 @@ private:
     Atom &operator = (Atom &&) = delete;
 
     BaseSpec *specByRole(ushort sid, ushort role);
+
+    template <class S, class L>
+    void combinations(ushort total, ushort n, S *specs, S *cache, const L &lambda);
 
     uint hash(ushort first, ushort second) const
     {
@@ -92,34 +98,90 @@ S *Atom::specByRole(ushort role)
     return static_cast<S *>(result);
 }
 
-template <class S, ushort NUM>
-ContainedSpecies<S, NUM> Atom::specsByRole(ushort role)
-{
-    const uint key = hash(role, S::ID);
-    auto range = _specs.equal_range(key);
-    uint distance = std::distance(range.first, range.second);
-
-    // there could be permutaion if assert failed,
-    // and method should iterate "typles" of specs
-    assert(distance <= NUM);
-
-    S *specs[NUM] = { nullptr, nullptr };
-    for (int i = 0; range.first != range.second; ++range.first, ++i)
-    {
-        specs[i] = static_cast<S *>(range.first->second);
-    }
-    return ContainedSpecies<S, NUM>(specs);
-}
-
 template <class S, class L>
 void Atom::eachSpecByRole(ushort role, const L &lambda)
 {
     const uint key = hash(role, S::ID);
     auto range = _specs.equal_range(key);
-    for (; range.first != range.second; ++range.first)
+    uint num = std::distance(range.first, range.second);
+    if (num == 0) return;
+
+#ifdef PRINT
+    debugPrint([&](IndentStream &os) {
+        os << "Atom::eachSpecByRole " << this << " " << std::dec;
+        pos(os);
+        os << " |" << _type << ", " << _prevType << "| role id: " << role
+           << ". spec id: " << S::ID << ". key: " << key;
+        os << " => total " << num << " specs:";
+
+        for (auto it = range.first; it != range.second; ++it)
+        {
+            BaseSpec *spec = range.first->second;
+            os << " <" << spec->type() << ">" << spec->name();
+        }
+    });
+#endif // PRINT
+
+    BaseSpec **specsDup = new BaseSpec *[num];
+    for (uint i = 0; range.first != range.second; ++range.first, ++i)
+    {
+        specsDup[i] = range.first->second;
+    }
+
+    for (uint i = 0; i < num; ++i)
+    {
+        BaseSpec *spec = specsDup[i];
+        assert(spec->type() == S::ID);
+        lambda(static_cast<S *>(spec));
+    }
+
+    delete [] specsDup;
+}
+
+template <class S, class L>
+void Atom::eachSpecsPortionByRole(ushort role, ushort portion, const L &lambda)
+{
+    const uint key = hash(role, S::ID);
+    auto range = _specs.equal_range(key);
+    uint num = std::distance(range.first, range.second);
+    if (num < portion) return; // go out from iterator!
+
+    S **specsDup = new S *[num];
+    for (uint i = 0; range.first != range.second; ++range.first, ++i)
     {
         BaseSpec *spec = range.first->second;
-        lambda(static_cast<S *>(spec));
+        assert(spec->type() == S::ID);
+        specsDup[i] = static_cast<S *>(spec);
+    }
+
+    if (num == portion)
+    {
+        lambda(specsDup);
+    }
+    else
+    {
+        S **cache = new S *[portion];
+        combinations(num, portion, specsDup, cache, lambda);
+        delete [] cache;
+    }
+
+    delete [] specsDup;
+}
+
+template <class S, class L>
+void Atom::combinations(ushort total, ushort n, S *specs, S *cache, const L &lambda)
+{
+    for (ushort i = total; i >= n; --i)
+    {
+        cache[n - 1] = specs[i];
+        if (n > 1)
+        {
+            combinations(i - 1, n - 1, specs, cache, lambda);
+        }
+        else
+        {
+            lambda(cache);
+        }
     }
 }
 

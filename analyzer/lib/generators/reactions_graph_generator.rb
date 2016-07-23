@@ -4,27 +4,31 @@ module VersatileDiamond
     # Provides methods for reactions graph generation
     module ReactionsGraphGenerator
 
-      WHERE_COLOR = 'darkviolet'
-
-      UBIQUITOUS_REACTION_COLOR = 'lightblue'
+      UBIQUITOUS_REACTION_COLOR = 'greenyellow'
       TYPICAL_REACTION_COLOR = 'darkgreen'
       LATERAL_REACTION_COLOR = 'lightpink'
+      CHUNK_COLOR = 'darkviolet'
+
       REACTION_DEPENDENT_EDGE_COLOR = 'red'
+
+      PRODUCTS_EDGE_COLOR = 'burlywood4'
 
     private
 
-      # Draws where objects and dependencies between them, and also will
+      # Draws chunks and dependencies between them, and also will
       # draw dependencies from specific species
-      def draw_wheres
-        @where_to_node ||= {}
-        setup_lambda = -> x { x.color = WHERE_COLOR }
+      def draw_chunks
+        @chunk_to_node ||= {}
+        name_method = method(:multilinize)
+        setup_lambda = -> x { x.color = CHUNK_COLOR }
 
-        add_nodes_to(@where_to_node, wheres, method(:same_key), &setup_lambda)
+        add_nodes_to(
+          @chunk_to_node, chunks, method(:same_key), name_method, &setup_lambda)
 
-        multi_deps(:parents, wheres, method(:where_node), &setup_lambda)
+        multi_deps(:parents, chunks, method(:chunk_node), &setup_lambda)
         if @spec_to_node
-          multi_deps(:specs, wheres,
-            method(:where_node), method(:spec_node), &setup_lambda)
+          multi_deps(:specs, chunks.select { |ch| ch.parents.empty? },
+            method(:chunk_node), method(:spec_node), &setup_lambda)
         end
       end
 
@@ -45,9 +49,9 @@ module VersatileDiamond
       def draw_lateral_reactions
         setup_lambda = method(:lateral_setup)
         draw_reactions(lateral_reactions, &setup_lambda)
-        if @where_to_node
-          multi_deps(:wheres, lateral_reactions,
-            method(:reaction_node), method(:where_node), &setup_lambda)
+        if @chunk_to_node
+          mono_dep(:chunk, lateral_reactions,
+            method(:reaction_node), method(:chunk_node), &setup_lambda)
         end
       end
 
@@ -63,10 +67,10 @@ module VersatileDiamond
       end
 
       # Draws dependencies between reactions
-      def draw_all_reactions_deps
-        multicomplexes_deps(ubiquitous_reactions, &method(:ubiquitous_setup))
-        multicomplexes_deps(typical_reactions, &method(:typical_setup))
-        multicomplexes_deps(lateral_reactions, &method(:lateral_setup))
+      def draw_all_reactions_deps(**kwargs)
+        multicomplexes_deps(ubiquitous_reactions, **kwargs, &method(:ubiquitous_setup))
+        multicomplexes_deps(typical_reactions, **kwargs, &method(:typical_setup))
+        multicomplexes_deps(lateral_reactions, **kwargs, &method(:lateral_setup))
       end
 
       # Draw dependencies between reactions and their more complex analogies and to
@@ -74,14 +78,19 @@ module VersatileDiamond
       #
       # @param [Array] reactions the reactions set dependencies for which will be show
       # @yield [Edge] do with each drawn edge
-      def multicomplexes_deps(reactions, &setup_block)
+      def multicomplexes_deps(reactions, products: false, &setup_block)
         complexes_setup = -> x { x.color = REACTION_DEPENDENT_EDGE_COLOR }
-        multi_deps(:complexes, reactions, method(:reaction_node), &complexes_setup)
+        multi_deps(:children, reactions, method(:reaction_node), &complexes_setup)
 
         if @spec_to_node
-          parent_reactions = reactions.reject { |reaction| reaction.parent }
-          multi_deps(:source, parent_reactions,
-            method(:reaction_node), method(:spec_node), &setup_block)
+          target_reactions = reactions.select { |rc| !rc.parent || rc.local? }
+          node_procs = [method(:reaction_node), method(:spec_node)]
+          multi_deps(:source, target_reactions, *node_procs, &setup_block)
+          if products
+            multi_deps(:products, target_reactions, *node_procs) do |x|
+              x.color = PRODUCTS_EDGE_COLOR
+            end
+          end
         end
       end
 
@@ -100,11 +109,11 @@ module VersatileDiamond
         entity
       end
 
-      # Gets where node from internal where to node cache
-      # @param [Concepts::Where] where for which node will returned
-      # @return [Node] the result where node
-      def where_node(where)
-        @where_to_node[where]
+      # Gets chunk node from internal chunk to node cache
+      # @param [Organizers::DrawableChunk] chunk for which node will returned
+      # @return [Node] the result chunk node
+      def chunk_node(chunk)
+        @chunk_to_node[chunk]
       end
 
       # Gets reaction node from internal reaction to node cache

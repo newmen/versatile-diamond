@@ -28,13 +28,13 @@ module VersatileDiamond
           # Makes #{prefix} name for current specie
           # @return [String] the result #{prefix} name
           define_method(method_name) do
-            var = instance_variable_get(var_name)
-            unless var
+            value = instance_variable_get(var_name)
+            unless value
               parts = reaction.name.split(/\s+/).map { |str| eval("str.#{method}") }
-              var = parts.join(separator)
-              instance_variable_set(var_name, var)
+              value = parts.join(separator).gsub('.', '')
+              instance_variable_set(var_name, value)
             end
-            var
+            value
           end
         end
 
@@ -53,16 +53,23 @@ module VersatileDiamond
 
       private
 
-        # Gets the parent ubiquitous reaction
-        # @return [UbiquitousReaction] the parent reaction
+        # The list of common files which are used by reaction class
+        # @return [Array] list with base class file path
+        # @override
+        def using_common_files
+          super + [common_file('registrator')]
+        end
+
+        # Gets the parents of current reaction
+        # @return [BaseReaction] the parents of current reaction
         def parent
-          reaction_class(reaction.parent)
+          reaction.parent && reaction_class(reaction.parent)
         end
 
         # Gets the list of more complex reactions
         # @return [Array] the list of children reactions
         def children
-          reaction.complexes.map(&method(:reaction_class))
+          reaction_classes(reaction.children)
         end
 
         # Gets reacting gas species list
@@ -82,8 +89,20 @@ module VersatileDiamond
 
         # By default gets the unwrapped parent type
         # @return [String] the unwrapped parent type of reaction
+        # @override
         def outer_base_class_name
           reaction_type
+        end
+
+        # Provides common files which is base class for current instance
+        # @return [Array] the common files for current reaction
+        # @override
+        def common_base_class_files
+          if outer_base_class_name == reaction_type
+            super
+          else
+            super + [common_file(reaction_type.underscore)]
+          end
         end
 
         # Gets the name of directory where will be stored result file

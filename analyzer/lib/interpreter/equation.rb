@@ -45,7 +45,7 @@ module VersatileDiamond
         end
 
         lateral = env.make_lateral(Hash[resolved_targets])
-        store(@reaction, lateral) # only for check duplication?
+        store(@reaction, lateral)
       end
 
       # Interprets there line and nest new refinement
@@ -72,9 +72,12 @@ module VersatileDiamond
         names_and_specs = {}
         is_forward = reaction.type == :forward
         dup = reaction.send(method, *dup_args) do |type, mirror|
-          type = type == :source ?
-            (is_forward ? :source : :products) :
-            (is_forward ? :products : :source)
+          type =
+            if type == :source
+              (is_forward ? :source : :products)
+            else
+              (is_forward ? :products : :source)
+            end
 
           names_and_specs[type] = []
           @names_and_specs[type].each do |name, spec|

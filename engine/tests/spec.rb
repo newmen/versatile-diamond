@@ -9,9 +9,10 @@ HANDG_DIR = '../hand-generations'
 HANDG_SRC_DIR = "#{HANDG_DIR}/src"
 HANDG_OBJS_DIR = "#{HANDG_DIR}/obj"
 
-GCC_PATH = '/usr'
-CXX = "#{GCC_PATH}/bin/g++"
-FLAGS = "-I#{ENGINE_SRC_DIR} -I#{HANDG_SRC_DIR} -std=c++11 -O2 -pthread -lyaml-cpp"
+GCC_PATH = '/usr/local/Cellar/gcc/6.1.0'
+CC_BIN = 'g++-6'
+CXX = "#{GCC_PATH}/bin/#{CC_BIN}"
+FLAGS = "-I#{GCC_PATH}/include/c++/6.1.0 -I#{ENGINE_SRC_DIR} -I#{HANDG_SRC_DIR} -L#{GCC_PATH}/lib -std=c++11 -O2 -openmp -lyaml-cpp"
 
 # Provides string by which compilation will do
 # @return [String] the compilation string
@@ -47,13 +48,37 @@ end
 # @param [String] random_name the name of binary output file
 def compile_test(file_name, random_name)
   if (!@maked && ARGV.size == 0) || ARGV.size == 1
-    `make -j3`
+    `make -j#{processor_count}`
     @maked = true
   end
 
   supports = Dir['support/**/*.cpp']
   args = "#{supports.join(' ')}"
   compile_line(file_name, random_name, args)
+end
+
+# Gets the number of processor cores
+# The original source code: https://github.com/grosser/parallel
+# @return [Integer] the number of cores
+def processor_count
+  case RbConfig::CONFIG['host_os']
+  when /darwin9/
+    `hwprefs cpu_count`.to_i
+  when /darwin/
+    ((`which hwprefs` != '') ? `hwprefs thread_count` : `sysctl -n hw.ncpu`).to_i
+  when /linux/
+    `cat /proc/cpuinfo | grep processor | wc -l`.to_i
+  when /freebsd/
+    `sysctl -n hw.ncpu`.to_i
+  when /mswin|mingw/
+    require 'win32ole'
+    wmi = WIN32OLE.connect("winmgmts://")
+    # TODO: count hyper-threaded in this
+    cpu = wmi.ExecQuery("select NumberOfCores from Win32_Processor")
+    cpu.to_enum.first.NumberOfCores
+  else
+    1
+  end
 end
 
 # Runs test

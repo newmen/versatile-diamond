@@ -19,7 +19,7 @@ module VersatileDiamond
       end
 
       # Calls correspond method in atom properties
-      # @param [AtomProperties] prop the observed atom properties
+      # @param [Organizers::AtomProperties] prop the observed atom properties
       def terminations_num(prop)
         prop.actives_num
       end
@@ -46,6 +46,15 @@ module VersatileDiamond
 
       def to_s
         name.to_s
+      end
+
+    private
+
+      # Provides empty comparing core
+      # @param [ActiveBond] other comparing instance
+      # @return [Integer] 0
+      def comparing_core(other)
+        0
       end
     end
 

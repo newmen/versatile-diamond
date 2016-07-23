@@ -19,18 +19,17 @@ public:
 
     bool all()
     {
-        bool result = true;
-        for (int i = 0; i < NUM; ++i)
+        for (uint i = 0; i < NUM; ++i)
         {
-            result = result && (_items[i] != nullptr);
+            if (_items[i] == nullptr) return false;
         }
-        return result;
+        return true;
     }
 
 protected:
     ManyItemsResult()
     {
-        for (int i = 0; i < NUM; ++i)
+        for (uint i = 0; i < NUM; ++i)
         {
             _items[i] = nullptr;
         }
@@ -38,18 +37,21 @@ protected:
 
     ManyItemsResult(T *items[NUM])
     {
-        for (int i = 0; i < NUM; ++i)
+        for (uint i = 0; i < NUM; ++i)
         {
             _items[i] = items[i];
         }
     }
 
+    template <class... Args>
+    ManyItemsResult(Args... args) : _items { args... } {}
+
     ManyItemsResult(ManyItemsResult<T, NUM> &&) = default;
-    ManyItemsResult<T, NUM>& operator = (ManyItemsResult<T, NUM> &&) = default;
+    ManyItemsResult<T, NUM> &operator = (ManyItemsResult<T, NUM> &&) = default;
 
 private:
     ManyItemsResult(const ManyItemsResult<T, NUM> &) = delete;
-    ManyItemsResult<T, NUM>& operator = (const ManyItemsResult<T, NUM> &) = delete;
+    ManyItemsResult<T, NUM> &operator = (const ManyItemsResult<T, NUM> &) = delete;
 };
 
 #endif // MANY_ITEMS_RESULT_H

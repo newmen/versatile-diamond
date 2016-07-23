@@ -3,7 +3,7 @@ module VersatileDiamond
 
     # Configuration singleton which contain params about calculaton runtime
     class Config
-      DUMP_PREFIX = 'config'
+      DUMP_PREFIX = 'config'.freeze
 
       # Exception class for cases where setuping value already setuped
       class AlreadyDefined < Errors::Base
@@ -16,7 +16,7 @@ module VersatileDiamond
         attr_reader :concs
 
         # Initialize internal variables of config
-        def init
+        def init!
           @total_time = nil
           @concs = {}
           @composition = nil
@@ -26,7 +26,7 @@ module VersatileDiamond
 
         # Loads config from path by it dump
         # @param [String] path to file which will checked for correct dump
-        def load(path)
+        def load!(path)
           # internal variables same as dump_data
           @total_time, @concs, @sizes, @gas_temperature, @surface_temperature =
             Serializer.load(path, suffix: DUMP_PREFIX)
@@ -114,11 +114,13 @@ module VersatileDiamond
           arrenius = reaction.rate * (temp ** reaction.temp_power) *
             Math.exp(-reaction.activation / (Dimension::R * temp))
 
-          reaction.gases_num == 0 ?
-            arrenius :
-            reaction.each_source.reduce(arrenius) do |acc, spec|
+          if reaction.gases_num == 0
+            arrenius
+          else
+            reaction.each(:source).reduce(arrenius) do |acc, spec|
               spec.gas? ? acc * concentration_value(spec) : acc
             end
+          end
         end
 
         # Finds concenctration value for some spec

@@ -8,13 +8,23 @@ module VersatileDiamond
       class YamlFile
         include TemplateFile
 
+        # Initialize YAML file generator
+        # @param [Object] code_class the instance class file generator
+        def initialize(code_class)
+          @code_class = code_class
+        end
+
         # Generates .h and .cpp files for current instance
         # @param [String] root_dir the generation directory
+        # @return [Array] yaml file no any dependencies to another file by default
         def generate(root_dir)
           write_file(root_dir, 'yml')
+          []
         end
 
       private
+
+        attr_reader :code_class
 
         # Yaml config files located in configs directory
         # @return [String] the config directory name

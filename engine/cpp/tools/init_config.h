@@ -16,7 +16,8 @@
 #include "common.h"
 #include "error.h"
 
-using namespace vd;
+namespace vd
+{
 
 template <class HB>
 class InitConfig
@@ -233,6 +234,8 @@ VolumeSaverCounter *InitConfig<HB>::createVSCounter(const char *from, const Dete
 {
     VolumeSaverFactory vsFactory;
     return new VolumeSaverCounter(detFactory.create(readDetector(from)), vsFactory.create(from, filename().c_str()), readStep(from));
+}
+
 }
 
 #endif // INIT_CONFIG_H

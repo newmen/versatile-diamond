@@ -30,6 +30,20 @@ module VersatileDiamond
       def atom(keyname)
         @atoms_to_veiled[original.atom(keyname)]
       end
+
+      # Gets correct keyname of veiled atom
+      # @param [VeiledAtom] atom for which the keyname will be found
+      # @return [Symbol] the keyname of atom
+      def keyname(atom)
+        original.keyname(atom.original)
+      end
+
+      # Changes internal atom to correspond veiled atom
+      # @param [TerminationSpec] term_spec the termination specie
+      # @return [Boolean] has termination atom or not
+      def has_termination?(internal_atom, term_spec)
+        original.has_termination?(@atoms_to_veiled.invert[internal_atom], term_spec)
+      end
     end
 
   end

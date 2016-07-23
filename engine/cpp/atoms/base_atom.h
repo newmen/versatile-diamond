@@ -35,8 +35,9 @@ public:
 
     void bondWith(D *neighbour, int depth = 1);
     template <class L> void eachNeighbour(const L &lambda) const;
+    template <class L> void eachAmorphNeighbour(const L &lambda);
+    template <class L> void eachCrystalNeighbour(const L &lambda);
 
-    D *amorphNeighbour() const;
     D *firstCrystalNeighbour() const;
     ushort crystalNeighboursNum() const;
 
@@ -57,6 +58,9 @@ protected:
 
     void setType(ushort type) { _type = type; }
     void setLattice(Lattice<C> *lattice) { _lattice = lattice; }
+
+private:
+    template <class L, class P> void eachNeighbourBy(const L &lambda, const P &predicate);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -101,30 +105,49 @@ void BaseAtom<D, C>::eachNeighbour(const L &lambda) const
 }
 
 template <class D, class C>
-D *BaseAtom<D, C>::amorphNeighbour() const
+template <class L>
+void BaseAtom<D, C>::eachAmorphNeighbour(const L &lambda)
 {
-    D *neighbour = nullptr;
-    for (D *relative : _relatives)
-    {
-        if (!relative->lattice())
-        {
-            neighbour = relative;
-            break;
-        }
-    }
+    eachNeighbourBy(lambda, [](const BaseAtom *neighbour) {
+       return !neighbour->lattice();
+    });
+}
 
-    assert(neighbour);
-#ifndef NDEBUG
-    for (D *relative : _relatives)
-    {
-        if (!relative->lattice() && relative != neighbour)
-        {
-            assert(false); // if has many unlatticed atoms
-        }
-    }
-#endif // NDEBUG
+template <class D, class C>
+template <class L>
+void BaseAtom<D, C>::eachCrystalNeighbour(const L &lambda)
+{
+    eachNeighbourBy(lambda, [](const BaseAtom *neighbour) {
+       return neighbour->lattice();
+    });
+}
 
-    return neighbour;
+template <class D, class C>
+template <class L, class P>
+void BaseAtom<D, C>::eachNeighbourBy(const L &lambda, const P &predicate)
+{
+    BaseAtom **visited = new BaseAtom *[_relatives.size()];
+    ushort n = 0;
+    for (BaseAtom *neighbour : _relatives)
+    {
+        if (predicate(neighbour))
+        {
+            // Skip multibonds
+            for (ushort i = 0; i < n; ++i)
+            {
+                if (visited[i] == neighbour)
+                {
+                    goto next_main_iteration;
+                }
+            }
+
+            lambda(neighbour);
+            visited[n++] = neighbour;
+        }
+
+        next_main_iteration :;
+    }
+    delete [] visited;
 }
 
 template <class D, class C>

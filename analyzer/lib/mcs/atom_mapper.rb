@@ -32,6 +32,7 @@ module VersatileDiamond
       # @param [Array] products see at #self.map same argument
       def initialize(source, products)
         @source, @products = source.dup, products.dup
+        @blank_result = MappingResult.new(@source, @products)
       end
 
       # Detects mapping case and uses the appropriate algorithm. Changes
@@ -42,23 +43,19 @@ module VersatileDiamond
       # @raise [ManyToOneAlgorithm::CannotMap] see at #self.map
       # @return [MappingResult] see at #self.map
       def map(names_and_specs)
-        reject_simple_specs!
-
-        mapping_result = MappingResult.new(@source, @products)
-        mapping_result.reaction_type == :exchange ?
-          ManyToManyAlgorithm.map_to(mapping_result, names_and_specs) :
-          ManyToOneAlgorithm.map_to(mapping_result)
-
-        mapping_result
+        if @blank_result.reaction_type == :exchange
+          ManyToManyAlgorithm.map_to(@blank_result, names_and_specs)
+        else
+          ManyToOneAlgorithm.map_to(@blank_result)
+        end
       end
 
     private
 
       # Rejects simple specs from each source and products containers
       def reject_simple_specs!
-        context = -> specific_spec { specific_spec.simple? }
-        @source.reject!(&context)
-        @products.reject!(&context)
+        @source.reject!(&:simple?)
+        @products.reject!(&:simple?)
       end
     end
 

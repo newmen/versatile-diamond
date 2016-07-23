@@ -5,11 +5,12 @@ module VersatileDiamond
     # used in reactions
     class SpecificSpec
       include Modules::RelationBetweenChecker
+      include Modules::GraphDupper
       include BondsCounter
       extend Forwardable
 
-      def_delegators :@spec, :extendable?, :gas?, :simple?
       attr_reader :spec, :specific_atoms
+      def_delegators :spec, :extendable?, :termination?, :gas?, :simple?
 
       # Initialize specific spec instalce. Checks specified atom for correct
       # valence value
@@ -42,8 +43,8 @@ module VersatileDiamond
         @spec = spec
         @original_name = spec.name
 
-        @external_bonds_after_extend = nil
-        @reduced, @correct_reduced = nil
+        @extended_spec, @reduced, @correct_reduced = nil
+        @_name, @_external_bonds_after_extend = nil
       end
 
       # Makes a copy of other specific spec by dup each specific atom from it
@@ -51,7 +52,12 @@ module VersatileDiamond
       def initialize_copy(other)
         @spec = other.spec
         @specific_atoms = Hash[other.specific_atoms.map { |k, a| [k, a.dup] }]
-        reset_caches
+        reset_caches!
+      end
+
+      # @return [Boolean]
+      def specific?
+        true
       end
 
       # Updates base spec from which dependent current specific spec
@@ -74,13 +80,15 @@ module VersatileDiamond
       # Builds the full name of specific spec (with specificied atom info)
       # @return [Symbol] the full name of specific spec
       def name
+        return @_name if @_name
+
         sorted_atoms = @specific_atoms.to_a.sort { |(k1, _), (k2, _)| k1 <=> k2 }
         args = sorted_atoms.reduce([]) do |arr, (keyname, atom)|
           atom.actives.times { arr << "#{keyname}: *" }
           arr + relevants_for(atom) + monovalents_for(atom)
         end
 
-        :"#{@original_name}(#{args.join(', ')})"
+        @_name = :"#{@original_name}(#{args.join(', ')})"
       end
 
       # Gets corresponding atom, because it can be specific atom
@@ -115,7 +123,27 @@ module VersatileDiamond
             "Described atom #{keyname} for specific #{name} cannot be unspecified"
         end
         @specific_atoms[keyname] = atom
-        reset_caches
+        reset_caches!
+      end
+
+      # Swaps from own to new
+      # @param [Atom | SpecificAtom | AtomReference] from
+      # @param [Atom | SpecificAtom | AtomReference] to
+      def swap_atom(from, to)
+        original_links = dup_graph(links, &:itself)
+        find_proc = -> atom { @specific_atoms.find { |_, a| a == atom } }
+        pair = find_proc[from]
+        if pair
+          raise ArgumentError, 'Incorrect swapping' if find_proc[to]
+          @specific_atoms[pair.first] = to
+        elsif to.specific?
+          @specific_atoms[spec.keyname(from)] = to
+        else
+          spec.swap_atom(from, to)
+        end
+
+        reset_caches!
+        @links = dup_graph(original_links) { |atom| atom == from ? to : atom }
       end
 
       # Returns original links of base spec but exchange correspond atoms to
@@ -138,7 +166,7 @@ module VersatileDiamond
           unless atom
             atom = SpecificAtom.new(spec.atom(atom_keyname))
             @specific_atoms[atom_keyname] = atom
-            reset_caches
+            reset_caches!
           end
           atom.send(method_name)
         end
@@ -157,9 +185,10 @@ module VersatileDiamond
       #
       # @return [Integer] the number of external bonds for extended spec
       def external_bonds_after_extend
-        return @external_bonds_after_extend if @external_bonds_after_extend
+        return @_external_bonds_after_extend if @_external_bonds_after_extend
         @extended_spec = spec.extend_by_references
-        @external_bonds_after_extend = @extended_spec.external_bonds - active_bonds_num
+        @_external_bonds_after_extend =
+          @extended_spec.external_bonds - active_bonds_num
       end
 
       # Makes a new specific spec by extended base spec
@@ -168,7 +197,7 @@ module VersatileDiamond
         external_bonds_after_extend unless @extended_spec
 
         spec = self.class.new(@extended_spec)
-        spec.reduced = self
+        spec.reduced = self # @reduced assign
         @specific_atoms.each do |keyname, old_atom|
           spec.specific_atoms[keyname] =
             SpecificAtom.new(@extended_spec.atom(keyname), ancestor: old_atom)
@@ -287,17 +316,7 @@ module VersatileDiamond
       # Updates current links to correct atoms from some other base spec
       # @param [Hash] mirror of atoms from prev base to some other new base spec
       def update_links(mirror)
-        # before build curret links cache by calling #links method
-        new_links = links.map do |atom_key, atoms_ref_list|
-          new_atom_key = mirror[atom_key] || atom_key
-          new_atoms_ref_list = atoms_ref_list.map do |a, r|
-            [mirror[a] || a, r]
-          end
-
-          [new_atom_key, new_atoms_ref_list]
-        end
-
-        @links = Hash[new_links]
+        @links = dup_graph(links) { |a| mirror[a] || a }
       end
 
       # Collect all relevant states for passed atom
@@ -343,9 +362,10 @@ module VersatileDiamond
       end
 
       # Resets internal caches
-      def reset_caches
+      def reset_caches!
+        @_name = nil
         @links = nil
-        @external_bonds_after_extend = nil
+        @_external_bonds_after_extend = nil
       end
     end
 

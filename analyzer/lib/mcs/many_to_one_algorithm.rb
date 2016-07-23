@@ -24,6 +24,7 @@ module VersatileDiamond
         # @param [MappingResult] map_result the object which accumulate mapping
         #   result
         # @raise [AtomMapper::CannotMap] when algorithm cannot be applied
+        # @return [MappingResult] the fillingn results
         def map_to(map_result)
           new(map_result.source, map_result.products,
             map_result.reaction_type).map_to(map_result)
@@ -47,8 +48,8 @@ module VersatileDiamond
         @graphs_to_specs.merge!(Hash[source_graphs.zip(source)])
         @graphs_to_specs.merge!(Hash[product_graphs.zip(products)])
 
-        @reaction_type = reaction_type # must be :association or :dissociation
-        # for current algorithm
+        # must be :association or :dissociation for current algorithm
+        @reaction_type = reaction_type
 
         @few_graphs, @big_graph =
           if @reaction_type == :association
@@ -72,11 +73,12 @@ module VersatileDiamond
       #
       # @param [MappingResult] map_result see at #self.map same argument
       # @raise [AtomMapper::CannotMap] see at #self.map
+      # @return [MappingResult] the fillingn results
       def map_to(mapping_result)
         @few_graphs.sort! { |a, b| b.size <=> a.size }
 
         @boundary_big_vertices = nil
-        @few_graphs.each do |small_graph|
+        @few_graphs.each_with_object(mapping_result) do |small_graph, acc|
           @small_graph = small_graph
           @remaining_small_vertices = nil
 
@@ -100,7 +102,7 @@ module VersatileDiamond
           # store result
           changes = associate_links(changed_big, changed_small)
           full = associate_links(big_mapped_vertices, small_mapped_vertices)
-          mapping_result.add(associate_specs, full, changes)
+          acc.add(associate_specs, full, changes)
         end
       end
 
@@ -135,7 +137,7 @@ module VersatileDiamond
             lattices_variants ||= detect_lattices_variants
 
             if lattices_variants.empty?
-              # assoc_graph.save('assoc_error') # TODO: it's not necessarily
+              # assoc_graph.save('assoc_error') # just for debug sometimes
               raise AtomMapper::CannotMap
             else
               new_lattices = lattices_variants.pop
@@ -157,16 +159,26 @@ module VersatileDiamond
       #
       # @return [AssocGraph] the resulted associaton graph
       def build_assoc_graph
-        AssocGraph.new(@big_graph, @small_graph,
-          comparer: method(:vertex_comparer)) do |(v1, w1), (v2, w2)|
+        bbvs = @boundary_big_vertices
+        rsvs = @remaining_small_vertices
 
-          (@boundary_big_vertices &&
-            (@boundary_big_vertices.include?(v1) ||
-              @boundary_big_vertices.include?(w1))) ||
-          (@remaining_small_vertices &&
-            (@remaining_small_vertices.include?(@small_graph.changed_vertex(v2) ||
-              @remaining_small_vertices.include?(@small_graph.changed_vertex(w2)))))
+        opts = {
+          comparer: method(:vertex_comparer),
+          bonds_checker: method(:can_bond?)
+        }
+
+        AssocGraph.new(@big_graph, @small_graph, **opts) do |(v1, v2), (w1, w2)|
+          (bbvs && (bbvs.include?(v1) || bbvs.include?(v2))) ||
+          (rsvs &&
+            (rsvs.include?(@small_graph.changed_vertex(w1) ||
+              rsvs.include?(@small_graph.changed_vertex(w2)))))
         end
+      end
+
+      # @param [Array] atoms
+      # @return [Boolean]
+      def can_bond?(*atoms)
+        atoms.all? { |a| a.actives > 0 }
       end
 
       # Compare two vertices in different graphs for creating associated vertex
@@ -181,9 +193,11 @@ module VersatileDiamond
         # valence is not compared because could not be case when names is equal
         # and valencies is not
         return false unless v.name == w.name && v.lattice == w.lattice
-        return true if (@boundary_big_vertices &&
-          @boundary_big_vertices.include?(v)) || (@remaining_small_vertices &&
+
+        cmp = (@boundary_big_vertices && @boundary_big_vertices.include?(v)) ||
+          (@remaining_small_vertices &&
             @remaining_small_vertices.include?(g2.changed_vertex(w)))
+        return true if cmp
 
         s1, s2 = @graphs_to_specs[g1], @graphs_to_specs[g2]
         cv, cw = g1.changed_vertex(v) || v, g2.changed_vertex(w) || w
@@ -207,14 +221,22 @@ module VersatileDiamond
       # @return [Array, Array] changed vertices for both graphs
       def select_on_remaining(mapped_big, mapped_small)
         small_to_big = Hash[mapped_small.zip(mapped_big)]
+        big_to_small = small_to_big.invert
 
         # because lattice may be changed
         @remaining_small_vertices.map! do |v|
           @small_graph.vertex_changed_to(v) || v
         end
 
-        changed_small = @remaining_small_vertices +
-          @small_graph.boundary_vertices(@remaining_small_vertices)
+        remaining_big = @remaining_small_vertices.map { |v| small_to_big[v] }
+        boundary_big = @big_graph.boundary_vertices(remaining_big)
+        pairs = boundary_big.map { |v| [v, big_to_small[v]] }.select(&:last)
+        different_pairs = pairs.select { |v, w| !v.same?(w) || realy_changed?(v, w) }
+        different_small = different_pairs.map(&:last)
+
+        boundary_small = @small_graph.boundary_vertices(@remaining_small_vertices)
+        changed_small =
+          (@remaining_small_vertices + boundary_small + different_small).uniq
 
         changed_big = changed_small.map { |v| small_to_big[v] }
         # because lattice may be changed again
@@ -231,14 +253,10 @@ module VersatileDiamond
         big_to_small = Hash[mapped_big.zip(mapped_small)]
         small_to_big = big_to_small.invert
 
-        changed_big =
-          if @boundary_big_vertices
-            @boundary_big_vertices
-          else
+        changed_big = @boundary_big_vertices ||
             # sum order is important!
             (vertices_with_differ_edges(mapped_big, big_to_small) +
               extreme_vertices!(mapped_big)).uniq
-          end
 
         changed_small = changed_big.map { |v| big_to_small[v] }.compact
         changed_small.select! { |v| realy_changed?(small_to_big[v], v) }
@@ -255,7 +273,7 @@ module VersatileDiamond
 
         big_edges = @big_graph.significant_edges_of(big_vertex)
         small_edges = @small_graph.significant_edges_of(small_vertex)
-        !lists_are_identical?(big_edges, small_edges, &:==)
+        !lists_are_identical?(big_edges, small_edges)
       end
 
       # Determines which vertices changed by changing the relative position or
@@ -272,9 +290,9 @@ module VersatileDiamond
             next if bv == bw
             sw = big_to_small[bw]
 
-            if @big_graph.edges(bv, bw) != @small_graph.edges(sv, sw)
-              vertices << bv << bw
-            end
+            big_edges = @big_graph.edges(bv, bw)
+            small_edges = @small_graph.edges(sv, sw)
+            vertices << bv << bw unless lists_are_identical?(big_edges, small_edges)
           end
         end
         result.to_a

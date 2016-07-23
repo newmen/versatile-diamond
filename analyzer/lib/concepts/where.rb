@@ -8,7 +8,7 @@ module VersatileDiamond
     class Where < Named
       include Modules::ListsComparer
       include Modules::GraphDupper
-      include SpecAtomSwapper
+      include Modules::SpecAtomSwapper
 
       attr_reader :description, :parents, :specs, :links
 
@@ -18,11 +18,33 @@ module VersatileDiamond
       #   added to end of name of lateral reaction
       # @option [Array] :specs the target specific specs
       def initialize(name, description, specs: [])
+        raise 'Description should be a string' unless description.is_a?(String)
+        raise 'Description should not be empty' if description.empty?
+
         super(name)
         @description = description
-        @specs = specs
         @parents = []
+        @specs = specs
         @links = {}
+      end
+
+      # Makes a duplicate of where object
+      # @param [Where] other the where object which will be duplicated
+      def initialize_copy(other)
+        @description = other.description
+        @parents = other.parents.map(&:dup)
+        @specs = other.specs.map(&:dup)
+
+        specs_mirror = Hash[other.specs.zip(@specs)]
+        links_mirror = other.links.flat_map(&:last).map(&:first).map do |spec, atom|
+          self_spec = specs_mirror[spec]
+          [[spec, atom], [self_spec, self_spec.atom(spec.keyname(atom))]]
+        end
+
+        links_mirror = Hash[links_mirror]
+        @links = dup_graph(other.links) do |spec_atom|
+          spec_atom.is_a?(Symbol) ? spec_atom : links_mirror[spec_atom]
+        end
       end
 
       # Stores raw position between target symbol and some concrete atom.
@@ -44,14 +66,14 @@ module VersatileDiamond
       # TODO: rspec
       def swap_source(from, to)
         return if from == to
-        return unless @specs.delete(from)
-        @specs << to
-
-        @links = dup_graph(@links) do |v|
-          v.is_a?(Symbol) ? v : swap(v, from, to)
+        if @specs.delete(from)
+          @specs << to
+          @links = dup_graph(@links) do |v|
+            v.is_a?(Symbol) ? v : swap(v, from, to)
+          end
+        else
+          parents.each { |parent| parent.swap_source(from, to) }
         end
-
-        parents.each { |parent| parent.swap_source(from, to) }
       end
 
       # Swaps atoms
@@ -70,7 +92,7 @@ module VersatileDiamond
       # Reduce all species from current instance and from all parent instances
       # @return [Array] the result of reduce
       def all_specs
-        specs + parents.reduce([]) { |acc, parent| acc + parent.all_specs }
+        specs + parents.flat_map(&:all_specs)
       end
 
       # Concretize current instance by creating there object
@@ -100,59 +122,8 @@ module VersatileDiamond
           rels.each { |(s, a), _| acc << a if s == spec }
         end
 
-        atoms += parents.reduce([]) { |acc, parent| acc + parent.used_atoms_of(spec) }
+        atoms += parents.flat_map { |parent| parent.used_atoms_of(spec) }
         atoms.uniq
-      end
-
-      # Compares raw positions between self and other where objects
-      # @param [Where] other where object which raw positions will be checked
-      # @return [Boolean] are same raw positions or not
-      # TODO: valid comparison?
-      def same_positions?(other)
-        same_specs?(other) &&
-          lists_are_identical?(raw_positions, other.raw_positions) do |fs, os|
-            (target, spec_atom, position), (t, sa, p) = fs, os
-            t == target && p == position && same_spec_atoms?(spec_atom, sa)
-          end
-      end
-
-    protected
-
-      # Gets the list of all raw positions
-      # @return [Array] the list of raw positions
-      def raw_positions
-        links.flat_map do |target, rels|
-          rels.map { |spec_atom, relation| [target, spec_atom, relation] }
-        end
-      end
-
-    private
-
-      # Compares specs of current and other where objects
-      # @param [Where] other where object which specs will be checked
-      # @return [Boolean] are same specs or not
-      def same_specs?(other)
-        lists_are_identical?(specs, other.specs, &:same?)
-      end
-
-      # Compares two spec_atom instances
-      # @param [Array] first spec_atom instance
-      # @param [Array] second spec_atom instance
-      # @return [Boolean] are identical spec_atom instances or not
-      def same_spec_atoms?(first, second)
-        return true if first == second
-
-        sf, ss = first.first, second.first
-        return false unless sf.links.size == ss.links.size
-
-        args = [sf, ss, { collaps_multi_bond: true }]
-        insecs = Mcs::SpeciesComparator.intersec(*args)
-        return false unless sf.links.size == insecs.first.size
-
-        af, as = first.last, second.last
-        insecs.any? do |intersec|
-          intersec.any? { |f, t| f == af && t == as }
-        end
       end
     end
 

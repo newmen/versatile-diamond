@@ -15,12 +15,14 @@ module VersatileDiamond
         def initialize(first, second); @first, @second = first, second end
       end
 
-      attr_reader :ubiquitous_reactions, :typical_reactions, :lateral_reactions,
-        :theres
+      attr_reader :ubiquitous_reactions, :typical_reactions, :lateral_reactions
 
       # Collects results of interpretations from Chest to internal storage and
       # organizes dependencies between collected concepts
       def initialize
+        ChunkLinksMerger.init_veiled_cache!
+        reorganize_children_specs!(Tools::Chest.all(:reaction))
+
         @ubiquitous_reactions =
           wrap_reactions(DependentUbiquitousReaction, :ubiquitous_reaction)
         @typical_reactions =
@@ -34,6 +36,7 @@ module VersatileDiamond
         @base_specs, @specific_specs =
           purge_unspecified_specs(collect_base_specs, collect_specific_specs)
 
+        exchange_same_used_base_specs!
         organize_dependecies!
       end
 
@@ -56,24 +59,28 @@ module VersatileDiamond
 
     private
 
+      attr_reader :theres
+
+      # Grabs possible reactions from Chest by passed key
+      # @param [Symbol] chest_key the key by which reactions will be got from Chest
+      # @return [Array] the list of significant reactions
+      def significant_reactions(chest_key)
+        Tools::Chest.all(chest_key).select(&:significant?)
+      end
+
       # Wraps reactions from Chest
       # @param [Class] the class that inherits DependentReaction
       # @param [Symbol] chest_key the key by which reactions will be got from Chest
       # @raise [RuntimeError] if passed klass is not DependentReaction
       # @return [Array] the array with each wrapped reaction
       def wrap_reactions(klass, chest_key)
-        raise 'Wrong klass value' unless klass.ancestors.include?(DependentReaction)
-
-        with_rate = Tools::Chest.all(chest_key).reject { |r| r.full_rate == 0 }
-        with_rate.map { |reaction| klass.new(reaction) }
+        significant_reactions(chest_key).map { |reaction| klass.new(reaction) }
       end
 
       # Collects there instances from lateral reactions
       # @return [Array] the array of collected instances
       def collect_theres
-        lateral_reactions.reduce([]) do |acc, reaction|
-          acc + reaction.theres.map { |there| DependentThere.new(reaction, there) }
-        end
+        lateral_reactions.flat_map(&:theres)
       end
 
       # Collects termination species from reactions
@@ -91,11 +98,8 @@ module VersatileDiamond
       # @return [Hash] the hash of collected base species where keys are names
       #   of each base spec
       def collect_base_specs
-        dependent_bases =
-          Chest.all(:gas_spec, :surface_spec).map do |base_spec|
-            DependentBaseSpec.new(base_spec)
-          end
-
+        concepts = Tools::Chest.all(:gas_spec, :surface_spec)
+        dependent_bases = concepts.map(&method(:create_dept_base_spec))
         make_cache(dependent_bases)
       end
 
@@ -103,27 +107,31 @@ module VersatileDiamond
       # looked around by atom mapping! At collecting time swaps reaction source
       # spec with another same spec (with same name) if it another spec already
       # collected. Each specific spec stores reaction or theres from which it
-      # dependent.
       #
+
       # @return [Hash] the hash of collected specific species where keys are
       #   full names of each specific spec
       def collect_specific_specs
         cache = {}
-        all = [ubiquitous_reactions, typical_reactions, lateral_reactions, theres]
-        all.each do |concepts|
-          concepts.each do |concept|
-            concept.each_source do |specific_spec|
-              next if @term_specs[specific_spec.name]
+        (all_reactions + [theres]).each do |dept_concepts|
+          dept_concepts.each do |dept_concept|
+            is_ubiquitous = ubiquitous_reactions.include?(dept_concept)
+            [:source, :products].each do |target|
+              dept_concept.each(target) do |spec|
+                next if is_ubiquitous && !spec.simple?
+                name = spec.name
 
-              name = specific_spec.name
-              cached_dept_spec = cached_spec(cache, specific_spec)
-              if cached_dept_spec
-                swap_source_carefully(concept, specific_spec, cached_dept_spec.spec)
-              else
-                cache[name] = create_dept_specific_spec(specific_spec)
+                cached_dept_spec = cached_spec(cache, spec)
+                if cached_dept_spec
+                  cached_conc_spec = cached_dept_spec.spec
+                  name = cached_conc_spec.name
+                  swap_carefully(target, dept_concept, spec, cached_conc_spec)
+                else
+                  cache[name] = create_dept_specific_spec(spec)
+                end
+
+                store_concept_to(dept_concept, cache[name])
               end
-
-              store_concept_to(concept, cache[name])
             end
           end
         end
@@ -141,15 +149,26 @@ module VersatileDiamond
       #   found in cache
       # @return [DependentSpecificSpec] the search result or nil
       def cached_spec(cache, spec)
-        cached_dept_spec = cache[spec.name] || cache.values.find do |dss|
-          dss.spec.same?(spec)
+        cached_dept_spec = cache[spec.name]
+        if cached_dept_spec
+          cached_dept_spec
+        else
+          similar_dept_spec = cache.values.find { |dss| dss.spec.same?(spec) }
+          cache[similar_dept_spec.name] = similar_dept_spec if similar_dept_spec
+          similar_dept_spec
         end
       end
 
+      # Creates correspond dependent base spec instance
+      # @param [Concepts::Spec] spec the concept by which new spec will created
+      # @return [DependentSimpleSpec | DependentBaseSpec] the wrapped concept spec
+      def create_dept_base_spec(spec)
+        spec.simple? ? DependentSimpleSpec.new(spec) : DependentBaseSpec.new(spec)
+      end
+
       # Creates correspond dependent specific spec instance
-      # @param [Concepts::SpecificSpec] spec the concept by which new spec will
-      #   created
-      # @return [DependentSimpleSpec] the wrapped concept spec
+      # @param [Concepts::SpecificSpec] spec concept by which new spec will created
+      # @return [DependentSimpleSpec | DependentSpecificSpec] the wrapped concept spec
       def create_dept_specific_spec(spec)
         spec.simple? ? DependentSimpleSpec.new(spec) : DependentSpecificSpec.new(spec)
       end
@@ -176,6 +195,12 @@ module VersatileDiamond
         [base_specs_cache, specific_specs_cache]
       end
 
+      # Checks that if some reaction contains specific spec and same base spec then
+      # base spec will be swapped to veiled spec
+      def exchange_same_used_base_specs!
+        exchange_same_used_base_specs_of(specific_specs.reject(&:simple?))
+      end
+
       # Organize dependecies between collected items
       # @raise [ReactionDuplicate] if was defined some duplicate of reaction
       def organize_dependecies!
@@ -190,10 +215,8 @@ module VersatileDiamond
       # Checks stored reactions for duplication with each other
       # @raise [ReactionDuplicate] if duplicate is found
       def check_reactions_for_duplicates
-        all = [ubiquitous_reactions, typical_reactions, lateral_reactions]
-        all.each do |reactions|
+        all_reactions.each do |reactions|
           reactions = reactions.dup
-
           until reactions.empty?
             reaction = reactions.pop
             same = reactions.find { |r| r != reaction && reaction.same?(r) }
@@ -202,13 +225,23 @@ module VersatileDiamond
         end
       end
 
+      # Gets lists of all types reactoins
+      # @return [Array] the lists of reactions
+      def all_reactions
+        [ubiquitous_reactions, typical_reactions, lateral_reactions]
+      end
+
       # Organize dependencies between all stored reactions.
       # Also organize dependencies between termination species and their complex
       # parents.
+      # The lateral reactions which were missed by user and which could be is combined.
+      # Combined lateral reactions extends initial list of lateral reactions.
       def organize_all_reactions_dependencies!
         nt_spec_cache = @specific_specs.merge(@base_specs)
-        reactions_lists = [ubiquitous_reactions, typical_reactions, lateral_reactions]
-        organize_reactions_dependencies!(@term_specs, nt_spec_cache, *reactions_lists)
+        combined_lateral_reactions =
+          organize_reactions_dependencies!(@term_specs, nt_spec_cache, *all_reactions)
+
+        @lateral_reactions += combined_lateral_reactions
       end
     end
 

@@ -34,13 +34,28 @@ module VersatileDiamond
 
           it_behaves_like :check_base_class_name do
             let(:lateral_reactions) { [dept_end_lateral_df] }
-            let(:outer_class_name) { 'LaterableRole' }
-            let(:templ_args) { ['Typical', 'FORWARD_DIMER_FORMATION', 2] }
+            let(:outer_class_name) { 'ConcretizableRole' }
+            let(:templ_args) { ['Central', 'FORWARD_DIMER_FORMATION', 2] }
           end
         end
 
-        describe 'sidepiece_species' do
+        describe '#sidepiece_species' do
           it { expect(subject.sidepiece_species).to be_empty }
+        end
+
+        describe '#target_index' do
+          describe 'without index' do
+            let(:target) { dept_incoherent_dimer_drop }
+            it { expect(subject.target_index(idd_source.first)).to be_nil }
+          end
+
+          describe 'with index 0' do
+            it { expect(subject.target_index(df_source.last)).to eq(0) }
+          end
+
+          describe 'with index 1' do
+            it { expect(subject.target_index(df_source.first)).to eq(1) }
+          end
         end
       end
 

@@ -61,12 +61,11 @@ void HighBridgeToTwoBridges::doIt()
     assert(b->is(19));
     assert(c->is(5));
 
+    Handbook::amorph().erase(a);
+    crystalBy(b)->insert(a, Diamond::front_110_at({ b, c }));
+
     a->unbondFrom(b);
     a->bondWith(c);
-
-    Handbook::amorph().erase(a);
-    assert(b->lattice()->crystal() == c->lattice()->crystal());
-    crystalBy(b)->insert(a, Diamond::front_110_at(b, c));
 
     if (a->is(17)) a->changeType(2);
     else if (a->is(16)) a->changeType(1);

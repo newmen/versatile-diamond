@@ -23,13 +23,14 @@ void DesMethylFromBridge::doIt()
     assert(a->is(7));
     assert(b->is(25));
 
+    Handbook::amorph().erase(b);
+
     a->unbondFrom(b);
 
     if (a->is(8)) a->changeType(2);
     else a->changeType(28);
 
     b->prepareToRemove();
-    Handbook::amorph().erase(b);
     Handbook::scavenger().markAtom(b);
 
     Finder::findAll(atoms, 2);

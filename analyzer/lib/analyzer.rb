@@ -8,17 +8,18 @@ module VersatileDiamond
       # If the results already where obtained then using it
       #
       # @param [String] config_path the path to configuration file
+      # @option [String] :cache_dir the directory where cache files will be stored
       # @return [Organizers::AnalysisResult] the result of analysis
-      def read_config(config_path)
-        # проверяем, что уже есть резульаты анализа
-        # результатов нет: анализируем и сохраняем дамп
-
+      def read_config(config_path, cache_dir: 'cache')
+        Serializer.init!(cache_dir)
         result = Tools::Serializer.load(config_path)
 
+        # Checks that analysis results already exists
+        # If not then analyze and store dup
         if result
-          Tools::Config.load(config_path)
+          Tools::Config.load!(config_path)
         else
-          Tools::Config.init
+          Tools::Config.init!
 
           content = File.open(config_path).readlines
           result = new(content, config_path).analyze

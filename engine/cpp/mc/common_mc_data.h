@@ -6,10 +6,6 @@
 #include "counter.h"
 #include "random_generator.h"
 
-#ifndef MIN_DISTANCE
-#define MIN_DISTANCE 8
-#endif // MIN_DISTANCE
-
 namespace vd
 {
 

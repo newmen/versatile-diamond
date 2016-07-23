@@ -14,43 +14,10 @@ module VersatileDiamond
         it { expect(methyl_desorption.reverse.type).to eq(:reverse) }
       end
 
-      shared_examples_for :check_duplicate_property do
-        it { expect(subject.name).to match(/tail$/) }
-        it { expect(subject.reverse.name).to match(/tail$/) }
-
-        it { expect(subject.source).not_to eq(df_source) }
-        it { expect(subject.source.first).not_to eq(df_source.first) }
-        it { expect(subject.products).not_to eq(df_products) }
-        it { expect(subject.products.first).not_to eq(df_products.first) }
-        it { expect(subject.products.last).not_to eq(df_products.last) }
-
-        shared_examples_for :child_changes_too do
-          %w(enthalpy activation rate).each do |prop|
-            describe "children setup #{prop}" do
-              before(:each) do
-                child # makes a child
-                reaction.send(:"#{prop}=", 456)
-              end
-              it { expect(child.send(prop)).to eq(456) }
-            end
-          end
-        end
-
-        it_behaves_like :child_changes_too do
-          let(:reaction) { dimer_formation }
-          let(:child) { subject }
-        end
-
-        it_behaves_like :child_changes_too do
-          let(:reaction) { dimer_formation.reverse }
-          let(:child) { subject.reverse }
-        end
-      end
-
       describe '#as' do
         shared_examples_for :forward_and_reverse do
           let(:name) { 'dimer formation' }
-          before(:each) do
+          before do
             subject.as(:forward).rate = 1
             subject.as(:forward).reverse.rate = 2
           end
@@ -79,6 +46,39 @@ module VersatileDiamond
                 df_products, df_source, df_atom_map.reverse)
             end
           end
+        end
+      end
+
+      shared_examples_for :check_duplicate_property do
+        it { expect(subject.name).to match(/tail$/) }
+        it { expect(subject.reverse.name).to match(/tail$/) }
+
+        it { expect(subject.source).not_to eq(df_source) }
+        it { expect(subject.source.first).not_to eq(df_source.first) }
+        it { expect(subject.products).not_to eq(df_products) }
+        it { expect(subject.products.first).not_to eq(df_products.first) }
+        it { expect(subject.products.last).not_to eq(df_products.last) }
+
+        shared_examples_for :child_changes_too do
+          %w(enthalpy activation rate).each do |prop|
+            describe "children setup #{prop}" do
+              before do
+                child # makes a child
+                reaction.send(:"#{prop}=", 456)
+              end
+              it { expect(child.send(prop)).to eq(456) }
+            end
+          end
+        end
+
+        it_behaves_like :child_changes_too do
+          let(:reaction) { dimer_formation }
+          let(:child) { subject }
+        end
+
+        it_behaves_like :child_changes_too do
+          let(:reaction) { dimer_formation.reverse }
+          let(:child) { subject.reverse }
         end
       end
 
@@ -112,9 +112,47 @@ module VersatileDiamond
         it { expect(hydrogen_migration.reverse.gases_num).to eq(0) }
       end
 
-      describe '#swap_source' do
+      describe '#children' do
+        subject { dimer_formation }
+        it { expect(subject.children).to be_empty }
+
+        describe 'after duplication' do
+          before { child }
+          let(:child) { subject.duplicate('tail') }
+          it { expect(subject.children).to eq([child]) }
+        end
+      end
+
+      describe '#significant?' do
+        def setup_rate_for(reaction)
+          Tools::Config.surface_temperature(1200, 'K')
+          reaction.activation = 1
+          reaction.rate = 2
+        end
+
+        subject { dimer_formation }
+        it { expect(subject.significant?).to be_falsey }
+
+        describe 'when not zero rate' do
+          before { setup_rate_for(subject) }
+          it { expect(subject.significant?).to be_truthy }
+        end
+
+        describe 'after duplication' do
+          before { child }
+          let(:child) { subject.duplicate('tail') }
+          it { expect(subject.significant?).to be_falsey }
+
+          describe 'child with not zero rate' do
+            before { setup_rate_for(child) }
+            it { expect(subject.significant?).to be_falsey }
+          end
+        end
+      end
+
+      describe '#swap_on' do
         shared_examples_for :check_specs_existence do
-          before { reaction.swap_source(old, fresh) }
+          before { reaction.swap_on(:source, old, fresh) }
           it { should include(fresh) }
           it { should_not include(old) }
         end
@@ -135,11 +173,13 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_specs_existence do
-            subject { reaction.positions.map(&:first).map(&:first) }
+            subject { reaction.links.keys.map(&:first) }
           end
 
           it_behaves_like :check_specs_existence do
-            subject { reaction.positions.map { |p| p[1] }.map(&:first) }
+            subject do
+              reaction.links.values.flat_map { |rels| rels.map(&:first) }.map(&:first)
+            end
           end
         end
 
@@ -179,7 +219,8 @@ module VersatileDiamond
             let(:old_atom) { spec.atom(target_kn) }
             let(:new_atom) { spec.atom(target_kn) }
 
-            before(:each) do
+            before do
+              methyl_incorporation # initialize memoized value
               old_atom # initialize memoized value
               spec.incoherent!(target_kn)
               methyl_incorporation.apply_relevants(spec, old_atom, new_atom)
@@ -237,7 +278,7 @@ module VersatileDiamond
             end
 
             it_behaves_like :check_source do
-              let(:target_kn) { :cr }
+              let(:target_kn) { :cl }
               let(:inc_kn) { :cb }
               let(:not_inc_kn) { :cm }
             end
@@ -280,36 +321,20 @@ module VersatileDiamond
             ]
           end
         end
+      end
 
-        describe '#position_between' do
-          describe 'opposite relation stored too' do
-            it_behaves_like :check_positions do
-              subject { hydrogen_migration }
-              let(:s1) { hm_source.first }
-              let(:s2) { hm_source.last }
-              let(:positions) do
-                [
-                  [[s1, s1.atom(:cr)], [s2, s2.atom(:cr)], position_100_front],
-                  [[s2, s2.atom(:cr)], [s1, s1.atom(:cr)], position_100_front]
-                ]
-              end
-            end
-          end
-
-          describe 'apply to reverse' do
-            it_behaves_like :check_positions do
-              subject { hydrogen_migration.reverse }
-              let(:s1) { hm_products.first }
-              let(:s2) { hm_products.last }
-              let(:positions) do
-                [
-                  [[s1, s1.atom(:cr)], [s2, s2.atom(:cr)], position_100_front],
-                  [[s2, s2.atom(:cr)], [s1, s1.atom(:cr)], position_100_front]
-                ]
-              end
-            end
-          end
+      describe '#position_between' do
+        # method uses for building reaction in Concepts::Handbook
+        subject { hydrogen_migration }
+        let(:s1) { hm_source.first }
+        let(:s2) { hm_source.last }
+        let(:links) do
+          {
+            [s1, s1.atom(:cr)] => [[[s2, s2.atom(:cr)], position_100_front]],
+            [s2, s2.atom(:cr)] => [[[s1, s1.atom(:cr)], position_100_front]]
+          }
         end
+        it { expect(subject.links).to match_graph(links) }
       end
 
       describe '#used_atoms_of' do
@@ -332,39 +357,49 @@ module VersatileDiamond
       end
 
       describe '#same?' do
-        let(:hm_wo_positions) do
-          source = [methyl_on_dimer.dup, activated_dimer.dup]
-          products = [activated_methyl_on_dimer.dup, dimer.dup]
-          names_to_specs = {
-            source: [[:f, source.first], [:s, source.last]],
-            products: [[:f, products.first], [:s, products.last]]
-          }
-          atom_map = Mcs::AtomMapper.map(source, products, names_to_specs)
-          Reaction.new(:forward, 'duplicate', source, products, atom_map)
+        describe 'basic case' do
+          it { expect(methyl_activation.same?(methyl_deactivation)).to be_falsey }
+          it { expect(methyl_deactivation.same?(methyl_activation)).to be_falsey }
         end
 
-        it { expect(methyl_activation.same?(methyl_deactivation)).to be_falsey }
-        it { expect(methyl_deactivation.same?(methyl_activation)).to be_falsey }
-
-        describe 'same positions' do
-          before(:each) do
-            s1, s2 = hm_wo_positions.source
-            hm_wo_positions.position_between(
-              [s1, s1.atom(:cr)], [s2, s2.atom(:cr)], position_100_front)
+        describe 'similar reaction' do
+          let(:hm_wo_pos) do
+            source = [methyl_on_dimer.dup, activated_dimer.dup]
+            products = [activated_methyl_on_dimer.dup, dimer.dup]
+            names_to_specs = {
+              source: [[:f, source.first], [:s, source.last]],
+              products: [[:f, products.first], [:s, products.last]]
+            }
+            atom_map = Mcs::AtomMapper.map(source, products, names_to_specs)
+            described_class.new(:forward, 'duplicate', source, products, atom_map)
           end
 
-          it { expect(hydrogen_migration.same?(hm_wo_positions)).to be_truthy }
-          it { expect(hm_wo_positions.same?(hydrogen_migration)).to be_truthy }
-        end
+          describe 'same positions' do
+            before do
+              s1, s2 = hm_wo_pos.source
+              hm_wo_pos.position_between(
+                [s2, s2.atom(:cr)], [s1, s1.atom(:cr)], position_100_front)
+            end
 
-        describe 'positions are different' do
-          it { expect(hydrogen_migration.same?(hm_wo_positions)).to be_falsey }
-          it { expect(hm_wo_positions.same?(hydrogen_migration)).to be_falsey }
+            it { expect(hydrogen_migration.same?(hm_wo_pos)).to be_truthy }
+            it { expect(hm_wo_pos.same?(hydrogen_migration)).to be_truthy }
+          end
+
+          describe 'positions are different' do
+            before do
+              s1, s2 = hm_wo_pos.source
+              hm_wo_pos.position_between(
+                [s2, s2.atom(:cr)], [s1, s1.atom(:cr)], position_100_cross)
+            end
+
+            it { expect(hydrogen_migration.same?(hm_wo_pos)).to be_falsey }
+            it { expect(hm_wo_pos.same?(hydrogen_migration)).to be_falsey }
+          end
         end
 
         describe 'lateral reaction' do
           subject { dimer_formation.duplicate('dup') }
-          it { expect(subject.same?(end_lateral_df)).to be_truthy }
+          it { expect(subject.same?(end_lateral_df)).to be_falsey }
         end
       end
 

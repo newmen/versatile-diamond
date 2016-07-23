@@ -43,36 +43,77 @@ module VersatileDiamond
         end
       end
 
+      # Recursive finds last global veiled spec
+      # @param [Symbol] target the type of swapping species
+      # @param [DependentReaction | DependentThere] target_container in which the
+      #   source spec will be changed
+      # @param [Array] global_key of global veiled cache
+      # @return [Array] the array with previous global vailed spec and the last veiled
+      #   spec
+      def find_global_veiled(target, target_container, global_key)
+        global_veiled = ChunkLinksMerger.global_cache[global_key]
+        if global_veiled && target_container.each(target).to_a.include?(global_veiled)
+          key = [global_veiled, global_key.last]
+          find_global_veiled(target, target_container, key)
+        else
+          [global_key.first, global_veiled]
+        end
+      end
+
+      # Makes veiled spec (or use from global cache) by passed container and spec
+      # @param [Symbol] target the type of swapping species
+      # @param [DependentReaction | DependentThere] target_container in which the
+      #   source spec will be changed
+      # @param [Concepts::Spec | Concepts::SpecificSpec] spec the new spec to which
+      #   old spec will be changed
+      def make_veiled_spec(target, target_container, spec)
+        rels = target_container.links.select { |(s, _), _| spec == s }
+        prev_spec, global_veiled =
+          find_global_veiled(target, target_container, [spec, rels])
+        if global_veiled
+          global_veiled
+        else
+          key = [prev_spec, rels]
+          ChunkLinksMerger.global_cache[key] = Concepts::VeiledSpec.new(spec)
+        end
+      end
+
       # Checks that swapping source presented in target container and if so then
       # wraps new source spec to veiled spec
       #
+      # @param [Symbol] target the type of swapping species
       # @param [DependentReaction | DependentThere] target_container in which the
       #   source spec will be changed
       # @param [Concepts::Spec | Concepts::SpecificSpec] from the source spec which
       #   will be changed
       # @param [Concepts::Spec | Concepts::SpecificSpec] to the new spec to which
       #   old spec will be changed
-      def swap_source_carefully(target_container, from, to)
+      def swap_carefully(target, target_container, from, to)
         return if from == to
-        has_similar_spec = target_container.use_similar_source?(to)
-        to_spec = has_similar_spec ? Concepts::VeiledSpec.new(to) : to
-        target_container.swap_source(from, to_spec)
+        has_similar_spec = target_container.use_similar?(target, to)
+        to_spec =
+          has_similar_spec ? make_veiled_spec(target, target_container, to) : to
+        target_container.swap_on(target, from, to_spec)
       end
 
       # Excnahges two specs
-      # @param [DependentSpecificSpec | DependentSpecificSpec] from the spec
-      #   which will be exchanged
+      # @param [Hash] cache of spec names to specs
+      # @param [DependentSpecificSpec] from the spec which will be exchanged
       # @param [DependentSpecificSpec | DependentSpec] to the spec to which
       #   will be exchanged
       # @param [Hash] cache where contains pairs of name => dependent_spec
       def exchange_specs(cache, from, to)
-        lambda = -> wrapped_concept do
-          wrapped_concept.each_source.each do |spec|
-            if spec.name == from.spec.name
-              swap_source_carefully(wrapped_concept, spec, to.spec)
+        lambda = -> wrapped_holder do
+          [:source, :products].each do |target|
+            wrapped_holder.each(target) do |spec|
+              if spec.name == from.spec.name
+                swap_carefully(target, wrapped_holder, spec, to.spec)
+                store_concept_to(wrapped_holder, to)
+              elsif spec.name == to.spec.name
+                store_concept_to(wrapped_holder, to)
+              end
             end
           end
-          store_concept_to(wrapped_concept, to)
         end
 
         from.reactions.each(&lambda)
@@ -113,6 +154,44 @@ module VersatileDiamond
         end
 
         [base_specs_cache, specific_specs_cache]
+      end
+
+      # Checks that if some reaction contains specific spec and same base spec then
+      # base spec will be swapped to veiled spec
+      def exchange_same_used_base_specs_of(specific_specs)
+        veiled_cache = {}
+        specific_specs.each do |dept_specific_spec|
+          concept_base_spec = dept_specific_spec.spec.spec
+          dept_specific_spec.reactions.each do |dept_reaction|
+            wrap_each_used_same(veiled_cache, dept_reaction, concept_base_spec)
+
+            if dept_reaction.lateral?
+              dept_reaction.theres.each do |dept_there|
+                wrap_each_used_same(veiled_cache, dept_there, concept_base_spec)
+              end
+            end
+          end
+        end
+      end
+
+      # Wraps each target concept spec if container contains it
+      # @param [Hash] veiled_cache where already wraped specs contains
+      # @param [DependentReaction | DependentThere] target_container where same spec
+      #   will be wrapped
+      # @param [Concepts::BaseSpec] target_spec which will be wrapped if have the same
+      def wrap_each_used_same(veiled_cache, target_container, target_spec)
+        targets = [:source, :products]
+        assert = targets.map { |tg| target_container.each(tg).count(target_spec) }
+        raise 'Wrong before swapping' if assert.any? { |num| num > 1 }
+
+        targets.each do |target|
+          target_container.each(target) do |spec|
+            if target_spec == spec
+              veiled_cache[spec] ||= Concepts::VeiledSpec.new(spec)
+              target_container.swap_on(target, spec, veiled_cache[spec])
+            end
+          end
+        end
       end
 
       # Organize dependencies between specific species
@@ -165,8 +244,9 @@ module VersatileDiamond
       # @param [Array] base_specs array of base species the dependencies between
       #   which will be organized
       def organize_base_specs_dependencies!(base_specs)
-        table = BaseSpeciesTable.new(base_specs)
-        base_specs.each do |wrapped_base|
+        complex_surface_base_specs = base_specs.reject(&:simple?).reject(&:gas?)
+        table = BaseSpeciesTable.new(complex_surface_base_specs)
+        complex_surface_base_specs.each do |wrapped_base|
           wrapped_base.organize_dependencies!(table)
         end
       end

@@ -2,6 +2,7 @@
 #define <%= define_name %>
 
 #include <phases/crystal.h>
+#include <phases/behavior.h>
 using namespace vd;
 
 #include "<%= crystal_properties_file_name %>"
@@ -15,7 +16,7 @@ public:
     typedef <%= relations_class_name %><Crystal> Relations;
 #endif // NDEBUG
 
-    <%= class_name %>(const dim3 &sizes, int defaultSurfaceHeight = <%= default_surface_height %>);
+    <%= class_name %>(const dim3 &sizes, const Behavior *behavior, int defaultSurfaceHeight = <%= default_surface_height %>);
     ~<%= class_name %>();
 
 protected:

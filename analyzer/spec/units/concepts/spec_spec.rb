@@ -6,16 +6,33 @@ module VersatileDiamond
     describe Spec do
       describe 'self#good_for_reduce?' do
         it { expect(described_class.good_for_reduce?([:cl])).to be_truthy }
-        it { expect(described_class.good_for_reduce?([:_cl])).to be_falsey }
+        it { expect(described_class.good_for_reduce?([:cl, :cr])).to be_truthy }
+        it { expect(described_class.good_for_reduce?([:_cl])).to be_truthy }
+        it { expect(described_class.good_for_reduce?([:_cl, :cr])).to be_truthy }
+        it { expect(described_class.good_for_reduce?([:cl, :_cr])).to be_truthy }
+        it { expect(described_class.good_for_reduce?([:cl_])).to be_falsey }
+        it { expect(described_class.good_for_reduce?([:cl_, :_cl_])).to be_falsey }
+        it { expect(described_class.good_for_reduce?([:_cl_, :cr])).to be_falsey }
+        it { expect(described_class.good_for_reduce?([:_cl_, :cr_])).to be_falsey }
+      end
+
+      describe 'self#extended?' do
+        it { expect(described_class.extended?(:cl)).to be_falsey }
+        it { expect(described_class.extended?(:_cl)).to be_falsey }
+        it { expect(described_class.extended?(:cl_)).to be_truthy }
+        it { expect(described_class.extended?(:_cl_)).to be_truthy }
       end
 
       describe '#simple?' do
-        it { expect(Spec.new(:not_set).simple?).to be_nil }
-
         it { expect(hydrogen_base.simple?).to be_truthy }
         it { expect(methane_base.simple?).not_to be_truthy }
         it { expect(ethylene_base.simple?).not_to be_truthy }
         it { expect(bridge_base.simple?).not_to be_truthy }
+      end
+
+      describe '#termination?' do
+        it { expect(hydrogen_base.termination?).to be_falsey }
+        it { expect(bridge_base.termination?).to be_falsey }
       end
 
       describe '#atom' do
@@ -68,8 +85,7 @@ module VersatileDiamond
       end
 
       describe '#relation_between' do
-        let(:ct) { bridge_base.atom(:ct) }
-        let(:cr) { bridge_base.atom(:cr) }
+        let_atoms_of(:bridge_base, [:ct, :cr])
         it { expect(bridge_base.relation_between(ct, cr)).to eq(bond_110_cross) }
         it { expect(bridge_base.relation_between(cr, ct)).to eq(bond_110_front) }
       end
@@ -120,6 +136,11 @@ module VersatileDiamond
         it { expect(methane_base.extendable?).to be_falsey }
         it { expect(ethylene_base.extendable?).to be_falsey }
         it { expect(bridge_base.extendable?).to be_truthy }
+      end
+
+      describe '#extended?' do
+        it { expect(bridge_base.extended?).to be_falsey }
+        it { expect(extended_bridge_base.extended?).to be_truthy }
       end
 
       describe '#extend_by_references' do

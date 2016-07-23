@@ -34,10 +34,11 @@ module VersatileDiamond
       # @return [Concepts::Atom | Concepts::AtomReference | Concepts::SpecificAtom]
       #   the atom with lattice
       def check_latticed_atom(first, second)
-        unless first.lattice == second.lattice
+        if first.lattice == second.lattice
+          first
+        else
           raise 'Wrong position between atoms that belongs to different lattices'
         end
-        first
       end
     end
 

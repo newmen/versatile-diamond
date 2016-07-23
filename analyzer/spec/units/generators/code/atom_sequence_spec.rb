@@ -6,6 +6,10 @@ module VersatileDiamond
 
       describe AtomSequence, use: :engine_generator do
         shared_examples_for :apply_all do
+          def at_to_kns(atom)
+            subject.spec.keyname(atom)
+          end
+
           let(:sequence) { generator.sequences_cacher.get(subject) }
           let(:generator) do
             stub_generator(base_specs: bases, specific_specs: specifics)
@@ -13,12 +17,17 @@ module VersatileDiamond
 
           before { generator }
 
+          let(:original_keynames) { sequence.original.map(&method(:at_to_kns)) }
+          let(:short_keynames) { sequence.short.map(&method(:at_to_kns)) }
+          let(:major_keynames) { sequence.major_atoms.map(&method(:at_to_kns)) }
+          let(:addition_keynames) { sequence.addition_atoms.map(&method(:at_to_kns)) }
+
           # each method should not change the state of sequence
           it '#original && #short && #major_atoms && #addition_atoms && #delta' do
-            expect(sequence.original).to eq(original)
-            expect(sequence.short).to eq(short)
-            expect(sequence.major_atoms).to eq(major_atoms)
-            expect(sequence.addition_atoms).to eq(addition_atoms)
+            expect(original_keynames).to eq(original)
+            expect(short_keynames).to eq(short)
+            expect(major_keynames).to eq(major_atoms)
+            expect(addition_keynames).to eq(addition_atoms)
             expect(sequence.delta).to eq(addition_atoms.size)
           end
         end
@@ -35,39 +44,62 @@ module VersatileDiamond
           end
           let(:specifics) { [dept_activated_bridge] }
 
-          let(:original) do
-            [
-              bridge_base.atom(:ct),
-              bridge_base.atom(:cl),
-              bridge_base.atom(:cr),
-            ]
-          end
+          let(:original) { %i(ct cl cr) }
           let(:short) { original }
           let(:major_atoms) { original }
           let(:addition_atoms) { [] }
         end
 
-        it_behaves_like :apply_all do
-          subject { dept_methyl_on_bridge_base }
-          let(:bases) { [dept_bridge_base, subject] }
-          let(:specifics) { [dept_activated_methyl_on_bridge] }
+        describe 'like methyl on bridge' do
+          let(:original) { %i(cm cb cl cr) }
+          let(:short) { %i(cb cm) }
+          let(:major_atoms) { %i(cb) }
+          let(:addition_atoms) { %i(cm) }
 
-          let(:original) do
-            [
-              methyl_on_bridge_base.atom(:cm),
-              methyl_on_bridge_base.atom(:cb),
-              methyl_on_bridge_base.atom(:cl),
-              methyl_on_bridge_base.atom(:cr),
-            ]
+          it_behaves_like :apply_all do
+            subject { dept_methyl_on_bridge_base }
+            let(:bases) { [dept_bridge_base, subject] }
+            let(:specifics) { [dept_activated_methyl_on_bridge] }
           end
-          let(:short) do
-            [
-              methyl_on_bridge_base.atom(:cb),
-              methyl_on_bridge_base.atom(:cm),
-            ]
+
+          it_behaves_like :apply_all do
+            subject { dept_high_bridge_base }
+            let(:bases) { [dept_bridge_base, subject] }
+            let(:specifics) { [] }
           end
-          let(:major_atoms) { [methyl_on_bridge_base.atom(:cb)] }
-          let(:addition_atoms) { [methyl_on_bridge_base.atom(:cm)] }
+        end
+
+        describe 'like vinyl on bridge' do
+          let(:original) { %i(c2 c1 cb cl cr) }
+          let(:short) { %i(c1 c2) }
+          let(:major_atoms) { %i(c1) }
+          let(:addition_atoms) { %i(c2) }
+
+          it_behaves_like :apply_all do
+            subject { dept_vinyl_on_bridge_base }
+            let(:bases) { [dept_bridge_base, dept_methyl_on_bridge_base, subject] }
+            let(:specifics) { [] }
+          end
+
+          it_behaves_like :apply_all do
+            subject { dept_very_high_bridge_base }
+            let(:bases) { [dept_bridge_base, dept_high_bridge_base, subject] }
+            let(:specifics) { [] }
+          end
+        end
+
+        it_behaves_like :apply_all do
+          subject { dept_incoherent_very_high_bridge }
+          before { subject.replace_base_spec(dept_high_bridge_base) }
+          let(:specifics) { [subject] }
+          let(:bases) do
+            [dept_bridge_base, dept_high_bridge_base, dept_vinyl_on_bridge_base]
+          end
+
+          let(:original) { %i(c2 cm cb cl cr) }
+          let(:short) { %i(cm c2) }
+          let(:major_atoms) { %i(cm) }
+          let(:addition_atoms) { %i(c2) }
         end
 
         it_behaves_like :apply_all do
@@ -75,23 +107,8 @@ module VersatileDiamond
           let(:bases) { [dept_bridge_base, dept_methyl_on_bridge_base, subject] }
           let(:specifics) { [dept_activated_methyl_on_dimer] }
 
-          let(:original) do
-            [
-              methyl_on_dimer_base.atom(:cm),
-              methyl_on_dimer_base.atom(:cr),
-              methyl_on_dimer_base.atom(:crb),
-              methyl_on_dimer_base.atom(:_cr0),
-              methyl_on_dimer_base.atom(:cl),
-              methyl_on_dimer_base.atom(:clb),
-              methyl_on_dimer_base.atom(:_cr1),
-            ]
-          end
-          let(:short) do
-            [
-              methyl_on_dimer_base.atom(:cr),
-              methyl_on_dimer_base.atom(:cl),
-            ]
-          end
+          let(:original) { %i(cm cr crb _cr0 cl clb _cr1) }
+          let(:short) { %i(cr cl) }
           let(:major_atoms) { short }
           let(:addition_atoms) { [] }
         end
@@ -101,25 +118,8 @@ module VersatileDiamond
           let(:bases) { [dept_bridge_base, dept_methyl_on_bridge_base, subject] }
           let(:specifics) { [] }
 
-          let(:original) do
-            [
-              cross_bridge_on_bridges_base.atom(:cm),
-              cross_bridge_on_bridges_base.atom(:ctl),
-              cross_bridge_on_bridges_base.atom(:cl),
-              cross_bridge_on_bridges_base.atom(:cr),
-              cross_bridge_on_bridges_base.atom(:cm),
-              cross_bridge_on_bridges_base.atom(:ctr),
-              cross_bridge_on_bridges_base.atom(:_cr0),
-              cross_bridge_on_bridges_base.atom(:_cl0),
-            ]
-          end
-          let(:short) do
-            [
-              cross_bridge_on_bridges_base.atom(:ctl),
-              cross_bridge_on_bridges_base.atom(:ctr),
-              cross_bridge_on_bridges_base.atom(:cm),
-            ]
-          end
+          let(:original) { %i(cm ctl cl cr cm ctr _cr0 _cl0) }
+          let(:short) { %i(ctl ctr cm) }
           let(:major_atoms) { short }
           let(:addition_atoms) { [] }
         end
@@ -130,32 +130,9 @@ module VersatileDiamond
           let(:specifics) { [] }
 
           let(:original) do
-            [
-              cross_bridge_on_dimers_base.atom(:cm),
-              cross_bridge_on_dimers_base.atom(:ctl),
-              cross_bridge_on_dimers_base.atom(:csl),
-              cross_bridge_on_dimers_base.atom(:_cr1),
-              cross_bridge_on_dimers_base.atom(:crb),
-              cross_bridge_on_dimers_base.atom(:clb),
-              cross_bridge_on_dimers_base.atom(:_cr0),
-              cross_bridge_on_dimers_base.atom(:cm),
-              cross_bridge_on_dimers_base.atom(:ctr),
-              cross_bridge_on_dimers_base.atom(:csr),
-              cross_bridge_on_dimers_base.atom(:_clb0),
-              cross_bridge_on_dimers_base.atom(:_cr2),
-              cross_bridge_on_dimers_base.atom(:_cr3),
-              cross_bridge_on_dimers_base.atom(:_crb0),
-            ]
+            %i(cm ctl csl crb _cr1 clb _cr0 cm ctr csr _cr2 _clb0 _cr3 _crb0)
           end
-          let(:short) do
-            [
-              cross_bridge_on_dimers_base.atom(:ctr),
-              cross_bridge_on_dimers_base.atom(:ctl),
-              cross_bridge_on_dimers_base.atom(:csl),
-              cross_bridge_on_dimers_base.atom(:csr),
-              cross_bridge_on_dimers_base.atom(:cm),
-            ]
-          end
+          let(:short) { %i(ctl ctr csl csr cm) }
           let(:major_atoms) { short }
           let(:addition_atoms) { [] }
         end
@@ -165,25 +142,8 @@ module VersatileDiamond
           let(:bases) { [dept_bridge_base, subject] }
           let(:specifics) { [] }
 
-          let(:original) do
-            [
-              three_bridges_base.atom(:tt),
-              three_bridges_base.atom(:cc),
-              three_bridges_base.atom(:ct),
-              three_bridges_base.atom(:_ct0),
-              three_bridges_base.atom(:cc),
-              three_bridges_base.atom(:_cl0),
-              three_bridges_base.atom(:ct),
-              three_bridges_base.atom(:cr),
-              three_bridges_base.atom(:cl),
-            ]
-          end
-          let(:short) do
-            [
-              three_bridges_base.atom(:ct),
-              three_bridges_base.atom(:cc),
-            ]
-          end
+          let(:original) { %i(tt cc ct _ct0 cc _cl0 ct cr cl) }
+          let(:short) { %i(ct cc) }
           let(:major_atoms) { short }
           let(:addition_atoms) { [] }
         end
@@ -192,39 +152,32 @@ module VersatileDiamond
           let(:concept) { subject.spec }
           let(:bases) { [dept_bridge_base, dept_dimer_base] }
 
-          let(:original) do
-            [
-              concept.atom(:cr),
-              concept.atom(:crb),
-              concept.atom(:_cr0),
-              concept.atom(:cl),
-              concept.atom(:_cr1),
-              concept.atom(:clb),
-            ]
-          end
           let(:major_atoms) { short }
           let(:addition_atoms) { [] }
 
           it_behaves_like :apply_all do
             subject { dept_dimer_base }
+            let(:original) { %i(cl _cr1 clb cr crb _cr0) }
+            let(:short) { %i(cl cr) }
             let(:specifics) { [dept_activated_dimer] }
-            let(:short) { [concept.atom(:cr), concept.atom(:cl)] }
           end
 
           it_behaves_like :apply_all do
             subject { dept_twise_incoherent_dimer }
+            let(:original) { %i(cl clb _cr1 cr _cr0 crb) }
+            let(:short) { %i(cl cr) }
             let(:specifics) do
               [dept_activated_incoherent_dimer, dept_twise_incoherent_dimer]
             end
-            let(:short) { [concept.atom(:cr), concept.atom(:cl)] }
           end
 
           it_behaves_like :apply_all do
             subject { dept_activated_dimer }
+            let(:original) { %i(cl clb _cr1 cr _cr0 crb) }
+            let(:short) { %i(cr) }
             let(:specifics) do
               [dept_activated_dimer, dept_bottom_hydrogenated_activated_dimer]
             end
-            let(:short) { [concept.atom(:cr)] }
           end
         end
       end

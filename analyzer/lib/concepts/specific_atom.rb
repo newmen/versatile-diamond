@@ -1,4 +1,6 @@
 module VersatileDiamond
+  using Patches::RichArray
+
   module Concepts
 
     # Specified atom class, contain additional atom states like incoherentness,
@@ -21,9 +23,9 @@ module VersatileDiamond
       class NotStated < Stated; end
 
       # Error for case if unfixed state is stated but incoherent state states now
-      class AlreadyUnfixed; end
+      class AlreadyUnfixed < Errors::Base; end
 
-      def_delegators :@atom, :name, :lattice, :lattice=, :original_valence,
+      def_delegators :atom, :name, :lattice, :lattice=, :original_valence,
         :original_same?, :reference?, :relations_limits
 
       attr_reader :monovalents
@@ -55,6 +57,12 @@ module VersatileDiamond
         atom.valence - actives - monovalents.size
       end
 
+      # Gets the unspecified atom instance
+      # @return [Atom | AtomReference] without specific states
+      def clean
+        atom
+      end
+
       # Specific atom could be not specified
       # @return [Boolean] is specified or not
       def specific?
@@ -68,8 +76,8 @@ module VersatileDiamond
       def same?(other)
         if self.class == other.class
           atom.same?(other.atom) &&
-            lists_are_identical?(options, other.options, &:==) &&
-            lists_are_identical?(monovalents, other.monovalents, &:==)
+            lists_are_identical?(options, other.options) &&
+            lists_are_identical?(monovalents, other.monovalents)
         elsif other.is_a?(VeiledAtom)
           other.same?(self)
         else
@@ -92,11 +100,10 @@ module VersatileDiamond
       # @raise [AlreadyStated] if atom already has incoherent state
       def incoherent!
         raise AlreadyStated.new('incoherent') if incoherent?
-        if unfixed?
-          raise AlreadyUnfixed.new
-          not_unfixed!
-        end
+        is_unfixed = unfixed?
+        not_unfixed! if is_unfixed
         @options << Incoherent.property
+        raise AlreadyUnfixed.new if is_unfixed
       end
 
       # Changes atom unfixed state
@@ -136,7 +143,11 @@ module VersatileDiamond
       #   compares
       # @return [Array] the array of relevants state symbols
       def diff(other)
-        other.relevants - relevants
+        actives_delta = actives - other.actives
+        actives_delta = 0 if actives_delta < 0
+        (other.relevants - relevants) +
+          monovalents.accurate_diff(other.monovalents) +
+          ([ActiveBond.property] * actives_delta)
       end
 
       # Applies diff to current options

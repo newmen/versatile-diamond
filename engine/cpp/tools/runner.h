@@ -44,7 +44,6 @@ private:
                      double dt,
                      bool forseSave);
 
-    std::string filename() const;
     double timestamp() const;
 
     void firstSave(const Amorph *amorph, const Crystal *crystal, const char *name);
@@ -108,7 +107,7 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
         dt = HB::mc().doRandom(&mcData);
 
 #ifdef PRINT
-        debugPrint([&](std::ostream &os) {
+        debugPrint([&](IndentStream &os) {
             os << "-----------------------------------------------\n"
                << steps << ". " << HB::mc().totalRate() << "\n";
         });

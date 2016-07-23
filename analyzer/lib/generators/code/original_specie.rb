@@ -68,6 +68,12 @@ module VersatileDiamond
         def body_include_objects
           []
         end
+
+        # Makes string by which base constructor will be called
+        # @return [String] the string with calling base constructor
+        def outer_base_call
+          "#{outer_base_class_name}(#{constructor_variables_str})"
+        end
       end
 
     end

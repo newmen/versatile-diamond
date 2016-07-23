@@ -5,7 +5,8 @@ module VersatileDiamond
     module Code
 
       describe OriginalSpecie, type: :code do
-        subject { described_class.new(empty_generator, specie_class) }
+        subject { described_class.new(internal_generator, specie_class) }
+        let(:internal_generator) { specie_class.send(:generator) }
         let(:specie_class) { code_bridge_base }
 
         describe '#template_name' do

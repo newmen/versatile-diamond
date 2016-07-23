@@ -1,6 +1,7 @@
 #ifndef TYPED_H
 #define TYPED_H
 
+#include <sstream>
 #include "common.h"
 
 namespace vd

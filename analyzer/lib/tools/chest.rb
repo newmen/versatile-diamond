@@ -28,7 +28,9 @@ module VersatileDiamond
 
       class << self
         # Reset the sac and using by RSpec only
-        def reset; @sac && @sac.clear end
+        def reset!
+          @sac && @sac.clear
+        end
 
         # Adds each passed concept to sac and check name duplication. If passed
         # many concepts then shift concepts to the last, each time nesting
@@ -128,7 +130,8 @@ module VersatileDiamond
         def all(*keys)
           @sac ||= {}
           keys.reduce([]) do |acc, key|
-            @sac[key] ? acc + @sac[key].values : acc
+            cell = @sac[key]
+            cell ? acc + cell.values : acc
           end
         end
 

@@ -19,7 +19,7 @@ module VersatileDiamond
 
         describe 'different atoms' do
           let(:old_cr_twin) { subject.twin_of(dimer_base.atom(:cr)) }
-          let(:new_cr_twin) { clone.twin_of(dimer_base_dup.atom(:r)) }
+          let(:new_cr_twin) { clone.twin_of(dimer_base_dup.atom(:l)) }
           it { expect(new_cr_twin).not_to be_nil }
           it { expect(old_cr_twin).to eq(new_cr_twin) }
         end
@@ -36,9 +36,7 @@ module VersatileDiamond
       end
 
       describe '#twin_of' do
-        [:cl, :cr, :crb, :_cr0].each do |kn|
-          let(kn) { dimer_base.atom(kn) }
-        end
+        let_atoms_of(:dimer_base, [:cl, :cr, :crb, :_cr0])
 
         it { expect(subject.twin_of(cl)).to be_nil }
         it { expect(subject.twin_of(cr)).to eq(bridge_base.atom(:ct)) }
@@ -47,9 +45,7 @@ module VersatileDiamond
       end
 
       describe '#atom_by' do
-        [:ct, :cl, :cr].each do |kn|
-          let(kn) { bridge_base.atom(kn) }
-        end
+        let_atoms_of(:bridge_base, [:ct, :cl, :cr])
 
         it { expect(subject.atom_by(ct)).to eq(dimer_base.atom(:cr)) }
         it { expect(subject.atom_by(cl)).to eq(dimer_base.atom(:crb)) }
@@ -78,7 +74,7 @@ module VersatileDiamond
           end
 
           describe '#children' do
-            it { expect(subject.children).to eq([dept_dimer_base] * 2) }
+            it { expect(subject.children).to eq([dept_dimer_base]) }
           end
 
           describe '#source?' do

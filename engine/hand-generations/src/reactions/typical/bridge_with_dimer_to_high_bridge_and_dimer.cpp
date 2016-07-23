@@ -25,7 +25,7 @@ void BridgeWithDimerToHighBridgeAndDimer::doIt()
     assert(c->is(32));
 
     // erase from crystal should be before bond-unbond atoms
-    a->lattice()->crystal()->erase(a);
+    a->eraseFromCrystal();
     Handbook::amorph().insert(a);
 
     a->unbondFrom(c);

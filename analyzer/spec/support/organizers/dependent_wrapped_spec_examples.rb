@@ -6,8 +6,8 @@ module VersatileDiamond
 
       module DependentWrappedSpecExamples
         shared_examples_for :wrapped_spec do
-          describe '#target' do
-            it { expect(subject.target).to eq(subject) }
+          describe '#residual_links' do
+            it { expect(subject.residual_links).to eq(subject.links) }
           end
 
           describe '#parents' do
@@ -23,16 +23,21 @@ module VersatileDiamond
             it { expect(subject.children).to eq([child]) }
           end
 
-          describe '#non_term_children' do
+          describe '#reactant_children' do
             before do
+              dept_active_bond.store_reaction(dept_surface_deactivation)
               subject.store_child(dept_active_bond)
+              dept_adsorbed_h.store_reaction(dept_surface_activation)
               subject.store_child(dept_adsorbed_h)
             end
-            it { expect(subject.non_term_children).to eq([]) }
+            it { expect(subject.reactant_children).to eq([]) }
 
             describe 'wish non term children' do
-              before { subject.store_child(child) }
-              it { expect(subject.non_term_children).to eq([child]) }
+              before do
+                child.store_reaction(reaction)
+                subject.store_child(child)
+              end
+              it { expect(subject.reactant_children).to eq([child]) }
             end
           end
 
@@ -47,11 +52,13 @@ module VersatileDiamond
             bases = all.reject(&:specific?)
             specifics = all - bases
 
-            organize_base_specs_dependencies!(bases) unless bases.empty?
-
+            cache = make_cache(bases)
             unless specifics.empty?
-              organize_specific_specs_dependencies!(make_cache(bases), specifics)
+              organize_specific_specs_dependencies!(cache, specifics.uniq)
             end
+
+            cached_bases = cache.values
+            organize_base_specs_dependencies!(cached_bases) unless cached_bases.empty?
           end
 
           it 'parents are always unique' do

@@ -21,7 +21,7 @@ module VersatileDiamond
           elsif method_name_or_class.is_a?(Class)
             x.is_a?(method_name_or_class)
           else
-            fail 'Wrong type of "method_name_or_class" variable'
+            raise ArgumentError, 'Wrong type of "method_name_or_class" variable'
           end
         end
 
@@ -38,13 +38,11 @@ module VersatileDiamond
       # @param [Object] a is first object
       # @param [Object] b is second object
       # @param [Array] methods_chain by which value for comparison will gotten
-      # @option [Proc] :first_method_block the block which will be applied to call of
-      #   first method in chain
       # @yield if passed then calling when objects is same by used method
       # @return [Integer] the order of objects
-      def order(a, b, *methods_chain, first_method_block: nil, &block)
-        va = value_by_chain(a, methods_chain.dup, first_method_block)
-        vb = value_by_chain(b, methods_chain.dup, first_method_block)
+      def order(a, b, *methods_chain, &block)
+        va = value_by_chain(a, methods_chain.dup)
+        vb = value_by_chain(b, methods_chain.dup)
 
         if va == vb
           block_given? ? block.call : 0
@@ -57,15 +55,13 @@ module VersatileDiamond
       # @param [Object] target for which will be applied first method in methods chain
       # @param [Array] methods_chain the list of methods which will be recursive
       #   applied to each next value
-      # @param [Proc] block will be passed to first method in chain
       # @return [Object] the final value
-      def value_by_chain(target, methods_chain, block = nil)
+      def value_by_chain(target, methods_chain)
         method_name = methods_chain.shift
         if method_name
-          value = block ? target.send(method_name, &block) : target.send(method_name)
-          value_by_chain(value, methods_chain)
+          value_by_chain(target.send(method_name), methods_chain)
         else
-          block ? block[target] : target
+          target
         end
       end
     end

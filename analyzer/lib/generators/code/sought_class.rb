@@ -38,6 +38,13 @@ module VersatileDiamond
 
       private
 
+        # The list of common files which are used by current generating class
+        # @return [Array] list with base class file path
+        # @override
+        def using_common_files
+          common_base_class_files
+        end
+
         # By default sought instance doesn't use lattice atom iterators
         # @return [Array] the empty array by default
         def used_iterators
@@ -69,13 +76,13 @@ module VersatileDiamond
         # Gets a list of code elements each of which will be included in header file
         # @return [Array] the array of header including objects
         def head_include_objects
-          head_used_objects + used_iterators + [common_base_class_file]
+          head_used_objects + used_iterators + common_base_class_files
         end
 
-        # Provides common file which is base class for current instance
-        # @return [CommonFile] the common file for current specie
-        def common_base_class_file
-          CommonFile.new("#{template_additional_path}/#{outer_base_name}.h")
+        # Provides common files which is base class for current instance
+        # @return [Array] the common files for current instance
+        def common_base_class_files
+          [common_file(outer_base_name)]
         end
 
         # Gets the name of directory where will be stored result file

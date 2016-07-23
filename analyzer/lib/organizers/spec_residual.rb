@@ -4,7 +4,7 @@ module VersatileDiamond
     # Contain some residual of find diff between base species
     class SpecResidual
       include Modules::GraphDupper
-      include Minuend
+      include MinuendSpec
 
       class << self
         # Gets empty residual instance
@@ -20,36 +20,31 @@ module VersatileDiamond
       # Initialize residual by hash of links and residual border atoms
       # @param [DependentWrappedSpec] owner of current instance
       # @param [Hash] links the links between some atoms
-      # @param [hash] atoms_to_parents the mirror of owner atoms to parent specs
+      # @param [Hash] atoms_to_parents the mirror of owner atoms to parent specs
       def initialize(owner, links, atoms_to_parents)
         @owner = owner
         @links = links
         @atoms_to_parents = atoms_to_parents
+
+        @_clean_links = nil
+      end
+
+      # @param [Concepts::Atom...] atom
+      # @return [Symbol]
+      def keyname(atom)
+        @owner.spec.keyname(atom)
       end
 
       # Clones the current instance and replaces value of internal owner variable and
       # also changes internal hashes where uses the atoms of old owner spec
       #
-      # @param [DependentWrappedSpec] owner the new value of owner variable
+      # @param [DependentWrappedSpec] other_owner the new value of owner variable
       # @param [Hash] mirror of old atoms to new atoms
       # @return [SpecResidual] the clone of current instance
-      def clone_with_replace_by(owner, mirror)
+      def clone_with_replace_by(other_owner, mirror)
         result = self.dup
-        result.replace_owner(owner, mirror)
+        result.replace_owner!(other_owner, mirror)
         result
-      end
-
-      # Makes correct difference with other spec
-      # @param [DependentWrappedSpec] other see at #super same argument
-      # @return [SpecResidual] spec residual that contains current instance and
-      #   difference operation result
-      # @override
-      def - (other)
-        diff = super(other)
-        return nil unless diff
-
-        full_atoms_to_parents = merge(@atoms_to_parents, diff.atoms_to_parents)
-        self.class.new(owner, diff.links, full_atoms_to_parents)
       end
 
       # Gets all stored parents
@@ -79,24 +74,51 @@ module VersatileDiamond
       # Replaces the value of internal owner variable and change old owner atoms in
       # interhal hashes
       #
-      # @param [DependentWrappedSpec] owner see at #clone_with_replace_by same argument
+      # @param [DependentWrappedSpec] other_owner the new value of owner variable
       # @param [Hash] mirror see at #clone_with_replace_by same argument
-      def replace_owner(owner, mirror)
-        @owner = owner
+      def replace_owner!(other_owner, mirror)
+        @owner = other_owner
         @links = dup_graph(@links) { |a| mirror[a] }
         @atoms_to_parents = @atoms_to_parents.each_with_object({}) do |(a, ps), acc|
-          acc[mirror[a]] = ps.map { |p| p.clone_with_replace_by(owner, mirror) }
+          acc[mirror[a]] = ps.map { |p| p.clone_with_replace_by(other_owner, mirror) }
         end
       end
 
     private
 
-      # Changes comparison behavior for more optimal base specs spliting
-      # @param [Minuend] other see at #<=> same argument
-      # @return [Integer] the result of comparation
+      # The cap for strong ordering
+      # @return [String] the cap
+      def name
+        "spec_residual##{object_id}"
+      end
+
+      # Makes correct difference with other spec
+      # @return [SpecResidual] spec residual that contains current instance and
+      #   difference operation result
       # @override
-      def order_relations(other, &block)
-        order(other, self, :relations_num, &block)
+      def subtract(*)
+        diff = super
+        full_atoms_to_parents = merge(@atoms_to_parents, diff.atoms_to_parents)
+        self.class.new(diff.owner, diff.links, full_atoms_to_parents)
+      end
+
+      # In the case when comparing instances have the current class then checks number
+      # of atoms which were not mapped with parent spec
+      #
+      # @param [Proc] nest to which the call will be nested
+      # @param [Minuend] other comparing item
+      # @option [Boolean] :strong_types_order is the flag which if set then types info
+      #   also used for ordering
+      # @override
+      def inlay_orders(nest, other, **kwargs)
+        nest[:order, self, other, :unmapped_num] if self.class == other.class
+        super(nest, other, **kwargs)
+      end
+
+      # Counts number of linked atoms which are not mapped to parent species
+      # @return [Integer] the nujmber of unmapped atoms
+      def unmapped_num
+        links.keys.reject(&atoms_to_parents.public_method(:[])).size
       end
 
       # Gets the number of external bonds for comparing with dependent base spec
@@ -111,9 +133,9 @@ module VersatileDiamond
       # Checks that relations of both atom have same sets
       # @param [DependentBaseSpec | DependentSpecificSpec] other same as #- argument
       # @param [Concepts::SpecificAtom | Concepts::Atom | Concepts::AtomReference]
-      #   spec_atom same as Minuend#different_by? argument
+      #   spec_atom same as MinuendSpec#different_by? argument
       # @param [Concepts::Atom | Concepts::AtomReference] base_atom same as
-      #   Minuend#different_by? argument
+      #   MinuendSpec#different_by? argument
       # @return [Boolean] are different or not
       def different_relations?(*args)
         different_by?(:relations_of, *args)
@@ -129,18 +151,22 @@ module VersatileDiamond
         !!@atoms_to_parents[atom] || super
       end
 
+      # @param [Array] atoms
+      # @return [Boolean]
+      def excess_parent_relation?(*atoms)
+        ps, qs = atoms.map(&atoms_to_parents.public_method(:[]))
+        ps && qs && !(ps & qs).empty?
+      end
+
       # Merges collected references of atoms to parent specs
       # @param [Hash] prev_refs the previous collected references
-      # @return [Hash] new_refs the references which was collecected in difference
+      # @return [Hash] new_refs the references which were collecected in difference
       #   operation
       # @return [Hash] the merging result where each value is list of possible values
       def merge(prev_refs, new_refs)
         new_refs.each_with_object(prev_refs.dup) do |(a, ps), result|
-          if result[a]
-            result[a] += ps
-          else
-            result[a] = ps
-          end
+          result[a] ||= []
+          result[a] += ps
         end
       end
 

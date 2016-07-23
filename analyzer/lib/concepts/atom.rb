@@ -35,6 +35,11 @@ module VersatileDiamond
         @valence = valence
       end
 
+      # @return [Atom] self instance without specific states
+      def clean
+        self
+      end
+
       # Simple atom is not reference
       # @return [Boolean] false
       def reference?

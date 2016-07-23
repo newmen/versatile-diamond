@@ -6,7 +6,7 @@ module VersatileDiamond
       extend Forwardable
       extend Collector
 
-      def_delegators :@spec, :name, :gas?
+      def_delegators :spec, :name, :gas?
       collector_methods :reaction
       attr_reader :spec
 
@@ -18,10 +18,35 @@ module VersatileDiamond
         @reactions = nil
       end
 
+      # Checks that other spec is same
+      # @param [DepdendentSimpleSpec] other the comparable spec
+      # @return [Boolean] same or not
+      def same?(other)
+        self.class == other.class && spec.same?(other.spec)
+      end
+
+      # Simple spec without parents
+      # @return [Array] the empty array
+      def parents
+        spec.specific? ? [spec.spec] : []
+      end
+
+      # Simple spec without anchors
+      # @return [Array] the empty array
+      def anchors
+        []
+      end
+
       # Simple spec does not have links
       # @return [Hash] the empty hash
       def links
         {}
+      end
+
+      # Gets number of external bonds for simple spec
+      # @return [Integer] 0
+      def external_bonds
+        0
       end
 
       # All species is not termination by default
@@ -40,6 +65,23 @@ module VersatileDiamond
       # @return [Boolean] false
       def specific?
         true
+      end
+
+      # @return [Boolean]
+      def deep_reactant?
+        reactions.any? { |r| r.source.include?(spec) }
+      end
+
+      # Simple species are not excess
+      # @return [Boolean] false
+      def excess?
+        false
+      end
+
+      # Simple species are not unused
+      # @return [Boolean] false
+      def unused?
+        false
       end
 
       def inspect

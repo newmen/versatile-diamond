@@ -8,7 +8,9 @@ module VersatileDiamond
         # Provides methods for make grouped nodes graph
         # @abstract
         class BaseGroupedNodes
+          include Modules::ExtendedCombinator
           include Modules::GraphDupper
+          include Modules::ListsComparer
           extend Forwardable
 
           # Initizalizes base grouped nodes graph builder
@@ -16,7 +18,7 @@ module VersatileDiamond
           #   nodes for current grouped nodes graph builder
           def initialize(factory)
             @factory = factory
-            @_flatten_face_grouped_nodes, @_final_graph = nil
+            @_flatten_face_grouped_nodes, @_complete_grouped_graph = nil
           end
 
           # Gets the nodes of small links graph which are grouped by available
@@ -28,37 +30,19 @@ module VersatileDiamond
           # TODO: must be private
           def flatten_face_grouped_nodes
             @_flatten_face_grouped_nodes ||= main_keys.groups do |node|
-              (flatten_neighbours_for(node) + [node]).map(&:uniq_specie).to_set
+              (strong_flatten_neighbours_for(node) + [node]).map(&:uniq_specie).to_set
             end
           end
 
           # Provides undirected graph of algorithm without bonds duplications. Nodes of
-          # big_graph are grouped there by flatten relations between nodes
-          # of small_graph graph.
+          # big_ungrouped_graph are grouped there by flatten relations between nodes
+          # of small_ungrouped_graph graph.
           #
           # @return [Hash] the hash of sparse graph where keys are arrays of nodes
           #   which have similar relations with neighbour nodes and values are wrapped
           #   to arrays other side "vertex" and relation to it vertex
-          def final_graph
-            return @_final_graph if @_final_graph
-
-            result = {}
-            store_result = proc do |nodes, nbrs_with_rel_param|
-              result[nodes] ||= []
-              result[nodes] << nbrs_with_rel_param if nbrs_with_rel_param
-            end
-
-            flatten_groups, non_flatten_groups = split_grouped_nodes
-
-            flatten_groups.each do |group|
-              accurate_combine_relations(group, &store_result)
-            end
-
-            non_flatten_groups.each do |group|
-              similar_combine_relations(group, &store_result)
-            end
-
-            @_final_graph = collaps_similar_key_nodes(result)
+          def complete_grouped_graph
+            @_complete_grouped_graph ||= reorder_vertices(build_complete_grouped_graph)
           end
 
         private
@@ -69,7 +53,15 @@ module VersatileDiamond
           # @param [Hash] links the original graph
           # @return [Hash] the graph with nodes
           def transform_links(links)
-            dup_graph(links) { |v| get_node(v) }
+            dup_graph(links, &method(:get_node))
+          end
+
+          # Combines final graph from small graph
+          # @return [Hash] the final grouped graph
+          def small_complete_grouped_graph
+            small_ungrouped_graph.each_with_object({}) do |(node, rels), acc|
+              acc[[node]] = rels.map { |n, r| [[n], r.params] }
+            end
           end
 
           # Groups key nodes of passed graph if them haven't relations and contains
@@ -84,7 +76,7 @@ module VersatileDiamond
               nodes, rels = shrink_graph.shift
 
               uniq_specie_nodes = nodes.uniq(&:uniq_specie)
-              if uniq_specie_nodes.size == 1 && rels.empty?
+              if uniq_specie_nodes.one? && rels.empty?
                 uniq_specie = uniq_specie_nodes.first.uniq_specie
                 similar_nodes = nodes
                 shrink_graph.each do |ns, rs|
@@ -104,17 +96,17 @@ module VersatileDiamond
           # Gets nodes that used in small links graph
           # @return [Array] the nodes which using in small links graph
           def main_keys
-            small_graph.keys
+            small_ungrouped_graph.keys
           end
 
           # Gets all flatten relations of passed node
-          # @param [Node] node the pair of specie and atom isntances for which
+          # @param [BaseNode] node the pair of specie and atom isntances for which
           #   the flatten relations will be gotten
           # @return [Array] the array of relations where each relation is array of two
           #   items, where first item is neighbour atom and second item is relation
           #   instance
           def flatten_relations_of(node)
-            big_graph[node].select do |n, r|
+            big_ungrouped_graph[node].select do |n, r|
               flatten_relation?(n, r) && main_keys.include?(n)
             end
           end
@@ -126,15 +118,15 @@ module VersatileDiamond
           #   items, where first item is neighbour atom and second item is relation
           #   instance
           def non_flatten_relations_of(node)
-            small_graph[node].reject { |n, r| flatten_relation?(n, r) }
+            small_ungrouped_graph[node].reject { |n, r| flatten_relation?(n, r) }
           end
 
           # Gets list of relations between nodes from passed group
           # @param [Array] group of nodes between which the relations will be gotten
           # @return [Array] the list of relations
           def relations_from(group)
-            group.reduce([]) do |acc, node|
-              acc + small_graph[node].select { |n, _| group.include?(n) }
+            group.flat_map do |node|
+              small_ungrouped_graph[node].select { |n, _| group.include?(n) }
             end
           end
 
@@ -145,7 +137,7 @@ module VersatileDiamond
           #   the neighbour nodes which avail from passed
           # @return [Array] the array of neighbour atoms which available through
           #   flatten relation
-          def flatten_neighbours_for(node)
+          def strong_flatten_neighbours_for(node)
             flatten_nbrs = flatten_relations_of(node).map(&:first)
             if flatten_nbrs.size > 1
               not_alive = flatten_nbrs.reject { |n| alive_relation?(node, n) }
@@ -158,40 +150,37 @@ module VersatileDiamond
           # Checks that passed relation is flatten on crystal lattice
           # @return [Boolean] is flatten relation or not
           def flatten_relation?(node, relation)
-            if node.lattice
+            node.lattice &&
               relation.relation? && node.lattice.instance.flatten?(relation)
-            else
-              false
-            end
           end
 
           # Checks that small links graph has relation between passed nodes
-          # @param [Node] from is the first node
-          # @param [Node] to is the second node
+          # @param [BaseNode] from is the first node
+          # @param [BaseNode] to is the second node
           # @return [Boolean] has relation or not
           def alive_relation?(from, to)
-            has_relation_in?(small_graph, from, to)
+            has_relation_in?(small_ungrouped_graph, from, to)
           end
 
           # Checks that clean specie links graph has relation between passed nodes
-          # @param [Node] from is the first node
-          # @param [Node] to is the second node
+          # @param [BaseNode] from is the first node
+          # @param [BaseNode] to is the second node
           # @return [Boolean] has relation or not
           def has_relation?(from, to)
-            has_relation_in?(big_graph, from, to)
+            has_relation_in?(big_ungrouped_graph, from, to)
           end
 
           # Checks that relation is present between passed nodes in also passed links
           # @param [Hash] links where relation will be found or not
-          # @param [Node] from is the first node
-          # @param [Node] to is the second node
+          # @param [BaseNode] from is the first node
+          # @param [BaseNode] to is the second node
           # @return [Boolean] has relation or not
           def has_relation_in?(links, from, to)
             links[from].any? { |n, _| n == to }
           end
 
           # Checks that node has flatten relation
-          # @param [Node] node which relations will be checked
+          # @param [BaseNode] node which relations will be checked
           # @return [Boolean] node has flatten relation or not
           def has_flatten_relation?(node)
             !flatten_relations_of(node).empty?
@@ -210,8 +199,11 @@ module VersatileDiamond
           # @param [Array] group which nodes will be checked
           # @return [Boolean] are another different nodes available from nodes of group
           #   or not
-          def different_another_nodes?(group)
-            group.map { |n| (flatten_neighbours_for(n) + [n]).to_set }.uniq.size > 1
+          def same_another_nodes?(group)
+            flatten_nbrs_sets = group.map do |node|
+              (strong_flatten_neighbours_for(node) + [node]).to_set
+            end
+            flatten_nbrs_sets.uniq.size > 1
           end
 
           # Verifies that all flatten relations, which passed node have relations only
@@ -220,33 +212,46 @@ module VersatileDiamond
           # @param [Array] group of similar nodes
           # @param [Array] node which relations will be checked
           # @return [Boolean] are flatten relations used only by group nodes or not
-          def only_flatten_relations_in?(group, node)
-            rels = small_graph[node].select { |n, r| flatten_relation?(n, r) }
+          def flatten_relations_only_in?(group, node)
+            rels = small_ungrouped_graph[node].select { |n, r| flatten_relation?(n, r) }
             rels.all? { |n, _| group.include?(n) }
           end
 
-          # Separates the grouped nodes into two categories: nodes with flatten
-          # relations and nodes with non flatten relations
-          #
-          # @return [Array] the array with two items where each item is array. The
-          #   first item is groups of nodes with flatten relations and the second item
-          #   is groups of nodes with non flatten relations
-          def split_grouped_nodes
-            flatten_groups = flatten_face_grouped_nodes.select do |group|
-              group.any? do |node|
-                has_flatten_relation?(node) && !only_flatten_relations_in?(group, node)
+          # Selects just flatten groups
+          # @return [Array] the array of flatten groups
+          def flatten_groups
+            flatten_face_grouped_nodes.select do |group|
+              group.size > 1 && group.any? do |node|
+                has_flatten_relation?(node) && !flatten_relations_only_in?(group, node)
               end
             end
+          end
 
-            non_flatten_groups = flatten_face_grouped_nodes.select do |group|
-              different_another_nodes?(group) || group.any? do |node|
-                dept_only_from_group = only_flatten_relations_in?(group, node)
-                dept_only_from_group || small_graph[node].empty? ||
-                  (!dept_only_from_group && has_non_flatten_relation?(node))
+          # Selects only non-flatten groups
+          # @return [Array] the array of non-flatten groups
+          def non_flatten_groups
+            flatten_face_grouped_nodes.select do |group|
+              same_another_nodes?(group) || group.any? do |node|
+                flatten_relations_only_in?(group, node) ||
+                  small_ungrouped_graph[node].empty? || has_non_flatten_relation?(node)
               end
             end
+          end
 
-            [flatten_groups, non_flatten_groups]
+          # Makes groups from non complete groups
+          # @return [Array] the array of groups wich bulded from non complete groups
+          def non_complete_groups
+            flatten_face_grouped_nodes.each_with_object([]) do |group, acc|
+              next unless group.one?
+              rels = small_ungrouped_graph[group.first]
+              next unless rels.one?
+              singular_rel = rels.first
+              relation = singular_rel.last
+              next unless relation.belongs_to_crystal?
+              nbrs = [singular_rel.first]
+              next if flatten_face_grouped_nodes.include?(nbrs)
+              acc << (group + nbrs)
+            end
           end
 
           # Gets all subsets of passed set
@@ -254,7 +259,7 @@ module VersatileDiamond
           # @return [Array] the array with all subsets of passed set grouped by
           #   number of elements in subset
           def all_subsets_of(set)
-            2.upto(set.size).map { |n| set.combination(n).to_a }
+            sliced_combinations(set, 2)
           end
 
           # Products passed lists and combinates them items
@@ -296,7 +301,7 @@ module VersatileDiamond
           #   nodes from which has similar relations to neighbour nodes which placed as
           #   second item of array
           def accurate_node_groups_from(nodes)
-            small_rels = nodes.map { |node| small_graph[node] }
+            small_rels = nodes.map { |node| small_ungrouped_graph[node] }
 
             accurate_groups = []
             all_subsets_of(nodes.zip(small_rels)).each do |subsets|
@@ -331,6 +336,8 @@ module VersatileDiamond
           # @yeild [Array, (Array, Hash)] do for nodes and them neighbours
           def accurate_combine_relations(group, &block)
             accurate_node_groups_from(group).each do |nodes, nbrs|
+              next if lists_are_identical?(nodes, nbrs)
+
               relation = nil
               nodes.zip(nbrs).each do |nd, nb|
                 relation = relation_between(nd, nb)
@@ -354,30 +361,82 @@ module VersatileDiamond
           def similar_combine_relations(group, &block)
             group.each do |node|
               nodes = [node]
-              rels = small_graph[node]
+              rels = small_ungrouped_graph[node]
 
               if rels.empty?
                 block[nodes, nil]
               else
                 selected_rels =
-                  if only_flatten_relations_in?(group, node)
+                  if flatten_relations_only_in?(group, node)
                     rels
-                  elsif different_another_nodes?(group)
+                  elsif same_another_nodes?(group)
                     relations_from(group).reject { |n, _| node == n }
                   else
                     non_flatten_relations_of(node)
                   end
 
-                similar_rels_groups = selected_rels.group_by do |n, r|
+                similar_rels_groups = selected_rels.groups do |n, r|
                   [n.properties, r.params]
                 end
 
-                similar_rels_groups.values.each do |similar_rels|
+                similar_rels_groups.each do |similar_rels|
                   nbrs, relations = similar_rels.transpose
                   block[nodes, [nbrs, relations.first.params]]
                 end
               end
             end
+          end
+
+          # @return [Hash] new builded instance of final graph
+          def build_complete_grouped_graph
+            graph = {}
+            store_proc = proc do |nodes, nbrs_with_rel_param|
+              graph[nodes] ||= []
+              graph[nodes] << nbrs_with_rel_param if nbrs_with_rel_param
+            end
+
+            major_groups = non_complete_groups
+            if lists_are_identical?(major_groups.flatten, main_keys)
+              similar_groups = major_groups
+            else
+              similar_groups = non_flatten_groups + major_groups
+              flatten_groups.each do |group|
+                accurate_combine_relations(group, &store_proc)
+              end
+            end
+
+            similar_groups.each do |group|
+              similar_combine_relations(group, &store_proc)
+            end
+
+            if graph.empty?
+              small_complete_grouped_graph
+            else
+              collaps_similar_key_nodes(graph)
+            end
+          end
+
+          # @param [Hash] graph which vertices will be accurate reordered
+          # @return [Hash] the graph with reordered vertices
+          def reorder_vertices(graph)
+            graph.each_with_object({}) do |(key, rels), acc|
+              if key.one?
+                acc[key] = rels.map { |nbrs, rp| [nbrs.sort, rp] }.sort_by(&:first)
+              else
+                ordered_key = key.sort
+                acc[ordered_key] = rels.map do |nbrs, rp|
+                  nbrs.one? ? [nbrs, rp] : [order_vertex(nbrs, by: key), rp]
+                end
+                acc[ordered_key].sort!
+              end
+            end
+          end
+
+          # @param [Array] nodes which will be ordered
+          # @option [Array] :by which the order will be applyed
+          # @return [Array] the ordered nodes
+          def order_vertex(nodes, by: nodes)
+            by.zip(nodes).sort.transpose.last
           end
         end
 

@@ -48,6 +48,23 @@ module VersatileDiamond
         end
 
         it_behaves_like :check_symmetry do
+          subject { dept_activated_bridge }
+          let(:bases) do
+            [
+              dept_bridge_base,
+              dept_methyl_on_bridge_base,
+              dept_methyl_on_dimer_base
+            ]
+          end
+          let(:specifics) { [subject] }
+          let(:typical_reactions) { [dept_intermed_migr_dc_formation] }
+          let(:symmetry_classes) do
+            ['AtomsSwapWrapper<EmptySpecific<BRIDGE_CTs>, 1, 2>']
+          end
+          let(:symmetric_keynames) { [:cr, :cl] }
+        end
+
+        it_behaves_like :check_symmetry do
           subject { dept_methyl_on_bridge_base }
           let(:bases) { [dept_bridge_base, subject] }
           let(:specifics) { [dept_activated_methyl_on_bridge] }
@@ -56,15 +73,35 @@ module VersatileDiamond
           let(:symmetric_keynames) { [] }
         end
 
-        it_behaves_like :check_symmetry do
-          subject { dept_activated_methyl_on_bridge }
-          let(:bases) { [dept_bridge_base, dept_methyl_on_bridge_base] }
-          let(:specifics) { [subject] }
-          let(:typical_reactions) { [dept_methyl_incorporation] }
-          let(:symmetry_classes) do
-            ['AtomsSwapWrapper<EmptySpecific<METHYL_ON_BRIDGE_CMs>, 2, 3>']
+        describe 'methyl on bridge and child of it are symmetrics' do
+          let(:bases) do
+            [
+              dept_bridge_base,
+              dept_methyl_on_bridge_base,
+              dept_methyl_on_dimer_base,
+              dept_intermed_migr_down_common_base
+            ]
           end
-          let(:symmetric_keynames) { [:cr, :cl] }
+          let(:specifics) { [dept_activated_methyl_on_bridge] }
+          let(:typical_reactions) do
+            [dept_intermed_migr_dc_drop, dept_methyl_incorporation]
+          end
+
+          it_behaves_like :check_symmetry do
+            subject { dept_methyl_on_bridge_base }
+            let(:symmetry_classes) do
+              ['AtomsSwapWrapper<EmptyBase<METHYL_ON_BRIDGE>, 2, 3>']
+            end
+            let(:symmetric_keynames) { [:cr, :cl] }
+          end
+
+          it_behaves_like :check_symmetry do
+            subject { dept_activated_methyl_on_bridge }
+            let(:symmetry_classes) do
+              ['AtomsSwapWrapper<EmptySpecific<METHYL_ON_BRIDGE_CMs>, 2, 3>']
+            end
+            let(:symmetric_keynames) { [:cr, :cl] }
+          end
         end
 
         it_behaves_like :check_symmetry do
@@ -73,6 +110,7 @@ module VersatileDiamond
             [dept_bridge_base, dept_methyl_on_bridge_base, subject]
           end
           let(:specifics) { [dept_activated_methyl_on_dimer] }
+          let(:typical_reactions) { [dept_hydrogen_migration] }
           let(:symmetry_classes) { [] }
           let(:symmetric_keynames) { [] }
         end
@@ -81,21 +119,20 @@ module VersatileDiamond
           subject { dept_dimer_base }
           let(:bases) { [dept_bridge_base, subject] }
 
-          let(:cl) { dimer_base.atom(:cl) }
-          let(:cr) { dimer_base.atom(:cr) }
-          let(:crb) { dimer_base.atom(:crb) }
-          let(:_cr0) { dimer_base.atom(:_cr0) }
-          let(:clb) { dimer_base.atom(:clb) }
-          let(:_cr1) { dimer_base.atom(:_cr1) }
+          let_atoms_of(:dimer_base, [:cl, :cr, :crb, :_cr0, :clb, :_cr1])
 
           it_behaves_like :check_symmetry do
             let(:specifics) { [dept_twise_incoherent_dimer] }
+            let(:typical_reactions) { [dept_incoherent_dimer_drop] }
             let(:symmetry_classes) { [] }
             let(:symmetric_keynames) { [] }
           end
 
           it_behaves_like :check_symmetry do
             let(:specifics) { [dept_activated_dimer, dept_twise_incoherent_dimer] }
+            let(:typical_reactions) do
+              [dept_hydrogen_migration, dept_incoherent_dimer_drop]
+            end
             let(:symmetry_classes) do
               ['ParentsSwapWrapper<EmptyBase<DIMER>, OriginalDimer, 0, 1>']
             end
@@ -110,8 +147,9 @@ module VersatileDiamond
           end
 
           it_behaves_like :check_symmetry do
-            let(:specifics) do
-              [dept_twise_incoherent_dimer, dept_activated_incoherent_dimer]
+            let(:specifics) { [] }
+            let(:typical_reactions) do
+              [dept_incoherent_dimer_drop, dept_one_dimer_hydrogen_migration]
             end
             let(:symmetry_classes) do
               ['ParentsSwapWrapper<EmptyBase<DIMER>, OriginalDimer, 0, 1>']
@@ -121,6 +159,7 @@ module VersatileDiamond
 
           it_behaves_like :check_symmetry do
             let(:specifics) { [dept_bottom_hydrogenated_activated_dimer] }
+            let(:typical_reactions) { [dept_bhad_activation] }
             let(:symmetry_classes) do
               [
                 'AtomsSwapWrapper<EmptyBase<DIMER>, 1, 2>',
@@ -143,10 +182,11 @@ module VersatileDiamond
 
         describe 'dimer children' do
           let(:bases) { [dept_bridge_base, dept_dimer_base] }
+          let(:specifics) { [subject] }
 
           describe 'incoherent dimer' do
-            let(:specifics) do
-              [dept_activated_incoherent_dimer, dept_twise_incoherent_dimer]
+            let(:typical_reactions) do
+              [dept_incoherent_dimer_drop, dept_one_dimer_hydrogen_migration]
             end
 
             it_behaves_like :check_symmetry do
@@ -171,18 +211,25 @@ module VersatileDiamond
 
             it_behaves_like :check_symmetry do
               let(:specific) { dept_bottom_hydrogenated_activated_dimer }
-              let(:symmetry_classes) { ['AtomsSwapWrapper<EmptyBase<DIMER_CRs>, 4, 5>'] }
+              let(:typical_reactions) { [dept_bhad_activation] }
+              let(:symmetry_classes) do
+                ['AtomsSwapWrapper<EmptyBase<DIMER_CRs>, 1, 2>']
+              end
               let(:symmetric_keynames) { [:_cr1, :clb] }
 
-              let(:clb) { activated_dimer.atom(:clb) }
-              let(:_cr1) { activated_dimer.atom(:_cr1) }
+              let_atoms_of(:activated_dimer, [:clb, :_cr1])
               it { expect(detector.symmetric_atoms(clb)).to match_array([clb, _cr1]) }
               it { expect(detector.symmetric_atoms(_cr1)).to match_array([clb, _cr1]) }
             end
 
             it_behaves_like :check_symmetry do
-              let(:specific) { dept_right_bottom_hydrogenated_activated_dimer }
-              let(:symmetry_classes) { ['AtomsSwapWrapper<EmptyBase<DIMER_CRs>, 1, 2>'] }
+              let(:faked_rbhad) do
+                fake_reaction.apply_to!(dept_right_bottom_hydrogenated_activated_dimer)
+              end
+              let(:specific) { faked_rbhad }
+              let(:symmetry_classes) do
+                ['AtomsSwapWrapper<EmptyBase<DIMER_CRs>, 4, 5>']
+              end
               let(:symmetric_keynames) { [:_cr0, :crb] }
 
               let(:crb) { activated_dimer.atom(:crb) }
@@ -202,12 +249,51 @@ module VersatileDiamond
             ['ParentsSwapWrapper<EmptySpecific<CROSS_BRIDGE_ON_BRIDGES>, ' \
               'OriginalCrossBridgeOnBridges, 0, 1>']
           end
-
           let(:symmetric_keynames) { [:ctl, :ctr] }
-          let(:ctl) { cross_bridge_on_bridges_base.atom(:ctl) }
-          let(:ctr) { cross_bridge_on_bridges_base.atom(:ctr) }
+
+          let_atoms_of(:cross_bridge_on_bridges_base, [:ctl, :ctr])
           it { expect(detector.symmetric_atoms(ctr)).to match_array([ctr, ctl]) }
           it { expect(detector.symmetric_atoms(ctl)).to match_array([ctr, ctl]) }
+        end
+
+        it_behaves_like :check_symmetry do
+          subject { dept_cross_bridge_on_bridges_base }
+          let(:bases) do
+            [
+              subject,
+              dept_bridge_base,
+              dept_methyl_on_bridge_base,
+              dept_cross_bridge_on_dimers_base
+            ]
+          end
+          let(:specifics) { [] }
+          let(:typical_reactions) { [dept_cbod_drop] }
+          let(:symmetry_classes) do
+            ['ParentsSwapWrapper<EmptyBase<CROSS_BRIDGE_ON_BRIDGES>, ' \
+              'OriginalCrossBridgeOnBridges, 0, 1>']
+          end
+          let(:symmetric_keynames) { [:ctl, :ctr] }
+
+          let_atoms_of(:cross_bridge_on_bridges_base, [:ctl, :ctr])
+          it { expect(detector.symmetric_atoms(ctr)).to match_array([ctr, ctl]) }
+          it { expect(detector.symmetric_atoms(ctl)).to match_array([ctr, ctl]) }
+        end
+
+        it_behaves_like :check_symmetry do
+          subject { dept_top_methyl_on_half_extended_bridge_base }
+          let(:bases) { [subject, dept_bridge_base, dept_methyl_on_bridge_base] }
+          let(:specifics) do
+            [dept_top_activated_methyl_on_activated_half_extended_bridge]
+          end
+          let(:typical_reactions) { [dept_migration_over_111] }
+          let(:symmetry_classes) do
+            ['AtomsSwapWrapper<EmptyBase<TOP_METHYL_ON_HALF_EXTENDED_BRIDGE>, 1, 2>']
+          end
+          let(:symmetric_keynames) { [:cbl, :cbr] }
+
+          let_atoms_of(:top_methyl_on_half_extended_bridge_base, [:cbl, :cbr])
+          it { expect(detector.symmetric_atoms(cbr)).to match_array([cbr, cbl]) }
+          it { expect(detector.symmetric_atoms(cbl)).to match_array([cbr, cbl]) }
         end
       end
 

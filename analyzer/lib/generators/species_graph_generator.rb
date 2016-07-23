@@ -4,27 +4,47 @@ module VersatileDiamond
     # Provides methods for species graph generation
     module SpeciesGraphGenerator
 
-      BASE_SPEC_COLOR = 'black'
-      SPECIFIC_SPEC_COLOR = 'blue'
+      BASE_REACTANT_SPEC_COLOR = 'black'
+      BASE_SUPPLY_SPEC_COLOR = 'gray85'
+      GAS_BASE_SPEC_COLOR = 'darkslategrey'
+      GAS_SPECIFIC_SPEC_COLOR = 'deeppink1'
+      SPECIFIC_REACTANT_SPEC_COLOR = 'blue'
+      SPECIFIC_SUPPLY_SPEC_COLOR = 'lightsteelblue1'
       TERMINATION_SPEC_COLOR = 'chocolate'
 
     private
 
+      # Splits the passed list of species to reactants and not reactants (supply) specs
+      # @param [Array] specs the splitting list of specs
+      # @return [Array, Array] the reactants first and supply specs at end
+      def split_reactants(specs)
+        splitted_specs = specs.group_by(&:deep_reactant?)
+        [splitted_specs[true] || [], splitted_specs[false] || []]
+      end
+
       # Draws basic species and dependencies between them
       # @option [Boolean] :no_includes if true then includes doesn't shown
-      def draw_base_specs(specs = base_surface_specs, no_includes: false)
+      def draw_base_specs(specs = base_specs, no_includes: false)
         deps_method = !no_includes && method(:multiparents_deps)
-        draw_specs(specs, BASE_SPEC_COLOR, deps_method)
+        gas_specs = specs.select(&:gas?)
+        reactants, supply = split_reactants(specs.reject(&:gas?))
+        draw_specs(gas_specs, GAS_BASE_SPEC_COLOR, deps_method)
+        draw_specs(reactants, BASE_REACTANT_SPEC_COLOR, deps_method)
+        draw_specs(supply, BASE_SUPPLY_SPEC_COLOR, deps_method)
       end
 
       # Draws specific species and dependencies between them, and also will
       # draw dependencies from basic species
       #
       # @option [Boolean] :no_includes if true then includes doesn't shown
-      def draw_specific_specs(specs = specific_surface_specs, no_includes: false)
+      def draw_specific_specs(specs = specific_specs, no_includes: false)
         deps_method = !no_includes && method(:monoparent_deps)
         name_method = method(:split_specific_name)
-        draw_specs(specs, SPECIFIC_SPEC_COLOR, deps_method, name_method)
+        gas_specs, _ = split_reactants(specs.select(&:gas?))
+        reactants, supply = split_reactants(specs.reject(&:gas?))
+        draw_specs(gas_specs, GAS_SPECIFIC_SPEC_COLOR, deps_method, name_method)
+        draw_specs(reactants, SPECIFIC_REACTANT_SPEC_COLOR, deps_method, name_method)
+        draw_specs(supply, SPECIFIC_SUPPLY_SPEC_COLOR, deps_method, name_method)
       end
 
       # Draws termination species
@@ -62,7 +82,8 @@ module VersatileDiamond
       def monoparent_deps(specs, &setup_block)
         specs.each do |spec|
           child_node = spec_node(spec)
-          parent_node = spec_node(spec.parents.first)
+          parent = spec.parents.first
+          parent_node = parent && spec_node(parent)
           if parent_node
             edge = graph.add_edges(child_node, parent_node)
             edge.set(&setup_block)
@@ -93,7 +114,7 @@ module VersatileDiamond
         splitted_text = ['']
         until words.empty?
           splitted_text << '' if splitted_text.last.size > limit
-          splitted_text.last << ' ' if splitted_text.last.size > 0
+          splitted_text.last << ' ' unless splitted_text.last.empty?
           splitted_text.last << words.shift
         end
         splitted_text.join("\n")

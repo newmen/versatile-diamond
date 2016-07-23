@@ -12,8 +12,8 @@ module VersatileDiamond
       # @return [Array] the immutable list of correspond pairs of spec_atom from both
       #   sides of reaction
       def self.rezip(result)
-        result.reduce([]) do |acc, (specs_pair, atoms_zip)|
-          acc + atoms_zip.map { |atoms_pair| specs_pair.zip(atoms_pair) }
+        result.flat_map do |specs_pair, atoms_zip|
+          atoms_zip.map { |atoms_pair| specs_pair.zip(atoms_pair) }
         end
       end
 
@@ -36,14 +36,13 @@ module VersatileDiamond
       # @param [Array] products the array of product species
       # @option [Hash] :result the value of result variable by default
       # @raise [AtomMapper::CannotMap] if number of source or products is wrong
-      def initialize(source, proructs, result: { change: [], conformity: [] })
+      def initialize(source, proructs, result: { change: [], conformity: [] }, rv: nil)
         @source, @products = source, proructs
         @result = result
-        @reverse = nil
+        @reverse = rv
 
-        size_wo_simple = -> specs { specs.reject { |sp| sp.simple? }.size }
-        source_size_wo_simple = size_wo_simple[source]
-        products_size_wo_simple = size_wo_simple[products]
+        source_size_wo_simple = complex_source.size
+        products_size_wo_simple = complex_products.size
 
         @reaction_type =
           if source_size_wo_simple == products_size_wo_simple
@@ -61,14 +60,14 @@ module VersatileDiamond
       # @return [Array] the array which is atom mapping result only for changes
       #   atoms
       def changes
-        @result[:change]
+        reject_simple_specs_mapping(@result[:change])
       end
 
       # Gets full atom mapping result for all atoms
       # @return [Array] the array which is atom mapping result for all atoms
       # TODO: must be private
       def full
-        @result[:conformity]
+        reject_simple_specs_mapping(@result[:conformity])
       end
 
       # Collects atoms of passed spec which used in changes
@@ -91,7 +90,7 @@ module VersatileDiamond
       end
 
       # Adds correspond mapping result for :change and :conformity keys. Also
-      # changes reactant for relevant states of ther atoms
+      # changes reactant for relevant states of their atoms
       #
       # @param [Array] specs the associating species
       # @param [Array] full_atoms all atoms for each associating spec
@@ -101,12 +100,12 @@ module VersatileDiamond
         atoms1, atoms2 = full_atoms
         changes1, _ = changed_atoms
 
-        # Changes specifics specs and they atoms if it need. After, the
+        # Changes specific specs and they atoms if it need. After, the
         # relevant states of atoms must be set accordingly.
         changes_zip = []
         full_zip = atoms1.zip(atoms2).map do |atom1, atom2|
           a1 = setup_by_other(spec1, spec2, atom1, atom2)
-          a2 = setup_by_other(spec2, spec1, atom2, atom1)
+          a2 = setup_by_other(spec2, spec1, atom2, a1)
           pair = [a1, a2]
 
           changes_zip << pair if changes1.include?(atom1)
@@ -122,13 +121,15 @@ module VersatileDiamond
       # @return [Array] reversed atom mapping result
       def reverse
         return @reverse if @reverse
-        reversed_result = Hash[@result.map do |key, mapping|
+        reversed_result = @result.map do |key, mapping|
           reversed_mapping = mapping.map do |specs, atoms|
             [specs.reverse, atoms.map(&:reverse)]
           end
           [key, reversed_mapping]
-        end]
-        @reverse = self.class.new(@products, @source, result: reversed_result)
+        end
+
+        opts = { result: reversed_result.to_h, rv: self }
+        @reverse = self.class.new(@products, @source, **opts)
       end
 
       # Duplicates atom mapping result with exchange of original specs to specs
@@ -157,24 +158,32 @@ module VersatileDiamond
       # Swap source species in result. Drops atom mapping result for atoms
       # which is not belongs to new spec if it spec is reduced version of from
       #
+      # @param [Symbol] target the type of swapping species
       # @param [SpecificSpec] from which spec will be deleted
       # @param [SpecificSpec] to which spec will be added
-      def swap_source(from, to)
+      # @option [Boolean] :reverse_too
+      def swap(target, from, to)
+        return if from.simple?
+
         mirror = SpeciesComparator.make_mirror(from, to)
-        @source.map! { |spec| spec == from ? to : spec }
+        trg = instance_variable_get(:"@#{target}")
+        trg.map! { |spec| spec == from ? to : spec }
+
         @result.each do |_, mapping|
           mapping.map! do |specs, atoms|
-            spec = specs.first
-            if spec == from
+            if target == :source && from == specs.first
               changed_atoms = atoms.map { |f, s| [mirror[f], s] }
               [[to, specs.last], changed_atoms]
+            elsif target == :products && from == specs.last
+              changed_atoms = atoms.map { |f, s| [f, mirror[s]] }
+              [[specs.first, to], changed_atoms]
             else
               [specs, atoms]
             end
           end
         end
 
-        @reverse.swap_source(to, from) if @reverse
+        clean_result!(from, to)
       end
 
       # Swaps atoms in result
@@ -182,8 +191,9 @@ module VersatileDiamond
       #   exchanged
       # @param [Atom] from the old atom
       # @param [Atom] to the new atom
+      # @option [Boolean] :reverse_too
       # @todo must be protected but checking by test
-      def swap_atom(spec, from, to)
+      def swap_atom(spec, from, to, reverse_too: true)
         is_source = @source.include?(spec)
 
         @result.each do |_, mapping|
@@ -191,13 +201,18 @@ module VersatileDiamond
             next unless spec == (is_source ? specs.first : specs.last)
 
             atoms.each do |pair|
-              atom_index = is_source ? 0 : 1
-              pair[atom_index] = to if from == pair[atom_index]
+              index = is_source ? 0 : 1
+              if from == pair[index]
+                specs[index].swap_atom(from, to)
+                pair[index] = to
+              end
             end
           end
         end
 
-        @reverse.swap_atom(spec, from, to) if @reverse
+        if @reverse && reverse_too
+          @reverse.swap_atom(spec, from, to, reverse_too: false)
+        end
       end
 
       # Applies relevant states form new atom instead old atom
@@ -206,17 +221,11 @@ module VersatileDiamond
       # @param [SpecificAtom] new_atom the atom from which relevant states will
       #   got
       def apply_relevants(spec, old_atom, new_atom)
-        os = other_side(spec, old_atom) if old_atom != new_atom
-        os = other_side(spec, new_atom) unless os
-        os_spec, os_old_atom = os
+        os_spec, os_old_atom = other_side(spec, old_atom)
         swap_atom(spec, old_atom, new_atom) if old_atom != new_atom
 
-        os_old_atom = os_spec.atom(os_spec.keyname(os_old_atom))
         os_new_atom = setup_by_other(os_spec, spec, os_old_atom, new_atom)
-
-        if os_new_atom != os_old_atom
-          swap_atom(os_spec, os_old_atom, os_new_atom)
-        end
+        swap_atom(os_spec, os_old_atom, os_new_atom) if os_new_atom != os_old_atom
       end
 
       # Gets single source complex spec and their changed atom
@@ -235,9 +244,10 @@ module VersatileDiamond
       #
       # @param [Reaction] reaction the reaction for which position finds
       def find_positions_for(reaction)
-        return if @source.size == 1 || @source.size == @products.size
+        return if complex_source.one? || complex_source.size == complex_products.size
 
-        main_spec, idx = @source.size == 1 ? [@source.first, 0] : [@products.first, 1]
+        main_spec, idx =
+          complex_source.one? ? [complex_source.first, 0] : [complex_products.first, 1]
 
         all_zipped_spec_atoms.combination(2).each do |quads|
           main_pairs, small_pairs = quads.transpose.rotate(idx)
@@ -258,6 +268,22 @@ module VersatileDiamond
       end
 
     private
+
+      # @return [Array]
+      def complex_source
+        source.reject(&:simple?)
+      end
+
+      # @return [Array]
+      def complex_products
+        products.reject(&:simple?)
+      end
+
+      # @param [Hash] mapping_hash which clean copy will be returned
+      # @return [Hash] mapping hash without simple species
+      def reject_simple_specs_mapping(mapping_hash)
+        mapping_hash.reject { |src_prd, _| src_prd.any?(&:simple?) }
+      end
 
       # Finds position relations by walking on crystal lattice from passed main atoms
       # and stores found positions to passed reaction
@@ -291,7 +317,17 @@ module VersatileDiamond
 
         return unless next_atoms.map(&:to_set).reduce(:&).empty?
 
-        next_atoms.transpose.each do |diff_side_atoms|
+        reordered_atoms = next_atoms.combination(2).flat_map do |scope1, scope2|
+          variants_with_usages = scope1.permutation.map do |scope1_var|
+            pairs = scope1_var.zip(scope2)
+            positions = pairs.map { |pair| main_spec.position_between(*pair) }
+            [scope1_var, positions.compact.size]
+          end
+          aligned_atoms = variants_with_usages.max_by(&:last).first
+          [aligned_atoms, scope2].transpose
+        end
+
+        reordered_atoms.uniq.each do |diff_side_atoms|
           deep_small_pairs = diff_side_atoms.map { |a| other_side(main_spec, a) }
           deep_small_specs, deep_small_atoms = deep_small_pairs.transpose
           next if deep_small_specs.first == deep_small_specs.last
@@ -300,7 +336,7 @@ module VersatileDiamond
             raise 'Incorrect atoms of reactants'
           end
 
-          # TODO: checkthe fact that position changes to cross for not diamond lattice
+          # TODO: check the fact that position changes to cross for not diamond lattice
           reaction.position_between(*deep_small_pairs, position.cross,
             check_possible: false)
         end
@@ -339,29 +375,60 @@ module VersatileDiamond
         own = SpecificAtom.new(own) unless own.specific?
         diff = own.diff(foreign)
 
-        extb = target.external_bonds_for(original_own)
-        if extb > 0
-          if !own.incoherent? && (other.gas? || diff.include?(Incoherent.property))
-            own.incoherent!
+        is_own_relevant_lazy = -> { own.incoherent? || own.unfixed? }
+        target_extb_lazy = -> { target.external_bonds_for(original_own) }
+        other_extb = other.external_bonds_for(foreign)
+
+        is_recharging =
+          target_extb_lazy.call > other_extb && foreign.actives > own.actives
+        simple_reactants = (source - [target]).select(&:simple?)
+
+        # Pass back the additional detecting monovalent properties to own atom
+
+        if is_recharging && diff.empty? && simple_reactants.one?
+          monovalent_atoms = simple_reactants.first.links.keys
+          atoms_with_names = monovalent_atoms.reduce([]) do |acc, atom|
+            acc.any? { |name, _| name == atom.name } ? acc : acc << [atom.name, atom]
           end
-        elsif extb == 0
-          own.not_incoherent! if own.incoherent?
+          own.use!(atoms_with_names.first.last.clean) if atoms_with_names.one?
         end
 
-        own.unfixed! if !own.incoherent? && !own.unfixed? &&
+        # Check and setup incoherent
+
+        if target_extb_lazy.call > 0
+          own.incoherent! if !is_own_relevant_lazy.call &&
+                    (other.gas? || diff.include?(Incoherent.property) ||
+                      (other.links[foreign] && other_extb == 0))
+        elsif target_extb_lazy.call == 0 && own.incoherent?
+          own.not_incoherent!
+        end
+
+        # Check and setup unfixed
+
+        own.unfixed! if !is_own_relevant_lazy.call && !own.lattice &&
           own.valence - target.external_bonds_for(original_own) == 1 &&
-          ((other.gas? && !other.simple?) || diff.include?(Unfixed.property)) &&
-          !own.lattice
+          ((other.gas? && !other.simple?) || diff.include?(Unfixed.property))
 
-        # return own specific atom if atom was a simple atom
-        if own != original_own && !own.relevants.empty?
-          keyname = target.keyname(original_own)
+        # Return own specific atom if atom was a simple atom
 
-          # changing target through specific spec
-          target.describe_atom(keyname, own)
-          own
-        else
+        if own == original_own || (own.relevants.empty? && own.monovalents.empty?)
           original_own
+        else
+          target.describe_atom(target.keyname(original_own), own)
+          own
+        end
+      end
+
+      # @param [SpecificSpec] from which spec will be deleted
+      # @param [SpecificSpec] to which spec will be added
+      def clean_result!(from, to)
+        if from.links.size != to.links.size
+          no_val_proc = -> f, t { !f || !t }
+          if changes.any? { |_, aps| aps.any?(&no_val_proc) }
+            raise ArgumentError, "Wrong swapping species #{from} -> #{to}"
+          else
+            full.map! { |specs, aps| [specs, aps.reject(&no_val_proc)] }
+          end
         end
       end
     end

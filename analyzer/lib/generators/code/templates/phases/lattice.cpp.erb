@@ -1,8 +1,8 @@
 #include "<%= file_name %>.h"
 <%= body_includes %>
 
-<%= class_name %>::<%= class_name %>(const dim3 &sizes, int defaultSurfaceHeight) :
-    <%= crystal_properties_class_name %><Crystal>(sizes), _defaultSurfaceHeight(defaultSurfaceHeight)
+<%= class_name %>::<%= class_name %>(const dim3 &sizes, const Behavior *behavior, int defaultSurfaceHeight) :
+    <%= crystal_properties_class_name %><Crystal>(sizes, behavior), _defaultSurfaceHeight(defaultSurfaceHeight)
 {
 }
 
@@ -22,10 +22,8 @@ void <%= class_name %>::buildAtoms()
 
 void <%= class_name %>::bondAllAtoms()
 {
-    atoms().ompParallelEach([this](Atom *atom) {
-        if (!atom) return;
+    eachAtom([this](Atom *atom) {
         assert(atom->lattice());
-
         int z = atom->lattice()->coords().z;
         if (z > 0)
         {
@@ -37,7 +35,7 @@ void <%= class_name %>::bondAllAtoms()
 Atom *<%= class_name %>::makeAtom(ushort type, ushort actives, const int3 &coords)
 {
     AtomBuilder builder;
-    Atom *atom = builder.buildCd(type, actives, this, coords);
+    Atom *atom = builder.<%= builder_method_name %>(type, actives, this, coords);
     return atom;
 }
 

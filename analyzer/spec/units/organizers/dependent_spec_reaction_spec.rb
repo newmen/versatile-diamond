@@ -50,11 +50,23 @@ module VersatileDiamond
       end
 
       it_behaves_like :check_links do
+        subject { dept_incoherent_dimer_drop }
+        let(:dmr) { subject.source.first }
+        let_atoms_of(:dmr, [:cl, :cr])
+
+        let(:original_links) do
+          {
+            [dmr, cl] => [[[dmr, cr], bond_100_front]],
+            [dmr, cr] => [[[dmr, cl], bond_100_front]]
+          }
+        end
+        let(:clean_links) { {} }
+      end
+
+      it_behaves_like :check_links do
         subject { dept_sierpinski_drop }
         let(:spc) { subject.source.first }
-        [:cm, :ctl, :ctr].each do |kn|
-          let(kn) { spc.atom(kn) }
-        end
+        let_atoms_of(:spc, [:cm, :ctl, :ctr])
 
         let(:original_links) do
           {
@@ -70,9 +82,8 @@ module VersatileDiamond
         subject { dept_hydrogen_migration }
         let(:s1) { subject.source.first }
         let(:s2) { subject.source.last }
-        let(:am) { s1.atom(:cm) }
-        let(:a1) { s1.atom(:cr) }
-        let(:a2) { s2.atom(:cr) }
+        let_atoms_of(:s1, [:cm, :cr], [:am, :a1])
+        let_atoms_of(:s2, [:cr], [:a2])
 
         let(:original_links) do
           {
@@ -93,12 +104,8 @@ module VersatileDiamond
         subject { dept_methyl_incorporation }
         let(:sm) { subject.source.first }
         let(:sd) { subject.source.last }
-        let(:amm) { sm.atom(:cm) }
-        let(:amb) { sm.atom(:cb) }
-        let(:amr) { sm.atom(:cr) }
-        let(:aml) { sm.atom(:cl) }
-        let(:adr) { sd.atom(:cr) }
-        let(:adl) { sd.atom(:cl) }
+        let_atoms_of(:sm, [:cm, :cb, :cr, :cl], [:amm, :amb, :amr, :aml])
+        let_atoms_of(:sd, [:cr, :cl], [:adr, :adl])
 
         let(:original_links) do
           {

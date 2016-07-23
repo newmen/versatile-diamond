@@ -58,6 +58,11 @@ module VersatileDiamond
         spec.external_bonds_for(@original_atom)
       end
 
+      # @return [Atom] self instance without specific states
+      def clean
+        self
+      end
+
       # Gets relations from reference
       # @return [Array] the array of relations
       def additional_relations

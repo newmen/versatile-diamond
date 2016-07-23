@@ -1,6 +1,7 @@
 #ifndef SAVING_ATOM_H
 #define SAVING_ATOM_H
 
+#include <vector>
 #include "base_atom.h"
 
 namespace vd

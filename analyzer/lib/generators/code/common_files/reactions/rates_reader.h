@@ -16,7 +16,7 @@ public:
     static double getRate(const char *rid);
 
 private:
-    static void readParams(const char *rid, double *A, double *Ea, double *Tp);
+    static void readParams(const char *rid, double *k, double *Ea, double *Tp);
     static double arrenius(const char *rid, double t);
 
     template <class... Args>

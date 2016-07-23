@@ -4,21 +4,6 @@ module VersatileDiamond
     # Describes reaction which has a some environment expresed by there objects
     class LateralReaction < Reaction
 
-      # Raises when target atom of sidepiece there object haven't lattice
-      class ReversingError < Errors::Base
-        attr_reader :spec
-        def initialize(spec, atom)
-          @spec = spec
-          @atom = atom
-        end
-
-        # Gets the keyname of invalid atom
-        # @return [Symbol] the keyname of atom
-        def keyname
-          @spec.keyname(@atom)
-        end
-      end
-
       attr_reader :theres
 
       # Among super, keeps the atom map
@@ -29,28 +14,36 @@ module VersatileDiamond
         @theres = theres
       end
 
+      # Also changes targets of there object
+      # @param [Symbol] target the type of swapping species
+      # @param [SpecificSpec] from the spec from which need to swap
+      # @param [SpecificSpec] to the spec to which need to swap
+      # @override
+      def swap_on(target, from, to, **)
+        super
+        theres.each { |there| there.swap_target(from, to) } if target == :source
+      end
+
       # Also checks using in there objects
       # @param [Spec | SpecificSpec] spec the one of reactant
       # @return [Array] the array of using atoms
+      # @override
       def used_atoms_of(spec)
         (super + theres.flat_map { |there| there.used_atoms_of(spec) }).uniq
       end
 
       # Also compare there objects
-      # @param [UbiqutousReaction] other see at #super same argument
+      # @param [UbiquitousReaction] other see at #super same argument
       # @return [Boolean] the same or not
       # @override
       def same?(other)
-        self.class == other.class ? all_same?(other) : false
+        super && lists_are_identical?(theres, other.theres, &:same?)
       end
 
-      # Checks that current reaction covered by other reaction
-      # @param [LateralReaction] other the comparable reaction
-      # @return [Boolean] covered or not
-      def cover?(other)
-        super_same?(other) && theres.all? do |there|
-          other.theres.any? { |t| there.same?(t) || there.cover?(t) }
-        end
+      # Lateral reaction is lateral reaction
+      # @return [Boolean] true
+      def lateral?
+        true
       end
 
       def to_s
@@ -63,35 +56,7 @@ module VersatileDiamond
       # Also reverse there objects
       # @override
       def reverse_params
-        reversed_theres = theres.map do |there|
-          reversed_refs = {}
-          there.target_refs.each do |target, (spec, atom)|
-            other_side_spec_atom = mapping.other_side(spec, atom)
-            if other_side_spec_atom.last.lattice
-              reversed_refs[target] = other_side_spec_atom
-            else
-              raise ReversingError.new(*other_side_spec_atom)
-            end
-          end
-
-          There.new(there.where, reversed_refs)
-        end
-
-        [*super, reversed_theres]
-      end
-
-      # Calls the #same? method from superclass
-      # @param [LateralReaction] other the comparable lateral reaction
-      # @return [Boolean] same by super or not
-      def super_same?(other)
-        self.class.superclass.instance_method(:same?).bind(self).call(other)
-      end
-
-      # Are another reaction completely same
-      # @param [LateralReaction] other with which comparison
-      # @return [Boolean] is reaction initially similar, and all theres are same
-      def all_same?(other)
-        super_same?(other) && lists_are_identical?(theres, other.theres, &:same?)
+        [*super, theres.map { |there| there.reverse(mapping) }]
       end
 
       # Also swaps target atoms for all used there objects

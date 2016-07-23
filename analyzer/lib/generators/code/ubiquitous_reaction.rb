@@ -6,14 +6,18 @@ module VersatileDiamond
 
       # Contains logic for generation ubiquitous reation
       class UbiquitousReaction < BaseReaction
+        include SpeciesUser
         include SourceFileCopier
         include ReactionWithSimpleGas
 
         # Also copies using data file
         # @param [String] root_dir see at #super same argument
+        # @return [Array] the list of required common files
+        # @override
         def generate(root_dir)
           super
           copy_file(root_dir, full_data_path)
+          [base_class_file]
         end
 
         # Gets the name of base class
@@ -31,12 +35,13 @@ module VersatileDiamond
       private
 
         # Gets the list of more complex reactions
-        # @return [Array] the list of children reactions
+        # @return [Array] the sorted list of children reactions
         # @override
         def children
           super.sort do |a, b|
-            aa, ba = [a, b].map(&:atom_of_complex).map do |atom|
-              Organizers::AtomProperties.new(atom)
+            aa, ba = [a, b].map(&:complex_source_spec_and_atom).map do |spec, atom|
+              dept_spec = specie_class(spec).spec
+              generator.atom_properties(dept_spec, atom)
             end
 
             aa <=> ba
@@ -63,6 +68,12 @@ module VersatileDiamond
         # @return [String] the path to using data file
         def full_data_path
           "data/#{data_file_name}.h"
+        end
+
+        # Gets the full path to data file
+        # @return [String] the path to using data file
+        def base_class_file
+          common_file('ubiquitous')
         end
 
         # Gets the list of reaction class generators which are dependent from current

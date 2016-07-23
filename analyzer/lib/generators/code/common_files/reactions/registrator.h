@@ -3,9 +3,11 @@
 
 #include <reactions/concrete_typical_reaction.h>
 #include <reactions/concrete_lateral_reaction.h>
+#include <reactions/multi_lateral_reaction.h>
 #include <tools/typed.h>
 using namespace vd;
 
+#include "../atoms/atom_builder.h"
 #include "../handbook.h"
 #include "rates_reader.h"
 
@@ -15,28 +17,34 @@ class Registrator : public Typed<B, RT>, public RatesReader
     typedef Typed<B, RT> ParentType;
 
 public:
-    void store() override;
     void remove() override;
 
 protected:
     template <class... Args> Registrator(Args... args) : ParentType(args...) {}
+
+    void mcRemember() override; // should be final
+    void mcForget() override; // should be final
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
 
 template <class B, ushort RT>
-void Registrator<B, RT>::store()
+void Registrator<B, RT>::remove()
 {
-    ParentType::store();
+    ParentType::remove();
+    Handbook::scavenger().markReaction(this);
+}
+
+template <class B, ushort RT>
+void Registrator<B, RT>::mcRemember()
+{
     Handbook::mc().add(ParentType::ID, this);
 }
 
 template <class B, ushort RT>
-void Registrator<B, RT>::remove()
+void Registrator<B, RT>::mcForget()
 {
     Handbook::mc().remove(ParentType::ID, this);
-    ParentType::remove();
-    Handbook::scavenger().markReaction(this);
 }
 
 #endif // REGISTRATOR_H

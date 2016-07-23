@@ -8,9 +8,7 @@ module VersatileDiamond
         subject { dept_bridge_base }
         let(:bigger) { dept_methyl_on_bridge_base }
 
-        [:ct, :cr, :cl].each do |kn|
-          let(kn) { bridge_base.atom(kn) }
-        end
+        let_atoms_of(:bridge_base, [:ct, :cr, :cl])
 
         let(:atom) { cr }
         let(:atom_relations) do
@@ -28,9 +26,10 @@ module VersatileDiamond
 
       it_behaves_like :check_clean_links do
         subject { dept_intermed_migr_down_full_base }
-        [:cm, :cb, :cbl, :cbr, :cdl, :cdr, :crb, :clb, :_cr0, :_cr1].each do |kn|
-          let(kn) { intermed_migr_down_full_base.atom(kn) }
-        end
+
+        let_atoms_of(:intermed_migr_down_full_base, [
+          :cm, :cb, :cbl, :cbr, :cdl, :cdr, :crb, :clb, :_cr0, :_cr1
+        ])
 
         let(:clean_links) do
           {
@@ -68,7 +67,8 @@ module VersatileDiamond
 
       it_behaves_like :wrapped_spec do
         subject { dept_bridge_base }
-        let(:child) { dept_methyl_on_bridge_base }
+        let(:reaction) { dept_methyl_activation }
+        let(:child) { described_class.new(ma_source.first) }
       end
 
       it_behaves_like :parents_with_twins do
@@ -81,6 +81,10 @@ module VersatileDiamond
             [dept_bridge_base, bridge_base.atom(:cr)]
           ]
         end
+      end
+
+      describe '#specific_atoms' do
+        it { expect(dept_bridge_base.specific_atoms).to be_empty }
       end
 
       describe '#same?' do
@@ -106,7 +110,7 @@ module VersatileDiamond
 
       describe '#unused?' do
         it 'default behavior' do
-          expect(dept_bridge_base).to be_truthy
+          expect(dept_bridge_base.unused?).to be_falsey
         end
 
         it_behaves_like :organize_dependencies do
@@ -116,16 +120,16 @@ module VersatileDiamond
         end
 
         it_behaves_like :organize_dependencies do
-          subject { dept_methyl_on_bridge_base }
+          subject { described_class.new(ma_source.first) }
           let(:others) { [dept_bridge_base] }
-          before { subject.store_reaction(methyl_activation) }
+          before { subject.store_reaction(dept_methyl_activation) }
           it { expect(subject.unused?).to be_falsey }
         end
 
         it_behaves_like :organize_dependencies do
-          subject { dept_methyl_on_bridge_base }
+          subject { described_class.new(on_end.env_specs.first) }
           let(:others) { [dept_bridge_base] }
-          before { subject.store_there(there_methyl) }
+          before { subject.store_there(dept_on_end) }
           it { expect(subject.unused?).to be_falsey }
         end
       end

@@ -5,6 +5,8 @@ module VersatileDiamond
     class ProxyParentSpec < Tools::TransparentProxy
       include Modules::OrderProvider
 
+      attr_reader :child
+
       # Initializes proxy instance
       # @param [DependentBaseSpec] original spec for which proxy provides
       # @param [DependentBaseSpec] child is the dependent spec which creates proxy
@@ -15,25 +17,25 @@ module VersatileDiamond
         @child = child
         @mirror = mirror
 
-        make_invert_mirror
+        make_invert_mirror!
       end
 
       # Clones the current instance and replaces value of internal child variable and
       # also changes the mirror of child spec atoms to original spec atoms
       #
-      # @param [DependentBaseSpec] child the new value of child variable
+      # @param [DependentBaseSpec] other_child the new value of child variable
       # @param [Hash] mirror of old key atoms to new key atoms
       # @return [ProxyParentSpec] the clone of current instance
-      def clone_with_replace_by(child, mirror)
+      def clone_with_replace_by(other_child, mirror)
         result = self.dup
-        result.replace_child(child, mirror)
+        result.replace_child!(other_child, mirror)
         result
       end
 
       # Compares current instance with other
       # @param [ProxyParentSpec] other instance with which comparison will do
       # @return [Integer] the comparison result
-      def <=> (other)
+      def <=>(other)
         order(other, self, :clean_relations_num) do
           order(other, self, :relations_num)
         end
@@ -62,21 +64,21 @@ module VersatileDiamond
       # Replaces the value of internal child variable and change keys of internal
       # mirror variable
       #
-      # @param [DependentBaseSpec] child see at #clone_with_replace_by same argument
+      # @param [DependentBaseSpec] other_child see at #clone_with_replace_by same arg
       # @param [Hash] mirror see at #clone_with_replace_by same argument
-      def replace_child(child, mirror)
-        @child = child
+      def replace_child!(other_child, mirror)
+        @child = other_child
         @mirror = @mirror.each_with_object({}) do |(f, t), acc|
           acc[mirror[f]] = t
         end
 
-        make_invert_mirror
+        make_invert_mirror!
       end
 
     private
 
       # Makes inverted mirror
-      def make_invert_mirror
+      def make_invert_mirror!
         @invert_mirror = @mirror.invert
       end
 
@@ -85,7 +87,7 @@ module VersatileDiamond
         # @return [Integer] the number of atom references
         define_method(:"#{prefix}relations_num") do
           child_atoms = @mirror.keys
-          @child.send("#{prefix}links").reduce(0) do |acc, (a, rs)|
+          child.send("#{prefix}links").reduce(0) do |acc, (a, rs)|
             child_atoms.include?(a) ? (acc + rs.size) : acc
           end
         end

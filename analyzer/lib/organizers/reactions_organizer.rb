@@ -19,10 +19,8 @@ module VersatileDiamond
         ubiq_rs, typical_rs, lateral_rs = reactions_lists
         non_ubiq_rs = typical_rs + lateral_rs
 
-        # order of dependencies organization is important!
         organize_ubiquitous_reactions_deps!(term_ss, non_term_ss, *reactions_lists)
-        organize_lateral_reactions_deps!(lateral_rs)
-        organize_typical_reactions_deps!(typical_rs, lateral_rs)
+        organize_complex_reactions_deps!(typical_rs, lateral_rs)
       end
 
     private
@@ -40,17 +38,20 @@ module VersatileDiamond
         end
       end
 
-      # Organize dependencies between typical reactions
+      # Organize dependencies between typical and lateral reactions
       # @param [Array] typical_rs the list of dependent typical reactions
       # @param [Array] lateral_rs the list of dependent lateral reactions
-      def organize_typical_reactions_deps!(typical_rs, lateral_rs)
+      # @return [Array] the list of new combined lateral reactions which were missed by
+      #   user
+      def organize_complex_reactions_deps!(typical_rs, lateral_rs)
         typical_rs.each { |reaction| reaction.organize_dependencies!(lateral_rs) }
+        typical_rs.flat_map(&:combine_children_laterals!)
       end
 
-      # Organize dependencies between lateral reactions
-      # @param [Array] lateral_rs the list of dependent lateral reactions
-      def organize_lateral_reactions_deps!(lateral_rs)
-        lateral_rs.each { |reaction| reaction.organize_dependencies!(lateral_rs) }
+      # Reorganizes the specs of children reactions
+      # @param [Array] typical_crs the list of concept typical reactions
+      def reorganize_children_specs!(typical_crs)
+        typical_crs.each(&:reorganize_children_specs!)
       end
     end
 

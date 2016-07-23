@@ -7,32 +7,74 @@ module VersatileDiamond
         include SpeciesOrganizer
         include ReactionsOrganizer
 
+        # The mock of analysis results
+        class ResultsMock
+          def initialize(depts)
+            @depts = depts
+          end
+
+          def method_missing(*args)
+            if args.size == 1 && @depts.include?(args.first)
+              @depts[args.first]
+            else
+              key = :"#{args.first}s"
+              if args.size == 2 && args.first =~ /_spec/ && @depts.include?(key)
+                @depts[key].find { |s| s.name == args.last }
+              else
+                super
+              end
+            end
+          end
+        end
+
         # Stubs analysis results and allow to call methods with same names as keys of
         # passed hash
         #
         # @param [Hash] depts see at #stub_generator same argument
         # @return [RSpec::Mocks::Double] same as original analysis results
         def stub_results(**depts)
-          results = double('pseudo_analysis_results')
-          fix(depts).each do |method_name, list|
-            allow(results).to receive(method_name).and_return(list)
+          ChunkLinksMerger.init_veiled_cache!
+          if depts[:typical_reactions]
+            reorganize_children_specs!(depts[:typical_reactions].map(&:reaction))
           end
 
-          sort_depts(depts).each do |method_name, list|
-            send(:"organize_#{method_name}", results) unless list.empty?
-          end
+          fixed_depts =
+            fix(depts).each_with_object({}) do |(method_name, list), acc|
+              acc[method_name] = list
+            end
 
-          results
+          mocking_depts =
+            sort_depts(fixed_depts).each_with_object({}) do |(method_name, list), acc|
+              if organization_keys.include?(method_name)
+                orgres = send(:"organize_#{method_name}", fixed_depts)
+                list += orgres if method_name == :lateral_reactions
+              end
+
+              acc[method_name] = list
+            end
+
+          ResultsMock.new(mocking_depts)
         end
 
       private
+
+        # The list of methods which data could be organized. Should be correspond to
+        # methods which described at end of current module
+        #
+        # @return [Set] the list of method names which data could be organized
+        def organization_keys
+          Set[
+            :base_specs, :specific_specs,
+            :ubiquitous_reactions, :typical_reactions, :lateral_reactions
+          ]
+        end
 
         # Provides default keys (names of analysis result methods)
         # @return [Array] the list of default keys
         def default_keys
           [
             :base_specs, :specific_specs, :term_specs,
-            :ubiquitous_reactions, :lateral_reactions, :typical_reactions
+            :ubiquitous_reactions, :typical_reactions, :lateral_reactions
           ]
         end
 
@@ -70,6 +112,7 @@ module VersatileDiamond
 
           fix_sidepieces(depts_cache, all_specs)
           fix_bases(depts_cache, all_specs)
+          fix_same_bases(depts_cache[:specific_specs])
 
           depts_cache
         end
@@ -83,20 +126,22 @@ module VersatileDiamond
         def fix_reactants(depts_cache, all_specs)
           [:ubiquitous_reactions, :typical_reactions, :lateral_reactions].each do |k|
             depts_cache[k].each do |dr|
-              dr.reaction.each_source do |s|
-                if all_specs.include?(s.name)
-                  swap_source_carefully(dr, s, spec_from(all_specs, s).spec)
-                else
-                  if s.is_a?(Concepts::TerminationSpec)
-                    dt = DependentTermination.new(s)
-                    depts_cache[:term_specs] << dt
-                    all_specs[dt.name] = dt
+              [:source, :products].each do |target|
+                dr.reaction.each(target) do |s|
+                  if all_specs.include?(s.name)
+                    swap_carefully(target, dr, s, spec_from(all_specs, s).spec)
                   else
-                    store_reactant(dr, depts_cache, all_specs, s)
+                    if s.termination?
+                      dt = DependentTermination.new(s)
+                      depts_cache[:term_specs] << dt
+                      all_specs[dt.name] = dt
+                    else
+                      store_reactant(dr, depts_cache, all_specs, s)
+                    end
                   end
-                end
 
-                store_concept_to(dr, spec_from(all_specs, s))
+                  store_concept_to(dr, spec_from(all_specs, s))
+                end
               end
             end
           end
@@ -105,16 +150,17 @@ module VersatileDiamond
         # Extends passed variables by sidepieces from where objects
         def fix_sidepieces(depts_cache, all_specs)
           depts_cache[:lateral_reactions].each do |reaction|
-            reaction.theres.each do |th|
-              there = DependentThere.new(reaction, th)
-              there.where.specs.each do |s|
-                if all_specs.include?(s.name)
-                  swap_source_carefully(there, s, spec_from(all_specs, s).spec)
-                else
-                  store_reactant(there, depts_cache, all_specs, s)
-                end
+            reaction.theres.each do |there|
+              [:source, :products].each do |target|
+                there.each(target) do |s|
+                  if all_specs.include?(s.name)
+                    swap_carefully(target, there, s, spec_from(all_specs, s).spec)
+                  else
+                    store_reactant(there, depts_cache, all_specs, s)
+                  end
 
-                store_concept_to(there, spec_from(all_specs, s))
+                  store_concept_to(there, spec_from(all_specs, s)) if target == :source
+                end
               end
             end
           end
@@ -128,6 +174,12 @@ module VersatileDiamond
             depts_cache[:base_specs] << ds
             all_specs[ds.name] = ds
           end
+        end
+
+        # Checks that if some reaction contains specific spec and same base spec then
+        # base spec will be swapped to veiled spec
+        def fix_same_bases(specific_specs)
+          exchange_same_used_base_specs_of(specific_specs)
         end
 
         # Provides lambda which checks type of own argument and wraps and store it
@@ -145,7 +197,9 @@ module VersatileDiamond
             else
               dbs = depts_cache[:base_specs].find { |bs| bs.name == spec.spec.name }
               dbs ||= DependentBaseSpec.new(spec.spec)
-              swap_source_carefully(dcont, spec, dbs.spec)
+              [:source, :products].each do |target|
+                swap_carefully(target, dcont, spec, dbs.spec)
+              end
               unless all_specs.include?(dbs.name)
                 depts_cache[:base_specs] << dbs
                 all_specs[dbs.name] = dbs
@@ -161,38 +215,41 @@ module VersatileDiamond
         end
 
         # Organizes dependencies between wrapped base species
-        def organize_base_specs(res)
-          organize_base_specs_dependencies!(res.base_specs)
+        def organize_base_specs(depts)
+          organize_base_specs_dependencies!(depts[:base_specs])
         end
 
         # Organizes dependencies between wrapped specific species
-        def organize_specific_specs(res)
-          base_cache = make_cache(res.base_specs)
-          not_simple_specs = res.specific_specs.reject(&:simple?)
+        def organize_specific_specs(depts)
+          base_cache = make_cache(depts[:base_specs])
+          not_simple_specs = depts[:specific_specs].reject(&:simple?)
           organize_specific_specs_dependencies!(base_cache, not_simple_specs)
         end
 
         # Organizes dependencies between wrapped ubiquitous reactions
-        def organize_ubiquitous_reactions(res)
-          term_ss = make_cache(res.term_specs)
-          non_term_ss = make_cache(res.base_specs)
-          non_term_ss = non_term_ss.merge(make_cache(res.specific_specs))
+        def organize_ubiquitous_reactions(depts)
+          term_ss = make_cache(depts[:term_specs])
+          non_term_ss = make_cache(depts[:base_specs])
+          non_term_ss = non_term_ss.merge(make_cache(depts[:specific_specs]))
           reactions_lists = [
-            res.ubiquitous_reactions, res.typical_reactions, res.lateral_reactions
+            depts[:ubiquitous_reactions],
+            depts[:typical_reactions],
+            depts[:lateral_reactions]
           ]
 
           organize_ubiquitous_reactions_deps!(term_ss, non_term_ss, *reactions_lists)
         end
 
         # Organizes dependencies between typical reactions
-        def organize_typical_reactions(res)
-          reactions_lists = [res.typical_reactions, res.lateral_reactions]
-          organize_typical_reactions_deps!(*reactions_lists)
+        def organize_typical_reactions(depts)
+          return @_combined_reactions if @_combined_reactions
+          reactions_lists = [depts[:typical_reactions], depts[:lateral_reactions]]
+          @_combined_reactions = organize_complex_reactions_deps!(*reactions_lists)
         end
 
         # Organizes dependencies between lateral reactions
-        def organize_lateral_reactions(res)
-          organize_lateral_reactions_deps!(res.lateral_reactions)
+        def organize_lateral_reactions(depts)
+          organize_typical_reactions(depts)
         end
       end
     end

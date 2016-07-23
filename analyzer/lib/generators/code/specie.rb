@@ -6,15 +6,22 @@ module VersatileDiamond
 
       # Creates Specie class
       class Specie < BaseSpecie
+        include Modules::SpecNameConverter
         include SpeciesUser
         include ReactionsUser
         extend Forwardable
 
-        ANCHOR_ATOM_NAME = 'anchor'
-        ANCHOR_SPECIE_NAME = 'parent'
+        ANCHOR_ATOM_NAME = 'anchor'.freeze
+        AMORPH_ATOM_NAME = 'amorph'.freeze
+        INTER_ATOM_NAME = 'atom'.freeze
+        NBR_ATOM_NAME = 'neighbour'.freeze
+        ADD_ATOM_NAME = 'additionalAtom'.freeze
 
-        def_delegators :@detector, :symmetric_atom?, :symmetric_atoms
-        def_delegator :@_find_builder, :using_atoms # error if no find algorithm
+        ANCHOR_SPECIE_NAME = 'parent'.freeze
+        TARGET_SPECIE_NAME = 'target'.freeze
+        INTER_SPECIE_NAME = 'specie'.freeze
+        SIDE_SPECIE_NAME = 'sidepiece'.freeze
+
         attr_reader :spec, :original, :sequence, :essence
 
         # Initialize specie code generator
@@ -26,7 +33,7 @@ module VersatileDiamond
 
           @spec = spec
           if spec.simple?
-            # for this species should not be called methods that dependent from these
+            # for these species should not be called methods that dependent from these
             # instance variables
             # TODO: separate for AbstractSpecie which will contain methods for getting
             # class name of simple species, because class name using in env.yml config
@@ -35,10 +42,11 @@ module VersatileDiamond
           else
             @original = OriginalSpecie.new(generator, self)
             @sequence = generator.sequences_cacher.get(spec)
-            @essence = Essence.new(self)
+            @essence = Essence.new(spec)
           end
 
-          @_class_name, @_enum_name, @_file_name, @_used_iterators, @_wheres = nil
+          @_class_name, @_enum_name, @_file_name, @_used_iterators = nil
+          @_action_reactions = nil
           @_find_builder = nil
         end
 
@@ -53,13 +61,16 @@ module VersatileDiamond
 
         # Generates source code for specie
         # @param [String] root_dir see at #super same argument
+        # @return [Array] the list of required common files
         # @override
         def generate(root_dir)
-          if symmetric?
-            @original.generate(root_dir)
-            @symmetrics.each { |symmetric| symmetric.generate(root_dir) }
-          end
-          super
+          build_satelites(root_dir) + super
+        end
+
+        # Checks that specie have typical reactions
+        # @return [Boolean] is specific or not
+        def specific?
+          !typical_reactions.empty?
         end
 
         # Is symmetric specie? If children species uses same as own atom and it atom
@@ -68,6 +79,22 @@ module VersatileDiamond
         # @return [Boolean] is symmetric specie or not
         def symmetric?
           !@symmetrics.empty?
+        end
+
+        # Delegates call to detector if it exists
+        # @param [Concepts::Atom | Concepts::AtomRefernce | Concepts::SpecificAtom]
+        #   atom which will be checked
+        # @return [Boolean]
+        def symmetric_atom?(atom)
+          @detector && @detector.symmetric_atom?(atom)
+        end
+
+        # Delegates call to detector if it exists
+        # @param [Concepts::Atom | Concepts::AtomRefernce | Concepts::SpecificAtom]
+        #   atom which symmetries will be gotten
+        # @return [Array]
+        def symmetric_atoms(atom)
+          @detector ? @detector.symmetric_atoms(atom) : []
         end
 
         PREF_METD_SEPS.each do |prefix, method, separator|
@@ -80,11 +107,8 @@ module VersatileDiamond
             var = instance_variable_get(var_name)
             return var if var
 
-            m = spec.name.to_s.match(/(\w+)(\(.+?\))?/)
-            addition = "#{separator}#{name_suffixes(m[2]).join(separator)}" if m[2]
-            addition = addition.public_send(method) if addition && prefix == 'file'
-            head = eval("m[1].#{method}")
-            instance_variable_set(var_name, "#{head}#{addition}")
+            nm = convert_name(spec.name, method, separator, tail_too: prefix == 'file')
+            instance_variable_set(var_name, nm)
           end
         end
 
@@ -141,6 +165,13 @@ module VersatileDiamond
           generator.classifier.index(spec, atom)
         end
 
+        # Gets outer template name of specie class
+        # @return [String] the outer specie file name
+        # @override
+        def outer_base_name
+          symmetric? ? 'overall' : super
+        end
+
         # The printable name which will be shown when debug calculation output
         # @return [String] the name of specie which used by user in DSL config file
         def print_name
@@ -158,6 +189,25 @@ module VersatileDiamond
 
         def_delegator :sequence, :delta
 
+        # Generates code for supply species
+        # @param [String] root_dir see at #generate same argument
+        # @return [Array] the list of all required common files
+        def build_satelites(root_dir)
+          if symmetric?
+            @original.generate(root_dir) +
+              @symmetrics.flat_map { |symmetric| symmetric.generate(root_dir) }
+          else
+            []
+          end
+        end
+
+        # Gets the name of directory where will be stored result file
+        # @return [String] the name of result directory
+        # @override
+        def outer_dir_name
+          symmetric? ? 'symmetrics' : super
+        end
+
         # Specie class has find algorithms by default
         # @return [Boolean] true
         def render_find_algorithms?
@@ -173,7 +223,7 @@ module VersatileDiamond
         # Gets the children specie classes
         # @return [Array] the array of children specie class generators
         def children
-          spec.non_term_children.map(&method(:specie_class))
+          specie_classes(spec.reactant_children)
         end
 
         # Gets children species without species which are find algorithm roots
@@ -189,11 +239,17 @@ module VersatileDiamond
           !children.empty?
         end
 
+        # @return [Array] the list of reactions where the current specie is source
+        def action_reactions
+          @_action_reactions ||=
+            spec.reactions.select { |r| r.source.include?(spec.spec) }
+        end
+
         # Gets list of local reactions for current specie
         # @return [Array] the list of local reactions
         def local_reactions
           if generator.handbook.ubiquitous_reactions_exists?
-            spec.reactions.select(&:local?).map(&method(:reaction_class))
+            reaction_classes(action_reactions.select(&:local?))
           else
             []
           end
@@ -202,7 +258,7 @@ module VersatileDiamond
         # Gets list of typical reactions for current specie
         # @return [Array] the list of typical reactions
         def typical_reactions
-          all_reactions = spec.reactions.map(&method(:reaction_class))
+          all_reactions = reaction_classes(action_reactions)
           (all_reactions - local_reactions - lateral_reactions).uniq
         end
 
@@ -210,13 +266,13 @@ module VersatileDiamond
         # @return [Array] the list of laterable typical reactions
         def laterable_typical_reactions
           parent_reactions = spec.theres.map(&:lateral_reaction).map(&:parent).compact
-          parent_reactions.reject(&:lateral?).uniq.map(&method(:reaction_class))
+          reaction_classes(parent_reactions.reject(&:lateral?).uniq)
         end
 
         # Gets list of lateral reactions for current specie
         # @return [Array] the list of lateral reactions
         def lateral_reactions
-          spec.reactions.select(&:lateral?).map(&method(:reaction_class)).uniq
+          reaction_classes(action_reactions.select(&:lateral?)).uniq
         end
 
         # Checks that ubiquitous reactions prestented and specie have local reactions
@@ -225,22 +281,23 @@ module VersatileDiamond
           !local_reactions.empty?
         end
 
-        # Checks that specie have typical reactions
-        # @return [Boolean] is specific or not
-        def specific?
-          !typical_reactions.empty?
-        end
-
         # Checks that specie have there objects
         # @return [Boolean] is lateral specie or not
         def sidepiece?
           !spec.theres.empty?
         end
 
-        # Gets the where object logic generators
-        # @return [Array] the list of where object logic generators
-        def wheres
-          @_wheres ||= spec.root_wheres.map { |wh| WhereLogic.new(generator, wh) }
+        # Provides common files which is base class for current instance
+        # @return [Array] the common files for current instance
+        def common_base_class_files
+          outers = []
+          if symmetric?
+            outers << 'overall'
+          else
+            outers << (specific? ? 'specific' : 'base')
+            outers << 'sidepiece' if sidepiece?
+          end
+          outers.map(&method(:common_file))
         end
 
         # Makes base classes for current specie class instance
@@ -375,9 +432,9 @@ module VersatileDiamond
           if parents_num == 0
             ['Atom **', 'atoms']
           elsif parents_num == 1
-            ['ParentSpec *', 'parent']
+            ['ParentSpec *', ANCHOR_SPECIE_NAME]
           else # parents_num > 1
-            ['ParentSpec **', 'parents']
+            ['ParentSpec **', ANCHOR_SPECIE_NAME.pluralize]
           end
         end
 
@@ -394,22 +451,6 @@ module VersatileDiamond
           else # delta > 1
             ['Atom **', 'additionalAtoms']
           end
-        end
-
-        # Makes suffix of name which is used in name builder methods
-        # @param [String] brackets_str the string which contain brackets and some
-        #   additional params of specie in them
-        # @return [String] the suffix of name
-        # @example generating name
-        #   '(ct: *, ct: i, cr: i)' => 'CTsiCRi'
-        def name_suffixes(brackets_str)
-          params_str = brackets_str.scan(/\((.+?)\)/).first.first
-          params = params_str.scan(/(\w+): (.)/)
-          strs = params.group_by(&:first).map do |k, gs|
-            states = gs.map { |item| item.last == '*' ? 's' : item.last }.join
-            "#{k.upcase}#{states}"
-          end
-          strs.sort
         end
 
         # Gets sorted anchors from atoms sequence

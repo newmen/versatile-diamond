@@ -9,7 +9,7 @@ module VersatileDiamond
         include TemplateFile
         include PartialRenderer
 
-        SRC_DIR_NAME = 'src'
+        SRC_DIR_NAME = 'src'.freeze
 
         class << self
           # Extends root dir path to source dir path
@@ -22,10 +22,12 @@ module VersatileDiamond
 
         # Generates .h and .cpp files for current instance
         # @param [String] root_dir the generation output directory
+        # @return [Array] the list of required common files
         def generate(root_dir)
           sdr = self.class.src_dir(root_dir)
           write_file(sdr, 'h')
           write_file(sdr, 'cpp') if File.exist?(template_path('cpp'))
+          using_common_files
         end
 
         # Gets default name of file which will be generated
@@ -56,6 +58,19 @@ module VersatileDiamond
         end
 
       private
+
+        # The list of common files which are used by current generating class
+        # @return [Array] empty by default
+        def using_common_files
+          []
+        end
+
+        # @param [String] file_name
+        # @param [String] ext
+        # @return [CommonFile]
+        def common_file(file_name, ext = 'h')
+          CommonFile.new("#{template_additional_path}/#{file_name}.#{ext}")
+        end
 
         # Collects pathes to files which will be included when generation do
         # @param [Array] others objects which full pathes will be normalized by current

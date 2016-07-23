@@ -8,14 +8,14 @@ module VersatileDiamond
       include LinksCleaner
       extend Forwardable
 
-      def_delegators :reaction, :changes, :swap_atom
+      def_delegators :reaction, :changes, :lateral?
 
       # Initializes dependent spec reation
       def initialize(*)
         super
 
         check_positions!
-        @_links, @_original_links, @_clean_links = nil
+        clear_caches!
       end
 
       # Gets the list of surface source specs
@@ -45,6 +45,19 @@ module VersatileDiamond
         @_clean_links ||= erase_excess_positions(reaction.links)
       end
 
+      # Clears caches and delegates call to super class
+      # @override
+      def swap_on(*)
+        clear_caches!
+        super
+      end
+
+      # Clears caches and delegates call to super class
+      def swap_atom(*args)
+        clear_caches!
+        reaction.swap_atom(*args)
+      end
+
       # Gets all using atoms of passed spec
       # @param [DependentWrappedSpec] spec the one of reactant
       # @return [Array] the array of using atoms
@@ -55,7 +68,7 @@ module VersatileDiamond
     private
 
       # Checks that positions between reactants is setted
-      # @raise [SystemError] if positions was not setted
+      # @raise [SystemError] if positions were not setted
       def check_positions!
         if surface_source.size > 1 && reaction.links.empty?
           raise %Q(No positions between atoms of reaction "#{name}")
@@ -82,6 +95,11 @@ module VersatileDiamond
       # @override
       def check_latticed_atom(first, second)
         super(first.last, second.last)
+      end
+
+      # Clears internal caches
+      def clear_caches!
+        @_links, @_original_links, @_clean_links = nil
       end
     end
 

@@ -28,7 +28,7 @@ module VersatileDiamond
         include Modules::SyntaxChecker
 
         # For RSpec
-        def reset
+        def reset!
           ALL_VARIABLES.each do |var|
             instance_variable_set("@#{var}".to_sym, nil)
           end

@@ -22,7 +22,7 @@ void BridgeWithDimerCBTiCBRsCDLi::find(BridgeWithDimerCDLi *parent)
 
     if (anchors[0]->is(5) && anchors[1]->is(0))
     {
-        if (!anchors[0]->hasRole(BRIDGE_WITH_DIMER_CBTi_CBRs_CDLi, 5) &&
+        if (!anchors[0]->hasRole(BRIDGE_WITH_DIMER_CBTi_CBRs_CDLi, 5) ||
                 !anchors[1]->hasRole(BRIDGE_WITH_DIMER_CBTi_CBRs_CDLi, 0))
         {
             create<BridgeWithDimerCBTiCBRsCDLi>(parent);

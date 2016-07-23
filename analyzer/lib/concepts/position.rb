@@ -31,13 +31,20 @@ module VersatileDiamond
         end
       end
 
+      # @return [Integer]
+      # @override
+      def arity
+        0
+      end
+
       # Approximate compares two instances. If their face and direction is
       # correspond then instances is the same.
       #
       # @param [Concepts::Bond] other an other comparing instances
       # @return [Boolean] same or not
       def same?(other)
-        exist? == other.exist? && face == other.face && dir == other.dir
+        other.is_a?(Bond) && exist? == other.exist? &&
+          face == other.face && dir == other.dir
       end
 
       # Checks that current position is not a bond

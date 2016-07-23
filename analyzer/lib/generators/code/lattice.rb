@@ -52,11 +52,14 @@ module VersatileDiamond
 
         # Also copies relations cpp template class which own for each lattice
         # @param [String] root_dir see at #super same argument
+        # @return [Array] no common files required for lattice class
+        # @override
         def generate(root_dir)
           super
           copy_file(root_dir, crystal_properties_file_name)
           copy_file(root_dir, relations_file_name)
           iterator.generate(root_dir)
+          []
         end
 
         # Get the cpp class name
@@ -106,6 +109,16 @@ module VersatileDiamond
           full_info[:lattice] = @lattice
           target = classifier.props.find { |prop| prop.correspond?(full_info) }
           target || raise('Used crystal atom was not found!')
+        end
+
+        # Gets the name of method which will build each atom under crystal creation
+        # @return [String] the builder method name
+        def builder_method_name
+          name = instance.major_crystal_atom[:atom_name]
+          valence = instance.major_crystal_atom[:valence]
+          concept = Concepts::Atom.new(name, valence)
+          code_class = Code::Atom.new(concept)
+          AtomBuilder.method_name(code_class, @lattice)
         end
 
         # Gets the list of objects which headers should be included in body file
