@@ -87,8 +87,6 @@ void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
     // TODO: Предоставить возможность сохранять концентрацию структур
     typename HB::SurfaceCrystal *surfaceCrystal = _init.initCrystal();
 
-    RandomGenerator::init(); // it must be called just one time at calculating begin (before init CommonMCData)
-
     CommonMCData mcData;
     HB::mc().initCounter(&mcData);
 
