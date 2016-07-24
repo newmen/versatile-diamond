@@ -302,7 +302,7 @@ HEADERS += \
     phases/behavior_tor.h \
     phases/crystal.h \
     phases/crystal_atoms_iterator.h \
-    phases/crystal_factory.h
+    phases/crystal_factory.h \
     phases/saving_amorph.h \
     phases/saving_crystal.h \
     phases/smart_atoms_vector3d.h \

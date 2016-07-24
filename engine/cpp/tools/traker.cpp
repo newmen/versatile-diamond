@@ -20,9 +20,9 @@ QueueItem *Traker::takeItem(QueueItem* soul) const
     return item;
 }
 
-void Traker::add(SaverCounter *svrBilder)
+void Traker::add(SaverCounter *counter)
 {
-    _savers.push_back(svrBilder);
+    _savers.push_back(counter);
 }
 
 void Traker::appendTime(double diffTime)

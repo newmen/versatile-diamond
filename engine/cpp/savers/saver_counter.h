@@ -3,7 +3,8 @@
 
 #include "queue/queue_item.h"
 
-namespace vd {
+namespace vd
+{
 
 class SaverCounter
 {
