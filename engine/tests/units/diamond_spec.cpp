@@ -6,7 +6,7 @@ using namespace vd;
 
 int main(int argc, char const *argv[])
 {
-    OpenDiamond *diamond = new OpenDiamond(2);
+    Crystal *diamond = new OpenDiamond(2);
     diamond->initialize();
     assert(diamond->countAtoms() == OpenDiamond::SIZES.x * OpenDiamond::SIZES.y * 2);
 
@@ -30,7 +30,7 @@ int main(int argc, char const *argv[])
     diamond->initialize();
     assert(diamond->countAtoms() == OpenDiamond::SIZES.x * OpenDiamond::SIZES.y * 3);
 
-    C *c = new C(3, 0, (Lattice *)nullptr);
+    C *c = new C(3, 0, (Lattice<Crystal> *)nullptr);
     diamond->insert(c, int3(3, 3, 3));
     assert(diamond->atom(int3(3, 3, 3)) == c);
     assert(c->lattice());

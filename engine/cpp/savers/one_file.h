@@ -4,9 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "../phases/saving_amorph.h"
-#include "../phases/saving_crystal.h"
-#include "detector.h"
+#include "../phases/saving_reactor.h"
 
 namespace vd
 {
@@ -19,49 +17,49 @@ class OneFile : public B
 public:
     ~OneFile() { delete _out; }
 
-    void save(double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector) override;
+    void save(const SavingReactor *reactor) override;
 
 protected:
     template <class... Args> OneFile(Args... args) : B(args...) {}
 
-    virtual const char *separator() const = 0;
     std::string filename() const override;
 
+    virtual void writeHeader(std::ostream &os, const SavingReactor *reactor) {}
+    virtual void writeBody(std::ostream &os, const SavingReactor *reactor) = 0;
+    virtual const char *separator() const;
+
 private:
-    std::ofstream &out();
+    std::ofstream &out() { return *_out; }
 };
 
-///////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
 
 template <class B>
-void OneFile<B>::save(double currentTime, const SavingAmorph *amorph, const SavingCrystal *crystal, const Detector *detector)
+void OneFile<B>::save(const SavingReactor *reactor)
 {
-    static uint counter = 0;
-    if (counter > 0)
+    static bool isFileOpen = false;
+    if (!isFileOpen)
     {
-        out() << separator();
+        _out = new std::ofstream(this->fullFilename());
+        writeHeader(out(), reactor);
+        isFileOpen = true;
     }
-    ++counter;
 
-    this->saveTo(out(), currentTime, amorph, crystal, detector);
+    this->writeBody(out(), reactor);
+    out() << separator();
 }
 
 template <class B>
 std::string OneFile<B>::filename() const
 {
-    std::stringstream ss;
-    ss << this->name() << this->ext();
-    return ss.str();
+    return this->config()->filename();
 }
 
 template <class B>
-std::ofstream &OneFile<B>::out()
+const char *OneFile<B>::separator() const
 {
-    if (_out == nullptr)
-    {
-        _out = new std::ofstream(filename());
-    }
-    return *_out;
+    static const char empty[1] = "";
+    return empty;
 }
 
 }

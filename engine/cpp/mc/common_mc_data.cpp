@@ -17,7 +17,7 @@ double CommonMCData::rand(double maxValue)
 
 void CommonMCData::makeCounter(uint reactionsNum)
 {
-    _counter = new Counter(reactionsNum);
+    _counter = new EventsCounter(reactionsNum);
 }
 
 }

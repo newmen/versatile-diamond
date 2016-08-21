@@ -65,7 +65,6 @@ SOURCES += \
     ../hand-generations/src/reactions/ubiquitous/local/methyl_on_dimer_deactivation.cpp \
     ../hand-generations/src/reactions/ubiquitous/surface_activation.cpp \
     ../hand-generations/src/reactions/ubiquitous/surface_deactivation.cpp \
-    ../hand-generations/src/run.cpp \
     ../hand-generations/src/species/base/bridge.cpp \
     ../hand-generations/src/species/base/bridge_cri.cpp \
     ../hand-generations/src/species/base/bridge_with_dimer.cpp \
@@ -109,8 +108,8 @@ SOURCES += \
     atoms/saving_atom.cpp \
     mc/base_events_container.cpp \
     mc/common_mc_data.cpp \
-    mc/counter.cpp \
     mc/events_container.cpp \
+    mc/events_counter.cpp \
     mc/multi_events_container.cpp \
     mc/random_generator.cpp \
     phases/amorph.cpp \
@@ -119,6 +118,7 @@ SOURCES += \
     phases/behavior_tor.cpp \
     phases/crystal.cpp \
     phases/saving_crystal.cpp \
+    phases/saving_reactor.cpp \
     reactions/central_reaction.cpp \
     reactions/lateral_reaction.cpp \
     reactions/typical_reaction.cpp \
@@ -126,35 +126,26 @@ SOURCES += \
     savers/accumulator.cpp \
     savers/all_atoms_detector.cpp \
     savers/bond_info.cpp \
-    savers/crystal_slice_saver.cpp \
-    savers/dump/dump_format.cpp \
-    savers/dump/dump_reader.cpp \
-    savers/dump/dump_saver.cpp \
-    savers/integral_saver_counter.cpp \
+    savers/file_saver.cpp \
     savers/mol_accumulator.cpp \
-    savers/mol_format.cpp \
     savers/mol_saver.cpp \
-    savers/queue/item_wrapper.cpp \
-    savers/queue/out_thread.cpp \
-    savers/queue/soul.cpp \
-    savers/saver_counter.cpp \
     savers/sdf_saver.cpp \
-    savers/volume_saver_counter.cpp \
-    savers/volume_saver_factory.cpp \
+    savers/slices_saver.cpp \
     savers/xyz_accumulator.cpp \
-    savers/xyz_format.cpp \
     savers/xyz_saver.cpp \
     species/base_spec.cpp \
     species/lateral_spec.cpp \
     species/parent_spec.cpp \
     species/specific_spec.cpp \
+    tools/config.cpp \
+    tools/counters/time_counter.cpp \
     tools/debug_print.cpp \
     tools/indent_stream.cpp \
     tools/process_mem_usage.cpp \
-    tools/saving_queue.cpp \
     tools/scavenger.cpp \
-    tools/traker.cpp \
-    tools/yaml_config_reader.cpp \
+    tools/worker/frame.cpp \
+    tools/worker/parallel_worker.cpp \
+    tools/worker/worker_queue.cpp \
 #    ../tests/units/c_spec.cpp \
 #    ../tests/units/diamond_relations_spec.cpp \
 #    ../tests/units/diamond_spec.cpp \
@@ -235,7 +226,6 @@ HEADERS += \
     ../hand-generations/src/reactions/ubiquitous/local/methyl_on_dimer_deactivation.h \
     ../hand-generations/src/reactions/ubiquitous/surface_activation.h \
     ../hand-generations/src/reactions/ubiquitous/surface_deactivation.h \
-    ../hand-generations/src/run.h \
     ../hand-generations/src/species/base.h \
     ../hand-generations/src/species/base/bridge.h \
     ../hand-generations/src/species/base/bridge_cri.h \
@@ -289,8 +279,8 @@ HEADERS += \
     atoms/saving_atom.h \
     mc/base_events_container.h \
     mc/common_mc_data.h \
-    mc/counter.h \
     mc/events_container.h \
+    mc/events_counter.h \
     mc/mc.h \
     mc/multi_events_container.h \
     mc/random_generator.h \
@@ -302,12 +292,14 @@ HEADERS += \
     phases/behavior_tor.h \
     phases/crystal.h \
     phases/crystal_atoms_iterator.h \
-    phases/crystal_factory.h \
+    phases/reactor.h \
     phases/saving_amorph.h \
     phases/saving_crystal.h \
+    phases/saving_reactor.h \
     phases/smart_atoms_vector3d.h \
     phases/templated_amorph.h \
     phases/templated_crystal.h \
+    phases/templated_reactor.h \
     reactions/central_reaction.h \
     reactions/concrete_lateral_reaction.h \
     reactions/concrete_typical_reaction.h \
@@ -328,36 +320,23 @@ HEADERS += \
     savers/actives_portion_counter.h \
     savers/all_atoms_detector.h \
     savers/atom_info.h \
+    savers/base_saver.h \
     savers/bond_info.h \
-    savers/bundle_saver.h \
-    savers/counter_whith_saver.h \
-    savers/crystal_slice_saver.h \
     savers/detector.h \
     savers/detector_factory.h \
-    savers/dump/dump_format.h \
-    savers/dump/dump_reader.h \
-    savers/dump/dump_saver.h \
-    savers/dump_saver_counter.h \
+    savers/file_saver.h \
     savers/format.h \
-    savers/integral_saver_counter.h \
     savers/many_files.h \
     savers/mol_accumulator.h \
     savers/mol_format.h \
     savers/mol_saver.h \
     savers/one_file.h \
     savers/progress_saver.h \
-    savers/progress_saver_counter.h \
-    savers/queue/item_wrapper.h \
-    savers/queue/out_thread.h \
-    savers/queue/queue_item.h \
-    savers/queue/saving_data.h \
-    savers/queue/soul.h \
-    savers/saver_counter.h \
     savers/sdf_saver.h \
+    savers/slices_saver.h \
     savers/surface_detector.h \
     savers/volume_saver.h \
-    savers/volume_saver_counter.h \
-    savers/volume_saver_factory.h \
+    savers/wrapped_saver.h \
     savers/xyz_accumulator.h \
     savers/xyz_format.h \
     savers/xyz_saver.h \
@@ -379,23 +358,29 @@ HEADERS += \
     species/symmetric.h \
     tools/collector.h \
     tools/common.h \
+    tools/config.h \
+    tools/counters/custom_counter.h \
+    tools/counters/time_counter.h \
     tools/creator.h \
     tools/debug_print.h \
     tools/error.h \
     tools/factory.h \
     tools/indent_facet.h \
     tools/indent_stream.h \
-    tools/init_config.h \
     tools/many_items_result.h \
+    tools/preparator.h \
     tools/process_mem_usage.h \
     tools/runner.h \
-    tools/saving_queue.h \
     tools/scavenger.h \
     tools/short_types.h \
-    tools/traker.h \
+    tools/tracker.h \
     tools/typed.h \
     tools/vector3d.h \
-    tools/yaml_config_reader.h \
+    tools/worker/frame.h \
+    tools/worker/job.h \
+    tools/worker/parallel_worker.h \
+    tools/worker/soul.h \
+    tools/worker/worker_queue.h \
 #    ../tests/support/open_diamond.h \
     tools/yaml_config_reader.h
 

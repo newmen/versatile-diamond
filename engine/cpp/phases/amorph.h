@@ -14,12 +14,6 @@ public:
 
 protected:
     Amorph() = default;
-
-private:
-    Amorph(const Amorph &) = delete;
-    Amorph(Amorph &&) = delete;
-    Amorph &operator = (const Amorph &) = delete;
-    Amorph &operator = (Amorph &&) = delete;
 };
 
 }

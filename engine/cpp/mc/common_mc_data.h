@@ -3,7 +3,7 @@
 
 #include "../atoms/atom.h"
 #include "../reactions/reaction.h"
-#include "counter.h"
+#include "events_counter.h"
 #include "random_generator.h"
 
 namespace vd
@@ -12,7 +12,7 @@ namespace vd
 class CommonMCData
 {
     RandomGenerator _generator;
-    Counter *_counter = nullptr;
+    EventsCounter *_counter = nullptr;
 
 public:
     CommonMCData() = default;
@@ -21,7 +21,7 @@ public:
     double rand(double maxValue);
 
     void makeCounter(uint reactionsNum);
-    Counter *counter() { return _counter; }
+    EventsCounter *counter() const { return _counter; }
 
 private:
     CommonMCData(const CommonMCData &) = delete;

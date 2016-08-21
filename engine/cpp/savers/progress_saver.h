@@ -1,56 +1,54 @@
 #ifndef PROGRESS_SAVER_H
 #define PROGRESS_SAVER_H
 
-#include "../phases/saving_amorph.h"
-#include "../phases/saving_crystal.h"
 #include <iostream>
+#include "base_saver.h"
 
 namespace vd
 {
 
 template <class HB>
-class ProgressSaver
+class ProgressSaver : public BaseSaver
 {
 public:
-    ProgressSaver() = default;
+    template <class... Args> ProgressSaver(Args... args) : BaseSaver(args...) {}
 
-    void printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph, double allTime, double currentTime) const;
+    void save(const SavingReactor *reactor) override;
+    bool needToInit() const override { return true; }
 
 private:
-    double activesRatio(const SavingCrystal *crystal, const SavingAmorph *amorph) const;
+    double activesRatio(const SavingReactor *reactor) const;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
 
 template <class HB>
-void ProgressSaver<HB>::printShortState(const SavingCrystal *crystal, const SavingAmorph *amorph, double allTime, double currentTime) const
+void ProgressSaver<HB>::save(const SavingReactor *reactor)
 {
     std::cout.width(10);
-    std::cout << 100 * currentTime / allTime << " %";
+    std::cout << 100 * reactor->currentTime() / config()->totalTime() << " %";
     std::cout.width(10);
-    std::cout << crystal->countAtoms();
+    std::cout << reactor->crystal()->countAtoms();
     std::cout.width(10);
-    std::cout << amorph->countAtoms();
+    std::cout << reactor->amorph()->countAtoms();
     std::cout.width(10);
-    std::cout << 100 * activesRatio(crystal, amorph) << " %";
+    std::cout << 100 * activesRatio(reactor) << " %";
     std::cout.width(20);
-    std::cout << HB::mc().totalTime() << " (s)";
+    std::cout << reactor->currentTime() << " (s)";
     std::cout.width(20);
-    std::cout << HB::mc().totalRate() << " (1/s)" << std::endl;
+    std::cout << reactor->totalRate() << " (1/s)" << std::endl;
 }
 
 template <class HB>
-double ProgressSaver<HB>::activesRatio(const SavingCrystal *crystal, const SavingAmorph *amorph) const
+double ProgressSaver<HB>::activesRatio(const SavingReactor *reactor) const
 {
     uint actives = 0;
     uint hydrogens = 0;
-    auto lambda = [&actives, &hydrogens](const SavingAtom *atom) {
+    reactor->eachAtom([&actives, &hydrogens](const SavingAtom *atom) {
         actives += HB::activesFor(atom->type());
         hydrogens += HB::hydrogensFor(atom->type());
-    };
+    });
 
-    amorph->eachAtom(lambda);
-    crystal->eachAtom(lambda);
     return (double)actives / (actives + hydrogens);
 }
 

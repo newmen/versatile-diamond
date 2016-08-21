@@ -93,33 +93,30 @@ const ushort Handbook::__activesOnAtoms[Handbook::__atomsNum] =
 };
 
 Handbook::DMC Handbook::__mc;
-
-PhaseBoundary Handbook::__amorph;
-
-Handbook::SKeeper Handbook::__specificKeeper;
-Handbook::LKeeper Handbook::__lateralKeeper;
-Scavenger Handbook::__scavenger;
-
 Handbook::DMC &Handbook::mc()
 {
     return __mc;
 }
 
-PhaseBoundary &Handbook::amorph()
+Handbook::SurfaceAmorph Handbook::__amorph;
+Handbook::SurfaceAmorph &Handbook::amorph()
 {
     return __amorph;
 }
 
+Handbook::SKeeper Handbook::__specificKeeper;
 Handbook::SKeeper &Handbook::specificKeeper()
 {
     return __specificKeeper;
 }
 
+Handbook::LKeeper Handbook::__lateralKeeper;
 Handbook::LKeeper &Handbook::lateralKeeper()
 {
     return __lateralKeeper;
 }
 
+Scavenger Handbook::__scavenger;
 Scavenger &Handbook::scavenger()
 {
     return __scavenger;

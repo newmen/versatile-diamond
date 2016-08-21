@@ -14,12 +14,6 @@ class DetectorFactory : public Factory<Detector, std::string>
 {
 public:
     DetectorFactory();
-
-private:
-    DetectorFactory(const DetectorFactory &) = delete;
-    DetectorFactory(DetectorFactory &&) = delete;
-    DetectorFactory &operator = (const DetectorFactory &) = delete;
-    DetectorFactory &operator = (DetectorFactory &&) = delete;
 };
 
 //////////////////////////////////////////////////////////////////////

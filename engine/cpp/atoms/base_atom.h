@@ -128,7 +128,7 @@ void BaseAtom<D, C>::eachNeighbourBy(const L &lambda, const P &predicate)
 {
     BaseAtom **visited = new BaseAtom *[_relatives.size()];
     ushort n = 0;
-    for (BaseAtom *neighbour : _relatives)
+    for (D *neighbour : _relatives)
     {
         if (predicate(neighbour))
         {

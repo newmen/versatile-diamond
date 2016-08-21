@@ -2,6 +2,7 @@
 #define YAML_CONFIG_READER_H
 
 #include <yaml-cpp/yaml.h>
+#include <vector>
 
 namespace vd
 {

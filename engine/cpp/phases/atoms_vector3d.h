@@ -6,18 +6,12 @@
 namespace vd
 {
 
-template <class A>
-class AtomsVector3d : public vector3d<A *>
+template <class AtomType>
+class AtomsVector3d : public vector3d<AtomType *>
 {
 public:
     AtomsVector3d(const dim3 &sizes) :
-        vector3d<A *>(sizes, (A *)nullptr) {}
-
-private:
-    AtomsVector3d(const AtomsVector3d &) = delete;
-    AtomsVector3d(AtomsVector3d &&) = delete;
-    AtomsVector3d &operator = (const AtomsVector3d &) = delete;
-    AtomsVector3d &operator = (AtomsVector3d &&) = delete;
+        vector3d<AtomType *>(sizes, (AtomType *)nullptr) {}
 };
 
 }

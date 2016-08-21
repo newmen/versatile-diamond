@@ -1,0 +1,1 @@
+../../../analyzer/lib/generators/code/common_files/main.cpp

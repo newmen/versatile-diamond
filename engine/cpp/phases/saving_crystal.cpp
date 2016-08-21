@@ -18,15 +18,6 @@ void SavingCrystal::insert(SavingAtom *atom, const int3 &coords)
     atoms()[coords] = atom;
 }
 
-uint SavingCrystal::countAtoms() const
-{
-    int result = 0;
-    eachAtom([&result](const SavingAtom *) {
-        ++result;
-    });
-    return result;
-}
-
 float3 SavingCrystal::translate(const int3 &coords) const
 {
     float3 realCoords = coords * periods();

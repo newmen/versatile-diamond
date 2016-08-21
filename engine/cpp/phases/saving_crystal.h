@@ -20,20 +20,12 @@ public:
 
     void insert(SavingAtom *atom, const int3 &coords);
 
-    uint countAtoms() const;
-
     template <class L> void eachSlice(const L &lambda) const;
     float3 translate(const int3 &coords) const;
 
     float3 correct(const SavingAtom *atom) const final;
     float3 seeks(const int3 &coords) const final;
     const float3 &periods() const final;
-
-private:
-    SavingCrystal(const SavingCrystal &) = delete;
-    SavingCrystal(SavingCrystal &&) = delete;
-    SavingCrystal &operator = (const SavingCrystal &) = delete;
-    SavingCrystal &operator = (SavingCrystal &&) = delete;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////

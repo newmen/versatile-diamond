@@ -1,7 +1,8 @@
 #include <signal.h>
-#include <omp.h>
-#include <tools/init_config.h>
-#include "run.h"
+#include <tools/preparator.h>
+#include "handbook.h"
+
+using namespace vd;
 
 void stopSignalHandler(int)
 {
@@ -15,10 +16,7 @@ int main(int argc, char *argv[])
     if (argc > 3)
     {
         std::cerr << "Wrong number of run arguments!" << std::endl;
-        std::cout << "Try: "
-                  << argv[0]
-                  << " run_name [--dump path_to_dump_file]"
-                  << std::endl;
+        std::cout << "Try: " << argv[0] << " run_name" << std::endl;
         return 1;
     }
 
@@ -27,9 +25,8 @@ int main(int argc, char *argv[])
 
     try
     {
-        const InitConfig init(argc, argv);
-        Runner<Handbook> runner(init);
-        run(runner);
+        Preparator<Handbook> preparator(argc, argv);
+        preparator.runner()->calculate();
     }
     catch (Error error)
     {

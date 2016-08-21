@@ -18,13 +18,18 @@ using namespace vd;
 
 class Handbook
 {
+public:
+    typedef PhaseBoundary SurfaceAmorph;
+    typedef Diamond SurfaceCrystal;
+
+private:
     typedef MC<ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> DMC;
 
     typedef Keeper<LateralSpec, &LateralSpec::findLateralReactions> LKeeper;
     typedef Keeper<SpecificSpec, &SpecificSpec::findTypicalReactions> SKeeper;
 
     static DMC __mc;
-    static PhaseBoundary __amorph;
+    static SurfaceAmorph __amorph;
 
     static LKeeper __lateralKeeper;
     static SKeeper __specificKeeper;
@@ -35,7 +40,7 @@ public:
 
     static DMC &mc();
 
-    static PhaseBoundary &amorph();
+    static SurfaceAmorph &amorph();
 
     static SKeeper &specificKeeper();
     static LKeeper &lateralKeeper();
@@ -67,8 +72,6 @@ public:
 
     static bool atomIs(ushort complexType, ushort typeOf);
     static ushort specificate(ushort type);
-
-    typedef Diamond SurfaceCrystal;
 };
 
 #endif // HANDBOOK_H

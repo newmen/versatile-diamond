@@ -3,15 +3,20 @@
 
 #include "../atoms/saving_atom.h"
 #include "../tools/common.h"
-#include "atoms_vector3d.h"
 
 namespace vd
 {
 
-template <template <class A> class V, class A>
+template
+<
+        template <class AtomType> class ContainerType,
+        class AtomType
+>
 class TemplatedCrystal
 {
-    V<A> _atoms;
+    typedef ContainerType<AtomType> Atoms;
+
+    Atoms _atoms;
 
 public:
     virtual ~TemplatedCrystal();
@@ -25,12 +30,13 @@ public:
     virtual const float3 &periods() const = 0;
 
     uint maxAtoms() const;
+    uint countAtoms() const;
 
 protected:
     template <class... Args> TemplatedCrystal(Args... args);
 
-    const V<A> &atoms() const { return _atoms; }
-    V<A> &atoms() { return _atoms; }
+    const Atoms &atoms() const { return _atoms; }
+    Atoms &atoms() { return _atoms; }
 
 private:
     TemplatedCrystal(const TemplatedCrystal &) = delete;
@@ -56,18 +62,31 @@ TemplatedCrystal<V, A>::~TemplatedCrystal()
 }
 
 template <template <class A> class V, class A>
+template <class L>
+void TemplatedCrystal<V, A>::eachAtom(const L &lambda) const
+{
+    _atoms.each([&lambda](A *atom) {
+        if (atom)
+        {
+            lambda(atom);
+        }
+    });
+}
+
+template <template <class A> class V, class A>
 uint TemplatedCrystal<V, A>::maxAtoms() const
 {
     return _atoms.size();
 }
 
 template <template <class A> class V, class A>
-template <class L>
-void TemplatedCrystal<V, A>::eachAtom(const L &lambda) const
+uint TemplatedCrystal<V, A>::countAtoms() const
 {
-    _atoms.each([&lambda](A *atom) {
-        if (atom) lambda(atom);
+    int result = 0;
+    eachAtom([&result](const A *) {
+        ++result;
     });
+    return result;
 }
 
 }

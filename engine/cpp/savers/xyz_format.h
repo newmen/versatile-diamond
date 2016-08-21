@@ -1,29 +1,51 @@
 #ifndef XYZ_FORMAT_H
 #define XYZ_FORMAT_H
 
-#include <ostream>
+#include "../phases/saving_reactor.h"
 #include "format.h"
 #include "xyz_accumulator.h"
 
 namespace vd
 {
 
-class XYZFormat : public Format<XYZAccumulator>
+template <class B>
+class XYZFormat : public Format<B, XYZAccumulator>
 {
+    typedef Format<B, XYZAccumulator> ParentType;
+
 public:
-    XYZFormat(const VolumeSaver &saver, const XYZAccumulator &acc) : Format(saver, acc) {}
+    template <class... Args> XYZFormat(Args... args) : ParentType(args...) {}
 
-    void render(std::ostream &os, double currentTime) const;
-
-private:
-    XYZFormat(const XYZFormat &) = delete;
-    XYZFormat(XYZFormat &&) = delete;
-    XYZFormat &operator = (const XYZFormat &) = delete;
-    XYZFormat &operator = (XYZFormat &&) = delete;
-
-    void writeHead(std::ostream &os, double currentTime) const;
-    void writeAtoms(std::ostream &os) const;
+protected:
+    void writeHeader(std::ostream &os, const SavingReactor *reactor) override;
+    void writeBody(std::ostream &os, const SavingReactor *reactor) override;
 };
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+template <class B>
+void XYZFormat<B>::writeHeader(std::ostream &os, const SavingReactor *reactor)
+{
+    os << this->accumulator()->atoms().size() << "\n"
+         << "Name: "
+         << this->config()->name()
+         << " Current time: "
+         << reactor->currentTime() << "s" << "\n";
+}
+
+template <class B>
+void XYZFormat<B>::writeBody(std::ostream &os, const SavingReactor *)
+{
+    for (const SavingAtom *atom : this->accumulator()->atoms())
+    {
+        const float3 &crd = atom->realPosition();
+        os << atom->name() << " "
+           << crd.x << " "
+           << crd.y << " "
+           << crd.z << "\n";
+    }
+}
+
 
 }
 

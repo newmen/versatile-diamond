@@ -3,16 +3,11 @@
 
 #include <iostream>
 #include <sys/time.h>
-#include "../mc/common_mc_data.h"
-#include "../hand-generations/src/handbook.h"
-#include "../phases/behavior_factory.h"
-#include "../phases/saving_amorph.h"
-#include "../phases/saving_crystal.h"
-#include "../savers/progress_saver_counter.h"
-#include "../savers/queue/out_thread.h"
+#include "../phases/reactor.h"
+#include "worker/parallel_worker.h"
+#include "config.h"
+#include "tracker.h"
 #include "process_mem_usage.h"
-#include "init_config.h"
-#include "common.h"
 
 namespace vd
 {
@@ -20,18 +15,24 @@ namespace vd
 template <class HB>
 class Runner
 {
+    enum : ushort { TRACK_EACH_STEP = 100 };
+
     static volatile bool __stopCalculating;
 
-    InitConfig<Handbook> _init;
-    OutThread _savingQueue;
+    const Config *_config;
+    Reactor<HB> *_reactor;
+    Tracker<HB> *_tracker;
+
+    ParallelWorker _parallelWorker;
 
 public:
     static void stop();
 
-    Runner(const InitConfig<Handbook> &init) : _init(init) {}
+    Runner(const Config *config, Reactor<HB> *reactor, Tracker<HB> *tracker) :
+        _config(config), _reactor(reactor), _tracker(tracker) {}
     ~Runner() {}
 
-    void calculate(const std::initializer_list<ushort> &types);
+    void calculate();
 
 private:
     Runner(const Runner &) = delete;
@@ -39,17 +40,14 @@ private:
     Runner &operator = (const Runner &) = delete;
     Runner &operator = (Runner &&) = delete;
 
-    void storeIfNeed(const Crystal *crystal,
-                     const Amorph *amorph,
-                     double dt,
-                     bool forseSave);
+    void firstSave();
+    void storeIfNeed(double timeDelta, bool forseSave);
+    void processJob(Job *job);
 
     double timestamp() const;
 
-    void firstSave(const Amorph *amorph, const Crystal *crystal, const char *name);
-
     void outputMemoryUsage(std::ostream &os) const;
-    void printStat(double startTime, double stopTime, CommonMCData &mcData, ullong steps) const;
+    void printStat(double startTime, double stopTime, ullong steps) const;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -61,6 +59,91 @@ template <class HB>
 void Runner<HB>::stop()
 {
     __stopCalculating = true;
+}
+
+template <class HB>
+void Runner<HB>::calculate()
+{
+#ifndef NOUT
+    firstSave();
+#endif // NOUT
+
+    ullong totalSteps = 0;
+    double timeDelta = 0;
+    double startTime = timestamp();
+
+    while (!__stopCalculating && _reactor->currentTime() <= _config->totalTime())
+    {
+        timeDelta = _reactor->doEvent();
+
+#ifdef PRINT
+        debugPrint([this, steps](IndentStream &os) {
+            os << "-----------------------------------------------\n"
+               << steps << ". " << _reactor->totalRate() << "\n";
+        });
+#endif // PRINT
+
+        ++totalSteps;
+
+#ifndef NOUT
+        if (timeDelta < 0)
+        {
+            std::cout << "No more events" << std::endl;
+            break;
+        }
+        else
+        {
+            storeIfNeed(timeDelta, false);
+        }
+#endif // NOUT
+    }
+
+    double stopTime = timestamp();
+
+#ifndef NOUT
+    storeIfNeed(timeDelta, true);
+#endif // NOUT
+
+    _parallelWorker.stop();
+    printStat(startTime, stopTime, totalSteps);
+}
+
+template <class HB>
+void Runner<HB>::firstSave()
+{
+    processJob(_tracker->firstFrame(_reactor));
+}
+
+template <class HB>
+void Runner<HB>::storeIfNeed(double timeDelta, bool forseSave)
+{
+    static uint stepsCounter = 0;
+
+    _tracker->appendTime(timeDelta);
+
+    if (stepsCounter == 0 || forseSave)
+    {
+        processJob(_tracker->nextFrame(_reactor));
+    }
+
+    if (++stepsCounter == TRACK_EACH_STEP)
+    {
+        stepsCounter = 0;
+    }
+}
+
+template <class HB>
+void Runner<HB>::processJob(Job *job)
+{
+    if (job->isEmpty())
+    {
+        delete job;
+    }
+    else
+    {
+        job->copyState();
+        _parallelWorker.push(job);
+    }
 }
 
 template <class HB>
@@ -82,115 +165,23 @@ void Runner<HB>::outputMemoryUsage(std::ostream &os) const
 }
 
 template <class HB>
-void Runner<HB>::calculate(const std::initializer_list<ushort> &types)
-{
-    // TODO: Предоставить возможность сохранять концентрацию структур
-    typename HB::SurfaceCrystal *surfaceCrystal = _init.initCrystal();
-
-    CommonMCData mcData;
-    HB::mc().initCounter(&mcData);
-
-    _init.initTraker(types);
-
-#ifndef NOUT
-    firstSave(&HB::amorph(), surfaceCrystal, _init.name());
-#endif // NOUT
-
-    ullong steps = 0;
-    double dt = 0;
-    double startTime = timestamp();
-
-    while (!__stopCalculating && HB::mc().totalTime() <= _init.totalTime())
-    {
-        dt = HB::mc().doRandom(&mcData);
-
-#ifdef PRINT
-        debugPrint([&](IndentStream &os) {
-            os << "-----------------------------------------------\n"
-               << steps << ". " << HB::mc().totalRate() << "\n";
-        });
-#endif // PRINT
-
-        ++steps;
-
-#ifndef NOUT
-        if (dt < 0)
-        {
-            std::cout << "No more events" << std::endl;
-            break;
-        }
-        else
-        {
-            storeIfNeed(surfaceCrystal, &HB::amorph(), dt, false);
-        }
-#endif // NOUT
-    }
-
-    double stopTime = timestamp();
-
-#ifndef NOUT
-    storeIfNeed(surfaceCrystal, &HB::amorph(), dt, true);
-#endif // NOUT
-
-    _savingQueue.stop();
-    printStat(startTime, stopTime, mcData, steps);
-    HB::amorph().clear(); // TODO: should not be explicitly!
-    delete surfaceCrystal;
-}
-
-template <class HB>
-void Runner<HB>::printStat(double startTime, double stopTime, CommonMCData &mcData, ullong steps) const
+void Runner<HB>::printStat(double startTime, double stopTime, ullong steps) const
 {
     std::cout << std::endl;
     std::cout.precision(8);
-    std::cout << "Elapsed time of process: " << HB::mc().totalTime() << " s" << std::endl;
+    std::cout << "Elapsed time of process: " << _reactor->currentTime() << " s" << std::endl;
     std::cout << "Calculation time: " << (stopTime - startTime) << " s" << std::endl;
 
     std::cout << std::endl;
     outputMemoryUsage(std::cout);
     std::cout << std::endl;
 
+    double percentOfRejection = 100 * (1 - (double)_reactor->evensCounter()->total() / steps);
     std::cout.precision(3);
-    std::cout << "Rejected events rate: " << 100 * (1 - (double)mcData.counter()->total() / steps) << " %" << std::endl;
-    mcData.counter()->printStats(std::cout);
-}
+    std::cout << "Rejected events rate: "
+              << percentOfRejection << " %" << std::endl;
 
-template <class HB>
-void Runner<HB>::firstSave(const Amorph *amorph, const Crystal *crystal, const char *name)
-{
-    QueueItem *item = new Soul(amorph, crystal);
-    ProgressSaver<HB> *saver = new ProgressSaver<HB>();
-    static ProgressSaverCounter<HB> progress(0, saver);
-    item = progress.wrapItem(item);
-    _savingQueue.push(item, _init.totalTime(), 0, name);
-}
-
-template <class HB>
-void Runner<HB>::storeIfNeed(const Crystal *crystal, const Amorph *amorph, double dt, bool forseSave)
-{
-    static uint takeCounter = 0;
-    static double currentTime = 0;
-
-    currentTime += dt;
-    _init.appendTime(dt);
-
-    if (takeCounter == 0 || forseSave)
-    {
-        QueueItem *item = _init.takeItem(amorph, crystal);
-
-        if (!item->isEmpty())
-        {
-            _savingQueue.push(item, _init.totalTime(), currentTime, _init.name());
-        }
-        else
-        {
-            delete item;
-        }
-    }
-    if (++takeCounter == 10)
-    {
-        takeCounter = 0;
-    }
+    _reactor->evensCounter()->printStats(std::cout);
 }
 
 }

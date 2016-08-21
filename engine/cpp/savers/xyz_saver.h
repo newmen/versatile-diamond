@@ -1,27 +1,22 @@
 #ifndef XYZ_SAVER_H
 #define XYZ_SAVER_H
 
+#include "wrapped_saver.h"
 #include "many_files.h"
-#include "xyz_accumulator.h"
-#include "bundle_saver.h"
 #include "xyz_format.h"
 
 namespace vd
 {
 
-class XYZSaver : public ManyFiles<BundleSaver<XYZAccumulator, XYZFormat>>
+class XYZSaver : public WrappedSaver<ManyFiles, XYZFormat>
 {
+    typedef WrappedSaver<ManyFiles, XYZFormat> ParentType;
+
 public:
-    explicit XYZSaver(const char *name): ManyFiles(name) {}
+    template <class... Args> XYZSaver(Args... args) : ParentType(args...) {}
 
 protected:
     const char *ext() const override;
-
-private:
-    XYZSaver(const XYZSaver &) = delete;
-    XYZSaver(XYZSaver &&) = delete;
-    XYZSaver &operator = (const XYZSaver &) = delete;
-    XYZSaver &operator = (XYZSaver &&) = delete;
 };
 
 }

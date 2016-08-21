@@ -1,5 +1,0 @@
-#ifndef CRYSTAL_FACTORY
-#define CRYSTAL_FACTORY
-
-#endif // CRYSTAL_FACTORY
-

@@ -1,6 +1,4 @@
 #include "xyz_saver.h"
-#include "xyz_accumulator.h"
-#include "xyz_format.h"
 
 namespace vd
 {

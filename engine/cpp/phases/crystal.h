@@ -32,12 +32,6 @@ protected:
     virtual Atom *makeAtom(ushort type, ushort actives, const int3 &coords) = 0;
 
     void makeLayer(uint z, ushort type, ushort actives);
-
-private:
-    Crystal(const Crystal &) = delete;
-    Crystal(Crystal &&) = delete;
-    Crystal &operator = (const Crystal &) = delete;
-    Crystal &operator = (Crystal &&) = delete;
 };
 
 }

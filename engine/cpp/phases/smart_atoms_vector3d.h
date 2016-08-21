@@ -7,16 +7,16 @@
 namespace vd
 {
 
-template <class A>
-class SmartAtomsVector3d : public AtomsVector3d<A>
+template <class AtomType>
+class SmartAtomsVector3d : public AtomsVector3d<AtomType>
 {
     const Behavior *_behavior = nullptr;
 
 public:
-    typedef vector3d<A *> BaseVector;
+    typedef vector3d<AtomType *> BaseVector;
 
     SmartAtomsVector3d(const dim3 &sizes, const Behavior *bhvr) :
-        AtomsVector3d<A>(sizes), _behavior(bhvr) {}
+        AtomsVector3d<AtomType>(sizes), _behavior(bhvr) {}
 
     ~SmartAtomsVector3d()
     {
@@ -29,16 +29,10 @@ public:
         _behavior = behavior;
     }
 
-    A *&operator [] (const int3 &coords)
+    AtomType *&operator [] (const int3 &coords)
     {
         return _behavior->getData(this, coords);
     }
-
-private:
-    SmartAtomsVector3d(const SmartAtomsVector3d &) = delete;
-    SmartAtomsVector3d(SmartAtomsVector3d &&) = delete;
-    SmartAtomsVector3d &operator = (const SmartAtomsVector3d &) = delete;
-    SmartAtomsVector3d &operator = (SmartAtomsVector3d &&) = delete;
 };
 
 }

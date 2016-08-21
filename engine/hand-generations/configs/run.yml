@@ -1,27 +1,21 @@
 ---
 system:
-  time: 0.2
+  size_x: 15
+  size_y: 15
   behavior: tor
-  size_x: 5
-  size_y: 5
+  time: 0.003
+
+progress:
+  step: 0.0001
 
 integral:
-  step: 0.1
-
-dump:
-  step: 0.02
+  step: 0.0005
+  atom_types: [0, 2, 4, 5, 20, 21, 24, 28, 32]
 
 mol:
-  step: 0.05
-  detector: surf
-
-sdf:
-  step: 0.05
+  step: 0.001
   detector: all
 
 xyz:
-  step: 0.01
+  step: 0.0007
   detector: surf
-
-progress:
-  step: 0.001
