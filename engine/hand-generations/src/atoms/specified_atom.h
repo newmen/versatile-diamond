@@ -1,1 +1,1 @@
-/Users/newmen/vd/analyzer/lib/generators/code/common_files/atoms/specified_atom.h
+../../../../analyzer/lib/generators/code/common_files/atoms/specified_atom.h
