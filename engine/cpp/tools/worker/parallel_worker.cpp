@@ -23,6 +23,14 @@ void ParallelWorker::push(Job *job)
 void ParallelWorker::stop()
 {
     _stop = true;
+    if (pthread_mutex_trylock(&_mutex) == 0)
+    {
+        pthread_mutex_unlock(&_mutex);
+    }
+    else
+    {
+        pthread_cond_signal(&_cond);
+    }
     pthread_join(_thread, nullptr);
 }
 
