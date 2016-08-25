@@ -2,7 +2,7 @@
 #define FORMAT_H
 
 #include <string>
-#include <ctime>
+#include <chrono>
 #include "../phases/saving_reactor.h"
 
 namespace vd
@@ -27,15 +27,9 @@ protected:
 template <class B, class A>
 std::string Format<B, A>::timestamp()
 {
-    time_t rawtime;
-    struct tm *timeinfo = nullptr;
-    char buffer[80];
-
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-
-    strftime(buffer, 80, "%d-%m-%Y %H:%M:%S", timeinfo);
-    return buffer;
+    std::chrono::time_point<std::chrono::system_clock> timePoint = std::chrono::system_clock::now();
+    std::time_t convertedTime = std::chrono::system_clock::to_time_t(timePoint);
+    return std::ctime(&convertedTime);
 }
 
 template <class B, class A>
