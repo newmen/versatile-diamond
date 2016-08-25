@@ -3,6 +3,9 @@
 
 #include "common.h"
 
+namespace vd
+{
+
 // Almost the same as std::array
 template <class T, ushort NUM>
 class ManyItemsResult
@@ -53,5 +56,7 @@ private:
     ManyItemsResult(const ManyItemsResult<T, NUM> &) = delete;
     ManyItemsResult<T, NUM> &operator = (const ManyItemsResult<T, NUM> &) = delete;
 };
+
+}
 
 #endif // MANY_ITEMS_RESULT_H
