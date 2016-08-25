@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include "../phases/behavior.h"
-#include "../phases/behavior_factory.h"
+#include "../phases/behavior_tor.h"
 #include "common.h"
 
 namespace vd
@@ -55,10 +55,10 @@ public:
 template <class SurfaceCrystal>
 SurfaceCrystal *Config::getCrystal() const
 {
-    const Behavior *initialBehavior = BehaviorFactory().create("tor");
+    const BehaviorTor *initialBehavior = new BehaviorTor();
     SurfaceCrystal *crystal = new SurfaceCrystal(sizes(), initialBehavior);
     crystal->initialize();
-    crystal->changeBehavior(behavior());
+    crystal->changeBehavior(behavior()); // internal delete initialBehavior
     return crystal;
 }
 

@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include "../phases/reactor.h"
+#include "../phases/behavior_factory.h"
 #include "../savers/detector_factory.h"
 #include "../savers/progress_saver.h"
 #include "../savers/slices_saver.h"

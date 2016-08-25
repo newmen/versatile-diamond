@@ -15,6 +15,8 @@ protected:
     VolumeSaver(const Config *config, const Detector *detector) :
         FileSaver(config), _detector(detector) {}
 
+    ~VolumeSaver() { delete _detector; }
+
     const Detector *detector() const { return _detector; }
 };
 
