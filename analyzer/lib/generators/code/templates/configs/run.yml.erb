@@ -1,0 +1,38 @@
+---
+system:
+  size_x: 20   # number of atoms
+  size_y: 20   # number of atoms
+  time: 0.001   # seconds
+  behavior: tor   # (tor|plane)
+
+progress:
+  step: 0.00001   # seconds
+
+integral:
+  step: 0.00005   # seconds
+  atom_types: []   # list of integer numbers which are coma separated
+
+# Available atom types:
+<% atom_types.each do |index, label| %>
+# <%= index.to_s.rjust(3) %>:   <%= label %>
+<% end %>
+
+# ------------------------------------------
+# There are several possible formats for output the volume of simulating surface to
+# file. Several such formats can be used at one time. Each such format requires the
+# `detector` parameter which selects atoms of surface which must be saved to file.
+# The `detector` parameter can receive `surf` or `all` value. The `surf` value means
+# "save just surface atoms" and `all` value means "save all atoms which are in
+# simulating system"
+
+xyz:
+  step: 0.001   # seconds
+  detector: surf   # (surf|all)
+
+# mol:
+#   step: 0.001   # seconds
+#   detector: surf   # (surf|all)
+
+# sdf:
+#   step: 0.001   # seconds
+#   detector: surf   # (surf|all)

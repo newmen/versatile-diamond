@@ -8,7 +8,7 @@ module VersatileDiamond
     class EngineCode < Base
 
       MAIN_CODE_INST_NAMES =
-        %w(atom_builder env finder handbook names rates_reader).freeze
+        %w(atom_builder config env finder handbook names rates_reader).freeze
 
       attr_reader :sequences_cacher, :detectors_cacher
 
