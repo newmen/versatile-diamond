@@ -13,8 +13,8 @@ public:
     static void find(<%= find_arguments_str(specie) %>);
 <% end %>
 
-    <%= class_name %>(SpecificSpec **targets) :
-        <%= outer_base_class_name %>(targets) {}
+    template <class... Args> <%= class_name %>(Args... args) :
+        <%= outer_base_class_name %>(args...) {}
 
     void doIt() override;
 <% if concretizable? %>

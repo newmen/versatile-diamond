@@ -24,6 +24,12 @@ public:
 
 protected:
     Reaction() = default;
+
+private:
+    Reaction(const Reaction &) = delete;
+    Reaction(Reaction &&) = delete;
+    Reaction &operator = (const Reaction &) = delete;
+    Reaction &operator = (Reaction &&) = delete;
 };
 
 }

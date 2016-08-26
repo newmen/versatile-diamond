@@ -39,6 +39,12 @@ private:
 
 protected:
     BaseSpec() = default;
+
+private:
+    BaseSpec(const BaseSpec &) = delete;
+    BaseSpec(BaseSpec &&) = delete;
+    BaseSpec &operator = (const BaseSpec &) = delete;
+    BaseSpec &operator = (BaseSpec &&) = delete;
 };
 
 }
