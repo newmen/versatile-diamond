@@ -3,7 +3,7 @@
 
 <%= render_rate_and_name_body_partial %>
 
-void SurfaceActivation::find(Atom *anchor)
+void <%= class_name %>::find(Atom *anchor)
 {
 <% if children.empty? %>
     findSelf<<%= class_name %>>(anchor)
