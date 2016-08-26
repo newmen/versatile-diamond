@@ -141,6 +141,15 @@ module VersatileDiamond
           find_root? ? [] : parents
         end
 
+        # Gets a list of base class files which are required for non symmetric specie
+        # @return [Array] the array of base class files
+        def direct_base_class_files
+          outers = ['base']
+          outers << 'specific' if specific?
+          outers << 'sidepiece' if sidepiece?
+          outers.map(&method(:common_file))
+        end
+
         # Gets number of sceleton atoms used in specie and different from atoms of
         # parent specie
         #
@@ -290,14 +299,7 @@ module VersatileDiamond
         # Provides common files which is base class for current instance
         # @return [Array] the common files for current instance
         def common_base_class_files
-          outers = []
-          if symmetric?
-            outers << 'overall'
-          else
-            outers << (specific? ? 'specific' : 'base')
-            outers << 'sidepiece' if sidepiece?
-          end
-          outers.map(&method(:common_file))
+          symmetric? ? [common_file('overall')] : direct_base_class_files
         end
 
         # Makes base classes for current specie class instance

@@ -63,6 +63,12 @@ module VersatileDiamond
           target_specie.header_parents_dependencies
         end
 
+        # Provides common files which is base class for current instance
+        # @return [Array] the common files for current instance
+        def common_base_class_files
+          target_specie.direct_base_class_files
+        end
+
         # Original specie doesn't have dependencies from species in source file
         # @return [Array] the empty array
         def body_include_objects
