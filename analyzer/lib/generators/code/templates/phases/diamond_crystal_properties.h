@@ -15,15 +15,14 @@ template <class B>
 class DiamondCrystalProperties : public DiamondRelations<B>
 {
 public:
-    // The virtual keyname required by compiler (why?)
-    virtual float3 correct(const Atom *atom) const final;
+    // The virtual keyname is required by compiler (why?)
+    virtual float3 correct(const SavingAtom *atom) const final;
+    virtual float3 seeks(const int3 &coords) const final;
     virtual const float3 &periods() const final;
 
 protected:
     template <class... Args> DiamondCrystalProperties(Args... args) : DiamondRelations<B>(args...) {}
 
-    // The virtual keyname required by compiler (why?)
-    virtual float3 seeks(const int3 &coords) const final;
     void bondAround(Atom *atom);
 
 private:
@@ -40,13 +39,13 @@ private:
 //////////////////////////////////////////////////////////////////////////////////////
 
 template <class B>
-float3 DiamondCrystalProperties<B>::correct(const Atom *atom) const
+float3 DiamondCrystalProperties<B>::correct(const SavingAtom *atom) const
 {
     assert(atom->lattice());
     const int3 &crds = atom->lattice()->coords();
-    const Atom *otherDimerPart = nullptr;
+    const SavingAtom *otherDimerPart = nullptr;
 
-    atom->eachNeighbour([&crds, &otherDimerPart](const Atom *nbr) {
+    atom->eachNeighbour([&crds, &otherDimerPart](const SavingAtom *nbr) {
         if (nbr->lattice() && nbr->lattice()->coords().z == crds.z)
         {
             assert(!otherDimerPart);
