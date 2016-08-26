@@ -242,7 +242,7 @@ allNeighbours(atom1, &Diamond::cross_110, [](Atom **atoms1) {
             let(:atom) { dict.make_atom_s(cr) }
             let(:other) { dict.make_atom_s(cl) }
             let(:coords) { atom.coords_with(other, lattice, param_110_front) }
-            let(:code) { 'Diamond::front_110_at(atom1, atom2)' }
+            let(:code) { 'Diamond::front_110_at({ atom1, atom2 })' }
             it { expect(coords.code).to eq(code) }
           end
 
@@ -260,7 +260,7 @@ allNeighbours(atom1, &Diamond::cross_110, [](Atom **atoms1) {
             let(:crystal) { atom.crystal }
             let(:coords) { atom.coords_with(other, lattice, param_110_front) }
             let(:code) do
-              'crystalBy(atom1)->insert(atom1, Diamond::front_110_at(atom1, atom2))'
+              'crystalBy(atom1)->insert(atom1, Diamond::front_110_at({ atom1, atom2 }))'
             end
             it { expect(atom.insert_to_crystal(crystal, coords).code).to eq(code) }
           end

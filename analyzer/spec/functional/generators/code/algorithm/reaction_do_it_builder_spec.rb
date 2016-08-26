@@ -952,7 +952,7 @@ module VersatileDiamond
     assert(atoms1[1]->is(#{snd_role_ct}));
     assert(atoms1[2]->is(#{role_cm}));
     Handbook::amorph().erase(atoms1[2]);
-    crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at(atoms1[0], atoms1[1]));
+    crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at({ atoms1[0], atoms1[1] }));
     atoms1[0]->unbondFrom(atoms1[2]);
     atoms1[1]->bondWith(atoms1[2]);
     assert(!atoms1[0]->is(#{br_s}));
@@ -976,7 +976,7 @@ module VersatileDiamond
     assert(atoms1[1]->is(#{snd_role_ct}));
     assert(atoms1[2]->is(#{role_cm}));
     Handbook::amorph().erase(atoms1[2]);
-    crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at(atoms1[0], atoms1[1]));
+    crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at({ atoms1[0], atoms1[1] }));
     atoms1[0]->unbondFrom(atoms1[2]);
     atoms1[1]->bondWith(atoms1[2]);
     assert(!atoms1[0]->is(#{br_s}));
@@ -1087,7 +1087,7 @@ module VersatileDiamond
     assert(atoms1[1]->is(#{snd_role_cr}));
     assert(atoms1[2]->is(#{role_cm}));
     Handbook::amorph().erase(atoms1[2]);
-    crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at(atoms1[0], atoms1[1]));
+    crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at({ atoms1[0], atoms1[1] }));
     atoms1[0]->unbondFrom(atoms1[2]);
     atoms1[1]->bondWith(atoms1[2]);
     assert(!atoms1[0]->is(#{br_s}));
@@ -1112,7 +1112,7 @@ module VersatileDiamond
     assert(atoms1[1]->is(#{snd_role_cr}));
     assert(atoms1[2]->is(#{role_cm}));
     Handbook::amorph().erase(atoms1[2]);
-    crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at(atoms1[0], atoms1[1]));
+    crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at({ atoms1[0], atoms1[1] }));
     atoms1[0]->unbondFrom(atoms1[2]);
     atoms1[1]->bondWith(atoms1[2]);
     assert(!atoms1[0]->is(#{br_s}));
@@ -1212,7 +1212,7 @@ module VersatileDiamond
     assert(atoms1[1]->is(#{snd_role_cr}));
     assert(atoms1[2]->is(#{role_cm}));
     Handbook::amorph().erase(atoms1[2]);
-    crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at(atoms1[0], atoms1[1]));
+    crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at({ atoms1[0], atoms1[1] }));
     atoms1[0]->unbondFrom(atoms1[2]);
     atoms1[1]->bondWith(atoms1[2]);
     assert(!atoms1[0]->is(#{br_s}));
@@ -1237,7 +1237,7 @@ module VersatileDiamond
     assert(atoms1[1]->is(#{snd_role_cr}));
     assert(atoms1[2]->is(#{role_cm}));
     Handbook::amorph().erase(atoms1[2]);
-    crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at(atoms1[0], atoms1[1]));
+    crystalBy(atoms1[0])->insert(atoms1[2], Diamond::front_110_at({ atoms1[0], atoms1[1] }));
     atoms1[0]->unbondFrom(atoms1[2]);
     atoms1[1]->bondWith(atoms1[2]);
     assert(!atoms1[0]->is(#{br_s}));
@@ -1421,7 +1421,7 @@ module VersatileDiamond
     assert(atoms1[2]->is(#{role_cb}));
     assert(atoms1[3]->is(#{role_cm}));
     Handbook::amorph().erase(atoms1[3]);
-    crystalBy(atoms1[0])->insert(atoms1[3], Diamond::front_110_at(atoms1[0], atoms1[1]));
+    crystalBy(atoms1[0])->insert(atoms1[3], Diamond::front_110_at({ atoms1[0], atoms1[1] }));
     atoms1[0]->unbondFrom(atoms1[1]);
     atoms1[0]->deactivate();
     atoms1[3]->activate();
@@ -1450,7 +1450,7 @@ module VersatileDiamond
     assert(atoms1[2]->is(#{role_cb}));
     assert(atoms1[3]->is(#{role_cm}));
     Handbook::amorph().erase(atoms1[3]);
-    crystalBy(atoms1[0])->insert(atoms1[3], Diamond::front_110_at(atoms1[0], atoms1[1]));
+    crystalBy(atoms1[0])->insert(atoms1[3], Diamond::front_110_at({ atoms1[0], atoms1[1] }));
     atoms1[0]->unbondFrom(atoms1[1]);
     atoms1[0]->deactivate();
     atoms1[3]->activate();
@@ -1509,7 +1509,7 @@ module VersatileDiamond
     assert(atoms1[2]->is(#{snd_role_cr}));
     assert(atoms1[3]->is(#{role_cm}));
     Handbook::amorph().erase(atoms1[3]);
-    crystalBy(atoms1[1])->insert(atoms1[3], Diamond::front_110_at(atoms1[1], atoms1[2]));
+    crystalBy(atoms1[1])->insert(atoms1[3], Diamond::front_110_at({ atoms1[1], atoms1[2] }));
     atoms1[1]->bondWith(atoms1[3]);
     atoms1[2]->bondWith(atoms1[3]);
     atoms1[0]->changeType(#{cd_f});
@@ -1537,7 +1537,7 @@ module VersatileDiamond
     assert(atoms1[2]->is(#{snd_role_cr}));
     assert(atoms1[3]->is(#{role_cm}));
     Handbook::amorph().erase(atoms1[3]);
-    crystalBy(atoms1[1])->insert(atoms1[3], Diamond::front_110_at(atoms1[1], atoms1[2]));
+    crystalBy(atoms1[1])->insert(atoms1[3], Diamond::front_110_at({ atoms1[1], atoms1[2] }));
     atoms1[1]->bondWith(atoms1[3]);
     atoms1[2]->bondWith(atoms1[3]);
     if (atoms1[0]->is(#{cb_h}))
@@ -1589,7 +1589,7 @@ module VersatileDiamond
     assert(atoms1[2]->is(#{br_s}));
     assert(atoms1[3]->is(#{snd_role_cm}));
     Handbook::amorph().erase(atoms1[3]);
-    crystalBy(atoms1[0])->insert(atoms1[3], Diamond::front_110_at(atoms1[0], atoms1[2]));
+    crystalBy(atoms1[0])->insert(atoms1[3], Diamond::front_110_at({ atoms1[0], atoms1[2] }));
     atoms1[0]->bondWith(atoms1[3]);
     atoms1[2]->bondWith(atoms1[3]);
     assert(!atoms1[0]->is(#{bd_c}));
@@ -1617,7 +1617,7 @@ module VersatileDiamond
     assert(atoms1[2]->is(#{br_s}));
     assert(atoms1[3]->is(#{snd_role_cm}));
     Handbook::amorph().erase(atoms1[3]);
-    crystalBy(atoms1[0])->insert(atoms1[3], Diamond::front_110_at(atoms1[0], atoms1[2]));
+    crystalBy(atoms1[0])->insert(atoms1[3], Diamond::front_110_at({ atoms1[0], atoms1[2] }));
     atoms1[0]->bondWith(atoms1[3]);
     atoms1[2]->bondWith(atoms1[3]);
     assert(!atoms1[0]->is(#{bd_c}));

@@ -33,7 +33,8 @@ module VersatileDiamond
           # @param [Array] args
           # @return [Core::OpNs]
           def lattice_call_at(lattice, rel_params, *args)
-            Core::OpNs[lattice, Core::FunctionCall[rel_name_at(rel_params), *args]]
+            nbrs_seq = Core::OpBraces[Core::OpSequence[*args], multilines: false]
+            Core::OpNs[lattice, Core::FunctionCall[rel_name_at(rel_params), nbrs_seq]]
           end
 
           # @param [Hash] rel_params
