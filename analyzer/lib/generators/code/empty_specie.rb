@@ -97,7 +97,15 @@ module VersatileDiamond
         # Gets the name to outer class
         # @return [String] the name of outer class
         def outer_base_class_name
-          original_specie.specific? ? 'EmptySpecific' : 'EmptyBase'
+          if !original_specie.specific? && !original_specie.sidepiece?
+            'EmptyBase'
+          elsif original_specie.specific? && original_specie.sidepiece?
+            'EmptySpecificSidepiece'
+          elsif original_specie.specific?
+            'EmptySpecific'
+          else # original_specie.sidepiece?
+            'EmptySidepiece'
+          end
         end
 
         # Gets the name of directory where will be stored result file
