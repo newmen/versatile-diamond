@@ -8,7 +8,8 @@ class <%= class_name %> : public SpecifiedAtom<<%= valence %>>
     static const char __name[];
 
 public:
-    <%= class_name %>(ushort type, ushort actives, Lattice *lattice) : SpecifiedAtom(type, actives, lattice) {}
+    <%= class_name %>(ushort type, ushort actives, Lattice<Crystal> *lattice) :
+        SpecifiedAtom(type, actives, lattice) {}
 
     const char *name() const final { return __name; }
 };

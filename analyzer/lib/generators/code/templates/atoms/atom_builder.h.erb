@@ -13,7 +13,7 @@ public:
 <% combinations.each do |atom, lattice| %>
     Atom *<%= method_name(atom, lattice) %>(ushort type, ushort actives<%= lattice && ', Crystal *crystal, const int3 &coords' %>) const
     {
-        return specify(new <%= atom.class_name %>(type, actives, <%= lattice ? 'new Lattice(crystal, coords)' : '(Lattice *)nullptr' %>));
+        return specify(new <%= atom.class_name %>(type, actives, <%= lattice ? 'new Lattice<Crystal>(crystal, coords)' : '(Lattice<Crystal> *)nullptr' %>));
     }
 
 <% end %>
