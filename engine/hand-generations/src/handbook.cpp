@@ -136,7 +136,7 @@ bool Handbook::isRegular(ushort type)
 }
 
 ushort Handbook::activesFor(ushort type)
-{;
+{
     assert(type < __atomsNum);
     return __activesOnAtoms[type];
 }
