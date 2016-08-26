@@ -49,12 +49,12 @@ public:
     static SurfaceAmorph &amorph();
     static Scavenger &scavenger();
 
-    static bool isRegular(const Atom *atom);
+    static bool isRegular(ushort type);
 
-    static ushort activesFor(const Atom *atom);
-    static ushort hydrogensFor(const Atom *atom);
-    static ushort hToActivesFor(const Atom *atom);
-    static ushort activesToHFor(const Atom *atom);
+    static ushort activesFor(ushort type);
+    static ushort hydrogensFor(ushort type);
+    static ushort hToActivesFor(ushort type);
+    static ushort activesToHFor(ushort type);
 
 private:
     static const bool __atomsAccordance[];

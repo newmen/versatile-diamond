@@ -16,40 +16,40 @@ const ushort Handbook::__hToActives[Handbook::__atomsNum] =
 {
     <%= deactives_to_actives %>
 };
-ushort Handbook::hToActivesFor(const Atom *atom)
+ushort Handbook::hToActivesFor(ushort type)
 {
-    assert(atom->type() < __atomsNum);
-    return __hToActives[atom->type()];
+    assert(type < __atomsNum);
+    return __hToActives[type];
 }
 
 const ushort Handbook::__hOnAtoms[Handbook::__atomsNum] =
 {
     <%= nums_on_terms[:H] %>
 };
-ushort Handbook::hydrogensFor(const Atom *atom)
+ushort Handbook::hydrogensFor(ushort type)
 {
-    assert(atom->type() < __atomsNum);
-    return __hOnAtoms[atom->type()];
+    assert(type < __atomsNum);
+    return __hOnAtoms[type];
 }
 
 const ushort Handbook::__activesToH[Handbook::__atomsNum] =
 {
     <%= actives_to_deactives %>
 };
-ushort Handbook::activesToHFor(const Atom *atom)
+ushort Handbook::activesToHFor(ushort type)
 {
-    assert(atom->type() < __atomsNum);
-    return __activesToH[atom->type()];
+    assert(type < __atomsNum);
+    return __activesToH[type];
 }
 
 const ushort Handbook::__activesOnAtoms[Handbook::__atomsNum] =
 {
     <%= nums_on_terms[:*] %>
 };
-ushort Handbook::activesFor(const Atom *atom)
+ushort Handbook::activesFor(ushort type)
 {
-    assert(atom->type() < __atomsNum);
-    return __activesOnAtoms[atom->type()];
+    assert(type < __atomsNum);
+    return __activesOnAtoms[type];
 }
 <% end %>
 
@@ -90,10 +90,8 @@ const ushort Handbook::__regularAtomsTypes[Handbook::__regularAtomsNum] =
 {
     <%= regular_atoms_types %>
 };
-bool Handbook::isRegular(const Atom *atom)
+bool Handbook::isRegular(ushort type)
 {
-    ushort type = atom->type();
-    assert(__atomsNum > type);
     bool b = false;
     for (int i = 0; i < __regularAtomsNum; ++i)
     {
