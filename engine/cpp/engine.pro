@@ -2,21 +2,19 @@ TEMPLATE = app
 CONFIG -= app_bundle
 CONFIG -= qt
 
-QMAKE_CXX = /usr/local/opt/gcc/bin/g++-6
-QMAKE_LIBDIR += /usr/local/opt/gcc/lib/gcc/6
-QMAKE_LIBDIR += /usr/local/lib
 QMAKE_INCDIR += /usr/local/include
+QMAKE_LIBDIR += /usr/local/lib
 
 QMAKE_CXXFLAGS_RELEASE += -DNDEBUG
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
 #QMAKE_CXXFLAGS += -DPRINT
 QMAKE_CXXFLAGS += -std=c++11
+#QMAKE_CXXFLAGS += -I../hand-generations/src
+QMAKE_CXXFLAGS += -w
 
 LIBS += -pthread
 LIBS += -lyaml-cpp
-
-QMAKE_CXXFLAGS += -std=c++11 -I../hand-generations/src -w
-LIBS += -lyaml-cpp -w
+LIBS += -w
 
 SOURCES += \
     ../hand-generations/src/atoms/c.cpp \
