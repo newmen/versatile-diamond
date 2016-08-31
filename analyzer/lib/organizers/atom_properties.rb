@@ -160,7 +160,8 @@ module VersatileDiamond
           props.smallests.empty? ? Set[props] : props.smallests
         end
 
-        max_root = smallests_of_both.reduce(:&).max
+        # is additional cast to arrays requires due bug?
+        max_root = smallests_of_both.map(&:to_a).reduce(:&).max
         return nil unless max_root
 
         diffs = both.map { |x| x - max_root }
