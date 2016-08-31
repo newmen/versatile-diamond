@@ -16,6 +16,18 @@ module VersatileDiamond
         end
       end
 
+      describe '#original_same?' do
+        let(:x) { described_class.new(c) }
+        let(:y) { described_class.new(activated_c) }
+        it { expect(x.original_same?(y)).to be_truthy }
+      end
+
+      describe '#accurate_same?' do
+        let(:x) { described_class.new(c) }
+        let(:y) { described_class.new(c) }
+        it { expect(x.accurate_same?(y)).to be_truthy }
+      end
     end
+
   end
 end

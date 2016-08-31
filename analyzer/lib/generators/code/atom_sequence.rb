@@ -42,7 +42,7 @@ module VersatileDiamond
         def original
           @_original_sequence ||=
             if spec.source?
-              sort_atoms(atoms)
+              smart_sort(atoms)
             else
               sorted_parents.reduce(addition_atoms) do |acc, parent|
                 acc + get(parent.original).original.map do |atom|
@@ -55,7 +55,7 @@ module VersatileDiamond
         # Gets short sequence of anchors
         # @return [Array] the short sequence of different atoms
         def short
-          @_short_sequence ||= sort_atoms(spec.anchors, amorph_before: false)
+          @_short_sequence ||= smart_sort(spec.anchors, amorph_before: false)
         end
 
         # Gets a atoms list of short sequence without addition atoms
@@ -71,7 +71,7 @@ module VersatileDiamond
             if spec.source?
               []
             else
-              sort_atoms(spec.anchors.select { |a| spec.twins_of(a).empty? })
+              smart_sort(spec.anchors.select { |a| spec.twins_of(a).empty? })
             end
         end
 
@@ -107,16 +107,16 @@ module VersatileDiamond
         attr_reader :spec, :cacher
 
         # Reverse sorts the atoms by number of their relations
-        # @param [Array] atoms the array of sorting atoms
+        # @param [Array] sorting_atoms
         # @option [Boolean] :amorph_before if true then latticed atoms will be at end
         #   in returned sequence
         # @return [Array] sorted array of atoms
-        def sort_atoms(atoms, amorph_before: true)
-          usages = atoms.map { |a| -major_bonds_num(a) }
-          props = atoms.map(&method(:atom_properties_for))
-          keynames = atoms.map(&spec.spec.public_method(:keyname))
+        def smart_sort(sorting_atoms, amorph_before: true)
+          usages = sorting_atoms.map { |a| -major_bonds_num(a) }
+          props = sorting_atoms.map(&method(:atom_properties_for))
+          keynames = sorting_atoms.map(&spec.spec.public_method(:keyname))
           triple = usages.zip(props, keynames)
-          sorteds = triple.zip(atoms).sort_by(&:first).map(&:last)
+          sorteds = triple.zip(sorting_atoms).sort_by(&:first).map(&:last)
           amorphs = sorteds.reject(&:lattice)
           surfaces = sorteds.select(&:lattice)
           amorph_before ? amorphs + surfaces : surfaces + amorphs

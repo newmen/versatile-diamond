@@ -18,8 +18,8 @@ module VersatileDiamond
         it { expect(subject).not_to eq(clone) }
 
         describe 'different atoms' do
-          let(:old_cr_twin) { subject.twin_of(dimer_base.atom(:cr)) }
-          let(:new_cr_twin) { clone.twin_of(dimer_base_dup.atom(:l)) }
+          let(:old_cr_twin) { subject.twin_of(dimer_base.atom(:cl)) }
+          let(:new_cr_twin) { clone.twin_of(dimer_base_dup.atom(:r)) }
           it { expect(new_cr_twin).not_to be_nil }
           it { expect(old_cr_twin).to eq(new_cr_twin) }
         end
@@ -36,20 +36,20 @@ module VersatileDiamond
       end
 
       describe '#twin_of' do
-        let_atoms_of(:dimer_base, [:cl, :cr, :crb, :_cr0])
+        let_atoms_of(:dimer_base, [:cr, :cl, :clb, :_cr1])
 
-        it { expect(subject.twin_of(cl)).to be_nil }
-        it { expect(subject.twin_of(cr)).to eq(bridge_base.atom(:ct)) }
-        it { expect(subject.twin_of(crb)).to eq(bridge_base.atom(:cl)) }
-        it { expect(subject.twin_of(_cr0)).to eq(bridge_base.atom(:cr)) }
+        it { expect(subject.twin_of(cr)).to be_nil }
+        it { expect(subject.twin_of(cl)).to eq(bridge_base.atom(:ct)) }
+        it { expect(subject.twin_of(clb)).to eq(bridge_base.atom(:cl)) }
+        it { expect(subject.twin_of(_cr1)).to eq(bridge_base.atom(:cr)) }
       end
 
       describe '#atom_by' do
         let_atoms_of(:bridge_base, [:ct, :cl, :cr])
 
-        it { expect(subject.atom_by(ct)).to eq(dimer_base.atom(:cr)) }
-        it { expect(subject.atom_by(cl)).to eq(dimer_base.atom(:crb)) }
-        it { expect(subject.atom_by(cr)).to eq(dimer_base.atom(:_cr0)) }
+        it { expect(subject.atom_by(ct)).to eq(dimer_base.atom(:cl)) }
+        it { expect(subject.atom_by(cl)).to eq(dimer_base.atom(:clb)) }
+        it { expect(subject.atom_by(cr)).to eq(dimer_base.atom(:_cr1)) }
       end
 
       describe '#method_missing' do

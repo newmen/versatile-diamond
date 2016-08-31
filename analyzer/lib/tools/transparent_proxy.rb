@@ -65,7 +65,7 @@ module VersatileDiamond
         method_name = args.first
         if self.class.avail_method?(method_name)
           original.send(*args)
-        elsif args.size == 2 && binary_op?(method_name) && same_class?(args.last)
+        elsif args.size == 2 && binary_op?(method_name) && self.class == args.last.class
           original.public_send(method_name, args.last.original)
         else
           original.public_send(*args)
@@ -79,13 +79,6 @@ module VersatileDiamond
     private
 
       attr_reader :i
-
-      # Checks that passed entity have the same class
-      # @param [Object] other checking entity
-      # @return [Boolean] is same or not
-      def same_class?(other)
-        self.class == args.last.class
-      end
 
       # Delegates to static #binary_operation? method
       # @param [Symbol] operation name

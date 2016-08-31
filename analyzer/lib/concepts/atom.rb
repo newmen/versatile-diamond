@@ -56,18 +56,24 @@ module VersatileDiamond
       # the name and the lattice. Another cases action is delegate to
       # comparable atom.
       #
-      # @param [Atom | AtomReference | SpecificAtom] other the other atom with
-      #   which comparing do
+      # @param [Atom | AtomReference | SpecificAtom] other comparing atom
       # @return [Boolean] is the same atom or not
       def same?(other)
-        compare_by_method(:same?, other)
+        compare_by(other, &:same?)
       end
 
       # Compares two atoms without comparing them specific states
-      # @param [Atom | AtomReference | SpecificAtom] other the comparable atom
+      # @param [Atom | AtomReference | SpecificAtom] other comparing atom
       # @return [Boolean] same or not
       def original_same?(other)
-        compare_by_method(:original_same?, other)
+        compare_by(other, &:original_same?)
+      end
+
+      # @param [Atom | AtomReference | SpecificAtom] other comparing atom
+      # @return [Boolean] are accurate same atoms or not
+      def accurate_same?(other)
+        (self.class == other.class && equal_properties?(other)) ||
+          (other.is_a?(VeiledAtom) && accurate_same?(other.original))
       end
 
       # Not specified atom cannot have active bonds
@@ -136,29 +142,19 @@ module VersatileDiamond
 
     private
 
-      # Finds all relation instances for current atom in passed spec.
-      # Hidden from around, this method could be called only from atom relation.
-      #
-      # @param [Spec] spec the spec in which relations will be found, must
-      #   contain current atom
-      # @return [Array] the array of relations
-      def relations_in(spec)
-        spec.links[self].map { |a, l| [a.dup, l] }
-      end
-
       # Compares two instances by some method if other instance is object of
       # another class
       #
-      # @param [Symbol] method by which will instances will be compared if classes is
-      #   different
       # @param [Atom | AtomReference | SpecificAtom] other the comparable atom
+      # @yield [Atom | AtomReference | SpecificAtom] comparation method
       # @return [Boolean] comparation result
-      def compare_by_method(method, other)
-        if self.class == other.class
-          name == other.name && valence == other.valence && lattice == other.lattice
-        else
-          other.public_send(method, self)
-        end
+      def compare_by(other, &block)
+        self.class == other.class ? equal_properties?(other) : block[other, self]
+      end
+
+      # @return [Boolean] are equal properties of self and other atoms or not
+      def equal_properties?(other)
+        name == other.name && valence == other.valence && lattice == other.lattice
       end
     end
 

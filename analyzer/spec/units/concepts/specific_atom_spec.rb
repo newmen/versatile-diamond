@@ -162,7 +162,7 @@ module VersatileDiamond
       end
 
       describe '#original_same?' do
-        it { expect(subject.original_same?(SpecificAtom.new(c))).to be_falsey }
+        it { expect(subject.original_same?(described_class.new(c))).to be_falsey }
 
         let(:other) { subject.dup }
         before { other.active! }
@@ -170,10 +170,36 @@ module VersatileDiamond
         it { expect(other.original_same?(subject)).to be_truthy }
       end
 
+      describe '#accurate_same?' do
+        it { expect(subject.accurate_same?(described_class.new(c))).to be_falsey }
+
+        let(:other) { subject.dup }
+        it { expect(subject.accurate_same?(other)).to be_truthy }
+        it { expect(other.accurate_same?(subject)).to be_truthy }
+
+        describe 'different properties' do
+          before { other.active! }
+          it { expect(subject.accurate_same?(other)).to be_falsey }
+          it { expect(other.accurate_same?(subject)).to be_falsey }
+        end
+
+        let(:cb) { methyl_on_bridge_base.atom(:cb) }
+        let(:ref_cb) { AtomReference.new(methyl_on_bridge_base, :cb) }
+        let(:specific_cb) { methyl_on_incoherent_bridge.atom(:cb) }
+        let(:specific_ref_cb) { AtomReference.new(methyl_on_incoherent_bridge, :cb) }
+        it { expect(specific_cb.accurate_same?(cb)).to be_falsey }
+        it { expect(specific_cb.accurate_same?(ref_cb)).to be_falsey }
+        it { expect(specific_cb.accurate_same?(specific_ref_cb)).to be_falsey }
+
+        let(:veiled) { VeiledAtom.new(specific_cb) }
+        it { expect(specific_cb.accurate_same?(veiled)).to be_truthy }
+        it { expect(veiled.accurate_same?(specific_cb)).to be_truthy }
+      end
+
       describe '#diff' do
         it { expect(unfixed_c.diff(c)).to be_empty }
         it { expect(unfixed_activated_c.diff(c)).to eq([active_bond]) }
-        it { expect(unfixed_c.diff(SpecificAtom.new(c))).to be_empty }
+        it { expect(unfixed_c.diff(described_class.new(c))).to be_empty }
 
         it { expect(i_cd.diff(cd)).to be_empty }
         it { expect(ai_cd.diff(cd)).to eq([active_bond]) }

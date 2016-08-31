@@ -59,6 +59,22 @@ module VersatileDiamond
         it { expect(other.original_same?(c)).to be_truthy }
       end
 
+      describe '#accurate_same?' do
+        it { expect(c.accurate_same?(n)).to be_falsey }
+        it { expect(c.accurate_same?(cd)).to be_falsey }
+
+        let(:other) { c.dup }
+        it { expect(c.accurate_same?(other)).to be_truthy }
+        it { expect(other.accurate_same?(c)).to be_truthy }
+
+        it { expect(cd.accurate_same?(bridge_base.atom(:cr))).to be_falsey }
+        it { expect(cd.accurate_same?(activated_bridge.atom(:ct))).to be_falsey }
+
+        let(:veiled) { VeiledAtom.new(c) }
+        it { expect(c.accurate_same?(veiled)).to be_truthy }
+        it { expect(veiled.accurate_same?(c)).to be_truthy }
+      end
+
       describe '#actives' do
         it { expect(h.actives).to eq(0) }
         it { expect(c.actives).to eq(0) }

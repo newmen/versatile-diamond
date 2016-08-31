@@ -5,6 +5,7 @@ module VersatileDiamond
     # to spec's atom. Behaves the same as an atom, but overrides value of
     # valence, taking into account position of the atom in structure.
     class AtomReference
+      include Modules::ListsComparer
       extend Forwardable
 
       def_delegators :@atom, :name, :lattice, :lattice=, :same?, :original_same?,
@@ -44,6 +45,15 @@ module VersatileDiamond
         @atom = ref.atom.dup
       end
 
+      # @param [Atom | AtomReference | SpecificAtom] other comparing atom
+      # @return [Boolean] are accurate same atoms or not
+      def accurate_same?(other)
+        (self.class == other.class && valence == other.valence &&
+                  lists_are_identical?(using_relations, other.using_relations) &&
+                  atom.accurate_same?(other.atom)) ||
+          (other.is_a?(VeiledAtom) && accurate_same?(other.original))
+      end
+
       # Atom reference always is reference
       # @return [Boolean] true
       def reference?
@@ -66,12 +76,11 @@ module VersatileDiamond
       # Gets relations from reference
       # @return [Array] the array of relations
       def additional_relations
-        # friendly private call
-        @original_atom.send(:relations_in, spec)
+        spec.links[original_atom].map { |a, r| [a.dup, r] }
       end
 
       def to_s
-        "&#{@atom}"
+        "&#{atom}"
       end
 
       def inspect
@@ -82,6 +91,10 @@ module VersatileDiamond
 
       attr_reader :atom, :original_atom
 
+      # @return [Array] the list of using relations
+      def using_relations
+        additional_relations.map(&:last)
+      end
     end
 
   end

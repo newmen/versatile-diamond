@@ -396,7 +396,10 @@ module VersatileDiamond
       # @return [Array] the list of unique parents with twins which several times uses
       #   by passed spec and atom
       def same_pwts(spec)
-        groups = all_pps(spec).groups { |pr, (tw, a)| [pr.original, tw, a] }
+        groups = all_pps(spec).groups do |pr, (tw, a)|
+          [pr.original, atom_properties(pr.original, tw), a]
+        end
+
         groups.reject(&:one?).map do |group|
           pr, (tw, _) = group.first
           [pr, tw, group.map(&:first).uniq.size]

@@ -130,7 +130,7 @@ module VersatileDiamond
           let(:specifics) { [] }
 
           let(:original) do
-            %i(cm ctl csl crb _cr1 clb _cr0 cm ctr csr _cr2 _clb0 _cr3 _crb0)
+            %i(cm ctl csl _cr0 clb _cr1 crb cm ctr csr _crb0 _cr3 _clb0 _cr2)
           end
           let(:short) { %i(ctl ctr csl csr cm) }
           let(:major_atoms) { short }
@@ -142,7 +142,7 @@ module VersatileDiamond
           let(:bases) { [dept_bridge_base, subject] }
           let(:specifics) { [] }
 
-          let(:original) { %i(tt cc ct _ct0 cc _cl0 ct cr cl) }
+          let(:original) { %i(tt cc ct _ct0 _cl0 cc ct cr cl) }
           let(:short) { %i(ct cc) }
           let(:major_atoms) { short }
           let(:addition_atoms) { [] }
@@ -157,14 +157,14 @@ module VersatileDiamond
 
           it_behaves_like :apply_all do
             subject { dept_dimer_base }
-            let(:original) { %i(cl _cr1 clb cr crb _cr0) }
+            let(:original) { %i(cl clb _cr1 cr _cr0 crb) }
             let(:short) { %i(cl cr) }
             let(:specifics) { [dept_activated_dimer] }
           end
 
           it_behaves_like :apply_all do
             subject { dept_twise_incoherent_dimer }
-            let(:original) { %i(cl clb _cr1 cr _cr0 crb) }
+            let(:original) { %i(cl _cr1 clb cr crb _cr0) }
             let(:short) { %i(cl cr) }
             let(:specifics) do
               [dept_activated_incoherent_dimer, dept_twise_incoherent_dimer]
@@ -173,7 +173,7 @@ module VersatileDiamond
 
           it_behaves_like :apply_all do
             subject { dept_activated_dimer }
-            let(:original) { %i(cl clb _cr1 cr _cr0 crb) }
+            let(:original) { %i(cl _cr1 clb cr crb _cr0) }
             let(:short) { %i(cr) }
             let(:specifics) do
               [dept_activated_dimer, dept_bottom_hydrogenated_activated_dimer]

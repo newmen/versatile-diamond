@@ -37,6 +37,22 @@ module VersatileDiamond
         it { expect(ref.original_same?(c1)).to be_truthy }
       end
 
+      describe '#accurate_same?' do
+        let(:ref_d) { described_class.new(methyl_on_bridge, :cb) }
+        it { expect(ref_d.accurate_same?(bridge_base.atom(:cr))).to be_falsey }
+
+        let(:other) { ref.dup }
+        it { expect(ref.accurate_same?(other)).to be_truthy }
+        it { expect(other.accurate_same?(ref)).to be_truthy }
+
+        it { expect(ref_d.accurate_same?(cd)).to be_falsey }
+        it { expect(ref_d.accurate_same?(specific_ref)).to be_falsey }
+
+        let(:veiled) { VeiledAtom.new(ref) }
+        it { expect(ref.accurate_same?(veiled)).to be_truthy }
+        it { expect(veiled.accurate_same?(ref)).to be_truthy }
+      end
+
       describe '#actives' do
         it { expect(ref.actives).to eq(0) }
       end

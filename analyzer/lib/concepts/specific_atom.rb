@@ -75,14 +75,20 @@ module VersatileDiamond
       # @return [Boolean] is the same atom or not
       def same?(other)
         if self.class == other.class
-          atom.same?(other.atom) &&
-            lists_are_identical?(options, other.options) &&
-            lists_are_identical?(monovalents, other.monovalents)
+          atom.same?(other.atom) && equal_properties?(other)
         elsif other.is_a?(VeiledAtom)
           other.same?(self)
         else
           options.empty? && monovalents.empty? && atom.same?(other)
         end
+      end
+
+      # @param [Atom | AtomReference | SpecificAtom] other comparing atom
+      # @return [Boolean] are accurate same atoms or not
+      def accurate_same?(other)
+        (self.class == other.class &&
+                  atom.accurate_same?(other.atom) && equal_properties?(other)) ||
+          (other.is_a?(VeiledAtom) && accurate_same?(other.original))
       end
 
       # Setup monovalent atom for using it
@@ -191,6 +197,12 @@ module VersatileDiamond
       def active_options
         active_bond = ActiveBond.property
         options.select { |o| o == active_bond }
+      end
+
+      # @return [Boolean] are equal properties of self and other atoms or not
+      def equal_properties?(other)
+        lists_are_identical?(options, other.options) &&
+          lists_are_identical?(monovalents, other.monovalents)
       end
     end
 

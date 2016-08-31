@@ -84,7 +84,7 @@ module VersatileDiamond
               let(:typical_reactions) { [dept_high_bridge_stand_to_incoherent_bridge] }
               let(:find_algorithm) do
                 <<-CODE
-    Atom *atom1 = parent->atom(2);
+    Atom *atom1 = parent->atom(1);
     if (atom1->is(#{role_cr}))
     {
         if (!atom1->hasRole(BRIDGE_CLs_CRi, #{role_cr}))
@@ -661,13 +661,13 @@ module VersatileDiamond
         if (!anchor->hasRole(CROSS_BRIDGE_ON_DIMERS, #{role_cm}))
         {
             anchor->eachSpecsPortionByRole<MethylOnDimer>(#{mod_cm}, 2, [](MethylOnDimer **species1) {
-                Atom *atoms1[4] = { species1[0]->atom(4), species1[0]->atom(1), species1[1]->atom(4), species1[1]->atom(1) };
+                Atom *atoms1[4] = { species1[1]->atom(4), species1[1]->atom(1), species1[0]->atom(4), species1[0]->atom(1) };
                 Atom *atoms2[2] = { atoms1[0], atoms1[1] };
                 Atom *atoms3[2] = { atoms1[2], atoms1[3] };
                 eachNeighbours<2>(atoms2, &Diamond::cross_100, [&atoms3, &species1](Atom **neighbours1) {
                     if (neighbours1[0] == atoms3[0] && neighbours1[1] == atoms3[1])
                     {
-                        ParentSpec *parents[2] = { species1[0], species1[1] };
+                        ParentSpec *parents[2] = { species1[1], species1[0] };
                         create<CrossBridgeOnDimers>(parents);
                     }
                 });
@@ -698,13 +698,13 @@ module VersatileDiamond
         if (!anchor->hasRole(CROSS_BRIDGE_ON_DIMERS, #{role_cm}))
         {
             anchor->eachSpecsPortionByRole<MethylOnDimer>(#{mod_cm}, 2, [](MethylOnDimer **species1) {
-                Atom *atoms1[4] = { species1[0]->atom(1), species1[0]->atom(4), species1[1]->atom(1), species1[1]->atom(4) };
+                Atom *atoms1[4] = { species1[1]->atom(1), species1[1]->atom(4), species1[0]->atom(1), species1[0]->atom(4) };
                 Atom *atoms2[2] = { atoms1[0], atoms1[1] };
                 Atom *atoms3[2] = { atoms1[2], atoms1[3] };
                 eachNeighbours<2>(atoms2, &Diamond::cross_100, [&atoms3, &species1](Atom **neighbours1) {
                     if (neighbours1[0] == atoms3[0] && neighbours1[1] == atoms3[1])
                     {
-                        ParentSpec *parents[2] = { species1[0], species1[1] };
+                        ParentSpec *parents[2] = { species1[1], species1[0] };
                         create<CrossBridgeOnDimers>(parents);
                     }
                 });
@@ -787,11 +787,11 @@ module VersatileDiamond
             anchor->eachSpecsPortionByRole<Bridge>(#{b_cr}, 2, [](Bridge **species1) {
                 for (uint s = 0; s < 2; ++s)
                 {
-                    Atom *atom1 = species1[s]->atom(2);
+                    Atom *atom1 = species1[1 - s]->atom(2);
                     Bridge *bridge1 = atom1->specByRole<Bridge>(#{b_ct});
                     if (bridge1)
                     {
-                        ParentSpec *parents[3] = { species1[s], species1[1 - s], bridge1 };
+                        ParentSpec *parents[3] = { species1[1 - s], species1[s], bridge1 };
                         create<ThreeBridges>(parents);
                     }
                 }
@@ -814,16 +814,16 @@ module VersatileDiamond
                 for (uint s = 0; s < 2; ++s)
                 {
                     species1[s]->eachSymmetry([&](ParentSpec *symmetricBridge1) {
-                        if (anchor == symmetricBridge1->atom(1))
+                        if (anchor == symmetricBridge1->atom(2))
                         {
                             species1[1 - s]->eachSymmetry([&anchor, &symmetricBridge1](ParentSpec *symmetricBridge2) {
                                 if (anchor == symmetricBridge2->atom(1))
                                 {
-                                    Atom *atom1 = symmetricBridge1->atom(2);
+                                    Atom *atom1 = symmetricBridge2->atom(2);
                                     Bridge *bridge1 = atom1->specByRole<Bridge>(#{b_ct});
                                     if (bridge1)
                                     {
-                                        ParentSpec *parents[3] = { symmetricBridge1, symmetricBridge2, bridge1 };
+                                        ParentSpec *parents[3] = { symmetricBridge2, symmetricBridge1, bridge1 };
                                         create<ThreeBridges>(parents);
                                     }
                                 }
