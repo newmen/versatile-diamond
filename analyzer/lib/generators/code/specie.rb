@@ -382,7 +382,8 @@ module VersatileDiamond
         # @return [Array] the array of species which should be included in source file
         def body_include_objects
           ((symmetric? || find_root?) ? parents.uniq : []) + non_root_children +
-            local_reactions + typical_reactions + lateral_reactions
+            local_reactions + typical_reactions + lateral_reactions +
+            laterable_typical_reactions
         end
 
         # Gets classes from which current code instance will be inherited if specie is
