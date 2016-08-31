@@ -300,7 +300,6 @@ bool Atom::checkAndFind(ushort sid, ushort role)
 
 BaseSpec *Atom::specByRole(ushort sid, ushort role)
 {
-    BaseSpec *result = nullptr;
     const uint key = hash(role, sid);
 
 #ifdef PRINT
@@ -319,10 +318,12 @@ BaseSpec *Atom::specByRole(ushort sid, ushort role)
     if (distance > 0)
     {
         assert(distance == 1);
-        result = range.first->second;
+        return range.first->second;
     }
-
-    return result;
+    else
+    {
+        return nullptr;
+    }
 }
 
 }
