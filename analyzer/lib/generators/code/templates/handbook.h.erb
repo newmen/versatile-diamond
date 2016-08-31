@@ -16,6 +16,11 @@ using namespace vd;
 
 class Handbook
 {
+public:
+    typedef PhaseBoundary SurfaceAmorph;
+    typedef <%= surface_crystal.class_name %> SurfaceCrystal;
+
+private:
     typedef MC<ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> DMC;
 
 <% if lateral_reactions_exists? %>
@@ -32,21 +37,16 @@ private:
 public:
     static SKeeper &specificKeeper();
 
-<% if amorph_phase_exists? %>
-private:
-    static PhaseBoundary __amorph;
-public:
-    static PhaseBoundary &amorph();
-<% end %>
-
 private:
     static DMC __mc;
+    static SurfaceAmorph __amorph;
     static Scavenger __scavenger;
 
 public:
     ~Handbook();
 
     static DMC &mc();
+    static SurfaceAmorph &amorph();
     static Scavenger &scavenger();
 
     static bool isRegular(const Atom *atom);
@@ -77,8 +77,6 @@ public:
 
     static bool atomIs(ushort complexType, ushort typeOf);
     static ushort specificate(ushort type);
-
-    typedef <%= surface_crystal.class_name %> SurfaceCrystal;
 };
 
 #endif // HANDBOOK_H

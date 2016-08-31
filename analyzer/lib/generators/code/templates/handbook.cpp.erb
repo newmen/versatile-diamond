@@ -79,13 +79,11 @@ Handbook::LKeeper &Handbook::lateralKeeper()
 }
 <% end %>
 
-<% if amorph_phase_exists? %>
-PhaseBoundary Handbook::__amorph;
-PhaseBoundary &Handbook::amorph()
+Handbook::SurfaceAmorph Handbook::__amorph;
+Handbook::SurfaceAmorph &Handbook::amorph()
 {
     return __amorph;
 }
-<% end %>
 
 const ushort Handbook::__regularAtomsNum = <%= regular_atoms_num %>;
 const ushort Handbook::__regularAtomsTypes[Handbook::__regularAtomsNum] =

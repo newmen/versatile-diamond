@@ -1,20 +1,12 @@
 #include "crystal.h"
 #include "../atoms/atom.h"
 
-//#include <iostream>
-
 namespace vd
 {
 
-Crystal::Crystal(const dim3 &sizes, const Behavior *behavior) : _atoms(behavior, sizes)
+Crystal::Crystal(const dim3 &sizes, const Behavior *behavior) :
+    TemplatedCrystal(sizes, behavior)
 {
-}
-
-Crystal::~Crystal()
-{
-    eachAtom([](Atom *atom) {
-        delete atom;
-    });
 }
 
 void Crystal::initialize()
@@ -27,7 +19,7 @@ void Crystal::initialize()
 
 void Crystal::changeBehavior(const Behavior *behavior)
 {
-    _atoms.changeBehavior(behavior);
+    atoms().changeBehavior(behavior);
 }
 
 void Crystal::insert(Atom *atom, const int3 &coords)
@@ -41,12 +33,10 @@ void Crystal::insert(Atom *atom, const int3 &coords)
 
     assert(atom);
     assert(!atom->lattice());
-
-    Atom **cell = &_atoms[coords];
-    assert(!*cell);
+    assert(!atoms()[coords]);
 
     atom->setLattice(this, coords);
-    *cell = atom;
+    atoms()[coords] = atom;
 }
 
 void Crystal::erase(Atom *atom)
@@ -54,7 +44,7 @@ void Crystal::erase(Atom *atom)
     assert(atom);
     assert(atom->lattice());
 
-    Atom **cell = &_atoms[atom->lattice()->coords()];
+    Atom **cell = &atoms()[atom->lattice()->coords()];
     assert(*cell);
 
     atom->unsetLattice();
@@ -68,23 +58,8 @@ void Crystal::makeLayer(uint z, ushort type, ushort actives)
         for (uint x = 0; x < sizes.x; ++x)
         {
             int3 coords(x, y, z);
-            _atoms[coords] = makeAtom(type, actives, coords);
+            atoms()[coords] = makeAtom(type, actives, coords);
         }
-}
-
-uint Crystal::countAtoms() const
-{
-    int result = 0;
-    eachAtom([&result](const Atom *) {
-        ++result;
-    });
-    return result;
-}
-
-float3 Crystal::translate(const int3 &coords) const
-{
-    float3 realCoords = coords * periods();
-    return realCoords + seeks(coords);
 }
 
 }

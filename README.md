@@ -15,7 +15,7 @@ DSL interprets by Analyzer and generates graph of concepts dependencies (for exa
 
 ![Classes Trees](docs/total-tree.png?raw=true)
 
-Forest of dependencies between atoms types presented below
+Forest of dependencies between atoms types is presented below
 
 ![Classes Trees](docs/composition.png?raw=true)
 

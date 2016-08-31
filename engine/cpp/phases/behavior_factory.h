@@ -11,12 +11,6 @@ class BehaviorFactory : public Factory<Behavior, std::string>
 {
 public:
     BehaviorFactory();
-
-private:
-    BehaviorFactory(const BehaviorFactory &) = delete;
-    BehaviorFactory(BehaviorFactory &&) = delete;
-    BehaviorFactory &operator = (const BehaviorFactory &) = delete;
-    BehaviorFactory &operator = (BehaviorFactory &&) = delete;
 };
 
 }

@@ -18,6 +18,13 @@ void RandomGenerator::init()
 
 RandomGenerator::RandomGenerator()
 {
+    static bool isInit = false;
+    if (!isInit)
+    {
+        init();
+        isInit = true;
+    }
+
     _generator.seed(__initDistrib(__initGenerator));
 }
 

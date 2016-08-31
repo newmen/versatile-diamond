@@ -4,7 +4,7 @@ using namespace vd;
 int main(int argc, char const *argv[])
 {
     Crystal *diamond = new OpenDiamond(2);
-    Lattice lattice(diamond, int3(1, 2, 3));
+    Lattice<Crystal> lattice(diamond, int3(1, 2, 3));
     assert(lattice.crystal() == diamond);
     assert(lattice.coords().x == 1);
     assert(lattice.coords().y == 2);

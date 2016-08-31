@@ -14,7 +14,7 @@ GCC_PATH	:= /usr
 CXX		:= $(GCC_PATH)/bin/g++
 DFLAGS		:= $(STANDART) -I$(ENGINE_SRC_DIR)
 CFLAGS		:= $(DFLAGS) $(ARKSFLAGS) -I$(GCC_PATH)/include
-LFLAGS		:= $(STANDART) -L$(GCC_PATH)/lib -lyaml-cpp
+LFLAGS		:= $(STANDART) -L$(GCC_PATH)/lib -lyaml-cpp -pthread
 
 HGEN_SRC_DIR	:= src
 HGEN_OBJS_DIR	:= obj

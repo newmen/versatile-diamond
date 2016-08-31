@@ -1,28 +1,24 @@
 #ifndef ATOM_H
 #define ATOM_H
 
-#include <algorithm>
-#include <unordered_set>
 #include <unordered_map>
-#include <vector>
+#include "../phases/crystal.h"
 #include "../species/base_spec.h"
-#include "../tools/common.h"
-#include "lattice.h"
+#include "base_atom.h"
 
 namespace vd
 {
 
-const ushort NO_VALUE = (ushort)(-1);
-
-class Atom
+class Atom : public BaseAtom<Atom, Crystal>
 {
+protected:
+    typedef Lattice<Crystal> OriginalLattice;
+
+private:
     bool _visited = false;
 
-    ushort _type, _prevType = NO_VALUE;
-    ushort _actives;
-    Lattice *_lattice, *_cacheLattice;
-
-    std::unordered_multiset<Atom *> _relatives;
+    ushort _prevType = NO_VALUE;
+    OriginalLattice *_cacheLattice;
 
     std::unordered_map<ushort, std::unordered_set<ushort>> _roles;
     std::unordered_multimap<uint, BaseSpec *> _specs;
@@ -34,7 +30,6 @@ public:
     void setUnvisited() { _visited = false; }
     bool isVisited() const { return _visited; }
 
-    ushort type() const { return _type; }
     ushort prevType() const { return _prevType; }
 
     virtual bool is(ushort typeOf) const = 0;
@@ -42,21 +37,9 @@ public:
     virtual void specifyType() = 0;
     void changeType(ushort newType);
 
-    void activate();
-    void deactivate();
-
-    void bondWith(Atom *neighbour, int depth = 1);
     void unbondFrom(Atom *neighbour, int depth = 1);
     bool hasBondWith(Atom *neighbour) const;
 
-    template <class L> void eachNeighbour(const L &lambda) const;
-    template <class L> void eachAmorphNeighbour(const L &lambda);
-    template <class L> void eachCrystalNeighbour(const L &lambda);
-
-    Atom *firstCrystalNeighbour() const;
-    ushort crystalNeighboursNum() const;
-
-    Lattice *lattice() const { return _lattice; }
     void setLattice(Crystal *crystal, const int3 &coords);
     void unsetLattice();
 
@@ -78,15 +61,6 @@ public:
 
     void prepareToRemove();
 
-    virtual const char *name() const = 0;
-
-    virtual ushort valence() const = 0;
-    virtual ushort hCount() const;
-    virtual ushort actives() const { return _actives; }
-    ushort bonds() const { return _relatives.size(); }
-
-    float3 realPosition() const;
-
 #ifdef PRINT
     void info(IndentStream &os);
     void printRoles(IndentStream &os);
@@ -95,18 +69,15 @@ public:
 #endif // PRINT
 
 protected:
-    Atom(ushort type, ushort actives, Lattice *lattice);
-
-    void setType(ushort type) { _type = type; }
+    Atom(ushort type, ushort actives, OriginalLattice *lattice);
 
 private:
-    template <class L, class P> void eachNeighbourBy(const L &lambda, const P &predicate);
+    Atom(const Atom &) = delete;
+    Atom(Atom &&) = delete;
+    Atom &operator = (const Atom &) = delete;
+    Atom &operator = (Atom &&) = delete;
 
     BaseSpec *specByRole(ushort sid, ushort role);
-
-    float3 relativePosition() const;
-    float3 correctAmorphPos() const;
-    std::vector<const Atom *> goodCrystalRelatives() const;
 
     template <class S, class L>
     void combinations(ushort total, ushort n, S *specs, S *cache, const L &lambda);
@@ -119,55 +90,6 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
-
-template <class L>
-void Atom::eachNeighbour(const L &lambda) const
-{
-    std::for_each(_relatives.cbegin(), _relatives.cend(), lambda);
-}
-
-template <class L>
-void Atom::eachAmorphNeighbour(const L &lambda)
-{
-    eachNeighbourBy(lambda, [](const Atom *neighbour) {
-       return !neighbour->lattice();
-    });
-}
-
-template <class L>
-void Atom::eachCrystalNeighbour(const L &lambda)
-{
-    eachNeighbourBy(lambda, [](const Atom *neighbour) {
-       return neighbour->lattice();
-    });
-}
-
-template <class L, class P>
-void Atom::eachNeighbourBy(const L &lambda, const P &predicate)
-{
-    Atom **visited = new Atom *[_relatives.size()];
-    ushort n = 0;
-    for (Atom *neighbour : _relatives)
-    {
-        if (predicate(neighbour))
-        {
-            // Skip multibonds
-            for (ushort i = 0; i < n; ++i)
-            {
-                if (visited[i] == neighbour)
-                {
-                    goto next_main_iteration;
-                }
-            }
-
-            lambda(neighbour);
-            visited[n++] = neighbour;
-        }
-
-        next_main_iteration :;
-    }
-    delete [] visited;
-}
 
 template <class S>
 S *Atom::specByRole(ushort role)

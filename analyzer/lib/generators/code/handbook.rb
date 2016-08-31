@@ -30,12 +30,6 @@ module VersatileDiamond
           lattices.all? ? [] : [amorph_phase_file]
         end
 
-        # Check that results contain amorph phase
-        # @return [Boolean] contain or not
-        def amorph_phase_exists?
-          lattices.include?(nil)
-        end
-
         # Gets the list of used crystal lattices
         # @return [Array] the list of crystal lattices
         def crystal_lattices

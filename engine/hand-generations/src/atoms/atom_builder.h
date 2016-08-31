@@ -12,12 +12,12 @@ class AtomBuilder
 public:
     Atom *buildC(ushort type, ushort actives) const
     {
-        return specify(new C(type, actives, (Lattice *)nullptr));
+        return specify(new C(type, actives, (Lattice<Crystal> *)nullptr));
     }
 
     Atom *buildCd(ushort type, ushort actives, Crystal *crystal, const int3 &coords) const
     {
-        return specify(new C(type, actives, new Lattice(crystal, coords)));
+        return specify(new C(type, actives, new Lattice<Crystal>(crystal, coords)));
     }
 
 private:

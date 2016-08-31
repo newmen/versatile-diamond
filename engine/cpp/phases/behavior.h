@@ -6,14 +6,15 @@
 namespace vd
 {
 
+template <class A>
+class SmartAtomsVector3d;
 class Atom;
-class AtomsVector3d;
 
 class Behavior
 {   
 public:
     virtual ~Behavior() {}
-    virtual Atom *&getData(AtomsVector3d *atomsVector, const int3 &coords) const = 0;
+    virtual Atom *&getData(SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const = 0;
 
 protected:
     Behavior() = default;
