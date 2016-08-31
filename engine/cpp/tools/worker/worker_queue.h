@@ -2,6 +2,8 @@
 #define WORKER_QUEUE_H
 
 #include <queue>
+#include <mutex>
+#include <condition_variable>
 #include "job.h"
 
 namespace vd
@@ -10,12 +12,14 @@ namespace vd
 class WorkerQueue
 {
     std::queue<Job *> _queue;
+    std::mutex _mutex;
+    std::condition_variable _cond;
 
 public:
     WorkerQueue() = default;
 
     void push(Job *job);
-    void process();
+    Job *pop();
 };
 
 }

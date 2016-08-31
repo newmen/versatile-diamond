@@ -17,7 +17,7 @@ class Runner
 {
     enum : ushort { TRACK_EACH_STEP = 100 };
 
-    static volatile bool __stopCalculating;
+    static volatile bool __terminate;
 
     const Config *_config;
     Reactor<HB> *_reactor;
@@ -53,12 +53,12 @@ private:
 //////////////////////////////////////////////////////////////////////////////////////
 
 template <class HB>
-volatile bool Runner<HB>::__stopCalculating = false;
+volatile bool Runner<HB>::__terminate = false;
 
 template <class HB>
 void Runner<HB>::stop()
 {
-    __stopCalculating = true;
+    __terminate = true;
 }
 
 template <class HB>
@@ -72,7 +72,7 @@ void Runner<HB>::calculate()
     double timeDelta = 0;
     double startTime = timestamp();
 
-    while (!__stopCalculating && _reactor->currentTime() <= _config->totalTime())
+    while (!__terminate && _reactor->currentTime() <= _config->totalTime())
     {
         timeDelta = _reactor->doEvent();
 

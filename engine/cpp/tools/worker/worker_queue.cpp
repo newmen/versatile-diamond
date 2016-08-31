@@ -5,18 +5,23 @@ namespace vd
 
 void WorkerQueue::push(Job *job)
 {
+    std::unique_lock<std::mutex> lock(_mutex);
     _queue.push(job);
+    lock.unlock();
+    _cond.notify_one();
 }
 
-void WorkerQueue::process()
+Job *WorkerQueue::pop()
 {
-    while (!_queue.empty())
+    std::unique_lock<std::mutex> lock(_mutex);
+    while (_queue.empty())
     {
-        Job* job = _queue.front();
-        _queue.pop();
-        job->apply();
-        delete job;
+        _cond.wait(lock);
     }
+
+    Job* job = _queue.front();
+    _queue.pop();
+    return job;
 }
 
 }

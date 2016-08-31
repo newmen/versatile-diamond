@@ -1,7 +1,7 @@
 #ifndef PARALLEL_WORKER_H
 #define PARALLEL_WORKER_H
 
-#include <pthread.h>
+#include <thread>
 #include "worker_queue.h"
 
 namespace vd
@@ -9,15 +9,11 @@ namespace vd
 
 class ParallelWorker
 {
-    pthread_mutex_t _mutex = PTHREAD_MUTEX_INITIALIZER;
-    pthread_cond_t _cond = PTHREAD_COND_INITIALIZER;
-    pthread_t _thread;
-
-    bool _stop = false;
-
+    std::thread _thread;
     WorkerQueue _queue;
 
-    static void *threadFunc(void *instance);
+    static volatile bool __stop;
+    static void parallelFunc(ParallelWorker *worker);
 
 public:
     ParallelWorker();
@@ -32,6 +28,7 @@ private:
     ParallelWorker &operator = (ParallelWorker &&) = delete;
 
     void run();
+    void process();
 };
 
 }
