@@ -2,7 +2,7 @@ void <%= class_name %>::find(<%= find_arguments_str %>)
 {
 <%= find_algorithm %>
 }
-<% if parent? %>
+<% if parent? || symmetric? %>
 
 void <%= class_name %>::findAllChildren()
 {

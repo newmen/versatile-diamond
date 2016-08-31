@@ -2,7 +2,7 @@ public:
     static void find(<%= find_arguments_str %>);
 
 protected:
-<% if parent? %>
+<% if parent? || symmetric? %>
     void findAllChildren() final;
 <% end %>
 <% if specific? %>
