@@ -31,7 +31,7 @@ SpecReaction *<%= class_name %>::lookAround()
 
 <%= look_around_algorithm %>
 
-    assert(<%= SpeciesReaction::CHUNKS_INDEX_NAME %> < <%= lateral_chunks_num %>);
+    assert(<%= SpeciesReaction::CHUNKS_INDEX_NAME %> <= <%= lateral_chunks_num %>);
     return selectReaction(<%= SpeciesReaction::LATERAL_CHUNKS_NAME %>, <%= SpeciesReaction::CHUNKS_INDEX_NAME %>);
 }
 <% end %>
