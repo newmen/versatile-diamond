@@ -51,22 +51,34 @@ module VersatileDiamond
         # @param [String] ext see at #write_file same argument
         # @return [Pathname] the path to output file
         def out_path(root_dir, ext)
-          out_dir(root_dir) + "#{file_name}.#{ext}"
+          out_dir(root_dir) + concat_name(file_name, ext)
+        end
+
+        # Get the path to current dir where is the current file located
+        # @return [Pathname] the path to current dir
+        def current_dir
+          Pathname.new(File.dirname(__FILE__))
         end
 
         # Get the path to template dir where is stored file
         # @return [Pathname] the path to template dir
         def template_dir
-          Pathname.new(File.dirname(__FILE__)) +
-            TEMPLATES_DIR +
-            template_additional_path
+           current_dir + TEMPLATES_DIR + template_additional_path
         end
 
         # Gets the path to template
         # @param [String] ext the extention of generation file
         # @return [Pathname] the full path to template
         def template_path(ext)
-          template_dir + "#{template_name}.#{ext}.erb"
+          template_dir + "#{concat_name(template_name, ext)}.erb"
+        end
+
+        # Combines the name of file with extenstion
+        # @param [String] file_name
+        # @param [String] ext
+        # @return [String] the full file name
+        def concat_name(name, ext = '')
+          ext.empty? ? name : "#{name}.#{ext}"
         end
 
         # Gets the template as erb data

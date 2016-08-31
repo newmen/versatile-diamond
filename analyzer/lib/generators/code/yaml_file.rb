@@ -16,7 +16,7 @@ module VersatileDiamond
 
         # Generates .h and .cpp files for current instance
         # @param [String] root_dir the generation directory
-        # @return [Array] yaml file no any dependencies to another file by default
+        # @return [Array] yaml file no any dependencs from another file by default
         def generate(root_dir)
           write_file(root_dir, 'yml')
           []
@@ -28,7 +28,6 @@ module VersatileDiamond
 
         # Yaml config files located in configs directory
         # @return [String] the config directory name
-        # @override
         def template_additional_path
           'configs'
         end

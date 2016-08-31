@@ -11,6 +11,7 @@ module VersatileDiamond
         end
 
         # @return [String]
+        # @override
         def template_name
           'run'
         end

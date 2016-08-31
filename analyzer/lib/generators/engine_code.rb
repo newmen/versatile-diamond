@@ -168,7 +168,7 @@ module VersatileDiamond
           lattices.compact,
           surface_reactants,
           reactions
-        ].map(&:to_a).reduce(:+)
+        ].flat_map(&:to_a) + [Makefile.new]
       end
 
       # Finds and drops not unique items which are compares by block

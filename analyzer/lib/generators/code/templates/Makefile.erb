@@ -1,6 +1,6 @@
-NAME		:= simple-diamond
+NAME		:= <%= simulation_name %>
 
-ENGINE_DIR	:= ..
+ENGINE_DIR	:= <%= relative_engine_dir_path %>
 ENGINE_SRC_DIR	:= $(ENGINE_DIR)/cpp
 ENGINE_OBJS_DIR	:= $(ENGINE_DIR)/obj
 ENGINE_OBJECT_DIRS := $(shell find $(ENGINE_OBJS_DIR) -type d)
