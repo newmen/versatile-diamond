@@ -850,15 +850,19 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(BRIDGE_WITH_DIMER, #{role_cr}))
         {
-            ParentSpec *species1[2] = { anchor->specByRole<Dimer>(#{d_cr}), anchor->specByRole<Bridge>(#{b_cr}) };
-            if (species1[0] && species1[1])
+            Dimer *dimer1 = anchor->specByRole<Dimer>(#{d_cr});
+            if (dimer1)
             {
-                Atom *atom1 = species1[1]->atom(2);
-                Bridge *bridge1 = atom1->specByRole<Bridge>(#{b_ct});
+                Bridge *bridge1 = anchor->specByRole<Bridge>(#{b_cr});
                 if (bridge1)
                 {
-                    ParentSpec *parents[3] = { species1[0], species1[1], bridge1 };
-                    create<BridgeWithDimer>(parents);
+                    Atom *atom1 = bridge1->atom(2);
+                    Bridge *bridge2 = atom1->specByRole<Bridge>(#{b_ct});
+                    if (bridge2)
+                    {
+                        ParentSpec *parents[3] = { dimer1, bridge1, bridge2 };
+                        create<BridgeWithDimer>(parents);
+                    }
                 }
             }
         }
@@ -875,21 +879,25 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(BRIDGE_WITH_DIMER, #{role_cr}))
         {
-            ParentSpec *species1[2] = { anchor->specByRole<Dimer>(#{d_cr}), anchor->specByRole<Bridge>(#{b_cr}) };
-            if (species1[0] && species1[1])
+            Dimer *dimer1 = anchor->specByRole<Dimer>(#{d_cr});
+            if (dimer1)
             {
-                species1[1]->eachSymmetry([&](ParentSpec *symmetricBridge1) {
-                    if (anchor == symmetricBridge1->atom(1))
-                    {
-                        Atom *atom1 = symmetricBridge1->atom(2);
-                        Bridge *bridge1 = atom1->specByRole<Bridge>(#{b_ct});
-                        if (bridge1)
+                Bridge *bridge1 = anchor->specByRole<Bridge>(#{b_cr});
+                if (bridge1)
+                {
+                    bridge1->eachSymmetry([&anchor, &dimer1](ParentSpec *symmetricBridge1) {
+                        if (anchor == symmetricBridge1->atom(1))
                         {
-                            ParentSpec *parents[3] = { species1[0], symmetricBridge1, bridge1 };
-                            create<BridgeWithDimer>(parents);
+                            Atom *atom1 = symmetricBridge1->atom(2);
+                            Bridge *bridge2 = atom1->specByRole<Bridge>(#{b_ct});
+                            if (bridge2)
+                            {
+                                ParentSpec *parents[3] = { dimer1, symmetricBridge1, bridge2 };
+                                create<BridgeWithDimer>(parents);
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         }
     }
@@ -905,21 +913,25 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(BRIDGE_WITH_DIMER, #{role_cr}))
         {
-            ParentSpec *species1[2] = { anchor->specByRole<Dimer>(#{d_cr}), anchor->specByRole<Bridge>(#{b_cr}) };
-            if (species1[0] && species1[1])
+            Dimer *dimer1 = anchor->specByRole<Dimer>(#{d_cr});
+            if (dimer1)
             {
-                species1[0]->eachSymmetry([&](ParentSpec *symmetricDimer1) {
-                    if (anchor == symmetricDimer1->atom(3))
-                    {
-                        Atom *atom1 = species1[1]->atom(2);
-                        Bridge *bridge1 = atom1->specByRole<Bridge>(#{b_ct});
-                        if (bridge1)
+                Bridge *bridge1 = anchor->specByRole<Bridge>(#{b_cr});
+                if (bridge1)
+                {
+                    dimer1->eachSymmetry([&anchor, &bridge1](ParentSpec *symmetricDimer1) {
+                        if (anchor == symmetricDimer1->atom(3))
                         {
-                            ParentSpec *parents[3] = { symmetricDimer1, species1[1], bridge1 };
-                            create<BridgeWithDimer>(parents);
+                            Atom *atom1 = bridge1->atom(2);
+                            Bridge *bridge2 = atom1->specByRole<Bridge>(#{b_ct});
+                            if (bridge2)
+                            {
+                                ParentSpec *parents[3] = { symmetricDimer1, bridge1, bridge2 };
+                                create<BridgeWithDimer>(parents);
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         }
     }
@@ -935,26 +947,30 @@ module VersatileDiamond
     {
         if (!anchor->hasRole(BRIDGE_WITH_DIMER, #{role_cr}))
         {
-            ParentSpec *species1[2] = { anchor->specByRole<Dimer>(#{d_cr}), anchor->specByRole<Bridge>(#{b_cr}) };
-            if (species1[0] && species1[1])
+            Dimer *dimer1 = anchor->specByRole<Dimer>(#{d_cr});
+            if (dimer1)
             {
-                species1[0]->eachSymmetry([&](ParentSpec *symmetricDimer1) {
-                    if (anchor == symmetricDimer1->atom(3))
-                    {
-                        species1[1]->eachSymmetry([&anchor, &symmetricDimer1](ParentSpec *symmetricBridge1) {
-                            if (anchor == symmetricBridge1->atom(1))
-                            {
-                                Atom *atom1 = symmetricBridge1->atom(2);
-                                Bridge *bridge1 = atom1->specByRole<Bridge>(#{b_ct});
-                                if (bridge1)
+                Bridge *bridge1 = anchor->specByRole<Bridge>(#{b_cr});
+                if (bridge1)
+                {
+                    dimer1->eachSymmetry([&anchor, &bridge1](ParentSpec *symmetricDimer1) {
+                        if (anchor == symmetricDimer1->atom(3))
+                        {
+                            bridge1->eachSymmetry([&anchor, &symmetricDimer1](ParentSpec *symmetricBridge1) {
+                                if (anchor == symmetricBridge1->atom(1))
                                 {
-                                    ParentSpec *parents[3] = { symmetricDimer1, symmetricBridge1, bridge1 };
-                                    create<BridgeWithDimer>(parents);
+                                    Atom *atom1 = symmetricBridge1->atom(2);
+                                    Bridge *bridge2 = atom1->specByRole<Bridge>(#{b_ct});
+                                    if (bridge2)
+                                    {
+                                        ParentSpec *parents[3] = { symmetricDimer1, symmetricBridge1, bridge2 };
+                                        create<BridgeWithDimer>(parents);
+                                    }
                                 }
-                            }
-                        });
-                    }
-                });
+                            });
+                        }
+                    });
+                }
             }
         }
     }

@@ -9,6 +9,7 @@ module VersatileDiamond
         # @abstract
         class BasePureUnit < GenerableUnit
           include Modules::OrderProvider
+          include Modules::ProcsReducer
 
           attr_reader :nodes
 
@@ -130,8 +131,10 @@ module VersatileDiamond
           def define_undefined_species(&block)
             if all_defined?(anchored_species)
               block.call
-            else
+            elsif select_undefined(anchored_species).uniq { |s| s.spec.spec }.one?
               check_undefined_species(&block)
+            else
+              call_procs(define_undefined_species_procs, &block)
             end
           end
 
@@ -183,6 +186,13 @@ module VersatileDiamond
             -> do
               sps, ops = [self, other].map { |u| u.nodes.map(&:sub_properties) }
               ops <=> sps
+            end
+          end
+
+          # @return [Array]
+          def define_undefined_species_procs
+            units.map do |unit|
+              -> &block { unit.define_undefined_species(&block) }
             end
           end
 
@@ -296,9 +306,7 @@ module VersatileDiamond
             undefined_species = select_undefined(anchored_species).sort
             vars = vars_for(nodes_with_species(undefined_species).map(&:atom))
             calls = vars.zip(undefined_species).map { |v, s| v.one_specie_by_role(s) }
-            kwargs = { value: calls }
-            kwargs[:type] = abstract_type unless undefined_species.one?
-            dict.make_specie_s(undefined_species, **kwargs)
+            dict.make_specie_s(undefined_species, value: calls)
           end
 
           # @param [BasePureUnit] nbr
