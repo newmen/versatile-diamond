@@ -30,7 +30,6 @@ void DesMethylFromBridge::doIt()
     if (a->is(8)) a->changeType(2);
     else a->changeType(28);
 
-    b->prepareToRemove();
     Handbook::scavenger().markAtom(b);
 
     Finder::findAll(atoms, 2);

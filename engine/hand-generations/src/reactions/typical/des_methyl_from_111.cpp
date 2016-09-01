@@ -29,7 +29,6 @@ void DesMethylFrom111::doIt()
 
     a->changeType(5);
 
-    b->prepareToRemove();
     Handbook::scavenger().markAtom(b);
 
     Finder::findAll(atoms, 2);

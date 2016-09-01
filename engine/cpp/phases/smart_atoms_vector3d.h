@@ -13,10 +13,10 @@ class SmartAtomsVector3d : public AtomsVector3d<AtomType>
     const Behavior *_behavior = nullptr;
 
 public:
-    typedef vector3d<AtomType *> BaseVector;
+    typedef AtomsVector3d<AtomType> BaseVector;
 
     SmartAtomsVector3d(const dim3 &sizes, const Behavior *bhvr) :
-        AtomsVector3d<AtomType>(sizes), _behavior(bhvr) {}
+        BaseVector(sizes), _behavior(bhvr) {}
 
     ~SmartAtomsVector3d()
     {

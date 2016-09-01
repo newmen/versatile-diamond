@@ -29,7 +29,6 @@ void DesMethylFromDimer::doIt()
 
     a->changeType(21);
 
-    b->prepareToRemove();
     Handbook::scavenger().markAtom(b);
 
     Finder::findAll(atoms, 2);

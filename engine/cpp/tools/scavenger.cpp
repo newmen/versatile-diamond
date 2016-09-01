@@ -10,6 +10,7 @@ Scavenger::~Scavenger()
 
 void Scavenger::markAtom(Atom *atom)
 {
+    atom->prepareToRemove();
     AtomsCollector::store(atom);
 }
 
@@ -25,9 +26,9 @@ void Scavenger::markReaction(SpecReaction *reaction)
 
 void Scavenger::clear()
 {
-    deleteAndClear<Atom>();
-    deleteAndClear<BaseSpec>();
     deleteAndClear<SpecReaction>();
+    deleteAndClear<BaseSpec>();
+    deleteAndClear<Atom>();
 }
 
 }
