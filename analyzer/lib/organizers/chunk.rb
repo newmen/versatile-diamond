@@ -14,7 +14,7 @@ module VersatileDiamond
       def initialize(lateral_reaction, theres)
         targets = merge_targets(theres)
         targets_specs = targets.map(&:first).to_set
-        tail_name = theres.map(&:description).join(' and ')
+        tail_name = theres.map(&:description).sort.join(' and ')
         super(lateral_reaction, targets, merge_links(targets_specs, theres), tail_name)
       end
 
@@ -32,10 +32,6 @@ module VersatileDiamond
       # @return [Boolean] true
       def original?
         true
-      end
-
-      def to_s
-        "Chunk of #{tail_name}"
       end
 
     private

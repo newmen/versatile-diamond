@@ -29,10 +29,17 @@ module VersatileDiamond
         @_clean_links = nil
       end
 
+      # Gets fake name for strong ordering and tests farm
+      # @return [Symbol]
+      def name
+        parents_names_suffix = parents.map(&:name).map(&:to_s).sort.join('%')
+        :"__spec_residual_of_#{owner.name}_#{parents_names_suffix}"
+      end
+
       # @param [Concepts::Atom...] atom
       # @return [Symbol]
       def keyname(atom)
-        @owner.spec.keyname(atom)
+        owner.spec.keyname(atom)
       end
 
       # Clones the current instance and replaces value of internal owner variable and
@@ -86,19 +93,13 @@ module VersatileDiamond
 
     private
 
-      # The cap for strong ordering
-      # @return [String] the cap
-      def name
-        "spec_residual##{object_id}"
-      end
-
       # Makes correct difference with other spec
       # @return [SpecResidual] spec residual that contains current instance and
       #   difference operation result
       # @override
       def subtract(*)
         diff = super
-        full_atoms_to_parents = merge(@atoms_to_parents, diff.atoms_to_parents)
+        full_atoms_to_parents = merge(atoms_to_parents, diff.atoms_to_parents)
         self.class.new(diff.owner, diff.links, full_atoms_to_parents)
       end
 
@@ -148,7 +149,7 @@ module VersatileDiamond
       # @return [Boolean] is atom used in current residual or not
       # @override
       def used?(_, atom)
-        !!@atoms_to_parents[atom] || super
+        !!atoms_to_parents[atom] || super
       end
 
       # @param [Array] atoms

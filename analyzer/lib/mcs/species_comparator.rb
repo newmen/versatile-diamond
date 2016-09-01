@@ -92,6 +92,7 @@ module VersatileDiamond
         # @param [Array] intersecs which will be resorted
         # @return [Array] the reordered list of passed intersections
         def resort_intersecs(intersecs, first, second)
+          fn, sn = first.name, second.name
           fs, ss = first.links.size, second.links.size
           intersecs.sort_by do |isec|
             isec.map do |v, w|
@@ -102,7 +103,11 @@ module VersatileDiamond
                   [keyname_from(first, v), keyname_from(second, w)]
                 end
 
-              fs > ss ? kn_pair.rotate : kn_pair
+              if fs < ss || (fs == ss && fn <= sn)
+                kn_pair
+              else
+                kn_pair.rotate
+              end
             end
           end
         end

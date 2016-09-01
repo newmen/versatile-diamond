@@ -20,10 +20,6 @@ module VersatileDiamond
         false
       end
 
-      def inspect
-        "TargetReplacedChunk of #{tail_name}"
-      end
-
     private
 
       # Creates lateral reaction which will be stored in current chunk

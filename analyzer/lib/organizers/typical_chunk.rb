@@ -27,10 +27,32 @@ module VersatileDiamond
         @_internal_chunks, @_total_links_num = nil
       end
 
+      # Gets fake name for strong ordering and tests farm
+      # @return [Symbol]
+      # @override
+      def name
+        underscorize = -> nm { nm.gsub(' ', '_') }
+        fixed_env_description = underscorize[tail_name]
+        if typical_reaction
+          fixed_reaction_name = underscorize[typical_reaction.name]
+          :"__typical_chunk_of_#{fixed_reaction_name}_with_#{fixed_env_description}"
+        else
+          :"__typical_chunk__with_#{fixed_env_description}"
+        end
+      end
+
       # Gets the parent typical reaction
       # @return [DependentTypicalReaction] the parent typical reaction
       def typical_reaction
         lateral_reaction.parent
+      end
+
+      def to_s
+        name
+      end
+
+      def inspect
+        to_s
       end
 
     private

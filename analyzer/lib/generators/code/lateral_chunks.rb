@@ -136,7 +136,7 @@ module VersatileDiamond
         # @param [Array] chunks from which the total chunk will be combined
         # @return [Organizers::TotalChunk] the total chunk
         def make_total_chunk(chunks)
-          Organizers::TotalChunk.new(reaction, chunks)
+          Organizers::TotalChunk.new(reaction.reaction, chunks)
         end
 
         # @return [Hash]

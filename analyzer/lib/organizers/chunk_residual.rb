@@ -20,6 +20,13 @@ module VersatileDiamond
         @_independent_links, @_independent_chunk = nil
       end
 
+      # Gets fake name for strong ordering and tests farm
+      # @return [Symbol]
+      def name
+        parents_names_suffix = parents.map(&:name).map(&:to_s).sort.join('%')
+        :"__chunk_residual_of_#{owner.name}_#{parents_names_suffix}"
+      end
+
       # Makes independent chunk from not fully matched residual
       # @return [IndependentChunk] the chunk which builds from not fully matchde
       #   residual

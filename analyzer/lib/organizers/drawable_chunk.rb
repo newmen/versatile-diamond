@@ -10,9 +10,10 @@ module VersatileDiamond
       end
 
       # Gets the name of chunk
-      # @return [String] same as #tail_name
+      # @return [Symbol] same as #tail_name
       def name
-        tail_name.freeze
+        fixed_env_description = tail_name.gsub(' ', '_')
+        :"__sub_chunk__with_#{fixed_env_description}"
       end
     end
 

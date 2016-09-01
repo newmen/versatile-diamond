@@ -65,6 +65,7 @@ module VersatileDiamond
       def replace_base_spec(new_spec)
         rename_used_keynames_and_update_links(new_spec)
         @spec = new_spec
+        @_name = nil
       end
 
       # Finds positions between atoms in base structure.

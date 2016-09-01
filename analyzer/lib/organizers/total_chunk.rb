@@ -21,6 +21,13 @@ module VersatileDiamond
         @_total_links = nil
       end
 
+      # Gets fake name for strong ordering and tests farm
+      # @return [Symbol]
+      def name
+        fixed_reaction_name = @typical_reaction.name.gsub(' ', '_')
+        :"__total_chunk_of_#{fixed_reaction_name}"
+      end
+
       # Gets total links of all participants
       # @return [Hash] the graph of of relations between all using specs and atoms
       def total_links
