@@ -82,20 +82,20 @@ void Atom::describe(ushort role, BaseSpec *spec)
 {
     assert(is(role));
 
-    const uint type = spec->type();
-    const uint key = hash(role, type);
+    const uint specType = spec->type();
+    const uint key = hash(role, specType);
 
 #ifdef PRINT
     debugPrint([&](IndentStream &os) {
         os << "Atom::describe " << this << " " << std::dec;
         pos(os);
         os << " " << spec->name();
-        os << " |" << _type << ", " << _prevType << "| role type: " << role
-           << ". spec type: " << type << ". key: " << key;
+        os << " |" << type() << ", " << _prevType << "| role type: " << role
+           << ". spec type: " << specType << ". key: " << key;
     });
 #endif // PRINT
 
-    _roles[role].insert(type);
+    _roles[role].insert(specType);
     _specs.insert(std::pair<uint, BaseSpec *>(key, spec));
 }
 

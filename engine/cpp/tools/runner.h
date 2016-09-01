@@ -77,9 +77,9 @@ void Runner<HB>::calculate()
         timeDelta = _reactor->doEvent();
 
 #ifdef PRINT
-        debugPrint([this, steps](IndentStream &os) {
+        debugPrint([this, totalSteps](IndentStream &os) {
             os << "-----------------------------------------------\n"
-               << steps << ". " << _reactor->totalRate() << "\n";
+               << totalSteps << ". " << _reactor->totalRate() << "\n";
         });
 #endif // PRINT
 
