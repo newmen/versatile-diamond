@@ -313,10 +313,7 @@ events
 
   reaction 'methyl to high bridge'
     # TODO: проверить соответствие значений направленности
-    # TODO: возможно реакция требует уточнения, ибо bridge(ct: *) слишком базовый атом, который также может являться димером, что может привести к assert ошибке (требуется дополнительный учёт атомов продукта (в данном случае исходного в-ва), для определения всех возможных изначальных и соответственно конечных состояний)
-    equation methyl_on_dimer(cm: *) = bridge(ct: *) + high_bridge
-      unfixed methyl_on_dimer(:cm)
-
+    equation methyl_on_dimer(cm: *, cm: u) = bridge(ct: *, ct: i) + high_bridge
       refinement 'without high chain neighbour'
         forward_activation 15.3
         reverse_activation 2.9

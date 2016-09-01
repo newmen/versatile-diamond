@@ -144,6 +144,7 @@ events
   reaction 'methyl to high bridge'
     equation methyl_on_dimer(cm: *) = bridge(ct: *) + high_bridge
       unfixed methyl_on_dimer(:cm)
+      incoherent bridge(:ct)
 
     forward_activation 15.3
     reverse_activation 2.9
