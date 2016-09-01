@@ -82,7 +82,7 @@ void Atom::describe(ushort role, BaseSpec *spec)
 {
     assert(is(role));
 
-    const uint specType = spec->type();
+    const ushort specType = spec->type();
     const uint key = hash(role, specType);
 
 #ifdef PRINT
@@ -101,7 +101,8 @@ void Atom::describe(ushort role, BaseSpec *spec)
 
 void Atom::forget(ushort role, BaseSpec *spec)
 {
-    const uint key = hash(role, spec->type());
+    const ushort specType = spec->type();
+    const uint key = hash(role, specType);
 
     auto range = _specs.equal_range(key);
     assert(std::distance(range.first, range.second) > 0);
@@ -117,7 +118,7 @@ void Atom::forget(ushort role, BaseSpec *spec)
         }
         else
         {
-            pr->second.erase(spec->type());
+            pr->second.erase(specType);
         }
     }
 
@@ -136,7 +137,7 @@ void Atom::forget(ushort role, BaseSpec *spec)
         pos(os);
         os << " " << spec->name();
         os << " |" << type() << ", " << _prevType << "| role type: " << role
-                  << ". spec type: " << spec->type() << ". key: " << key;
+                  << ". spec type: " << specType << ". key: " << key;
     });
 #endif // PRINT
 }
@@ -278,7 +279,6 @@ void Atom::pos(IndentStream &os)
     if (lattice()) os << lattice()->coords();
     else os << "amorph";
 }
-
 #endif // PRINT
 
 bool Atom::hasRole(ushort sid, ushort role) const
