@@ -26,7 +26,12 @@ public:
 
     ushort type() const { return _type; }
 
-    void activate() { ++_actives; }
+    void activate()
+    {
+        assert(_actives < valence());
+        ++_actives;
+    }
+
     void deactivate()
     {
         assert(_actives > 0);
