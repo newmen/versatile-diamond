@@ -61,6 +61,10 @@ void Local<B, U, RT, ST, AT>::concretize(Atom *anchor)
         ParentType::template remove<U>(anchor, n);
         ParentType::template store<R>(anchor, n);
     }
+    else
+    {
+        ParentType::template remove<U>(anchor, -n);
+    }
 }
 
 template <template <ushort> class B, class U, ushort RT, ushort ST, ushort AT>
@@ -70,7 +74,7 @@ void Local<B, U, RT, ST, AT>::unconcretize(Atom *anchor)
     static_assert(std::is_same<typename R::UbiquitousType, U>::value, "Undefined using reaction type");
 
     assert(anchor->isVisited());
-    assert(anchor->is(AT));
+    assert(!anchor->is(AT));
     assert(!anchor->hasRole(ST, AT));
 
     short n = ParentType::currNum(anchor, R::nums());
@@ -78,6 +82,10 @@ void Local<B, U, RT, ST, AT>::unconcretize(Atom *anchor)
     {
         ParentType::template remove<R>(anchor, n);
         ParentType::template store<U>(anchor, n);
+    }
+    else
+    {
+        ParentType::template remove<R>(anchor, -n);
     }
 }
 
