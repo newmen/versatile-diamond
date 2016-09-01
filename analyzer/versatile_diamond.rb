@@ -1,4 +1,4 @@
-require 'pry'
+require 'pry' unless ENV['TRAVIS']
 
 require 'graphviz'
 
