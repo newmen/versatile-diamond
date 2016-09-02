@@ -30,7 +30,6 @@ public:
 
     Runner(const Config *config, Reactor<HB> *reactor, Tracker<HB> *tracker) :
         _config(config), _reactor(reactor), _tracker(tracker) {}
-    ~Runner() {}
 
     void calculate();
 

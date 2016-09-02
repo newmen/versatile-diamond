@@ -110,7 +110,7 @@ void Atom::eachSpecByRole(ushort role, const L &lambda)
     debugPrint([&](IndentStream &os) {
         os << "Atom::eachSpecByRole " << this << " " << std::dec;
         pos(os);
-        os << " |" << _type << ", " << _prevType << "| role id: " << role
+        os << " |" << type() << ", " << _prevType << "| role id: " << role
            << ". spec id: " << S::ID << ". key: " << key;
         os << " => total " << num << " specs:";
 

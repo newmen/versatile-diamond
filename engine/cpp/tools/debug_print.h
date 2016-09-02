@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include "indent_stream.h"
 
 namespace vd
@@ -14,18 +15,15 @@ IndentStream rootStream(std::ostringstream &stream);
 IndentStream indentStream(IndentStream &stream);
 
 template <class L>
-void debugPrint(const L &lambda, bool putsNewLine = true)
+void debugPrint(const L &lambda)
 {
     std::ostringstream stringStream;
     IndentStream smartStream = rootStream(stringStream);
 
     lambda(smartStream);
 
-    std::cout << stringStream.str();
-    if (putsNewLine)
-    {
-        std::cout << std::endl;
-    }
+    static std::ofstream out("debug.log");
+    out << stringStream.str();
 }
 
 }

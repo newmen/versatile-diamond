@@ -74,7 +74,7 @@ void Local<B, U, RT, ST, AT>::unconcretize(Atom *anchor)
     static_assert(std::is_same<typename R::UbiquitousType, U>::value, "Undefined using reaction type");
 
     assert(anchor->isVisited());
-    assert(!anchor->is(AT));
+    assert(anchor->is(AT) || anchor->is(NO_VALUE));
     assert(!anchor->hasRole(ST, AT));
 
     short n = ParentType::currNum(anchor, R::nums());

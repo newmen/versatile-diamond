@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     {
         Preparator<Handbook> preparator(argc, argv);
         return firmRun(&preparator, {
-            SIGINT, SIGQUIT, SIGKILL, SIGTERM, SIGSTOP, SIGTSTP, SIGCHLD
+            SIGINT, SIGQUIT, SIGKILL, SIGSEGV, SIGTERM, SIGSTOP, SIGTSTP, SIGCHLD
         });
     }
     else
