@@ -17,15 +17,6 @@ void BaseSpec::remove()
 {
 #ifdef PRINT
     wasForgotten();
-
-    debugPrint([&](IndentStream &os) {
-        os << "BaseSpec::remove " << this->name() << " with atoms of: " << std::endl;
-        os << std::dec;
-        this->eachAtom([&os](Atom *atom) {
-            atom->info(os);
-            os << std::endl;
-        });
-    });
 #endif // PRINT
 }
 

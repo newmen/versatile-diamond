@@ -44,7 +44,8 @@ void UbiquitousReaction::doIt()
 void UbiquitousReaction::info(IndentStream &os)
 {
     os << "Reaction " << name() << " [" << this << "] ";
-    os << " as <" << target()->type() << ", " << target()->prevType() << ">: ";
+    os << " as <" << target()->type() << ", " << target()->prevType() << "> ";
+    os << " [" << target() << "]: ";
     if (target()->lattice()) os << target()->lattice()->coords();
     else os << "amorph";
 }

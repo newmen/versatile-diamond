@@ -23,7 +23,7 @@ void debugPrint(const L &lambda)
     lambda(smartStream);
 
     static std::ofstream out("debug.log");
-    out << stringStream.str();
+    out << stringStream.str() << "\n";
 }
 
 }
