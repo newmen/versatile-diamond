@@ -100,6 +100,13 @@ module VersatileDiamond
         end
         public :major_atom_index
 
+        # Gets number of active bonds for atom at zero crystal layer level
+        # @return [Integer]
+        def zero_level_atom_actives
+          ap = find_crystal_atom(instance.major_crystal_atom)
+          ap.unbonded_actives_num - instance.zero_level_crystal_atom_valence
+        end
+
         # Finds the crystal atom by atom information hash
         # @param [Hash] info about crystal atom
         # @return [Organizers::AtomProperties] the atom properties that correspond to

@@ -15,7 +15,7 @@ class Crystal : public TemplatedCrystal<SmartAtomsVector3d, Atom>
 public:
     void initialize();
 
-    void changeBehavior (const Behavior *behavior);
+    void changeBehavior(const Behavior *behavior);
 
     void insert(Atom *atom, const int3 &coords);
     void erase(Atom *atom);

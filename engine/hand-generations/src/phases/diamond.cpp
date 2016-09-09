@@ -14,7 +14,8 @@ Diamond::~Diamond()
 
 void Diamond::buildAtoms()
 {
-    for (int i = 0; i < _defaultSurfaceHeight - 1; ++i)
+    makeLayer(0, 24, 2);
+    for (int i = 1; i < _defaultSurfaceHeight - 1; ++i)
     {
         makeLayer(i, 24, 4);
     }

@@ -37,13 +37,13 @@ void LocalableRole<B, TARGET_ATOM_INDEX>::store()
 template <class B, ushort TARGET_ATOM_INDEX>
 void LocalableRole<B, TARGET_ATOM_INDEX>::remove()
 {
-    B::remove();
-
     Atom *target = this->atom(TARGET_ATOM_INDEX);
     if (target->isVisited())
     {
         unconcretizeLocal(target);
     }
+
+    B::remove();
 }
 
 }

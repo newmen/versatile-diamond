@@ -161,13 +161,13 @@ ushort Handbook::activesToHFor(ushort type)
 
 bool Handbook::atomIs(ushort complexType, ushort typeOf)
 {
-    assert(__atomsNum > complexType);
-    assert(__atomsNum > typeOf);
+    assert(complexType < __atomsNum);
+    assert(typeOf < __atomsNum);
     return __atomsAccordance[__atomsNum * complexType + typeOf];
 }
 
 ushort Handbook::specificate(ushort type)
 {
-    assert(__atomsNum > type);
+    assert(type < __atomsNum);
     return __atomsSpecifing[type];
 }

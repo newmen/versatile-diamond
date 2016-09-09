@@ -7,6 +7,12 @@ class Diamond < VersatileDiamond::Lattices::Base
   # file in common templates directory which located at
   # /analyzer/lib/generators/code/templates/phases
 
+  # Gets valence of zero level atom
+  # @return [Integer] get the number of valence electrons
+  def zero_level_crystal_atom_valence
+    2
+  end
+
   # Describes relations which belongs to major diamond crystal carbon atom
   # @return [Hash] the information about crystal carbon
   def major_crystal_atom

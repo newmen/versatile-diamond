@@ -124,8 +124,8 @@ void Ubiquitous<RT>::doIt()
 {
     ParentType::doIt();
 
-    Atom *atom[1] = { this->target() };
-    Finder::findAll(atom, 1);
+    Atom *atom = this->target();
+    Finder::findAll(&atom, 1);
 }
 
 #endif // UBIQUITOUS_H

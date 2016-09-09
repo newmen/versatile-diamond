@@ -13,7 +13,8 @@
 
 void <%= class_name %>::buildAtoms()
 {
-    for (int i = 0; i < _defaultSurfaceHeight - 1; ++i)
+    makeLayer(0, <%= major_atom_index %>, <%= zero_level_atom_actives %>);
+    for (int i = 1; i < _defaultSurfaceHeight - 1; ++i)
     {
         makeLayer(i, <%= major_atom_index %>, <%= major_atom_actives %>);
     }
