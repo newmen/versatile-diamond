@@ -14,6 +14,8 @@ namespace vd
 IndentStream rootStream(std::ostringstream &stream);
 IndentStream indentStream(IndentStream &stream);
 
+std::ostream &debugStream();
+
 template <class L>
 void debugPrint(const L &lambda)
 {
@@ -22,8 +24,7 @@ void debugPrint(const L &lambda)
 
     lambda(smartStream);
 
-    static std::ofstream out("debug.log");
-    out << stringStream.str() << "\n";
+    debugStream() << stringStream.str() << "\n";
 }
 
 }

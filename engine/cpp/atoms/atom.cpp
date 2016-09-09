@@ -214,7 +214,9 @@ void Atom::prepareToRemove()
 #ifdef PRINT
 void Atom::info(IndentStream &os)
 {
-    os << type() << " [" << this << "] -> ";
+    os << type() << "|" << _prevType
+       << " @ " << actives() << "%" << hCount()
+       << " [" << this << "] -> ";
     pos(os);
 
     printRoles(os);

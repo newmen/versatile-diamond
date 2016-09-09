@@ -15,6 +15,12 @@ IndentStream indentStream(IndentStream &stream)
     return IndentStream(stream, 2);
 }
 
+std::ostream &debugStream()
+{
+    static std::ofstream out("debug.log");
+    return out;
+}
+
 }
 
 #endif // PRINT
