@@ -8,27 +8,33 @@ short UbiquitousReaction::delta(const Atom *anchor, const ushort *typeToNum)
     return currNum(anchor, typeToNum) - prevNum(anchor, typeToNum);
 }
 
-short UbiquitousReaction::currNum(const Atom *anchor, const ushort *typeToNum)
+ushort UbiquitousReaction::currNum(const Atom *anchor, const ushort *typeToNum)
 {
     ushort currType = anchor->type();
     if (currType == NO_VALUE)
     {
         assert(anchor->prevType() != NO_VALUE);
-        return -typeToNum[anchor->prevType()];
+        return 0;
     }
-
-    return typeToNum[currType];
+    else
+    {
+        return typeToNum[currType];
+    }
 }
 
-short UbiquitousReaction::prevNum(const Atom *anchor, const ushort *typeToNum)
+ushort UbiquitousReaction::prevNum(const Atom *anchor, const ushort *typeToNum)
 {
     ushort prevType = anchor->prevType();
-    if (prevType != NO_VALUE && anchor->type() != NO_VALUE)
+    if (prevType == NO_VALUE)
+    {
+        assert(anchor->type() != NO_VALUE);
+        return 0;
+    }
+    else
     {
         return typeToNum[prevType];
     }
 
-    return 0;
 }
 
 void UbiquitousReaction::doIt()

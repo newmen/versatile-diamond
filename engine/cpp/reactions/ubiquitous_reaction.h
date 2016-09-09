@@ -12,8 +12,8 @@ class UbiquitousReaction : public Reaction
 
 protected:
     static short delta(const Atom *anchor, const ushort *typeToNum);
-    static short currNum(const Atom *anchor, const ushort *typeToNum);
-    static short prevNum(const Atom *anchor, const ushort *typeToNum);
+    static ushort currNum(const Atom *anchor, const ushort *typeToNum);
+    static ushort prevNum(const Atom *anchor, const ushort *typeToNum);
 
     UbiquitousReaction(Atom *target) : _target(target) {}
 

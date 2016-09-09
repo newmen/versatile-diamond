@@ -37,8 +37,8 @@ protected:
     template <class R> static void store(Atom *anchor, short delta);
     template <class R> static void remove(Atom *anchor, short delta);
 
-private:
     template <class R> static void removeAll(Atom *anchor);
+    template <class R1, class R2> static void replace(Atom *anchor);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -62,18 +62,11 @@ template <ushort RT>
 template <class R>
 void Ubiquitous<RT>::findChild(Atom *anchor)
 {
-    short n;
     auto result = R::check(anchor);
     switch (result)
     {
     case NEW:
-        removeAll<typename R::UbiquitousType>(anchor);
-
-        n = ParentType::currNum(anchor, R::nums());
-        if (n > 0)
-        {
-            store<R>(anchor, n);
-        }
+        replace<typename R::UbiquitousType, R>(anchor);
         break;
 
     case FOUND:
@@ -85,13 +78,7 @@ void Ubiquitous<RT>::findChild(Atom *anchor)
         break;
 
     case REMOVED:
-        removeAll<R>(anchor);
-
-        n = ParentType::currNum(anchor, R::nums());
-        if (n > 0)
-        {
-            store<typename R::UbiquitousType>(anchor, n);
-        }
+        replace<R, typename R::UbiquitousType>(anchor);
         break;
     }
 }
@@ -117,6 +104,19 @@ void Ubiquitous<RT>::removeAll(Atom *anchor)
 {
     R removableTemplate(anchor);
     Handbook::mc().removeAll(R::MC_INDEX, &removableTemplate);
+}
+
+template <ushort RT>
+template <class R1, class R2>
+void Ubiquitous<RT>::replace(Atom *anchor)
+{
+    removeAll<R1>(anchor);
+
+    ushort n = ParentType::currNum(anchor, R1::nums());
+    if (n > 0)
+    {
+        store<R2>(anchor, n);
+    }
 }
 
 template <ushort RT>
