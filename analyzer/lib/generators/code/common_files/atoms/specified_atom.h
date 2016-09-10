@@ -55,10 +55,11 @@ ushort SpecifiedAtom<VALENCE>::hCount() const
     }
     else
     {
-#endif // PRINT
+#else // PRINT
 #ifndef NDEBUG
         Atom::hCount();
 #endif // NDEBUG
+#endif // PRINT
         return Handbook::hydrogensFor(type());
 #ifdef PRINT
     }
@@ -78,7 +79,19 @@ ushort SpecifiedAtom<VALENCE>::actives() const
     {
 #endif // PRINT
         ushort result = Handbook::activesFor(type());
+#ifdef PRINT
+        if (Atom::actives() != result)
+        {
+            debugPrint([&](IndentStream &os) {
+                os << "...\n"
+                   << "DANGER!! "
+                   << Atom::actives() << " != " << result
+                   << "\n...";
+            });
+        }
+#else
         assert(Atom::actives() == result);
+#endif // PRINT
         return result;
 #ifdef PRINT
     }
