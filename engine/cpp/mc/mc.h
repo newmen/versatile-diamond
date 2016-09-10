@@ -274,6 +274,10 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeAll(ushort index, UbiquitousReactio
     uint n = _multiEvents[index].removeAll(templateReaction->target());
     if (n > 0)
     {
+#ifdef PRINT
+    printReaction(templateReaction, "Remove all", "multi", n);
+#endif // PRINT
+
         assert(n < templateReaction->target()->valence());
         updateRate(-templateReaction->rate() * n);
     }
