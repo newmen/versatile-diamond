@@ -84,7 +84,7 @@ ushort SpecifiedAtom<VALENCE>::actives() const
         {
             debugPrint([&](IndentStream &os) {
                 os << "...\n"
-                   << "DANGER!! "
+                   << "DANGER!! [" << (Atom *)this << "] "
                    << Atom::actives() << " != " << result
                    << "\n...";
             });
