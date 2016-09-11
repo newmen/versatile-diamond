@@ -334,7 +334,7 @@ events
 
   reaction 'high bridge is stand to incoherent bridge'
     aliases source: bridge, product: bridge
-    equation high_bridge(ct: i) + source(ct: *, ct: i) = product(cr: *)
+    equation high_bridge(ch: i) + source(ct: *, ct: i) = product(cr: *)
 
       refinement 'without chain neighbour methyl'
         forward_activation 12.3
@@ -351,7 +351,7 @@ events
     reverse_rate 6.1e13
 
   reaction 'high bridge to bridge and dimer'
-    equation high_bridge(ct: i) + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *)
+    equation high_bridge(ch: i) + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *)
 
       refinement 'without chain neighbour methyl'
         activation 14.9
@@ -365,7 +365,7 @@ events
     reverse_rate 4.2e8
 
   reaction 'high bridge to two bridges on three'
-    equation high_bridge(ct: i) + bridge(cr: *) = three_bridges(cbr: *)
+    equation high_bridge(ch: i) + bridge(cr: *) = three_bridges(cbr: *)
       refinement 'without chain neighbour methyl'
         activation 3.2
         forward_rate 2.9e11

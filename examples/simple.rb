@@ -152,7 +152,7 @@ events
     reverse_rate 2.7e11
 
   reaction 'high bridge to two bridges on three'
-    equation high_bridge + bridge(cr: *) = three_bridges(cl: *)
+    equation high_bridge(ch: i) + bridge(cr: *) = three_bridges(cl: *)
     activation 3.2
     forward_rate 2.9e11
     reverse_rate 1.1e8
@@ -179,7 +179,7 @@ events
 
   reaction 'high bridge is stand to incoherent bridge'
     aliases source: bridge, product: bridge
-    equation high_bridge + source(ct: *, ct: i) = product(cr: *)
+    equation high_bridge + source(ct: *, ct: i) = product(cr: *, ct: i)
 
     enthalpy 24
     forward_activation 12.3
@@ -188,7 +188,7 @@ events
     reverse_rate 6.1e13
 
   reaction 'high bridge to bridge and dimer'
-    equation high_bridge + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *)
+    equation high_bridge(ch: i) + dimer(cr: *, cl: i) = bridge_with_dimer(cl: *)
     activation 14.9
     forward_rate 2.2e9
     reverse_rate 4.2e8
