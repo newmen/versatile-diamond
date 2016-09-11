@@ -1063,7 +1063,19 @@ module VersatileDiamond
         assert(atoms1[1]->is(#{br_s}));
         atoms1[1]->changeType(#{ct_ss});
     }
-    atoms1[2]->changeType(#{hm_hh});
+    if (atoms1[2]->is(#{ct_hh}))
+    {
+        atoms1[2]->changeType(#{hm_hh});
+    }
+    else if (atoms1[2]->is(#{ct_sh}))
+    {
+        atoms1[2]->changeType(#{hm_sh});
+    }
+    else
+    {
+        assert(atoms1[2]->is(#{ct_ss}));
+        atoms1[2]->changeType(#{hm_ss});
+    }
     Finder::findAll(atoms1, 3);
                   CODE
                 end
@@ -1186,7 +1198,19 @@ module VersatileDiamond
     atoms1[0]->changeType(#{cd_s});
     assert(!atoms1[1]->is(#{hc_f}));
     atoms1[1]->changeType(#{hc_f});
-    atoms1[2]->changeType(#{hm_hh});
+    if (atoms1[2]->is(#{ct_hh}))
+    {
+        atoms1[2]->changeType(#{hm_hh});
+    }
+    else if (atoms1[2]->is(#{ct_sh}))
+    {
+        atoms1[2]->changeType(#{hm_sh});
+    }
+    else
+    {
+        assert(atoms1[2]->is(#{ct_ss}));
+        atoms1[2]->changeType(#{hm_ss});
+    }
     Finder::findAll(atoms1, 3);
                   CODE
                 end
@@ -1309,7 +1333,15 @@ module VersatileDiamond
     atoms1[0]->changeType(#{cd_s});
     assert(!atoms1[1]->is(#{hc_f}));
     atoms1[1]->changeType(#{hc_f});
-    atoms1[2]->changeType(#{hm_hh});
+    if (atoms1[2]->is(#{ct_hh}))
+    {
+        atoms1[2]->changeType(#{hm_hh});
+    }
+    else
+    {
+        assert(atoms1[2]->is(#{ct_sh}));
+        atoms1[2]->changeType(#{hm_sh});
+    }
     Finder::findAll(atoms1, 3);
                   CODE
                 end

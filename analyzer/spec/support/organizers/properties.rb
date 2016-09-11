@@ -127,6 +127,8 @@ module VersatileDiamond
 
         prop(:high_cm, :high_bridge, :cm)
         prop(:ihigh_cm, :incoherent_high_bridge, :cm)
+        prop(:ahigh_cm, :activated_high_bridge, :cm)
+        prop(:ihhigh_cm, :incoherent_hydrogenated_high_bridge, :cm)
         prop(:cm, :methyl_on_bridge_base, :cm)
         prop(:ucm, :unfixed_methyl_on_bridge, :cm)
         prop(:amob, :activated_methyl_on_bridge, :cm)

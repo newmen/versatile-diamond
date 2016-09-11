@@ -187,7 +187,8 @@ module VersatileDiamond
         return if groups.any? { |(rp, rels)| target_limits[rp] < rels.size }
 
         lattices_num = total_props[:nbr_lattices].select(&:last).size
-        return if target_limits[:nbr_lts_num] < lattices_num
+        both_wo_lattice = !lattice && !other.lattice
+        return if both_wo_lattice && target_limits[:nbr_lts_num] < lattices_num
 
         common_plus(other, total_props)
       end

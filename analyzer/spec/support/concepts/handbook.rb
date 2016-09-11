@@ -293,6 +293,9 @@ module VersatileDiamond
         set(:incoherent_high_bridge) do
           SpecificSpec.new(high_bridge_base, cm: incoherent_c)
         end
+        set(:activated_high_bridge) do
+          SpecificSpec.new(high_bridge_base, cm: activated_c)
+        end
         set(:incoherent_hydrogenated_high_bridge) do
           SpecificSpec.new(high_bridge_base, cm: incoherent_c_hydride)
         end

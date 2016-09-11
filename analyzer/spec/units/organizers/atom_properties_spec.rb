@@ -222,12 +222,20 @@ module VersatileDiamond
         end
 
         let(:limits) { classifier.limitations }
-        it { expect(cm.limited_plus(cm, limits)).to eq(nil) }
+        it { expect(cm.limited_plus(cm, limits)).to be_nil }
         it { expect(high_cm.limited_plus(cm, limits)).to be_nil }
         it { expect(high_cm.limited_plus(high_cm, limits)).to be_nil }
 
         let(:dimer_relation) { dimer_cr - bridge_ct }
         it { expect(dimer_cr.limited_plus(dimer_relation, limits)).to be_nil }
+
+        let(:cds) { ab_ct - bridge_ct }
+        it { expect(high_cm.limited_plus(cds, limits)).to eq(ahigh_cm) }
+        it { expect(cds.limited_plus(high_cm, limits)).to eq(ahigh_cm) }
+
+        let(:cdih) { hib_ct - bridge_ct }
+        it { expect(high_cm.limited_plus(cdih, limits)).to eq(ihhigh_cm) }
+        it { expect(cdih.limited_plus(high_cm, limits)).to eq(ihhigh_cm) }
       end
 
       describe '#-' do
