@@ -200,7 +200,7 @@ Tracker<HB> *Preparator<HB>::tracker()
 
         if (_yamlReader.isDefined("xyz"))
         {
-            trackVolumeSaver<SdfSaver>("xyz");
+            trackVolumeSaver<XYZSaver>("xyz");
         }
 
         if (_yamlReader.isDefined("mol"))
