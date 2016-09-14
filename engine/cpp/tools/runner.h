@@ -15,7 +15,7 @@ namespace vd
 template <class HB>
 class Runner
 {
-    enum : ushort { TRACK_EACH_STEP = 100 };
+    enum : ushort { TRACK_EACH_STEP = 1000 };
 
     static volatile bool __terminate;
 
