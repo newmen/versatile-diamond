@@ -45,10 +45,9 @@ module VersatileDiamond
           # @return [Expressions::Core::OpCall]
           def iterate_species_by_role(&block)
             if atoms.one?
-              predefn_vars = dict.defined_vars # get before make inner nbr specie var
-              specie_var = dict.make_specie_s(select_undefined(species))
-              atom_var = dict.var_of(atoms)
-              atom_var.all_species_by_role(predefn_vars, specie_var, block.call)
+              undefn_groups = select_undefined(species).group_by(&:original)
+              defn_procs = undefn_groups.map { |_, sg| species_by_role_proc(sg) }
+              call_procs(defn_procs, &block)
             else
               raise 'Species iteration by role can occur from just one atom'
             end
@@ -93,6 +92,17 @@ module VersatileDiamond
           end
 
         private
+
+          # @param [Array] species_group which will be defined
+          # @return [Proc] the all species definition construction with fiber notaion
+          def species_by_role_proc(species_group)
+            predefn_vars = dict.defined_vars # get before make inner nbr specie var
+            specie_var = dict.make_specie_s(species_group)
+            atom_var = dict.var_of(atoms)
+            -> &block do
+              atom_var.all_species_by_role(predefn_vars, specie_var, block.call)
+            end
+          end
 
           # @return [Array]
           def incoming_nodes
