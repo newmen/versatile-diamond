@@ -12,9 +12,9 @@ STANDART	:= -std=c++11
 
 GCC_PATH	:= /usr
 CXX		:= $(GCC_PATH)/bin/g++
-DFLAGS		:= $(STANDART) -I$(ENGINE_SRC_DIR)
+DFLAGS		:= $(STANDART) -I$(ENGINE_SRC_DIR) -I/usr/local/include
 CFLAGS		:= $(DFLAGS) $(ARKSFLAGS) -Wall -I$(GCC_PATH)/include
-LFLAGS		:= $(STANDART) -L$(GCC_PATH)/lib -lyaml-cpp -pthread
+LFLAGS		:= $(STANDART) -L$(GCC_PATH)/lib -L/usr/local/lib -lyaml-cpp -pthread
 
 HGEN_SRC_DIR	:= src
 HGEN_OBJS_DIR	:= obj
