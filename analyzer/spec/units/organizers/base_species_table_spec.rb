@@ -129,6 +129,12 @@ module VersatileDiamond
           let(:spec) { dept_lower_methyl_on_half_extended_bridge_base }
           let(:parents) { [dept_bridge_base, dept_methyl_on_right_bridge_base] }
         end
+
+        it_behaves_like :check_optimal_parents do
+          let(:dependent_base_species) { [dept_bridge_base, dept_dimer_base, spec] }
+          let(:spec) { dept_horizont_extended_dimer_base }
+          let(:parents) { [dept_bridge_base, dept_bridge_base, dept_dimer_base] }
+        end
       end
     end
 

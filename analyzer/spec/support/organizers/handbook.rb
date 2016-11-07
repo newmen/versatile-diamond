@@ -55,6 +55,7 @@ module VersatileDiamond
           :cross_bridge_on_dimers_base,
           :dimer_base,
           :dimer_base_dup,
+          :horizont_extended_dimer_base,
           :trimer_base,
           :extended_bridge_base,
           :extended_dimer_base,
