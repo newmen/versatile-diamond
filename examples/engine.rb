@@ -46,6 +46,11 @@ surface
     atoms cl: bridge(:ct), cr: mb(:cb), cm: mb(:cm)
     bond :cl, :cr, face: 100, dir: :front
 
+  spec :methyl_on_dimer_with_bridge
+    aliases mb: methyl_on_bridge
+    atoms cl: bridge(:cr), cr: mb(:cb), cm: mb(:cm)
+    bond :cl, :cr, face: 100, dir: :front
+
   spec :methyl_on_111
     atoms cm: C, cb: bridge(:cr)
     bond :cm, :cb
@@ -185,6 +190,13 @@ events
 
   reaction 'methyl to high bridge'
     equation methyl_on_dimer(cm: *, cm: u) = bridge(ct: *, ct: i) + high_bridge
+    forward_activation 15.3
+    reverse_activation 2.9
+    forward_rate 9.8e9
+    reverse_rate 2.7e8
+
+  reaction 'methyl to high bridge near bridge'
+    equation methyl_on_dimer_with_bridge(cm: *, cm: u) = bridge(cr: *) + high_bridge
     forward_activation 15.3
     reverse_activation 2.9
     forward_rate 9.8e9
