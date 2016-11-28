@@ -6,7 +6,6 @@ MIRROR = {
   'desorption methyl from 111': 'forward desorption methyl from 111',
   'desorption methyl from bridge': 'forward desorption methyl from bridge',
   'desorption methyl from dimer': 'forward desorption methyl from dimer',
-  'desorption methyl from dimer': 'forward desorption methyl from dimer',
   'dimer drop at end of dimers row': 'reverse dimer formation at end of dimers row',
   'dimer drop in middle of dimers row': 'reverse dimer formation in middle of dimers row',
   'dimer drop near bridge': 'reverse dimer formation near bridge',
@@ -32,7 +31,7 @@ MIRROR = {
   'sierpinski drop': 'forward sierpinski drop',
   'surface activation': 'forward surface activation',
   'surface deactivation': 'forward surface deactivation',
-  'two bridges to high bridge': 'reverse high bridge incorporates in crystal lattice near another bridge'
+  'two bridges to high bridge': 'reverse high bridge incorporates in crystal lattice near another bridge',
 }
 
 def convert(freq_stat):
