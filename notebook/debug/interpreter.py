@@ -1,6 +1,9 @@
 import re
 
 
+STEP_SEPARATOR = ' ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
+
+
 def convert_names(nums, names_map):
   result = {}
   for k, v in nums.items():
@@ -35,7 +38,7 @@ def read_specie(all_lines):
   return None
 
 
-REACT_NUM_RX = re.compile(r'^\d+-(?P<index>\d+)\.\. (?P<num>\d+) -> .+?$')
+REACT_NUM_RX = re.compile(r'^\d+-(?P<index>\d+)\.\. (?P<num>\d+) -> .+$')
 def read_reactions_num(all_lines):
   reading = False
   result = {}
@@ -84,6 +87,7 @@ def main_loop(all_lines, names_map):
             species_step = dict(species_step)
           else:
             all_lines.pop(0)  # skip no sence line
+  print('Done')
   return {
     'reactions': reactions_progress,
     'species': species_progress,
