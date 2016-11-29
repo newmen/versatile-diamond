@@ -31,7 +31,7 @@ def do_analysis(path, names_map):
 
 def cache_filename(path):
   fixed_path = path.replace('../', '').replace('./', '')
-  return '%s-xx.json' % ''.join([part[0] for part in fixed_path.split('/')])
+  return '%s.json' % ''.join([part[0] for part in fixed_path.split('/')])
 
 
 def read_cache(path):
