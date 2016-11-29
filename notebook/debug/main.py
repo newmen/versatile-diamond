@@ -24,18 +24,21 @@ def interpret_debug(path, call_intr):
 def do_analysis(path, names_map):
   print('Analysing: %s' % path)
   result = interpret_debug(path, lambda ls: main_loop(ls, names_map))
-  data = {'size': size, 'path': path, 'data': result}
-  open(name, 'w').write(json.dumps(data))
+  data = {'size': os.path.getsize(path), 'path': path, 'data': result}
+  open(cache_filename(path), 'w').write(json.dumps(data))
   return result
 
 
-def read_cache(path):
+def cache_filename(path):
   fixed_path = path.replace('../', '').replace('./', '')
-  name = '%s-xx.json' % ''.join([part[0] for part in fixed_path.split('/')])
-  size = os.path.getsize(path)
+  return '%s-xx.json' % ''.join([part[0] for part in fixed_path.split('/')])
+
+
+def read_cache(path):
+  name = cache_filename(path)
   if os.path.isfile(name):
     data = json.loads(open(name).read())
-    if data['size'] == size and data['path'] == path:
+    if data['size'] == os.path.getsize(path) and data['path'] == path:
       print('Read from cache %s' % name)
       return data['data']
   return None

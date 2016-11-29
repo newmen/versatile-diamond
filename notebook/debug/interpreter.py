@@ -5,18 +5,11 @@ STEP_SEPARATOR = ' +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
 def convert_names(nums, names_map):
-  result = {}
-  for k, v in nums.items():
-    result[names_map[k]] = v
-  return result
+  return dict([(names_map[k], v) for k, v in nums.items()])
 
 
 def clear_zero(nums):
-  result = {}
-  for k, v in nums.items():
-    if v != 0:
-      result[k] = v
-  return result
+  return dict([(k, v) for k, v in nums.items() if v != 0])
 
 
 SPEC_BEGIN_RX = re.compile(r'^(\S.+?) at \[0x[a-f0-9]+\]$')
@@ -38,7 +31,8 @@ def read_specie(all_lines):
   return None
 
 
-REACT_NUM_RX = re.compile(r'^\d+-(?P<index>\d+)\.\. (?P<num>\d+) -> .+$')
+REACT_BEGIN_RX = re.compile(r'^Current sizes:')
+REACT_NUM_RX = re.compile(r'^\d+-(?P<index>\d+)\.\. (?P<num>\d+) -> ')
 def read_reactions_num(all_lines):
   reading = False
   result = {}
@@ -50,7 +44,7 @@ def read_reactions_num(all_lines):
         result[int(m.group('index'))] = int(m.group('num'))
       else:
         return ([line] + all_lines, result)
-    elif line == 'Current sizes:\n':
+    elif REACT_BEGIN_RX.search(line):
       reading = True
     else:
       return ([line] + all_lines, None)
@@ -63,9 +57,9 @@ def main_loop(all_lines, names_map):
   species_step = {}
   counter = 0
   while all_lines:
-    counter += 1
-    if counter % 1000 == 0:
+    if counter % 10000 == 0:
       print('%s: %s' % (counter, len(all_lines)))
+    counter += 1
     specie_result = read_specie(all_lines)
     if not specie_result:
       break
@@ -87,7 +81,8 @@ def main_loop(all_lines, names_map):
             species_step = dict(species_step)
           else:
             all_lines.pop(0)  # skip no sence line
-  print('Done')
+  lr, ls = len(reactions_progress), len(species_progress)
+  print(('Done: %s' % lr) if lr == ls else ('Fail: %s != %s' % (lr, ls)))
   return {
     'reactions': reactions_progress,
     'species': species_progress,
