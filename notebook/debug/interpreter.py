@@ -12,13 +12,20 @@ def clear_zero(nums):
   return dict([(k, v) for k, v in nums.items() if v != 0])
 
 
+SPEC_SYMMETRIC_RX = re.compile(r'^symmetric ')
 def read_specie(all_lines, spec_name):
+  def result(lines, k):
+    if spec_name == 'bridge' or SPEC_SYMMETRIC_RX.search(spec_name):
+      return (lines, None)
+    else:
+      return (lines, (spec_name, k))
+
   while all_lines:
     line = all_lines.pop(0)
     if line == ' was found\n':
-      return (all_lines, (spec_name, 1))
+      return result(all_lines, 1)
     elif line == ' was forgotten\n':
-      return (all_lines, (spec_name, -1))
+      return result(all_lines, -1)
   return None
 
 
@@ -29,7 +36,7 @@ def find_specie(all_lines):
   else:
     m = SPEC_BEGIN_RX.search(all_lines[0])
     if m:
-      return read_specie(all_lines[1:], m.group(1))
+      return read_specie(all_lines[1:], m.group(1).replace('_', ' '))
     else:
       return (all_lines, None)
 
