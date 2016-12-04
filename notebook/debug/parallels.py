@@ -3,6 +3,7 @@ from multiprocessing import Process, Pipe
 from interpreter import STEP_SEPARATOR, clear_zero
 
 
+PARALLEL_PROCESSES = 8
 LOOKUP_RANGE_PERCENT = 0.1
 
 
@@ -29,12 +30,12 @@ def fix_parts(all_lines, parts_ns, limit):
   return [0] + result + [len(all_lines)]
 
 
-def borders(all_lines, number_of_parts):
+def borders(all_lines):
   tot_ln = len(all_lines)
-  nopmo = number_of_parts - 1
-  pln = tot_ln / number_of_parts
-  parts_ns = [pln * i for i in range(1, number_of_parts)]  # we need just border numbers
-  parts_ns[0] += tot_ln - pln * number_of_parts
+  nopmo = PARALLEL_PROCESSES - 1
+  pln = tot_ln / PARALLEL_PROCESSES
+  parts_ns = [pln * i for i in range(1, PARALLEL_PROCESSES)]  # we need just border numbers
+  parts_ns[0] += tot_ln - pln * PARALLEL_PROCESSES
   return fix_parts(all_lines, parts_ns, int(pln * LOOKUP_RANGE_PERCENT))
 
 
