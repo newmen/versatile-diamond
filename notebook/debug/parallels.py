@@ -23,20 +23,21 @@ def align_to_steps(parts_ns, dns):
   return [n + dn for n, dn in zip(parts_ns, dns) if dn]
 
 
-def fix_parts(all_lines, parts_ns, limit):
+def fix_parts(all_lines, parts_ns, limit, first=None, last=None):
   dns = [dn_to_sep(all_lines, n, limit) for n in parts_ns]
-  result = align_to_steps(parts_ns, dns) if any(dns) else []
-  print('Internal borders are: %s' % result)
-  return [0] + result + [len(all_lines)]
+  first = first if first else 0
+  last = last if last else len(all_lines)
+  result = [x + first for x in align_to_steps(parts_ns, dns)] if any(dns) else []
+  return [first] + result + [last]
 
 
-def borders(all_lines):
+def borders(all_lines, first=None, last=None):
   tot_ln = len(all_lines)
   nopmo = PARALLEL_PROCESSES - 1
   pln = tot_ln / PARALLEL_PROCESSES
   parts_ns = [pln * i for i in range(1, PARALLEL_PROCESSES)]  # we need just border numbers
   parts_ns[0] += tot_ln - pln * PARALLEL_PROCESSES
-  return fix_parts(all_lines, parts_ns, int(pln * LOOKUP_RANGE_PERCENT))
+  return fix_parts(all_lines, parts_ns, int(pln * LOOKUP_RANGE_PERCENT), first, last)
 
 
 def sub_interpret(pipe, part_lines, call_intr):
@@ -83,6 +84,7 @@ def recv_all_parts(all_processes, all_pipes):
 
 
 def parallel_interpret(all_lines, limits, call_intr):
+  print('Borders are: %s' % limits)
   all_pipes = []
   all_processes = []
   for i in range(len(limits) - 1):

@@ -90,11 +90,7 @@ def check_specie_or_next_step(all_lines, append_swn, append_react_step):
 
 
 def reading_loop(all_lines, append_swn, append_react_step):
-  counter = 0
   while all_lines:
-    if counter % 10000 == 0:
-      print('%s: %s' % (counter, len(all_lines)))
-    counter += 1
     all_lines = check_specie_or_next_step(all_lines, append_swn, append_react_step)
 
 
@@ -115,7 +111,6 @@ def main_loop(all_lines, names_map):
   reading_loop(all_lines, append_swn, append_react_step)
 
   lr, ls = len(reactions_progress), len(species_progress)
-  print(('Done: %s' % lr) if lr == ls else ('Fail: %s != %s' % (lr, ls)))
   return {
     'reactions': reactions_progress,
     'species': species_progress,

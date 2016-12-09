@@ -9,10 +9,10 @@ def main():
   hand_d = cache_or_interpret(sys.argv[1], HAND_NAMES)
   auto_d = cache_or_interpret(sys.argv[2], AGEN_NAMES)
 
-  draw_all([hand_d, auto_d], 'reactions', [
-    'forward methyl to high bridge',
-    'reverse methyl to high bridge',
-  ])
+  # draw_all([hand_d, auto_d], 'reactions', [
+  #   'forward methyl to high bridge',
+  #   'reverse methyl to high bridge',
+  # ])
 
   draw_all([hand_d, auto_d], 'species', [
     'high bridge',
