@@ -1,4 +1,5 @@
 import sys
+import re
 
 from names import HAND_NAMES, AGEN_NAMES
 from cache import cache_or_interpret
@@ -15,6 +16,7 @@ def main():
   # ])
 
   draw_all([hand_d, auto_d], 'species', [
+    # re.compile(r'^(?!dimer).*$')
     'high bridge',
     'methyl on dimer'
   ])
