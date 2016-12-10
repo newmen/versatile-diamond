@@ -1,4 +1,4 @@
-from multiprocessing import Pool
+from multiprocessing import Process, Pipe
 
 from interpreter import STEP_SEPARATOR, clear_zero
 
@@ -58,9 +58,11 @@ def resplit(all_lines, first, last):
     return result
 
 
-def sub_interpret(part_lines, call_intr):
-  print("Calc: %s" % len(part_lines))
-  return call_intr(part_lines)
+def sub_interpret(pipe, part_lines, call_intr):
+  print("start %s" % len(part_lines))
+  pipe.send(call_intr(part_lines))
+  print("done %s" % len(part_lines))
+  pipe.close()
 
 
 def merge_reactions(parts):
@@ -95,18 +97,22 @@ def merge_results(results):
   }
 
 
-def part_lines(all_lines, limits, call_intr):
-  def iterate(i):
-    pr, nx = limits[i], limits[i+1]
-    return sub_interpret(all_lines[pr:nx], call_intr)
-  print('op')
-  return iterate
+def recv_all_parts(all_processes, all_pipes):
+  results = [pipe.recv() for pipe in all_pipes]
+  [process.join() for process in all_processes]
+  return merge_results(results)
 
 
-def parallel_interpret(all_lines, call_intr):
-  limits = [0] + resplit(all_lines, 0, len(all_lines))
+def parallel_interpret(all_lines, limits, call_intr):
   print('Borders are: %s' % limits)
-  pool = Pool(processes=PARALLEL_PROCESSES)
-  f = part_lines(all_lines, limits, call_intr)
-  results = pool.map(f, range(len(limits) - 1))
-  return merge_results(map(get, results))
+  all_pipes = []
+  all_processes = []
+  for i in range(1, len(limits)):
+    pr, nx = (limits[i-1], limits[i])
+    part_lines = all_lines[pr:nx]
+    self_pipe, child_pipe = Pipe()
+    process = Process(target=sub_interpret, args=[child_pipe, part_lines, call_intr])
+    process.start()
+    all_processes.append(process)
+    all_pipes.append(self_pipe)
+  return recv_all_parts(all_processes, all_pipes)

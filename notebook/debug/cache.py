@@ -1,13 +1,34 @@
 import os
 import json
 
-from parallels import parallel_interpret
+from parallels import parallel_interpret, merge_results, PARALLEL_PROCESSES, resplit
 from interpreter import main_loop
+
+
+def split_limits(limits):
+  result = []
+  slc = []
+  i = 0
+  for limit in limits:
+    if i == PARALLEL_PROCESSES + 1:
+      result.append(slc)
+      slc = []
+      i = 0
+    else:
+      slc.append(limit)
+    i += 1
+  if slc:
+    result.append(slc)
+  return result
 
 
 def interpret_debug(path, call_intr):
   all_lines = open(path).readlines()
-  return parallel_interpret(all_lines, call_intr)
+  num = len(all_lines)
+  slices = split_limits([0] + resplit(all_lines, 0, num))
+  results = [parallel_interpret(all_lines, limits, call_intr) for limits in slices]
+  return merge_results(results)
+
 
 
 def do_analysis(path, names_map):
