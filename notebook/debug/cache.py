@@ -1,38 +1,13 @@
 import os
 import json
 
-from parallels import borders, parallel_interpret, merge_results
+from parallels import parallel_interpret
 from interpreter import main_loop
-
-
-MIN_CHUNK_LINES_NUM = 100000
-
-
-def separate_interpret(all_lines, limits, call_intr):
-  nlmo = len(limits) - 1
-  if nlmo == 1:
-    return call_intr(all_lines)
-  if limits[1] - limits[0] < MIN_CHUNK_LINES_NUM:
-    return parallel_interpret(all_lines, limits, call_intr)
-  else:
-    results = []
-    for i in range(nlmo):
-      f, t = limits[i], limits[i+1]
-      sub_limits = borders(all_lines[f:t], f, t)
-      result = separate_interpret(all_lines, sub_limits, call_intr)
-      results.append(result)
-    return merge_results(results)
 
 
 def interpret_debug(path, call_intr):
   all_lines = open(path).readlines()
-  limits = borders(all_lines)
-  nlmo = len(limits) - 1
-  print('Number of real parallel analysing processes: %s' % nlmo)
-  if nlmo == 1:
-    return call_intr(all_lines)
-  else:
-    return separate_interpret(all_lines, limits, call_intr)
+  return parallel_interpret(all_lines, call_intr)
 
 
 def do_analysis(path, names_map):
