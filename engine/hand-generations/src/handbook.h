@@ -5,6 +5,7 @@
 #include <mc/mc.h>
 #include <tools/common.h>
 #include <tools/scavenger.h>
+#include <tools/steps_serializer.h>
 #include <species/keeper.h>
 #include <species/lateral_spec.h>
 #include <species/specific_spec.h>
@@ -35,9 +36,16 @@ private:
     static SKeeper __specificKeeper;
     static Scavenger __scavenger;
 
+#ifdef SERIALIZE
+    static StepsSerializer __serializer;
+#endif // SERIALIZE
+
 public:
     ~Handbook();
 
+#ifdef SERIALIZE
+    static StepsSerializer &serializer();
+#endif // SERIALIZE
     static DMC &mc();
 
     static SurfaceAmorph &amorph();

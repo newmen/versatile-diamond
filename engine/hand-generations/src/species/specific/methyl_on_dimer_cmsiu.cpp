@@ -8,13 +8,13 @@
 template <> const ushort MethylOnDimerCMsiu::Base::__indexes[1] = { 0 };
 template <> const ushort MethylOnDimerCMsiu::Base::__roles[1] = { 26 };
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SERIALIZE)
 const char *MethylOnDimerCMsiu::name() const
 {
     static const char value[] = "methyl_on_dimer(cm: *, cm: i, cm: u)";
     return value;
 }
-#endif // PRINT
+#endif // PRINT || SERIALIZE
 
 void MethylOnDimerCMsiu::find(MethylOnDimerCMiu *parent)
 {

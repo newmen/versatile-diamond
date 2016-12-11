@@ -6,13 +6,13 @@
 template <> const ushort BridgeWithDimer::Base::__indexes[2] = { 5, 0 };
 template <> const ushort BridgeWithDimer::Base::__roles[2] = { 32, 6 };
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SERIALIZE)
 const char *BridgeWithDimer::name() const
 {
     static const char value[] = "bridge with dimer";
     return value;
 }
-#endif // PRINT
+#endif // PRINT || SERIALIZE
 
 void BridgeWithDimer::find(Atom *anchor)
 {

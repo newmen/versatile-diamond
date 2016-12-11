@@ -26,11 +26,12 @@ public:
     virtual void store();
     virtual void remove();
 
-#ifdef PRINT
-    virtual void eachAtom(const std::function<void (Atom *)> &lambda) = 0;
-
+#if defined(PRINT) || defined(SERIALIZE)
     virtual const char *name() const = 0;
+#endif // PRINT || SERIALIZE
+#ifdef PRINT
     virtual void info(IndentStream &os) = 0;
+    virtual void eachAtom(const std::function<void (Atom *)> &lambda) = 0;
 
 private:
     void wasFound();

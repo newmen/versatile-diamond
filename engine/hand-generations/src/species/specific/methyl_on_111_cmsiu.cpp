@@ -5,13 +5,13 @@
 template <> const ushort MethylOn111CMsiu::Base::__indexes[1] = { 0 };
 template <> const ushort MethylOn111CMsiu::Base::__roles[1] = { 26 };
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SERIALIZE)
 const char *MethylOn111CMsiu::name() const
 {
     static const char value[] = "methyl_on_111(cm: *, cm: i, cm: u)";
     return value;
 }
-#endif // PRINT
+#endif // PRINT || SERIALIZE
 
 void MethylOn111CMsiu::find(MethylOn111CMiu *parent)
 {

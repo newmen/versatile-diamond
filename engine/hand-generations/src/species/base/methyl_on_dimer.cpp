@@ -4,13 +4,13 @@
 template <> const ushort MethylOnDimer::Base::__indexes[2] = { 1, 4 };
 template <> const ushort MethylOnDimer::Base::__roles[2] = { 23, 22 };
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SERIALIZE)
 const char *MethylOnDimer::name() const
 {
     static const char value[] = "methyl on dimer";
     return value;
 }
-#endif // PRINT
+#endif // PRINT || SERIALIZE
 
 void MethylOnDimer::find(Atom *anchor)
 {

@@ -92,6 +92,14 @@ const ushort Handbook::__activesOnAtoms[Handbook::__atomsNum] =
     2, 0, 0, 0, 0, 0, 1, 1, 2
 };
 
+#ifdef SERIALIZE
+StepsSerializer Handbook::__serializer;
+StepsSerializer &Handbook::serializer()
+{
+    return __serializer;
+}
+#endif // SERIALIZE
+
 Handbook::DMC Handbook::__mc;
 Handbook::DMC &Handbook::mc()
 {

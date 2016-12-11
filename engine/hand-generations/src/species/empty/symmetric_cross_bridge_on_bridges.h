@@ -10,9 +10,9 @@ class SymmetricCrossBridgeOnBridges :
 public:
     SymmetricCrossBridgeOnBridges(OriginalCrossBridgeOnBridges *parent) : ParentsSwapWrapper(parent) {}
 
-#ifdef PRINT
-    const char *name() const final;
-#endif // PRINT
+#if defined(PRINT) || defined(SERIALIZE)
+    const char *name() const override;
+#endif // PRINT || SERIALIZE
 };
 
 #endif // SYMMETRIC_CROSS_BRIDGE_ON_BRIDGES_H

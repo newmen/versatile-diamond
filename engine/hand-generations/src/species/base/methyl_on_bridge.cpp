@@ -5,13 +5,13 @@
 template <> const ushort MethylOnBridge::Base::__indexes[2] = { 1, 0 };
 template <> const ushort MethylOnBridge::Base::__roles[2] = { 9, 14 };
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SERIALIZE)
 const char *MethylOnBridge::name() const
 {
     static const char value[] = "methyl on bridge";
     return value;
 }
-#endif // PRINT
+#endif // PRINT || SERIALIZE
 
 void MethylOnBridge::find(Bridge *target)
 {

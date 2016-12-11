@@ -4,13 +4,13 @@
 template <> const ushort TwoBridgesCTRiCBRs::Base::__indexes[2] = { 0, 3 };
 template <> const ushort TwoBridgesCTRiCBRs::Base::__roles[2] = { 5, 0 };
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SERIALIZE)
 const char *TwoBridgesCTRiCBRs::name() const
 {
     static const char value[] = "two_bridges(ctr: i, cbr: *)";
     return value;
 }
-#endif // PRINT
+#endif // PRINT || SERIALIZE
 
 void TwoBridgesCTRiCBRs::find(TwoBridges *parent)
 {

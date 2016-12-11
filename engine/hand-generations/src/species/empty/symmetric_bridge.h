@@ -9,9 +9,9 @@ class SymmetricBridge : public AtomsSwapWrapper<EmptyBase<BRIDGE>, 1, 2>
 public:
     SymmetricBridge(OriginalBridge *parent) : AtomsSwapWrapper(parent) {}
 
-#ifdef PRINT
-    const char *name() const final;
-#endif // PRINT
+#if defined(PRINT) || defined(SERIALIZE)
+    const char *name() const override;
+#endif // PRINT || SERIALIZE
 };
 
 #endif // SYMMETRIC_BRIDGE_H

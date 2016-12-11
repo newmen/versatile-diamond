@@ -11,9 +11,9 @@ public:
 
     HighBridge(Atom *additionalAtom, ParentSpec *parent) : Specific(additionalAtom, parent) {}
 
-#ifdef PRINT
-    const char *name() const final;
-#endif // PRINT
+#if defined(PRINT) || defined(SERIALIZE)
+    const char *name() const override;
+#endif // PRINT || SERIALIZE
 
 protected:
     void findAllChildren() final;

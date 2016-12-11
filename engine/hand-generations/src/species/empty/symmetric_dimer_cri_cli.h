@@ -9,9 +9,9 @@ class SymmetricDimerCRiCLi :
 public:
     SymmetricDimerCRiCLi(OriginalDimerCRiCLi *parent) : ParentsSwapProxy(parent) {}
 
-#ifdef PRINT
-    const char *name() const final;
-#endif // PRINT
+#if defined(PRINT) || defined(SERIALIZE)
+    const char *name() const override;
+#endif // PRINT || SERIALIZE
 };
 
 #endif // SYMMETRIC_DIMER_CRI_CLI_H

@@ -39,6 +39,10 @@ private:
     Runner &operator = (const Runner &) = delete;
     Runner &operator = (Runner &&) = delete;
 
+#ifdef SERIALIZE
+    void serializeStep();
+#endif // SERIALIZE
+
     void firstSave();
     void storeIfNeed(double timeDelta, bool forseSave);
     void processJob(Job *job);
@@ -60,6 +64,14 @@ void Runner<HB>::stop()
     __terminate = true;
 }
 
+#ifdef SERIALIZE
+template <class HB>
+void Runner<HB>::serializeStep()
+{
+    HB::serializer().step(HB::mc().counts());
+}
+#endif // SERIALIZE
+
 template <class HB>
 void Runner<HB>::calculate()
 {
@@ -71,9 +83,17 @@ void Runner<HB>::calculate()
     double timeDelta = 0;
     double startTime = timestamp();
 
+#ifdef SERIALIZE
+    serializeStep();
+#endif // SERIALIZE
+
     while (!__terminate && _reactor->currentTime() <= _config->totalTime())
     {
         timeDelta = _reactor->doEvent();
+
+#ifdef SERIALIZE
+        serializeStep();
+#endif // SERIALIZE
 
 #ifdef PRINT
         debugPrint([this, totalSteps](IndentStream &os) {
@@ -102,6 +122,10 @@ void Runner<HB>::calculate()
 #ifndef NOUT
     storeIfNeed(timeDelta, true);
 #endif // NOUT
+
+#ifdef SERIALIZE
+        HB::serializer().save();
+#endif // SERIALIZE
 
     _parallelWorker.stop();
     printStat(startTime, stopTime, totalSteps);

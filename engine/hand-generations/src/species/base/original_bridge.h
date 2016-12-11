@@ -6,9 +6,9 @@
 class OriginalBridge : public Base<SourceSpec<ParentSpec, 3>, BRIDGE, 3>
 {
 public:
-#ifdef PRINT
-    const char *name() const final;
-#endif // PRINT
+#if defined(PRINT) || defined(SERIALIZE)
+    const char *name() const override;
+#endif // PRINT || SERIALIZE
 
 protected:
     OriginalBridge(Atom **atoms) : Base(atoms) {}

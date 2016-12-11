@@ -5,6 +5,7 @@
 #include <mc/mc.h>
 #include <tools/common.h>
 #include <tools/scavenger.h>
+#include <tools/steps_serializer.h>
 #include <species/keeper.h>
 <% if lateral_reactions_exists? %>
 #include <species/lateral_spec.h>
@@ -36,6 +37,13 @@ private:
     static SKeeper __specificKeeper;
 public:
     static SKeeper &specificKeeper();
+
+#ifdef SERIALIZE
+private:
+    static StepsSerializer __serializer;
+public:
+    static StepsSerializer &serializer();
+#endif // SERIALIZE
 
 private:
     static DMC __mc;

@@ -20,6 +20,9 @@ class Overall : public Typed<B, ST>
     bool _markedForRemove = false;
 
 public:
+#ifdef SERIALIZE
+    void store() override;
+#endif // SERIALIZE
     void remove() override;
 
 protected:
@@ -30,11 +33,24 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////////////////
 
+#ifdef SERIALIZE
+template <class B, ushort ST>
+void Overall<B, ST>::store()
+{
+    ParentType::store();
+    Handbook::serializer().appendSpec(this->name(), 1);
+}
+#endif // SERIALIZE
+
 template <class B, ushort ST>
 void Overall<B, ST>::remove()
 {
 //    if (this->isMarked()) return; // in each dependent types
     _markedForRemove = true;
+
+#ifdef SERIALIZE
+    Handbook::serializer().appendSpec(this->name(), -1);
+#endif // SERIALIZE
 
     ParentType::remove();
     Handbook::scavenger().markSpec(this);

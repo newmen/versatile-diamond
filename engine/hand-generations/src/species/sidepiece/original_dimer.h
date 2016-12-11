@@ -7,9 +7,9 @@
 class OriginalDimer : public Sidepiece<Base<DependentSpec<ParentSpec, 2>, DIMER, 2>>
 {
 public:
-#ifdef PRINT
-    const char *name() const final;
-#endif // PRINT
+#if defined(PRINT) || defined(SERIALIZE)
+    const char *name() const override;
+#endif // PRINT || SERIALIZE
 
 protected:
     OriginalDimer(ParentSpec **parents) : Sidepiece(parents) {}

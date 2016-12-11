@@ -10,9 +10,9 @@ class SymmetricDimer :
 public:
     SymmetricDimer(OriginalDimer *parent) : ParentsSwapWrapper(parent) {}
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SERIALIZE)
     const char *name() const override;
-#endif // PRINT
+#endif // PRINT || SERIALIZE
 };
 
 #endif // SYMMETRIC_DIMER_H

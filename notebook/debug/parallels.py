@@ -59,9 +59,8 @@ def resplit(all_lines, first, last):
 
 
 def sub_interpret(pipe, part_lines, call_intr):
-  print("start %s" % len(part_lines))
   pipe.send(call_intr(part_lines))
-  print("done %s" % len(part_lines))
+  print("Done %s" % len(part_lines))
   pipe.close()
 
 
@@ -108,8 +107,8 @@ def parallel_interpret(all_lines, limits, call_intr):
   all_pipes = []
   all_processes = []
   for i in range(1, len(limits)):
-    pr, nx = (limits[i-1], limits[i])
-    part_lines = all_lines[pr:nx]
+    f, t = limits[i-1], limits[i]
+    part_lines = all_lines[f:t]
     self_pipe, child_pipe = Pipe()
     process = Process(target=sub_interpret, args=[child_pipe, part_lines, call_intr])
     process.start()

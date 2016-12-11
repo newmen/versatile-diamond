@@ -8,6 +8,7 @@ QMAKE_LIBDIR += /usr/local/lib
 QMAKE_CXXFLAGS_RELEASE += -DNDEBUG
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
 #QMAKE_CXXFLAGS += -DPRINT
+#QMAKE_CXXFLAGS += -DSERIALIZE
 QMAKE_CXXFLAGS += -std=c++11
 #QMAKE_CXXFLAGS += -I../hand-generations/src
 QMAKE_CXXFLAGS += -w
@@ -141,6 +142,7 @@ SOURCES += \
     tools/indent_stream.cpp \
     tools/process_mem_usage.cpp \
     tools/scavenger.cpp \
+    tools/steps_serializer.cpp \
     tools/worker/frame.cpp \
     tools/worker/parallel_worker.cpp \
     tools/worker/worker_queue.cpp \
@@ -371,6 +373,7 @@ HEADERS += \
     tools/runner.h \
     tools/scavenger.h \
     tools/short_types.h \
+    tools/steps_serializer.h \
     tools/tracker.h \
     tools/typed.h \
     tools/vector3d.h \

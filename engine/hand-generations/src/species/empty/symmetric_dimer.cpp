@@ -1,9 +1,9 @@
 #include "symmetric_dimer.h"
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SERIALIZE)
 const char *SymmetricDimer::name() const
 {
     static const char value[] = "symmetric dimer";
     return value;
 }
-#endif // PRINT
+#endif // PRINT || SERIALIZE

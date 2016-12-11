@@ -53,6 +53,14 @@ ushort Handbook::activesFor(ushort type)
 }
 <% end %>
 
+#ifdef SERIALIZE
+StepsSerializer Handbook::__serializer;
+StepsSerializer &Handbook::serializer()
+{
+    return __serializer;
+}
+#endif // SERIALIZE
+
 Handbook::DMC Handbook::__mc;
 Handbook::DMC &Handbook::mc()
 {

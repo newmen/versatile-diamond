@@ -7,9 +7,9 @@
 class OriginalDimerCRiCLi : public Specific<Base<DependentSpec<ParentSpec>, DIMER_CRi_CLi, 2>>
 {
 public:
-#ifdef PRINT
-    const char *name() const final;
-#endif // PRINT
+#if defined(PRINT) || defined(SERIALIZE)
+    const char *name() const override;
+#endif // PRINT || SERIALIZE
 
 protected:
     OriginalDimerCRiCLi(ParentSpec *parent) : Specific(parent) {}

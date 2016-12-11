@@ -9,13 +9,13 @@
 template <> const ushort DimerCRs::Base::__indexes[1] = { 0 };
 template <> const ushort DimerCRs::Base::__roles[1] = { 21 };
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SERIALIZE)
 const char *DimerCRs::name() const
 {
     static const char value[] = "dimer(cr: *)";
     return value;
 }
-#endif // PRINT
+#endif // PRINT || SERIALIZE
 
 void DimerCRs::find(Dimer *parent)
 {

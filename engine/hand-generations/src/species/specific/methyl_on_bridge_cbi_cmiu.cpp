@@ -5,13 +5,13 @@
 template <> const ushort MethylOnBridgeCBiCMiu::Base::__indexes[2] = { 1, 0 };
 template <> const ushort MethylOnBridgeCBiCMiu::Base::__roles[2] = { 7, 25 };
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SERIALIZE)
 const char *MethylOnBridgeCBiCMiu::name() const
 {
     static const char value[] = "methyl_on_bridge(cb: i, cm: i, cm: u)";
     return value;
 }
-#endif // PRINT
+#endif // PRINT || SERIALIZE
 
 void MethylOnBridgeCBiCMiu::find(MethylOnBridge *parent)
 {

@@ -6,6 +6,7 @@
 #include <cmath>
 #include <functional>
 #include <vector>
+#include "../tools/steps_serializer.h"
 #include "common_mc_data.h"
 #include "events_container.h"
 #include "multi_events_container.h"
@@ -31,6 +32,10 @@ public:
     void initCounter(CommonMCData *data) const;
 
     void sort();
+
+#ifdef SERIALIZE
+    StepsSerializer::Dict counts();
+#endif // SERIALIZE
 
     double doRandom(CommonMCData *data);
     double totalRate() const { return _totalRate; }
@@ -103,6 +108,24 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::initCounter(CommonMCData *data) const
 {
     data->makeCounter(EVENTS_NUM + MULTI_EVENTS_NUM);
 }
+
+#ifdef SERIALIZE
+template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+StepsSerializer::Dict MC<EVENTS_NUM, MULTI_EVENTS_NUM>::counts()
+{
+    StepsSerializer::Dict result;
+    for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
+    {
+        auto evs = events(i);
+        uint size = evs->size();
+        if (size > 0)
+        {
+            result[evs->name()] = size;
+        }
+    }
+    return result;
+}
+#endif // SERIALIZE
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 double MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
@@ -196,8 +219,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::sort()
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 BaseEventsContainer *MC<EVENTS_NUM, MULTI_EVENTS_NUM>::events(uint index)
 {
-    uint orderValue = _order[index];
-    return correspondEvents(orderValue);
+    return correspondEvents(_order[index]);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
