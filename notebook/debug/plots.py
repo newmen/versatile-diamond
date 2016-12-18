@@ -20,12 +20,17 @@ def make_filter(slit):
 
 
 def draw_all(datas, key, slit=[]):
+  times = [data['times'] for data in datas]
   target_datas = [data[key] for data in datas]
   cutten_datas = map(make_filter(slit), target_datas) if slit else target_datas
-  map(draw_plot, cutten_datas)
-  plt.show()
+  map(draw_plot, zip(times, cutten_datas))
 
 
 def draw_plot(debug_data):
-  df = pd.DataFrame(debug_data).fillna(0).astype(float)
+  times, data = debug_data
+  df = pd.DataFrame(data, index=times).fillna(0).astype(float)
   df.plot()
+
+
+def show():
+  plt.show()

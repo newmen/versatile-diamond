@@ -3,7 +3,7 @@ import re
 
 from names import HAND_NAMES, AGEN_NAMES
 from cache import cache_or_interpret
-from plots import draw_all
+from plots import draw_all, show
 
 
 def main():
@@ -20,6 +20,8 @@ def main():
     'high bridge',
     'methyl on dimer'
   ])
+
+  show()
 
 
 if __name__ == '__main__':

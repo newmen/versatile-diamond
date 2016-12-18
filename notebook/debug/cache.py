@@ -44,6 +44,15 @@ def cache_filename(path):
   return '%s.json' % ''.join([part[0] for part in fixed_path.split('/')])
 
 
+def read_data_json(path):
+  parts = path.split('/')
+  data_json_path = '%s/data.json' % '/'.join(parts[:-1])
+  if os.path.isfile(data_json_path):
+    return json.loads(open(data_json_path).read())
+  else:
+    return None
+
+
 def read_cache(path):
   name = cache_filename(path)
   if os.path.isfile(name):
@@ -55,4 +64,4 @@ def read_cache(path):
 
 
 def cache_or_interpret(path, names_map):
-  return read_cache(path) or do_analysis(path, names_map)
+  return read_data_json(path) or read_cache(path) or do_analysis(path, names_map)

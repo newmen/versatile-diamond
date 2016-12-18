@@ -5,7 +5,6 @@
 #include <string>
 #include <list>
 #include <map>
-#include <json.hpp>
 #include "short_types.h"
 
 namespace vd
@@ -14,10 +13,12 @@ namespace vd
 class StepsSerializer
 {
 public:
-    typedef std::map<std::string, uint> Dict;
+    typedef std::map<std::string, int> Dict;
 private:
     typedef std::list<Dict> Seq;
+    typedef std::list<double> Times;
 
+    Times _times;
     Seq _reactions;
     Seq _species;
     Dict _specsStep;
@@ -26,7 +27,7 @@ public:
     StepsSerializer() = default;
 
     void appendSpec(const std::string &name, uint n);
-    void step(const Dict &reactions);
+    void step(double time, const Dict &reactions);
     void save() const;
 
 private:
@@ -34,8 +35,6 @@ private:
     StepsSerializer(StepsSerializer &&) = delete;
     StepsSerializer &operator = (const StepsSerializer &) = delete;
     StepsSerializer &operator = (StepsSerializer &&) = delete;
-
-    nlohmann::json toJson(const Seq &seq) const;
 };
 
 }

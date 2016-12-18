@@ -1,5 +1,6 @@
 #ifdef SERIALIZE
 #include "steps_serializer.h"
+#include <json.hpp>
 #include <fstream>
 
 namespace vd
@@ -22,8 +23,9 @@ void StepsSerializer::appendSpec(const std::string &name, uint n)
     }
 }
 
-void StepsSerializer::step(const Dict &reactions)
+void StepsSerializer::step(double time, const Dict &reactions)
 {
+    _times.push_back(time);
     _reactions.push_back(reactions);
     _species.push_back(_specsStep);
 }
@@ -31,23 +33,14 @@ void StepsSerializer::step(const Dict &reactions)
 void StepsSerializer::save() const
 {
     nlohmann::json data = {
-        { "reactions", toJson(_reactions) },
-        { "species", toJson(_species) },
+        { "times", nlohmann::json(_times) },
+        { "reactions", nlohmann::json(_reactions) },
+        { "species", nlohmann::json(_species) },
     };
 
     std::ofstream os("data.json");
-    os << data;
+    os << std::setw(2) << data;
     os.close();
-}
-
-nlohmann::json StepsSerializer::toJson(const Seq &seq) const
-{
-    nlohmann::json result = nlohmann::json::array();
-    for (const Dict &dict : seq)
-    {
-        result.push_back(dict);
-    }
-    return result;
 }
 
 }

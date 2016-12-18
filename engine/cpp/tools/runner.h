@@ -40,7 +40,7 @@ private:
     Runner &operator = (Runner &&) = delete;
 
 #ifdef SERIALIZE
-    void serializeStep();
+    void serializeStep(double time);
 #endif // SERIALIZE
 
     void firstSave();
@@ -66,9 +66,9 @@ void Runner<HB>::stop()
 
 #ifdef SERIALIZE
 template <class HB>
-void Runner<HB>::serializeStep()
+void Runner<HB>::serializeStep(double time)
 {
-    HB::serializer().step(HB::mc().counts());
+    HB::serializer().step(time, HB::mc().counts());
 }
 #endif // SERIALIZE
 
@@ -84,7 +84,7 @@ void Runner<HB>::calculate()
     double startTime = timestamp();
 
 #ifdef SERIALIZE
-    serializeStep();
+    serializeStep(0);
 #endif // SERIALIZE
 
     while (!__terminate && _reactor->currentTime() <= _config->totalTime())
@@ -92,7 +92,7 @@ void Runner<HB>::calculate()
         timeDelta = _reactor->doEvent();
 
 #ifdef SERIALIZE
-        serializeStep();
+        serializeStep(_reactor->currentTime());
 #endif // SERIALIZE
 
 #ifdef PRINT

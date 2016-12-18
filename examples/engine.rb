@@ -218,7 +218,7 @@ events
     forward_rate 4.5e13, 'cm3/(mol * s)'
 
   reaction 'methyl on dimer hydrogen migration'
-    equation methyl_on_dimer(cm: *, cm: u, cl: H) = methyl_on_dimer(cl: *, cm: H)
+    equation methyl_on_dimer(cl: *, cm: u, cm: H) = methyl_on_dimer(cm: *, cl: H)
     forward_activation 37.5
     forward_rate 2.1e12
 

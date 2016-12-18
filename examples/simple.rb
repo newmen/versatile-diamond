@@ -169,7 +169,7 @@ events
 
   reaction 'same methyl-dimer hydrogen migration'
     # TODO: there is way to not specify H atom
-    equation methyl_on_dimer(cm: *, cl: H) = methyl_on_dimer(cl: *, cm: H)
+    equation methyl_on_dimer(cl: *, cm: H) = methyl_on_dimer(cm: *, cl: H)
       unfixed methyl_on_dimer(:cm)
 
     forward_activation 37.5
