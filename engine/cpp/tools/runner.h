@@ -95,12 +95,12 @@ void Runner<HB>::calculate()
         serializeStep(_reactor->currentTime());
 #endif // SERIALIZE
 
-#ifdef PRINT
+#if defined(PRINT) || defined(MC_PRINT)
         debugPrint([this, totalSteps](IndentStream &os) {
             os << "-----------------------------------------------\n"
                << totalSteps << ". " << _reactor->totalRate() << "\n";
         });
-#endif // PRINT
+#endif // PRINT || MC_PRINT
 
         ++totalSteps;
 

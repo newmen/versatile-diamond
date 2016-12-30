@@ -26,17 +26,17 @@ public:
     virtual void store();
     virtual void remove();
 
-#if defined(PRINT) || defined(SERIALIZE)
+#if defined(PRINT) || defined(SPEC_PRINT) || defined(SERIALIZE)
     virtual const char *name() const = 0;
-#endif // PRINT || SERIALIZE
-#ifdef PRINT
+#endif // PRINT || SPEC_PRINT || SERIALIZE
+#if defined(PRINT) || defined(SPEC_PRINT)
     virtual void info(IndentStream &os) = 0;
     virtual void eachAtom(const std::function<void (Atom *)> &lambda) = 0;
 
 private:
     void wasFound();
     void wasForgotten();
-#endif // PRINT
+#endif // PRINT || SPEC_PRINT
 
 protected:
     BaseSpec() = default;

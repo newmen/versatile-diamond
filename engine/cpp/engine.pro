@@ -363,6 +363,7 @@ HEADERS += \
     tools/counters/time_counter.h \
     tools/creator.h \
     tools/debug_print.h \
+    tools/define_print.h \
     tools/error.h \
     tools/factory.h \
     tools/indent_facet.h \

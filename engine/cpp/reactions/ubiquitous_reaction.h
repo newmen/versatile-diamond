@@ -23,9 +23,9 @@ public:
 
     void doIt() override;
 
-#ifdef PRINT
+#if defined(PRINT) || defined(MC_PRINT)
     void info(IndentStream &os) override;
-#endif // PRINT
+#endif // PRINT || MC_PRINT
 
 protected:
     virtual ushort toType() const = 0;

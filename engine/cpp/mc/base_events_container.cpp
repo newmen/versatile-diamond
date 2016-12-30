@@ -10,11 +10,11 @@ Reaction *BaseEventsContainer::selectEvent(double r)
     uint index = (uint)(r / _events.front()->rate());
     assert(index < _events.size());
 
-#ifdef PRINT
+#if defined(PRINT) || defined(MC_PRINT)
     debugPrint([&](IndentStream &os) {
         os << "BaseEventsContainer::selectEvent: " << index;
     });
-#endif // PRINT
+#endif // PRINT || MC_PRINT
 
     return _events[index];
 }

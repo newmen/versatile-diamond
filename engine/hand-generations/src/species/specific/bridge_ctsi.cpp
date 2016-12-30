@@ -7,13 +7,13 @@
 template <> const ushort BridgeCTsi::Base::__indexes[1] = { 0 };
 template <> const ushort BridgeCTsi::Base::__roles[1] = { 28 };
 
-#if defined(PRINT) || defined(SERIALIZE)
+#if defined(PRINT) || defined(SPEC_PRINT) || defined(SERIALIZE)
 const char *BridgeCTsi::name() const
 {
     static const char value[] = "bridge(ct: *, ct: i)";
     return value;
 }
-#endif // PRINT || SERIALIZE
+#endif // PRINT || SPEC_PRINT || SERIALIZE
 
 void BridgeCTsi::find(Bridge *parent)
 {

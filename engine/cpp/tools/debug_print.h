@@ -1,7 +1,9 @@
 #ifndef DEBUG_PRINT_H
 #define DEBUG_PRINT_H
 
-#ifdef PRINT
+#include "define_print.h"
+
+#if defined(PRINT) || defined(ANY_PRINT)
 
 #include <iostream>
 #include <sstream>
@@ -29,5 +31,5 @@ void debugPrint(const L &lambda)
 
 }
 
-#endif // PRINT
+#endif // PRINT || ANY_PRINT
 #endif // DEBUG_PRINT_H

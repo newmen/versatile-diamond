@@ -4,13 +4,13 @@
 template <> const ushort BridgeCRh::Base::__indexes[1] = { 1 };
 template <> const ushort BridgeCRh::Base::__roles[1] = { 34 };
 
-#if defined(PRINT) || defined(SERIALIZE)
+#if defined(PRINT) || defined(SPEC_PRINT) || defined(SERIALIZE)
 const char *BridgeCRh::name() const
 {
     static const char value[] = "bridge(cr: H)";
     return value;
 }
-#endif // PRINT || SERIALIZE
+#endif // PRINT || SPEC_PRINT || SERIALIZE
 
 void BridgeCRh::find(BridgeCRi *parent)
 {

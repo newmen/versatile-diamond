@@ -7,11 +7,12 @@
 // below includes is not used there, but they very useful everywhere where used it
 #include <assert.h>
 
-#ifdef PRINT
-#include "debug_print.h"
-#endif // PRINT
-
 #include "short_types.h"
+#include "define_print.h"
+
+#if defined(PRINT) || defined(ANY_PRINT)
+#include "debug_print.h"
+#endif // PRINT || ANY_PRINT
 
 namespace vd
 {

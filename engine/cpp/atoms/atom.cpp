@@ -85,7 +85,7 @@ void Atom::describe(ushort role, BaseSpec *spec)
     const ushort specType = spec->type();
     const uint key = hash(role, specType);
 
-#ifdef PRINT
+#if defined(PRINT) || defined(ATOM_PRINT)
     debugPrint([&](IndentStream &os) {
         os << "Atom::describe " << this << " " << std::dec;
         pos(os);
@@ -93,7 +93,7 @@ void Atom::describe(ushort role, BaseSpec *spec)
         os << " |" << type() << ", " << _prevType << "| role type: " << role
            << ". spec type: " << specType << ". key: " << key;
     });
-#endif // PRINT
+#endif // PRINT || ATOM_PRINT
 
     _roles[role].insert(specType);
     _specs.insert(std::pair<uint, BaseSpec *>(key, spec));
@@ -131,7 +131,7 @@ void Atom::forget(ushort role, BaseSpec *spec)
         }
     }
 
-#ifdef PRINT
+#if defined(PRINT) || defined(ATOM_PRINT)
     debugPrint([&](IndentStream &os) {
         os << "forget " << this << " " << std::dec;
         pos(os);
@@ -139,7 +139,7 @@ void Atom::forget(ushort role, BaseSpec *spec)
         os << " |" << type() << ", " << _prevType << "| role type: " << role
                   << ". spec type: " << specType << ". key: " << key;
     });
-#endif // PRINT
+#endif // PRINT || ATOM_PRINT
 }
 
 bool Atom::hasSpec(ushort role, BaseSpec *spec) const
@@ -211,7 +211,7 @@ void Atom::prepareToRemove()
     setType(NO_VALUE);
 }
 
-#ifdef PRINT
+#if defined(PRINT) || defined(ATOM_PRINT)
 void Atom::info(IndentStream &os)
 {
     os << type() << "|" << _prevType
@@ -281,7 +281,7 @@ void Atom::pos(IndentStream &os)
     if (lattice()) os << lattice()->coords();
     else os << "amorph";
 }
-#endif // PRINT
+#endif // PRINT || ATOM_PRINT
 
 bool Atom::hasRole(ushort sid, ushort role) const
 {
@@ -304,7 +304,7 @@ BaseSpec *Atom::specByRole(ushort sid, ushort role)
 {
     const uint key = hash(role, sid);
 
-#ifdef PRINT
+#if defined(PRINT) || defined(ATOM_PRINT)
     debugPrint([&](IndentStream &os) {
         os << "Atom::specByRole " << this << std::dec;
         pos(os);
@@ -313,7 +313,7 @@ BaseSpec *Atom::specByRole(ushort sid, ushort role)
         auto range = _specs.equal_range(key);
         os << " -> distance: " << std::distance(range.first, range.second);
     });
-#endif // PRINT
+#endif // PRINT || ATOM_PRINT
 
     auto range = _specs.equal_range(key);
     uint distance = std::distance(range.first, range.second);

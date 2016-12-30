@@ -15,9 +15,9 @@ class ConcreteTypicalReaction : public B, public Targets<SpecificSpec, TARGETS_N
     typedef Targets<SpecificSpec, TARGETS_NUM> TargetsType;
 
 public:
-#ifdef PRINT
+#if defined(PRINT) || defined(MC_PRINT)
     void info(IndentStream &os);
-#endif // PRINT
+#endif // PRINT || MC_PRINT
 
 protected:
     ConcreteTypicalReaction(SpecificSpec *target);
@@ -41,7 +41,7 @@ ConcreteTypicalReaction<B, TARGETS_NUM>::ConcreteTypicalReaction(SpecificSpec **
 {
 }
 
-#ifdef PRINT
+#if defined(PRINT) || defined(MC_PRINT)
 template <class B, ushort TARGETS_NUM>
 void ConcreteTypicalReaction<B, TARGETS_NUM>::info(IndentStream &os)
 {
@@ -49,7 +49,7 @@ void ConcreteTypicalReaction<B, TARGETS_NUM>::info(IndentStream &os)
     IndentStream sub = indentStream(os);
     TargetsType::info(sub);
 }
-#endif // PRINT
+#endif // PRINT || MC_PRINT
 
 }
 

@@ -1,7 +1,9 @@
+#include "define_print.h"
+
+#if defined(PRINT) || defined(ANY_PRINT)
+
 #include "indent_stream.h"
 #include "common.h"
-
-#ifdef PRINT
 
 namespace vd
 {
@@ -161,4 +163,4 @@ IndentStream &operator << (IndentStream &stream, const int3 &value)
 
 }
 
-#endif // PRINT
+#endif // PRINT || ANY_PRINT

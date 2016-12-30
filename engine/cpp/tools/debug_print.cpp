@@ -1,6 +1,9 @@
-#include "debug_print.h"
+#include "define_print.h"
 
-#ifdef PRINT
+#if defined(PRINT) || defined(ANY_PRINT)
+
+#include "debug_print.h"
+#include <streambuf>
 
 namespace vd
 {
@@ -23,4 +26,4 @@ std::ostream &debugStream()
 
 }
 
-#endif // PRINT
+#endif // PRINT || ANY_PRINT

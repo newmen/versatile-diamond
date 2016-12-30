@@ -29,24 +29,24 @@ public:
     void activate()
     {
         assert(_actives < valence());
-#ifdef PRINT
+#if defined(PRINT) || defined(ATOM_PRINT)
         debugPrint([&](IndentStream &os) {
             os << "[" << this << "] activate() "
                << _actives << " -> " << (_actives + 1);
         });
-#endif // PRINT
+#endif // PRINT || ATOM_PRINT
         ++_actives;
     }
 
     void deactivate()
     {
         assert(_actives > 0);
-#ifdef PRINT
+#if defined(PRINT) || defined(ATOM_PRINT)
         debugPrint([&](IndentStream &os) {
             os << "[" << this << "] deactivate() "
                << _actives << " -> " << (_actives - 1);
         });
-#endif // PRINT
+#endif // PRINT || ATOM_PRINT
         --_actives;
     }
 

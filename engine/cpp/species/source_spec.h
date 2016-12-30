@@ -18,10 +18,10 @@ public:
     ushort size() const { return ATOMS_NUM; }
     Atom *atom(ushort index) const;
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SPEC_PRINT)
     void info(IndentStream &os) override;
     void eachAtom(const std::function<void (Atom *)> &lambda) override;
-#endif // PRINT
+#endif // PRINT || SPEC_PRINT
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@ Atom *SourceSpec<B, ATOMS_NUM>::atom(ushort index) const
     return _atoms[index];
 }
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SPEC_PRINT)
 template <class B, ushort ATOMS_NUM>
 void SourceSpec<B, ATOMS_NUM>::info(IndentStream &os)
 {
@@ -62,7 +62,7 @@ void SourceSpec<B, ATOMS_NUM>::eachAtom(const std::function<void (Atom *)> &lamb
         lambda(_atoms[i]);
     }
 }
-#endif // PRINT
+#endif // PRINT || SPEC_PRINT
 
 }
 

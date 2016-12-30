@@ -24,9 +24,9 @@ public:
     double oneRate() const { return _events.front()->rate(); }
     double commonRate() const { return _events.empty() ? 0.0 : oneRate() * _events.size(); }
 
-#if defined(PRINT) || defined(SERIALIZE) || !defined(NDEBUG)
+#if defined(PRINT) || defined(MC_PRINT) || defined(SERIALIZE) || !defined(NDEBUG)
     uint size() const { return _events.size(); }
-#endif // PRINT || SERIALIZE || !NDEBUG
+#endif // PRINT || MC_PRINT || SERIALIZE || !NDEBUG
 
 protected:
     BaseEventsContainer() = default;

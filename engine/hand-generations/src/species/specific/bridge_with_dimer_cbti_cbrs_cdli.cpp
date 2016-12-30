@@ -4,13 +4,13 @@
 template <> const ushort BridgeWithDimerCBTiCBRsCDLi::Base::__indexes[2] = { 0, 3 };
 template <> const ushort BridgeWithDimerCBTiCBRsCDLi::Base::__roles[2] = { 5, 0 };
 
-#if defined(PRINT) || defined(SERIALIZE)
+#if defined(PRINT) || defined(SPEC_PRINT) || defined(SERIALIZE)
 const char *BridgeWithDimerCBTiCBRsCDLi::name() const
 {
     static const char value[] = "bridge_with_dimer(cbt: i, cbr: *, cdl: i)";
     return value;
 }
-#endif // PRINT || SERIALIZE
+#endif // PRINT || SPEC_PRINT || SERIALIZE
 
 void BridgeWithDimerCBTiCBRsCDLi::find(BridgeWithDimerCDLi *parent)
 {

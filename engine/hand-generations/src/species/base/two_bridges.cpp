@@ -5,13 +5,13 @@
 template <> const ushort TwoBridges::Base::__indexes[2] = { 5, 0 };
 template <> const ushort TwoBridges::Base::__roles[2] = { 24, 6 };
 
-#if defined(PRINT) || defined(SERIALIZE)
+#if defined(PRINT) || defined(SPEC_PRINT) || defined(SERIALIZE)
 const char *TwoBridges::name() const
 {
     static const char value[] = "two bridges";
     return value;
 }
-#endif // PRINT || SERIALIZE
+#endif // PRINT || SPEC_PRINT || SERIALIZE
 
 void TwoBridges::find(Atom *anchor)
 {
