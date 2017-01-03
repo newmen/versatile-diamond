@@ -8,6 +8,20 @@
 namespace vd
 {
 
+bool DebugOutFlag::_needOutToDebug = true;
+
+void DebugOutFlag::switchFlag(bool newValue)
+{
+    _needOutToDebug = newValue;
+}
+
+bool DebugOutFlag::isDebugOut()
+{
+    return _needOutToDebug;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+
 IndentStream rootStream(std::ostringstream &stream)
 {
     return IndentStream(stream, 0);

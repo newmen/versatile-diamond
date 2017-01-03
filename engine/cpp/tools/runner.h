@@ -8,6 +8,11 @@
 #include "config.h"
 #include "tracker.h"
 #include "process_mem_usage.h"
+#include "define_print.h"
+
+#if defined(PRINT) || defined(ANY_PRINT)
+#define DEBUG_EACH_STEP TRACK_EACH_STEP
+#endif // PRINT || ANY_PRINT
 
 namespace vd
 {
@@ -115,16 +120,22 @@ void Runner<HB>::calculate()
             storeIfNeed(timeDelta, false);
         }
 #endif // NOUT
+#if defined(PRINT) || defined(ANY_PRINT)
+        DebugOutFlag::switchFlag((totalSteps % DEBUG_EACH_STEP) == 0);
+#endif // PRINT || ANY_PRINT
     }
 
     double stopTime = timestamp();
+#if defined(PRINT) || defined(ANY_PRINT)
+    DebugOutFlag::switchFlag(true);
+#endif // PRINT || ANY_PRINT
 
 #ifndef NOUT
     storeIfNeed(timeDelta, true);
 #endif // NOUT
 
 #ifdef SERIALIZE
-        HB::serializer().save();
+    HB::serializer().save();
 #endif // SERIALIZE
 
     _parallelWorker.stop();
