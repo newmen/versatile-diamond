@@ -340,7 +340,7 @@ module VersatileDiamond
     atoms1[1]->unbondFrom(atoms1[0]);
     atoms1[0]->changeType(#{ct_is});
     Handbook::scavenger().markAtom(atoms1[1]);
-    Finder::findAll(&atoms1[0], 1);
+    Finder::findAll(atoms1, 2);
                   CODE
                 end
               end
@@ -366,7 +366,7 @@ module VersatileDiamond
         atoms1[0]->changeType(#{ct_ss});
     }
     Handbook::scavenger().markAtom(atoms1[1]);
-    Finder::findAll(&atoms1[0], 1);
+    Finder::findAll(atoms1, 2);
                   CODE
                 end
               end
@@ -391,7 +391,7 @@ module VersatileDiamond
     atoms1[0]->changeType(#{ct_is});
     Handbook::scavenger().markAtom(atoms1[1]);
     Handbook::scavenger().markAtom(atoms1[2]);
-    Finder::findAll(&atoms1[0], 1);
+    Finder::findAll(atoms1, 3);
                   CODE
                 end
               end
@@ -420,7 +420,7 @@ module VersatileDiamond
     }
     Handbook::scavenger().markAtom(atoms1[1]);
     Handbook::scavenger().markAtom(atoms1[2]);
-    Finder::findAll(&atoms1[0], 1);
+    Finder::findAll(atoms1, 3);
                   CODE
                 end
               end

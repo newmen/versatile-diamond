@@ -233,13 +233,19 @@ events
   #   activation 0
   #   forward_rate 1e8
 
-  reaction 'migration down at activated dimer from high bridge'
+  # TODO: fix algorithm of atomic balance checking
+  reaction 'migration down at activated dimer from high bridge HH'
     aliases source: dimer, product: dimer
-    equation high_bridge(ch: i) + source(cr: *) = product(cr: *)
+    equation high_bridge(ch: H, ch: H) + source(cr: *) = product(cr: *, cl: H)
+    activation 0
+    forward_rate 1e8
+  reaction 'migration down at activated dimer from high bridge sH'
+    aliases source: dimer, product: dimer
+    equation high_bridge(ch: H, ch: *) + source(cr: *) = product(cr: *, cl: *)
     activation 0
     forward_rate 1e8
 
-  reaction 'migration down in gap from bridge'
+  reaction 'migration down in gap from methyl on bridge'
     equation methyl_on_bridge(cm: *, cm: *, cm: u, cb: i) + bridge(cr: *) + bridge(cr: *) = dimer_after_gap_b
     activation 0
     forward_rate 1e7

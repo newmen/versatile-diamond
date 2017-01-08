@@ -34,7 +34,6 @@ ushort UbiquitousReaction::prevNum(const Atom *anchor, const ushort *typeToNum)
     {
         return typeToNum[prevType];
     }
-
 }
 
 void UbiquitousReaction::doIt()
