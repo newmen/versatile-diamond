@@ -25,17 +25,23 @@ void SlicesSaver::writeBody(std::ostream &os, const SavingReactor *reactor)
 {
     writeCurrentTime(os, reactor);
 
-    SlicesCounter slicesCounter = countAtomTypes(reactor);
-    for (const TypesCounter &typesCounter : slicesCounter)
+    SlicesCounter *slicesCounter = countAtomTypes(reactor);
+    for (const TypesCounter *typesCounter : *slicesCounter)
     {
-        for (const auto &pr : typesCounter)
+        if (!isEmptyCounter(*typesCounter))
         {
-            os.width(COLUMN_WIDTH);
-            os << (double)pr.second / config()->squire();
+            for (ushort atomType : config()->atomTypes())
+            {
+                TypesCounter::const_iterator it = typesCounter->find(atomType);
+                os.width(COLUMN_WIDTH);
+                os << (double)it->second / config()->squire();
+            }
+            os << "\n";
         }
-        os << "\n";
+        delete typesCounter;
     }
     os << std::endl;
+    delete slicesCounter;
 }
 
 void SlicesSaver::writeCurrentTime(std::ostream &os, const SavingReactor *reactor)
@@ -44,21 +50,21 @@ void SlicesSaver::writeCurrentTime(std::ostream &os, const SavingReactor *reacto
     os << n++ << " = " << reactor->currentTime() << " s\n";
 }
 
-SlicesSaver::TypesCounter SlicesSaver::emptyTypesCounter() const
+SlicesSaver::TypesCounter *SlicesSaver::emptyTypesCounter() const
 {
-    TypesCounter typesCounter;
+    TypesCounter *typesCounter = new TypesCounter();
     for (ushort atomType : config()->atomTypes())
     {
-        typesCounter.insert(TypesCounter::value_type(atomType, 0));
+        typesCounter->insert(TypesCounter::value_type(atomType, 0));
     }
     return typesCounter;
 }
 
-SlicesSaver::SlicesCounter SlicesSaver::countAtomTypes(const SavingReactor *reactor) const
+SlicesSaver::SlicesCounter *SlicesSaver::countAtomTypes(const SavingReactor *reactor) const
 {
-    SlicesCounter slicesCounter;
-    appendCrystalQuantities(&slicesCounter, reactor->crystal());
-    appendAmorphQuantities(&slicesCounter, reactor->amorph());
+    SlicesCounter *slicesCounter = new SlicesCounter();
+    appendCrystalQuantities(slicesCounter, reactor->crystal());
+    appendAmorphQuantities(slicesCounter, reactor->amorph());
     return slicesCounter;
 }
 
@@ -66,22 +72,19 @@ void SlicesSaver::appendCrystalQuantities(SlicesCounter *slicesCounter,
                                           const SavingCrystal *crystal) const
 {
     uint sliceNum = 0;
-    crystal->eachSlice([this, &slicesCounter, &sliceNum](SavingAtom **atoms) {
-        if (++sliceNum > 2)
+    crystal->eachSlice([this, slicesCounter, &sliceNum](SavingAtom **atoms) {
+        if (++sliceNum > NUMBER_OF_SKIPPING_SLICES)
         {
-            TypesCounter typesCounter = emptyTypesCounter();
+            TypesCounter *typesCounter = emptyTypesCounter();
             for (uint i = 0; i < config()->squire(); ++i)
             {
-                if (atoms[i])
+                if (atoms[i] && isTargetAtom(atoms[i]))
                 {
-                    appendAtomType(&typesCounter, atoms[i]);
+                    appendAtomType(typesCounter, atoms[i]);
                 }
             }
 
-            if (!isEmptyCounter(typesCounter))
-            {
-                slicesCounter->push_back(typesCounter);
-            }
+            slicesCounter->push_back(typesCounter);
         }
     });
 }
@@ -89,24 +92,25 @@ void SlicesSaver::appendCrystalQuantities(SlicesCounter *slicesCounter,
 void SlicesSaver::appendAmorphQuantities(SlicesCounter *slicesCounter,
                                          const SavingAmorph *amorph) const
 {
-    TypesCounter typesCounter = emptyTypesCounter();
-    amorph->eachAtom([this, &typesCounter](SavingAtom *atom) {
-        appendAtomType(&typesCounter, atom);
+    amorph->eachAtom([this, slicesCounter](SavingAtom *amorphAtom) {
+        if (isTargetAtom(amorphAtom))
+        {
+            SavingAtom *crystalAtom = amorphAtom->firstCrystalNeighbour();
+            uint sliceN = crystalAtom->lattice()->coords().z - NUMBER_OF_SKIPPING_SLICES;
+            appendAtomType(slicesCounter->at(sliceN), amorphAtom);
+        }
     });
-
-    if (!isEmptyCounter(typesCounter))
-    {
-        slicesCounter->push_back(typesCounter);
-    }
 }
 
 void SlicesSaver::appendAtomType(TypesCounter *typesCounter, const SavingAtom *atom) const
 {
     TypesCounter::iterator it = typesCounter->find(atom->type());
-    if (it != typesCounter->end())
-    {
-        ++it->second;
-    }
+    ++it->second;
+}
+
+bool SlicesSaver::isTargetAtom(const SavingAtom *atom) const
+{
+    return _setOfAtomTypes.find(atom->type()) != _setOfAtomTypes.cend();
 }
 
 bool SlicesSaver::isEmptyCounter(const TypesCounter &typesCounter) const

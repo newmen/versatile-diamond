@@ -13,6 +13,7 @@ bin/
 cache/
 obj/
 results/
+total/
 engine/hand-generations/simple-diamond
 
 *.job
