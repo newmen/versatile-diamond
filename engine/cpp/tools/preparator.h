@@ -195,7 +195,7 @@ Tracker<HB> *Preparator<HB>::tracker()
 
         if (_yamlReader.isDefined("integral"))
         {
-            trackSimpleSaver<SlicesSaver>("integral");
+            trackSimpleSaver<SlicesSaver<HB>>("integral");
         }
 
         if (_yamlReader.isDefined("xyz"))

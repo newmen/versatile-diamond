@@ -129,7 +129,6 @@ SOURCES += \
     savers/mol_accumulator.cpp \
     savers/mol_saver.cpp \
     savers/sdf_saver.cpp \
-    savers/slices_saver.cpp \
     savers/xyz_accumulator.cpp \
     savers/xyz_saver.cpp \
     species/base_spec.cpp \
