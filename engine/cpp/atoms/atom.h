@@ -49,6 +49,10 @@ public:
     void forget(ushort role, BaseSpec *spec);
     bool hasSpec(ushort role, BaseSpec *spec) const;
 
+    ushort amorphNeighboursNum() const;
+    ushort doubleNeighboursNum() const;
+    ushort tripleNeighboursNum() const;
+
     bool hasRole(ushort sid, ushort role) const;
     bool checkAndFind(ushort sid, ushort role);
     template <class S> S *specByRole(ushort role);
@@ -87,6 +91,10 @@ private:
         uint at = first;
         return (at << 16) ^ second;
     }
+
+    typedef std::unordered_map<const Atom *, ushort> Counter;
+    Counter sumNeighbours() const;
+    ushort countBonds(ushort arity) const;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////

@@ -14,12 +14,19 @@ class DiamondRelations : public B
 {
 public:
     typedef Neighbours<2> TN;
-    typedef TN (DiamondRelations<B>::*RelationsMethod)(const Atom *) const;
+//    typedef TN (DiamondRelations<B>::*RelationsMethod)(const Atom *) const;
 
     TN front_110(const Atom *atom);
+    TN crd_front_110(const int3 &coords);
+
     TN cross_110(const Atom *atom);
+    TN crd_cross_110(const int3 &coords);
+
     TN front_100(const Atom *atom);
+    TN crd_front_100(const int3 &coords);
+
     TN cross_100(const Atom *atom);
+    TN crd_cross_100(const int3 &coords);
 
     static int3 front_110_at(TN &&neighbours);
 
@@ -33,8 +40,12 @@ template <class B>
 typename DiamondRelations<B>::TN DiamondRelations<B>::front_110(const Atom *atom)
 {
     assert(atom->lattice());
-    const int3 &coords = atom->lattice()->coords();
+    return crd_front_110(atom->lattice()->coords());
+}
 
+template <class B>
+typename DiamondRelations<B>::TN DiamondRelations<B>::crd_front_110(const int3 &coords)
+{
     Atom *twoAtoms[2];
     if (coords.z % 2 == 0)
     {
@@ -53,10 +64,13 @@ template <class B>
 typename DiamondRelations<B>::TN DiamondRelations<B>::cross_110(const Atom *atom)
 {
     assert(atom->lattice());
-    const int3 &coords = atom->lattice()->coords();
+    return crd_cross_110(atom->lattice()->coords());
+}
 
+template <class B>
+typename DiamondRelations<B>::TN DiamondRelations<B>::crd_cross_110(const int3 &coords)
+{
     Atom *twoAtoms[2];
-
     twoAtoms[0] = this->atom(int3(coords.x, coords.y, coords.z - 1));
     if (coords.z % 2 == 0)
     {
@@ -74,8 +88,12 @@ template <class B>
 typename DiamondRelations<B>::TN DiamondRelations<B>::front_100(const Atom *atom)
 {
     assert(atom->lattice());
-    const int3 &coords = atom->lattice()->coords();
+    return crd_front_100(atom->lattice()->coords());
+}
 
+template <class B>
+typename DiamondRelations<B>::TN DiamondRelations<B>::crd_front_100(const int3 &coords)
+{
     Atom *twoAtoms[2];
     if (coords.z % 2 == 0)
     {
@@ -94,8 +112,12 @@ template <class B>
 typename DiamondRelations<B>::TN DiamondRelations<B>::cross_100(const Atom *atom)
 {
     assert(atom->lattice());
-    const int3 &coords = atom->lattice()->coords();
+    return crd_cross_100(atom->lattice()->coords());
+}
 
+template <class B>
+typename DiamondRelations<B>::TN DiamondRelations<B>::crd_cross_100(const int3 &coords)
+{
     Atom *twoAtoms[2];
     if (coords.z % 2 == 0)
     {

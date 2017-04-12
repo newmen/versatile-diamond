@@ -5,6 +5,8 @@ module VersatileDiamond
 
         # Less comparation operator statement
         class OpLess < BinaryOperator
+          include Expression
+
           class << self
             # @param [Expression] a
             # @param [Expression] b

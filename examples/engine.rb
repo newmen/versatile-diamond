@@ -95,6 +95,7 @@ surface
     bond :crs, :cr, face: 110, dir: :front
     bond :cr, :cl, face: 100, dir: :front
 
+  size x: 100, y: 100, z: 5
   temperature 1200
 
 events

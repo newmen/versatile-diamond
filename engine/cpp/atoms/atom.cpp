@@ -158,6 +158,27 @@ bool Atom::hasSpec(ushort role, BaseSpec *spec) const
     return false;
 }
 
+ushort Atom::amorphNeighboursNum() const
+{
+    ushort num = 0;
+    for (Atom *nbr : relatives())
+    {
+        if (!nbr->lattice()) ++num;
+    }
+
+    return num;
+}
+
+ushort Atom::doubleNeighboursNum() const
+{
+    return countBonds(2);
+}
+
+ushort Atom::tripleNeighboursNum() const
+{
+    return countBonds(3);
+}
+
 void Atom::setSpecsUnvisited()
 {
     for (auto &pr : _specs)
@@ -326,6 +347,35 @@ BaseSpec *Atom::specByRole(ushort sid, ushort role)
     {
         return nullptr;
     }
+}
+
+Atom::Counter Atom::sumNeighbours() const
+{
+    Counter counter;
+    for (Atom *nbr : relatives())
+    {
+        if (counter.find(nbr) == counter.cend())
+        {
+            counter[nbr] = 0;
+        }
+        else
+        {
+            ++counter[nbr];
+        }
+    }
+
+    return counter;
+}
+
+ushort Atom::countBonds(ushort arity) const
+{
+    Counter counter = sumNeighbours();
+    ushort result = 0;
+    for (const std::pair<const Atom *, ushort> &p : counter)
+    {
+        if (p.second == arity) ++result;
+    }
+    return result;
 }
 
 }

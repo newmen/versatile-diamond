@@ -2,7 +2,9 @@ require 'spec_helper'
 
 module VersatileDiamond
   module Organizers
+
     describe AtomProperties, type: :organizer, use: :atom_properties do
+      include_context :classified_props
 
       let(:i_diff) { imob - cm }
       let(:u_diff) { ucm - cm }
@@ -716,6 +718,25 @@ module VersatileDiamond
         it { expect(hb_cr.actives_num).to eq(0) }
         it { expect(clb_cr.actives_num).to eq(0) }
         it { expect(ad_cr.actives_num).to eq(1) }
+      end
+
+      describe '#undir_bonds_num' do
+        it { expect(bridge_ct.undir_bonds_num).to eq(0) }
+        it { expect(ab_ct.undir_bonds_num).to eq(0) }
+        it { expect(ucm.undir_bonds_num).to eq(1) }
+        it { expect(high_cm.undir_bonds_num).to eq(2) }
+      end
+
+      describe '#double_bonds_num' do
+        it { expect(bridge_ct.double_bonds_num).to eq(0) }
+        it { expect(cm.double_bonds_num).to eq(0) }
+        it { expect(high_cm.double_bonds_num).to eq(1) }
+      end
+
+      describe '#triple_bonds_num' do
+        it { expect(bridge_ct.triple_bonds_num).to eq(0) }
+        it { expect(cm.triple_bonds_num).to eq(0) }
+        it { expect(high_cm.triple_bonds_num).to eq(0) }
       end
 
       describe '#dangling_hydrogens_num' do

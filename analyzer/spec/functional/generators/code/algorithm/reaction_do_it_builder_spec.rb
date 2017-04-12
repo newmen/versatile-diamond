@@ -5,7 +5,9 @@ module VersatileDiamond
     module Code
       module Algorithm
 
-        describe ReactionDoItBuilder, type: :algorithm, use: :atom_properties do
+        describe ReactionDoItBuilder, type: :algorithm do
+          include_context :classified_props
+
           let(:base_specs) { [] }
           let(:specific_specs) { [] }
           let(:ubiquitous_reactions) { [] }
@@ -25,21 +27,11 @@ module VersatileDiamond
               typical_reactions: [typical_reaction] + other_reactions)
           end
 
-          shared_context :with_ubiquitous do
-            let(:ubiquitous_reactions) do
-              [dept_surface_activation, dept_surface_deactivation]
-            end
-          end
-
           let(:classifier) { generator.classifier }
           let(:builder) { described_class.new(generator, reaction) }
           let(:reaction) { generator.reaction_class(typical_reaction.name) }
           let(:species) do
             typical_reaction.surface_source.map { |s| generator.specie_class(s.name) }
-          end
-
-          def raw_props_idx(spec, keyname, str_opts)
-            classifier.index(raw_prop(spec, keyname, str_opts))
           end
 
           shared_examples_for :check_do_it do
@@ -52,48 +44,6 @@ module VersatileDiamond
               let(:"role_#{keyname}") { role(first_spec, keyname) }
               let(:"snd_role_#{keyname}") { role(second_spec, keyname) }
             end
-
-            let(:ct_ss) { raw_props_idx(dept_bridge_base, :ct, '**') }
-            let(:ct_is) { raw_props_idx(dept_bridge_base, :ct, 'i*') }
-            let(:ct_s) { raw_props_idx(dept_bridge_base, :ct, '*') }
-            let(:ct_f) { raw_props_idx(dept_bridge_base, :ct, '') }
-            let(:ct_ih) { raw_props_idx(dept_bridge_base, :ct, 'iH') }
-            let(:ct_hh) { raw_props_idx(dept_bridge_base, :ct, 'HH') }
-            let(:ct_sh) { raw_props_idx(dept_bridge_base, :ct, '*H') }
-            let(:br_h) { raw_props_idx(dept_bridge_base, :cr, 'H') }
-            let(:br_s) { raw_props_idx(dept_bridge_base, :cr, '*') }
-            let(:br_i) { raw_props_idx(dept_bridge_base, :cr, 'i') }
-            let(:br_m) { raw_props_idx(dept_methyl_on_right_bridge_base, :cr, '') }
-            let(:cb_h) { raw_props_idx(dept_methyl_on_bridge_base, :cb, 'H') }
-            let(:cb_s) { raw_props_idx(dept_methyl_on_bridge_base, :cb, '*') }
-            let(:cb_i) { raw_props_idx(dept_methyl_on_bridge_base, :cb, 'i') }
-            let(:cb_f) { raw_props_idx(dept_methyl_on_bridge_base, :cb, '') }
-            let(:cd_h) { raw_props_idx(dept_dimer_base, :cr, 'H') }
-            let(:cd_s) { raw_props_idx(dept_dimer_base, :cr, '*') }
-            let(:cd_i) { raw_props_idx(dept_dimer_base, :cr, 'i') }
-            let(:cd_f) { raw_props_idx(dept_dimer_base, :cr, '') }
-            let(:md_d) { raw_props_idx(dept_methyl_on_dimer_base, :cr, '') }
-            let(:bd_c) { raw_props_idx(dept_bridge_with_dimer_base, :cr, '') }
-            let(:tb_c) { raw_props_idx(dept_three_bridges_base, :cc, '') }
-            let(:cm_sss) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '***') }
-            let(:cm_ssh) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '**H') }
-            let(:cm_shh) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '*HH') }
-            let(:cm_hhh) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'HHH') }
-            let(:cm_s) { raw_props_idx(dept_methyl_on_bridge_base, :cm, '*') }
-            let(:cm_h) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'H') }
-            let(:cm_i) { raw_props_idx(dept_methyl_on_bridge_base, :cm, 'i') }
-            let(:hm_ss) { raw_props_idx(dept_high_bridge_base, :cm, '**') }
-            let(:hm_hh) { raw_props_idx(dept_high_bridge_base, :cm, 'HH') }
-            let(:hm_sh) { raw_props_idx(dept_high_bridge_base, :cm, '*H') }
-            let(:hm_ih) { raw_props_idx(dept_high_bridge_base, :cm, 'iH') }
-            let(:hm_f) { raw_props_idx(dept_high_bridge_base, :cm, '') }
-            let(:hc_f) { raw_props_idx(dept_high_bridge_base, :cb, '') }
-            let(:cv_i) { raw_props_idx(dept_vinyl_on_bridge_base, :c1, 'i') }
-            let(:cw_i) { raw_props_idx(dept_vinyl_on_bridge_base, :c2, 'i') }
-            let(:sm_hh) { raw_props_idx(dept_cross_bridge_on_bridges_base, :cm, 'HH') }
-            let(:sm_sh) { raw_props_idx(dept_cross_bridge_on_bridges_base, :cm, '*H') }
-            let(:sm_ss) { raw_props_idx(dept_cross_bridge_on_bridges_base, :cm, '**') }
-            let(:sm_f) { raw_props_idx(dept_cross_bridge_on_bridges_base, :cm, '') }
 
             describe 'methyl activation' do
               let(:typical_reaction) { dept_methyl_activation }
@@ -208,6 +158,7 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{ct_s}));
     Handbook::amorph().insert(atoms1[1]);
     atoms1[0]->bondWith(atoms1[1]);
+    assert(!atoms1[0]->is(#{ct_ss}));
     atoms1[0]->changeType(#{cb_f});
     Finder::findAll(atoms1, 2);
                   CODE
@@ -288,6 +239,7 @@ module VersatileDiamond
     atoms1[0]->bondWith(atoms1[1]);
     atoms1[1]->bondWith(atoms1[2]);
     atoms1[1]->bondWith(atoms1[2]);
+    assert(!atoms1[0]->is(#{ct_ss}));
     atoms1[0]->changeType(#{cb_f});
     Finder::findAll(atoms1, 3);
                   CODE
@@ -499,6 +451,7 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{snd_role_ct}));
     assert(atoms1[1]->is(#{role_cm}));
     atoms1[0]->bondWith(atoms1[1]);
+    assert(!atoms1[0]->is(#{ct_ss}));
     atoms1[0]->changeType(#{cb_f});
     atoms1[1]->changeType(#{sm_f});
     Finder::findAll(atoms1, 2);
@@ -538,6 +491,10 @@ module VersatileDiamond
     if (atoms1[0]->is(#{br_s}))
     {
         atoms1[0]->changeType(#{br_m});
+    }
+    else if (atoms1[0]->is(#{ct_ss}))
+    {
+        atoms1[0]->changeType(#{cb_s});
     }
     else
     {
@@ -606,6 +563,7 @@ module VersatileDiamond
     assert(atoms1[1]->is(#{role_cr}));
     atoms1[0]->deactivate();
     atoms1[1]->activate();
+    assert(!atoms1[0]->is(#{cd_i}));
     atoms1[0]->changeType(#{cd_i});
     assert(!atoms1[1]->is(#{cd_s}));
     atoms1[1]->changeType(#{cd_s});
@@ -647,7 +605,9 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{role_cr}));
     assert(atoms1[1]->is(#{role_cr}));
     atoms1[0]->unbondFrom(atoms1[1]);
+    assert(!atoms1[0]->is(#{ct_is}));
     atoms1[0]->changeType(#{ct_is});
+    assert(!atoms1[1]->is(#{ct_is}));
     atoms1[1]->changeType(#{ct_is});
     Finder::findAll(atoms1, 2);
                   CODE
@@ -703,6 +663,7 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{role_ct}));
     assert(atoms1[1]->is(#{snd_role_ct}));
     atoms1[0]->bondWith(atoms1[1]);
+    assert(!atoms1[0]->is(#{ct_ss}));
     atoms1[0]->changeType(#{cd_i});
     atoms1[1]->changeType(#{cd_i});
     Finder::findAll(atoms1, 2);
@@ -722,6 +683,7 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{role_ct}));
     assert(atoms1[1]->is(#{snd_role_ct}));
     atoms1[0]->bondWith(atoms1[1]);
+    assert(!atoms1[0]->is(#{ct_ss}));
     atoms1[0]->changeType(#{cd_i});
     if (atoms1[1]->is(#{br_s}))
     {
@@ -793,6 +755,7 @@ module VersatileDiamond
     atoms1[0]->bondWith(atoms1[1]);
     assert(!atoms1[0]->is(#{md_d}));
     atoms1[0]->changeType(#{md_d});
+    assert(!atoms1[1]->is(#{ct_ss}));
     atoms1[1]->changeType(#{cd_f});
     atoms1[2]->changeType(#{cm_s});
     Finder::findAll(atoms1, 3);
@@ -957,6 +920,7 @@ module VersatileDiamond
     atoms1[1]->bondWith(atoms1[2]);
     assert(!atoms1[0]->is(#{br_s}));
     atoms1[0]->changeType(#{br_s});
+    assert(!atoms1[1]->is(#{br_i}));
     atoms1[1]->changeType(#{br_i});
     atoms1[2]->changeType(#{ct_f});
     Finder::findAll(atoms1, 3);
@@ -1030,8 +994,9 @@ module VersatileDiamond
     atoms1[0]->bondWith(atoms1[2]);
     assert(!atoms1[0]->is(#{hc_f}));
     atoms1[0]->changeType(#{hc_f});
-    assert(!atoms1[1]->is(#{br_s}));
+    assert(!atoms1[1]->is(#{ct_is}));
     atoms1[1]->changeType(#{ct_is});
+    assert(!atoms1[2]->is(#{ct_ss}));
     atoms1[2]->changeType(#{hm_f});
     Finder::findAll(atoms1, 3);
                   CODE
@@ -1174,6 +1139,7 @@ module VersatileDiamond
     atoms1[0]->changeType(#{cd_s});
     assert(!atoms1[1]->is(#{hc_f}));
     atoms1[1]->changeType(#{hc_f});
+    assert(!atoms1[2]->is(#{ct_ss}));
     atoms1[2]->changeType(#{hm_f});
     Finder::findAll(atoms1, 3);
                   CODE
@@ -1362,6 +1328,7 @@ module VersatileDiamond
     assert(atoms1[0]->is(#{role_ct}));
     assert(atoms1[1]->is(#{snd_role_cm}));
     atoms1[0]->bondWith(atoms1[1]);
+    assert(!atoms1[0]->is(#{ct_ss}));
     atoms1[0]->changeType(#{cb_f});
     atoms1[1]->changeType(#{sm_f});
     Finder::findAll(atoms1, 2);

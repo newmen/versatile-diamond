@@ -70,14 +70,12 @@ ushort SpecifiedAtom<VALENCE>::hCount() const
 template <ushort VALENCE>
 ushort SpecifiedAtom<VALENCE>::actives() const
 {
-#if defined(PRINT) || defined(ATOM_PRINT)
     if (type() == NO_VALUE)
     {
-        return 0;
+        return Atom::actives();
     }
     else
     {
-#endif // PRINT || ATOM_PRINT
         ushort result = Handbook::activesFor(type());
 #if defined(PRINT) || defined(ATOM_PRINT)
         if (Atom::actives() != result)
@@ -93,9 +91,7 @@ ushort SpecifiedAtom<VALENCE>::actives() const
         assert(Atom::actives() == result);
 #endif // PRINT || ATOM_PRINT
         return result;
-#if defined(PRINT) || defined(ATOM_PRINT)
     }
-#endif // PRINT || ATOM_PRINT
 }
 #endif // NDEBUG
 

@@ -3,13 +3,13 @@ module VersatileDiamond
     module Code
       module Algorithm::Units::Expressions::Core
 
-        # Algebraic MINUS operator statement
-        class OpMinus < OpChain
+        # Algebraic MULTIPLE operator statement
+        class OpMul < OpChain
         private
 
           # @return [Symbol]
           def mark
-            :-
+            :*
           end
         end
 

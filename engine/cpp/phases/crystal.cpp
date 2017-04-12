@@ -13,6 +13,7 @@ void Crystal::initialize()
 {
     buildAtoms();
     bondAllAtoms();
+    detectAtomTypes();
 
     findAll();
 }
@@ -58,7 +59,10 @@ void Crystal::makeLayer(uint z, ushort type, ushort actives)
         for (uint x = 0; x < sizes.x; ++x)
         {
             int3 coords(x, y, z);
-            atoms()[coords] = makeAtom(type, actives, coords);
+            if (z == 0 || hasBottom(coords))
+            {
+                atoms()[coords] = makeAtom(type, actives, coords);
+            }
         }
 }
 

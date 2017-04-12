@@ -176,6 +176,9 @@ bool Handbook::atomIs(ushort complexType, ushort typeOf)
 
 ushort Handbook::specificate(ushort type)
 {
-    assert(type < __atomsNum);
-    return __atomsSpecifing[type];
+    if (type != NO_VALUE)
+    {
+        assert(type < __atomsNum);
+        return __atomsSpecifing[type];
+    }
 }

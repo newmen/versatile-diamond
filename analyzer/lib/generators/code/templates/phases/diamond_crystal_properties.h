@@ -95,9 +95,12 @@ template <class B>
 void DiamondCrystalProperties<B>::bondAround(Atom *atom)
 {
     auto neighbours = this->cross_110(atom);
-    assert(neighbours.all());
-    atom->bondWith(neighbours[0]);
-    atom->bondWith(neighbours[1]);
+    neighbours.each([atom](Atom *neighbour) {
+        if (neighbour)
+        {
+            atom->bondWith(neighbour);
+        }
+    });
 }
 
 #endif // DIAMOND_CRYSTAL_PROPERTIES_H

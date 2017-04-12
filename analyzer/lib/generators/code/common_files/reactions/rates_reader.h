@@ -32,7 +32,7 @@ private:
 template <class... Args>
 double RatesReader::getRate(const char *rid, Args... multipliers)
 {
-    return arrenius(rid, Env::gasT()) * productAll(multipliers...);
+    return arrenius(rid, Env::surfaceT()) * productAll(multipliers...);
 }
 
 template <class... Args>

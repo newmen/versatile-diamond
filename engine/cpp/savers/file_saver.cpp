@@ -4,7 +4,7 @@
 namespace vd
 {
 
-std::string FileSaver::fullFilename() const
+std::string FileSaver::fullFilename()
 {
     std::stringstream ss;
     ss << filename() << ext();

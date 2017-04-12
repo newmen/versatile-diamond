@@ -15,6 +15,7 @@ public:
     static const dim3 SIZES;
     OpenDiamond(uint height = DEFAULT_HEIGHT) : OpenDiamond(SIZES, height) {}
     OpenDiamond(const dim3 &sizes, uint height = DEFAULT_HEIGHT) : Diamond(sizes, new BehaviorTor, height) {}
+    OpenDiamond(const dim3 &sizes, const Behavior *behavior, uint height = DEFAULT_HEIGHT) : Diamond(sizes, behavior, height) {}
 
     Atom *atom(const int3 &coords) { return atoms()[coords]; }
 

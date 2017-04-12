@@ -39,61 +39,6 @@ module VersatileDiamond
           organize_spec_dependencies!(base_cache, specific_species)
         end
 
-        # Converts character to property
-        # @param [String] char which will be converted
-        # @return [Array] the pair of key and property
-        def convert_char_prop(char)
-          if char == '*'
-            [:danglings, Concepts::ActiveBond.property]
-          elsif char == 'H'
-            [:danglings, Concepts::AtomicSpec.new(Concepts::Atom.hydrogen)]
-          elsif char == 'i'
-            [:relevants, Concepts::Incoherent.property]
-          elsif char == 'u'
-            [:relevants, Concepts::Unfixed.property]
-          end
-        end
-
-        # Collects the hash of atom properties by parsing passed string
-        # @param [String] str which will be parsed
-        # @return [Hash] the hash of atom properties
-        def convert_str_prop(str)
-          chars = str.scan(/./).group_by(&:itself).map { |c, cs| [c, cs.size] }
-          chars.each_with_object({}) do |(c, num), acc|
-            key, value = convert_char_prop(c)
-            acc[key] ||= []
-            acc[key] += [value] * num
-          end
-        end
-
-        # @param [DependentWrappedSpec] spec
-        # @param [Symbol] keyname
-        # @param [String] str_opts
-        # @return [AtomProperties]
-        def raw_prop(spec, keyname, str_opts)
-          atom = spec.spec.atom(keyname)
-          result = AtomProperties.new(spec, atom) +
-            AtomProperties.raw(atom, **convert_str_prop(str_opts))
-          result ||
-            raise("Incorrect aproperties for #{spec.name}(#{keyname}: #{str_opts})")
-        end
-
-        # Gets atoms property by original specie and atom and additional options which
-        # describes by string
-        #
-        # @param [Organizers::DependentWrappedSpec] spec which is context for getting
-        #   original atom properties
-        # @param [Concepts::Atom | Concepts::AtomRelation | Concepts::SpecificAtom]
-        #   atom for which the original properties will be gotten
-        # @param [String] str_opts the string of additional properties which will
-        #   appendet to original properties
-        # @return [AtomProperties] the result of merging two properties
-        def raw_props(spec, keyname, str_opts)
-          opts = convert_str_prop(str_opts)
-          prop = Organizers::AtomProperties.new(spec, spec.spec.atom(keyname)) +
-            Organizers::AtomProperties.raw(spec.spec.atom(keyname), **opts)
-        end
-
         prop(:bridge_ct, :bridge, :ct)
         prop(:ib_ct, :incoherent_bridge, :ct)
         prop(:ab_ct, :activated_bridge, :ct)

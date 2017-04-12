@@ -122,4 +122,27 @@ describe Diamond do
       end
     end
   end
+
+  describe '#major_crystal_atom' do
+    let(:mcah) do
+      {
+        atom_name: :C,
+        valence: 4,
+        relations: [bond_110_front, bond_110_front, bond_110_cross, bond_110_cross],
+      }
+    end
+    it { expect(subject.major_crystal_atom).to eq(mcah) }
+  end
+
+  describe '#surface_crystal_atom' do
+    let(:scah) do
+      {
+        atom_name: :C,
+        valence: 4,
+        relations: [bond_110_cross, bond_110_cross],
+        danglings: [ActiveBond.property, ActiveBond.property]
+      }
+    end
+    it { expect(subject.surface_crystal_atom).to eq(scah) }
+  end
 end

@@ -74,31 +74,54 @@ module VersatileDiamond
           LatticeAtomsIterator.new(self)
         end
 
+        # Finds index of atom properties that correspond to major atom instance of
+        # crystal lattice
+        #
+        # @return [Integer] see at #crystal_atom_index result
+        def major_atom_index
+          classifier.index(find_crystal_atom(instance.major_crystal_atom))
+        end
+
       private
 
         def_delegator :generator, :classifier
         def_delegator :@lattice, :instance
 
-        %w(major surface).each do |name|
-          # Finds index of atom properties that correspond to #{name} atom instance of
-          # crystal lattice
-          #
-          # @return [Integer] see at #crystal_atom_index result
-          define_method(:"#{name}_atom_index") do
-            ap = find_crystal_atom(instance.public_send(:"#{name}_crystal_atom"))
-            classifier.index(ap)
-          end
-
-          # Finds index of atom properties that correspond to #{name} atom instance of
-          # crystal lattice
-          #
-          # @return [Integer] see at #crystal_atom_index result
-          define_method(:"#{name}_atom_actives") do
-            ap = find_crystal_atom(instance.public_send(:"#{name}_crystal_atom"))
-            ap.unbonded_actives_num
-          end
+        # Finds index of atom properties that correspond to major atom instance of
+        # crystal lattice
+        #
+        # @return [Integer] see at #crystal_atom_index result
+        def major_atom_actives
+          find_crystal_atom(instance.major_crystal_atom).unbonded_actives_num
         end
-        public :major_atom_index
+
+        # Gets condition to check required bottom neighbours
+        # @return [String] the condition
+        def has_bottom_condition
+          conds = instance.bottom_relations.map do |rel, n|
+            "#{relations_num_call(rel)} == #{n}"
+          end
+          conds.join(' && ')
+        end
+
+        # @return [String] gets algorithm for detect atom type
+        def define_type_algorithm
+          Algorithm::AtomTypeDetector.new(classifier).build
+        end
+
+        # Gets method to resolve neighbours by relation
+        # @param [Concepts::Bond] rel
+        # @return [String] the call
+        def relations_num_call(rel)
+          "crd_#{relation_name(rel.params)}(coords).num()"
+        end
+
+        # Gets name of relation
+        # @param [Hash] params
+        # @return [String]
+        def relation_name(params)
+          "#{params[:dir]}_#{params[:face]}"
+        end
 
         # Gets number of active bonds for atom at zero crystal layer level
         # @return [Integer]

@@ -91,8 +91,18 @@ for (int i = 0; i < 3; ++i)
               end
 
               it_behaves_like :check_chain_op do
+                let(:op_class) { OpPlus }
+                let(:mark) { '+' }
+              end
+
+              it_behaves_like :check_chain_op do
                 let(:op_class) { OpMinus }
                 let(:mark) { '-' }
+              end
+
+              it_behaves_like :check_chain_op do
+                let(:op_class) { OpMul }
+                let(:mark) { '*' }
               end
             end
 
@@ -233,10 +243,28 @@ for (int i = 0; i < 3; ++i)
             it { expect { OpLess[num, type] }.to raise_error }
 
             subject { OpLess[x, num] }
+            let(:is_expr) { true }
+
             it_behaves_like :check_predicates
 
             describe '#code' do
               it { expect(subject.code).to eq('x < 5') }
+            end
+          end
+
+          describe 'OpLessEq' do
+            it { expect { OpLessEq[x] }.to raise_error }
+            it { expect { OpLessEq[x, y, y] }.to raise_error }
+            it { expect { OpLessEq[type, num] }.to raise_error }
+            it { expect { OpLessEq[num, type] }.to raise_error }
+
+            subject { OpLessEq[x, num] }
+            let(:is_expr) { true }
+
+            it_behaves_like :check_predicates
+
+            describe '#code' do
+              it { expect(subject.code).to eq('x <= 5') }
             end
           end
         end

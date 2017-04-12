@@ -72,6 +72,7 @@ surface
     bond :ct, :cr
     position :cl, :cr, face: 100, dir: :cross
 
+  size x: 100, y: 100, z: 5
   temperature 1000
 
 events

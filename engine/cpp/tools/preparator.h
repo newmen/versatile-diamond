@@ -118,7 +118,17 @@ const Config *Preparator<HB>::config()
             throw Error("system.size_y is not defined");
         }
 
-        if (sizeX <= 0 || sizeY <= 0)
+        uint sizeZ = 0;
+        if (_yamlReader.isDefined("system", "size_z"))
+        {
+            sizeZ = _yamlReader.read<uint>("system", "size_z");
+        }
+        else
+        {
+            throw Error("system.size_z is not defined");
+        }
+
+        if (sizeX <= 0 || sizeY <= 0 || sizeZ <= 0)
         {
             throw Error("Wrong size value");
         }
@@ -164,7 +174,7 @@ const Config *Preparator<HB>::config()
             atomTypes = _yamlReader.read<Config::AtomTypes>("integral", "atom_types");
         }
 
-        _config = new Config(_runName, sizeX, sizeY, behavior, totalTime, atomTypes);
+        _config = new Config(_runName, sizeX, sizeY, sizeZ, behavior, totalTime, atomTypes);
     }
 
     return _config;

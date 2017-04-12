@@ -4,7 +4,7 @@
 namespace vd
 {
 
-Atom *&BehaviorPlane::getData(SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const
+Atom *&BehaviorPlane::choiseAtom(SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const
 {
     static Atom *nullAtom = nullptr;
 

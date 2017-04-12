@@ -333,7 +333,9 @@ module VersatileDiamond
       # @return [Array] numbers of usages of making atom properties combination in
       #   latticed atom properties
       def latticed_contains_times(props)
-        classifier.default_latticed_atoms.map { |def_ap| contain_times(def_ap, props) }
+        latticed_props = classifier.default_latticed_atoms
+        undangled_props = latticed_props.select { |ap| ap.danglings.empty? }
+        undangled_props.map { |def_ap| contain_times(def_ap, props) }
       end
 
       # Gets maximal number of usages pf passed atom props in latticed atom props
@@ -361,7 +363,7 @@ module VersatileDiamond
       def inject_classification(all, spec, &block)
         all[spec.name] ||= {}
         avail_props = spec.anchors.map { |atom| atom_properties(spec, atom) }
-        avail_props.each_with_object(all) do |ap, acc|
+        avail_props.each_with_object(all.dup) do |ap, acc|
           inner = acc[spec.name]
           stored_value = inner[ap]
           usage_times = block[ap]

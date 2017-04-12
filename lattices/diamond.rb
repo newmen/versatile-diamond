@@ -21,15 +21,10 @@ class Diamond < VersatileDiamond::Lattices::Base
     })
   end
 
-  # Describes relations and dangling bonds which belongs to surface diamond crystal
-  # carbon atom
-  #
-  # @return [Hash] the information about surface carbon
-  def surface_crystal_atom
-    crystal_atom.merge({
-      relations: [bond_cross_110, bond_cross_110],
-      danglings: [ActiveBond.property]
-    })
+  # Describes relations of bottom surface diamond crystal atom
+  # @return [Hash] quantities of required bottom relations
+  def bottom_relations
+    { bond_cross_110 => 2 }
   end
 
 private

@@ -12,19 +12,23 @@ class Diamond : public DiamondCrystalProperties<Crystal>
     int _defaultSurfaceHeight;
 
 public:
-#ifndef NDEBUG
     typedef DiamondRelations<Crystal> Relations;
-#endif // NDEBUG
 
     Diamond(const dim3 &sizes, const Behavior *behavior, int defaultSurfaceHeight = 3);
     ~Diamond();
 
 protected:
     void buildAtoms() final;
-    Atom *makeAtom(ushort type, ushort actives, const int3 &coords) final;
     void bondAllAtoms() final;
+    void detectAtomTypes() final;
 
     void findAll() final;
+
+    Atom *makeAtom(ushort type, ushort actives, const int3 &coords) final;
+    bool hasBottom(const int3 &coords) final;
+
+private:
+    ushort detectType(const Atom *atom);
 };
 
 #endif // DIAMOND_H
