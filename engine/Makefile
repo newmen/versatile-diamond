@@ -1,7 +1,7 @@
 NAME		:= libengine
 
-ARKSFLAGS	:= -DNDEBUG -O2 #-DMC_PRINT
-#ARKSFLAGS	:=
+ARKSFLAGS	:= -DNDEBUG -O2
+# ARKSFLAGS	:=
 STANDART	:= -std=c++11
 
 GCC_PATH	:= /usr

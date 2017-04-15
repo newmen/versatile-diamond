@@ -55,7 +55,7 @@ module VersatileDiamond
         nCross_110 = 0;
         nFront_100 = 0;
     }
-    assert(nCrystal == nFront_110 + nCross_110 + nFront_100);
+    assert(nFront_110 + nCross_110 + nFront_100 <= nCrystal);
     assert(actives + nFree + nCrystal <= atom->valence());
     assert(actives + nDouble * 2 + nCrystal <= atom->valence());
               CODE

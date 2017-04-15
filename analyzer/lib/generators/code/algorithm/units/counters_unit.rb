@@ -140,9 +140,9 @@ module VersatileDiamond
           # @return [Expressions::Core::Assert]
           def assert_crystal_relations
             Expressions::Core::Assert[
-              Expressions::Core::OpEq[
-                dict.crystal_counter,
-                Expressions::Core::OpPlus[*crystal_counters]
+              Expressions::Core::OpLessEq[
+                Expressions::Core::OpPlus[*crystal_counters],
+                dict.crystal_counter
               ]
             ]
           end

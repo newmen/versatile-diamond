@@ -29,6 +29,25 @@ protected:
 
 private:
     ushort detectType(const Atom *atom);
+
+    template <class RL>
+    ushort countCrystalNeighbours(const Atom *atom, const RL &relationsMethod);
 };
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+template <class RL>
+ushort Diamond::countCrystalNeighbours(const Atom *atom, const RL &relationsMethod)
+{
+    ushort result = 0;
+    (this->*relationsMethod)(atom).each([atom, &result](Atom *nbr) {
+        if (atom->hasBondWith(nbr))
+        {
+            ++result;
+        }
+    });
+
+    return result;
+}
 
 #endif // DIAMOND_H

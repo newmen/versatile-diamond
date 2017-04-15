@@ -68,15 +68,15 @@ ushort Diamond::detectType(const Atom *atom)
     ushort nFront_110;
     if (atom->lattice() && nCrystal > 0)
     {
-        nCross_110 = cross_110(atom).num();
-        nFront_110 = front_110(atom).num();
+        nFront_110 = countCrystalNeighbours(atom, &Diamond::front_110);
+        nCross_110 = countCrystalNeighbours(atom, &Diamond::cross_110);
     }
     else
     {
         nCross_110 = 0;
         nFront_110 = 0;
     }
-    assert(nCrystal == nCross_110 + nFront_110);
+    assert(nCrystal >= nCross_110 + nFront_110);
     assert(actives + nFree + nCrystal <= atom->valence());
     assert(actives + nDouble * 2 + nTriple * 3 + nCrystal <= atom->valence());
 

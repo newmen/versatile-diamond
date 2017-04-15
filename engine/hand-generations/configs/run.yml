@@ -12,9 +12,9 @@ integral:
   step: 0.0005
   atom_types: [0, 2, 4, 5, 20, 21, 24, 28, 32, 25, 15, 26, 7, 23, 33]
 
-mol:
-  step: 0.001
-  detector: all
+# mol:
+#   step: 0.001
+#   detector: all
 
 xyz:
   step: 0.0007
