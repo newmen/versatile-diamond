@@ -106,7 +106,7 @@ module VersatileDiamond
 
         # @return [String] gets algorithm for detect atom type
         def define_type_algorithm
-          Algorithm::AtomTypeDetector.new(classifier).build
+          Algorithm::AtomTypeDetector.new(self, classifier).build
         end
 
         # Gets method to resolve neighbours by relation

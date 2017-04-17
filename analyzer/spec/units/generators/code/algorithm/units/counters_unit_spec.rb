@@ -6,8 +6,9 @@ module VersatileDiamond
       module Algorithm::Units
 
         describe CountersUnit, type: :algorithm do
-          subject { described_class.new(dict, classifier) }
+          subject { described_class.new(dict, lattice, classifier) }
           let(:dict) { Expressions::RelationsDictionary.new }
+          let(:lattice) { Code::Lattice.new(generator, diamond) }
           let(:classifier) { generator.classifier }
           let(:generator) do
             stub_generator(base_specs: base_specs, specific_specs: specific_specs)
@@ -45,9 +46,9 @@ module VersatileDiamond
     ushort nFront_100;
     if (atom->lattice() && 0 < nCrystal)
     {
-        nFront_110 = front_110(atom).num();
-        nCross_110 = cross_110(atom).num();
-        nFront_100 = front_100(atom).num();
+        nFront_110 = countCrystalNeighbours(atom, &Diamond::front_110);
+        nCross_110 = countCrystalNeighbours(atom, &Diamond::cross_110);
+        nFront_100 = countCrystalNeighbours(atom, &Diamond::front_100);
     }
     else
     {

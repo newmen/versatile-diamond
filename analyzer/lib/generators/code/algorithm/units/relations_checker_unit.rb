@@ -4,7 +4,7 @@ module VersatileDiamond
       module Algorithm::Units
 
         # The unit for detect atom type
-        class RelationsCheckerUnit < AtomDetectorUnit
+        class RelationsCheckerUnit < RelationsDetectorUnit
           include ProcsReducer
 
           # @param [Expressions::RelationsDictionary] dict

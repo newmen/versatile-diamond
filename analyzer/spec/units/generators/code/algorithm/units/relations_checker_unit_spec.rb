@@ -9,9 +9,10 @@ module VersatileDiamond
           include_context :classified_props
 
           subject { described_class.new(dict, classifier) }
-          let(:counter_unit) { CountersUnit.new(dict, classifier) }
+          let(:counter_unit) { CountersUnit.new(dict, lattice, classifier) }
 
           let(:dict) { Expressions::RelationsDictionary.new }
+          let(:lattice) { Code::Lattice.new(generator, diamond) }
           let(:classifier) { generator.classifier }
           let(:generator) do
             stub_generator(base_specs: base_specs, specific_specs: specific_specs)

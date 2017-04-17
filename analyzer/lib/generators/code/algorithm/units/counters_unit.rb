@@ -4,14 +4,16 @@ module VersatileDiamond
       module Algorithm::Units
 
         # The unit for define counters for detect atom type
-        class CountersUnit < AtomDetectorUnit
+        class CountersUnit < RelationsDetectorUnit
           include Lattices::BasicRelations
+          include Algorithm::Units::Expressions::LatticePositionReference
 
           # @param [Expressions::RelationsDictionary] dict
+          # @param [Lattice] lattice
           # @param [Organizers::AtomClassifier] classifier
-          def initialize(dict, classifier)
+          def initialize(dict, lattice, classifier)
             super(dict, classifier)
-
+            @lattice = lattice
             @_all_relations = nil
           end
 
@@ -90,23 +92,13 @@ module VersatileDiamond
           # @return [Expressions::Core::Statement]
           def count_crystal_rels
             crystal_relations.map do |rel|
-              Expressions::Core::Assign[dict.crystal_counter(rel), value: nbrs_call(rel)]
+              # raise 'You need to implement RelationsProvider' unless @lattice == lattice
+              type = Expressions::Core::ObjectType[@lattice.class_name]
+              ref = ref_rel(type, rel.params)
+              value =
+                Expressions::Core::FunctionCall['countCrystalNeighbours', dict.atom, ref]
+              Expressions::Core::Assign[dict.crystal_counter(rel), value: value]
             end
-          end
-
-          # @param [Concepts::Bond] rel
-          # @return [Core::OpDot]
-          def nbrs_call(rel)
-            Expressions::Core::OpDot[
-              Expressions::Core::FunctionCall[relation_name(rel), dict.atom],
-              Expressions::Core::FunctionCall['num']
-            ]
-          end
-
-          # @param [Concepts::Bond] rel
-          # @return [String]
-          def relation_name(rel)
-            "#{rel.dir.to_s}_#{rel.face}"
           end
 
           # @return [Array]

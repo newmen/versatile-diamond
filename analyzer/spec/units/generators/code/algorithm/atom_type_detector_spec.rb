@@ -9,7 +9,8 @@ module VersatileDiamond
           include_context :classified_props
           include_context :with_ubiquitous
 
-          subject { described_class.new(classifier) }
+          subject { described_class.new(lattice, classifier) }
+          let(:lattice) { Code::Lattice.new(generator, diamond) }
           let(:classifier) { generator.classifier }
           let(:generator) do
             stub_generator(
@@ -26,8 +27,8 @@ module VersatileDiamond
     ushort nCross_110;
     if (atom->lattice() && 0 < nCrystal)
     {
-        nFront_110 = front_110(atom).num();
-        nCross_110 = cross_110(atom).num();
+        nFront_110 = countCrystalNeighbours(atom, &Diamond::front_110);
+        nCross_110 = countCrystalNeighbours(atom, &Diamond::cross_110);
     }
     else
     {

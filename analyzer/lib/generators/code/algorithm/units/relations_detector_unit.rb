@@ -5,7 +5,7 @@ module VersatileDiamond
 
         # The unit for define counters for detect atom type
         # @abstract
-        class AtomDetectorUnit < GenerableUnit
+        class RelationsDetectorUnit < GenerableUnit
 
           # @param [Expressions::RelationsDictionary] dict
           # @param [Organizers::AtomClassifier] classifier
