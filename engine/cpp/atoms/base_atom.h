@@ -9,7 +9,7 @@
 namespace vd
 {
 
-const ushort NO_VALUE = (ushort)(-1);
+enum : ushort { NO_VALUE = (ushort)(-1) };
 
 template <class D, class C>
 class BaseAtom

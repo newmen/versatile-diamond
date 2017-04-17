@@ -81,7 +81,7 @@ ushort Diamond::detectType(const Atom *atom)
     assert(actives + nDouble * 2 + nTriple * 3 + nCrystal <= atom->valence());
 
     if (nCross_110 == 2 &&
-        nFront_110 == 2) return 24;
+        nFront_110 == 2 && actives == 0) return 24;
 
     else if (nCross_110 == 2 &&
              nFront_110 == 1 && actives == 1) return 5;
