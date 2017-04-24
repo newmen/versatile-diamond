@@ -152,7 +152,9 @@ SOURCES += \
 #    ../tests/units/lattice_spec. \cpp \
 #    ../tests/units/vector3d_spec \.cpp \
 #    ../tests/support/open_diamond.cpp \
-    tools/yaml_config_reader.cpp
+    tools/yaml_config_reader.cpp \
+    mc/slice.cpp \
+    mc/tree.cpp
 
 HEADERS += \
     ../hand-generations/src/atoms/atom_builder.h \
@@ -276,12 +278,7 @@ HEADERS += \
     atoms/lattice.h \
     atoms/neighbours.h \
     atoms/saving_atom.h \
-    mc/base_events_container.h \
     mc/common_mc_data.h \
-    mc/events_container.h \
-    mc/events_counter.h \
-    mc/mc.h \
-    mc/multi_events_container.h \
     mc/random_generator.h \
     phases/amorph.h \
     phases/atoms_vector3d.h \
@@ -383,7 +380,17 @@ HEADERS += \
     tools/worker/soul.h \
     tools/worker/worker_queue.h \
 #    ../tests/support/open_diamond.h \
-    tools/yaml_config_reader.h
+    tools/yaml_config_reader.h \
+    mc/dynamic_mc.h \
+    mc/tree_mc.h \
+    mc/events/base_events_container.h \
+    mc/events/events_container.h \
+    mc/events_counter.h \
+    mc/events/multi_events_container.h \
+    mc/events/slice.h \
+    mc/events/tree.h \
+    mc/events/node.h \
+    mc/base_mc.h
 
 OTHER_FILES += \
     ../hand-generations/src/configs/env.yml \

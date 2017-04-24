@@ -2,7 +2,7 @@
 #define HANDBOOK_H
 
 #include <atoms/atom.h>
-#include <mc/mc.h>
+#include <mc/dynamic_mc.h>
 #include <tools/common.h>
 #include <tools/scavenger.h>
 #include <tools/steps_serializer.h>
@@ -24,12 +24,12 @@ public:
     typedef Diamond SurfaceCrystal;
 
 private:
-    typedef MC<ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> DMC;
+    typedef DynamicMC<ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> MC;
 
     typedef Keeper<LateralSpec, &LateralSpec::findLateralReactions> LKeeper;
     typedef Keeper<SpecificSpec, &SpecificSpec::findTypicalReactions> SKeeper;
 
-    static DMC __mc;
+    static MC __mc;
     static SurfaceAmorph __amorph;
 
     static LKeeper __lateralKeeper;
@@ -46,7 +46,7 @@ public:
 #ifdef SERIALIZE
     static StepsSerializer &serializer();
 #endif // SERIALIZE
-    static DMC &mc();
+    static MC &mc();
 
     static SurfaceAmorph &amorph();
 

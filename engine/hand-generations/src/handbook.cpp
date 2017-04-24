@@ -100,8 +100,8 @@ StepsSerializer &Handbook::serializer()
 }
 #endif // SERIALIZE
 
-Handbook::DMC Handbook::__mc;
-Handbook::DMC &Handbook::mc()
+Handbook::MC Handbook::__mc;
+Handbook::MC &Handbook::mc()
 {
     return __mc;
 }

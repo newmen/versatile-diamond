@@ -3,12 +3,13 @@
 
 #include <vector>
 #include <unordered_map>
-#include "../reactions/reaction.h"
+#include "../../reactions/reaction.h"
+#include "node.h"
 
 namespace vd
 {
 
-class BaseEventsContainer
+class BaseEventsContainer : public Node
 {
 protected:
     std::vector<Reaction *> _events;
@@ -16,13 +17,14 @@ protected:
 public:
     virtual ~BaseEventsContainer() {}
 
-    Reaction *selectEvent(double r);
+    void sort() override {}
+    Reaction *selectEvent(double r) override;
 
 #ifdef SERIALIZE
     std::string name() const { return _events.front()->name(); }
 #endif // SERIALIZE
     double oneRate() const { return _events.front()->rate(); }
-    double commonRate() const { return _events.empty() ? 0.0 : oneRate() * _events.size(); }
+    double commonRate() const override { return _events.size() * oneRate(); }
 
 #if defined(PRINT) || defined(MC_PRINT) || defined(SERIALIZE) || !defined(NDEBUG)
     uint size() const { return _events.size(); }
