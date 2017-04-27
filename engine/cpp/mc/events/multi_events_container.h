@@ -26,11 +26,6 @@ public:
     bool check(Atom *target);
 
 private:
-    MultiEventsContainer(const MultiEventsContainer &) = delete;
-    MultiEventsContainer(MultiEventsContainer &&) = delete;
-    MultiEventsContainer &operator = (const MultiEventsContainer &) = delete;
-    MultiEventsContainer &operator = (MultiEventsContainer &&) = delete;
-
     void unlockedRemove(Atom *target, uint n);
 };
 

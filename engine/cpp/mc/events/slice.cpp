@@ -1,9 +1,10 @@
 #include "slice.h"
+#include <algorithm>
 
 namespace vd
 {
 
-Slice::Slice(Slice *parent) : _parent(parent)
+Slice::Slice(Slice *parent) : Node(parent)
 {
 }
 
@@ -20,8 +21,29 @@ void Slice::addNode(Node *node)
     _nodes.push_back(node);
 }
 
+void Slice::resetRate()
+{
+    _totalRate = 0.0;
+    for (Node *node : _nodes)
+    {
+        node->resetRate();
+        _totalRate += node->commonRate();
+    }
+}
+
+void Slice::updateRate(double r)
+{
+    _totalRate += r;
+
+    if (parent())
+    {
+        parent()->updateRate(r);
+    }
+}
+
 Reaction *Slice::selectEvent(double r)
 {
+    assert(r >= 0);
     for (Node *node : _nodes)
     {
         double cr = node->commonRate();
@@ -39,17 +61,14 @@ Reaction *Slice::selectEvent(double r)
 
 double Slice::commonRate() const
 {
-    double result = 0;
-    for (Node *node : _nodes)
-    {
-        result += node->commonRate();
-    }
-    return result;
+    return _totalRate;
 }
 
 void Slice::sort()
 {
-
+    std::sort(_nodes.begin(), _nodes.end(), [](Node *a, Node *b) {
+        return a->commonRate() > b->commonRate();
+    });
 }
 
 }

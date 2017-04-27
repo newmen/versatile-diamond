@@ -4,12 +4,11 @@
 #include <vector>
 #include <unordered_map>
 #include "../../reactions/reaction.h"
-#include "node.h"
 
 namespace vd
 {
 
-class BaseEventsContainer : public Node
+class BaseEventsContainer
 {
 protected:
     std::vector<Reaction *> _events;
@@ -17,14 +16,13 @@ protected:
 public:
     virtual ~BaseEventsContainer() {}
 
-    void sort() override {}
-    Reaction *selectEvent(double r) override;
+    Reaction *selectEvent(double r);
 
 #ifdef SERIALIZE
     std::string name() const { return _events.front()->name(); }
 #endif // SERIALIZE
-    double oneRate() const { return _events.front()->rate(); }
-    double commonRate() const override { return _events.size() * oneRate(); }
+    double oneRate() const;
+    double commonRate() const;
 
 #if defined(PRINT) || defined(MC_PRINT) || defined(SERIALIZE) || !defined(NDEBUG)
     uint size() const { return _events.size(); }
@@ -34,6 +32,12 @@ protected:
     BaseEventsContainer() = default;
 
     template <class R> R *exchangeToLast(uint index);
+
+private:
+    BaseEventsContainer(const BaseEventsContainer &) = delete;
+    BaseEventsContainer(BaseEventsContainer &&) = delete;
+    BaseEventsContainer &operator = (const BaseEventsContainer &) = delete;
+    BaseEventsContainer &operator = (BaseEventsContainer &&) = delete;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////

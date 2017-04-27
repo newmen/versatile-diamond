@@ -16,18 +16,20 @@ class BaseMC
 public:
     virtual ~BaseMC() {}
 
+    double totalTime() const { return _totalTime; }
     void initCounter(CommonMCData *data) const;
 
-    virtual double doRandom(CommonMCData *data);
+    virtual void sort() = 0;
 
+    virtual double doRandom(CommonMCData *data);
     virtual double totalRate() const  = 0;
 
     virtual void add(ushort index, SpecReaction *reaction) = 0;
     virtual void remove(ushort index, SpecReaction *reaction) = 0;
 
     virtual void add(ushort index, UbiquitousReaction *reaction, ushort n) = 0;
-    virtual void remove(ushort index, UbiquitousReaction *templateReaction, ushort n) = 0;
-    virtual void removeAll(ushort index, UbiquitousReaction *templateReaction) = 0;
+    virtual void remove(ushort index, UbiquitousReaction *reaction, ushort n) = 0;
+    virtual void removeAll(ushort index, UbiquitousReaction *reaction) = 0;
     virtual bool check(ushort index, Atom *target) = 0;
 
 #ifndef NDEBUG
@@ -39,10 +41,11 @@ public:
     virtual void doLastOfMul(ushort rt) = 0;
 #endif // NDEBUG
 
-    Reaction *mostProbablyEvent(double r);
-
 protected:
     BaseMC() = default;
+
+    virtual Reaction *mostProbablyEvent(double r) = 0;
+    virtual void recountTotalRate() = 0;
 
     double increaseTime(CommonMCData *data);
 

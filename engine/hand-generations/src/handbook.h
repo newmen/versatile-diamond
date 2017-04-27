@@ -3,6 +3,7 @@
 
 #include <atoms/atom.h>
 #include <mc/dynamic_mc.h>
+#include <mc/tree_mc.h>
 #include <tools/common.h>
 #include <tools/scavenger.h>
 #include <tools/steps_serializer.h>
@@ -25,6 +26,7 @@ public:
 
 private:
     typedef DynamicMC<ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> MC;
+//    typedef TreeMC<ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> MC;
 
     typedef Keeper<LateralSpec, &LateralSpec::findLateralReactions> LKeeper;
     typedef Keeper<SpecificSpec, &SpecificSpec::findTypicalReactions> SKeeper;

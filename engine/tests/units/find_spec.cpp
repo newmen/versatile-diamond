@@ -62,7 +62,9 @@ void assert_rate(double rate)
     double delta = Handbook::mc().totalRate() - rate;
 
     // static int counter = 1;
-    // cout << (counter++) << "\tdelta: " << delta << "\trate: " << rate << endl;
+    // cout << (counter++) << "\tdelta: " << delta
+    //                     << "\tTotalRate: " << Handbook::mc().totalRate()
+    //                     << "\trate: " << rate << endl;
 
     assert(abs(delta) < EPS);
 }

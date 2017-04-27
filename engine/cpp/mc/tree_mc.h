@@ -16,10 +16,10 @@ class TreeMC : public BaseMC<EVENTS_NUM, MULTI_EVENTS_NUM>
 public:
     TreeMC();
 
-    void sort();
+    void sort() final;
 
 #ifdef SERIALIZE
-    StepsSerializer::Dict counts();
+    StepsSerializer::Dict counts() const;
 #endif // SERIALIZE
 
     double totalRate() const final { return _tree.totalRate(); }
@@ -28,18 +28,21 @@ public:
     void remove(ushort index, SpecReaction *reaction) final;
 
     void add(ushort index, UbiquitousReaction *reaction, ushort n) final;
-    void remove(ushort index, UbiquitousReaction *templateReaction, ushort n) final;
-    void removeAll(ushort index, UbiquitousReaction *templateReaction) final;
+    void remove(ushort index, UbiquitousReaction *reaction, ushort n) final;
+    void removeAll(ushort index, UbiquitousReaction *reaction) final;
     bool check(ushort index, Atom *target);
 
 #ifndef NDEBUG
-    void doOneOfOne(ushort rt) final;
-    void doLastOfOne(ushort rt) final;
+    void doOneOfOne(ushort index) final;
+    void doLastOfOne(ushort index) final;
 
-    void doOneOfMul(ushort rt) final;
-    void doOneOfMul(ushort rt, int x, int y, int z) final;
-    void doLastOfMul(ushort rt) final;
+    void doOneOfMul(ushort index) final;
+    void doOneOfMul(ushort index, int x, int y, int z) final;
+    void doLastOfMul(ushort index) final;
 #endif // NDEBUG
+
+protected:
+    void recountTotalRate() final;
 
 private:
     TreeMC(const TreeMC &) = delete;
@@ -53,214 +56,113 @@ private:
 //////////////////////////////////////////////////////////////////////////////////////
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::TreeMC()
+TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::TreeMC() : _tree(EVENTS_NUM, MULTI_EVENTS_NUM)
 {
 }
 
 #ifdef SERIALIZE
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-StepsSerializer::Dict TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::counts()
+StepsSerializer::Dict TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::counts() const
 {
+    return _tree.counts();
 }
 #endif // SERIALIZE
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-double TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
-{
-    double r = data->rand(totalRate());
-    Reaction *event = mostProbablyEvent(r);
-    if (event)
-    {
-#if defined(PRINT) || defined(MC_PRINT)
-        debugPrint([&](IndentStream &os) {
-            os << event->name();
-        });
-#endif // PRINT || MC_PRINT
-
-        data->counter()->inc(event);
-        event->doIt();
-        return increaseTime(data);
-    }
-    else
-    {
-#if defined(PRINT) || defined(MC_PRINT)
-        debugPrint([&](IndentStream &os) {
-            os << "Event not found! Recount and sort!";
-        });
-#endif // PRINT || MC_PRINT
-
-        recountTotalRate();
-        sort();
-
-        if (totalRate() == 0)
-        {
-            return -1;
-        }
-        else
-        {
-            return doRandom(data);
-        }
-    }
-}
-
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::recountTotalRate()
 {
+    _tree.resetRate();
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::sort()
 {
+    _tree.sort();
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(ushort index, SpecReaction *reaction)
 {
-#if defined(PRINT) || defined(MC_PRINT)
-    printReaction(reaction, "Add", "one");
-#endif // PRINT || MC_PRINT
-
     assert(index < EVENTS_NUM);
-
-    _events[index].add(reaction);
-    updateRate(reaction->rate());
+    _tree.add(index, reaction);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(ushort index, SpecReaction *reaction)
 {
-#if defined(PRINT) || defined(MC_PRINT)
-    printReaction(reaction, "Remove", "one");
-#endif // PRINT || MC_PRINT
-
     assert(index < EVENTS_NUM);
-
-    updateRate(-reaction->rate());
-    _events[index].remove(reaction);
+    _tree.remove(index, reaction);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(ushort index, UbiquitousReaction *reaction, ushort n)
 {
-#if defined(PRINT) || defined(MC_PRINT)
-    printReaction(reaction, "Add", "multi", n);
-#endif // PRINT || MC_PRINT
-
     assert(index < MULTI_EVENTS_NUM);
-    assert(n < reaction->target()->valence());
-
-    _multiEvents[index].add(reaction, n);
-    updateRate(reaction->rate() * n);
+    _tree.add(index, reaction, n);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(ushort index, UbiquitousReaction *templateReaction, ushort n)
+void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(ushort index, UbiquitousReaction *reaction, ushort n)
 {
-#if defined(PRINT) || defined(MC_PRINT)
-    printReaction(templateReaction, "Remove", "multi", n);
-#endif // PRINT || MC_PRINT
-
     assert(index < MULTI_EVENTS_NUM);
-    assert(n < templateReaction->target()->valence());
-
-    updateRate(-templateReaction->rate() * n);
-    _multiEvents[index].remove(templateReaction->target(), n);
+    _tree.remove(index, reaction, n);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeAll(ushort index, UbiquitousReaction *templateReaction)
+void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeAll(ushort index, UbiquitousReaction *reaction)
 {
     assert(index < MULTI_EVENTS_NUM);
-    uint n = _multiEvents[index].removeAll(templateReaction->target());
-    if (n > 0)
-    {
-#if defined(PRINT) || defined(MC_PRINT)
-    printReaction(templateReaction, "Remove all", "multi", n);
-#endif // PRINT || MC_PRINT
-
-        assert(n < templateReaction->target()->valence());
-        updateRate(-templateReaction->rate() * n);
-    }
+    _tree.removeAll(index, reaction);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 bool TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::check(ushort index, Atom *target)
 {
     assert(index < MULTI_EVENTS_NUM);
-    return _multiEvents[index].check(target);
+    return _tree.check(index, target);
 }
 
 #ifndef NDEBUG
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfOne(ushort rt)
+void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfOne(ushort index)
 {
-    assert(rt < EVENTS_NUM);
-    _events[rt].selectEvent(0)->doIt();
+    assert(index < EVENTS_NUM);
+    _tree.doOneOfOne(index);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doLastOfOne(ushort rt)
+void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doLastOfOne(ushort index)
 {
-    assert(rt < EVENTS_NUM);
-    _events[rt].selectEvent((_events[rt].size() - 0.5) * _events[rt].oneRate())->doIt();
+    assert(index < EVENTS_NUM);
+    _tree.doLastOfOne(index);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt)
+void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort index)
 {
-    assert(rt < MULTI_EVENTS_NUM);
-    _multiEvents[rt].selectEvent(0.0)->doIt();
+    assert(index < MULTI_EVENTS_NUM);
+    return _tree.doOneOfMul(index);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt, int x, int y, int z)
+void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort index, int x, int y, int z)
 {
-    auto crd = int3(x, y, z);
-    _multiEvents[rt].selectEventByCoords(crd)->doIt();
+    assert(index < MULTI_EVENTS_NUM);
+    return _tree.doOneOfMul(index, x, y, z);
 }
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doLastOfMul(ushort rt)
+void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doLastOfMul(ushort index)
 {
-    assert(rt < MULTI_EVENTS_NUM);
-    _multiEvents[rt].selectEvent((_multiEvents[rt].size() - 0.5) * _multiEvents[rt].oneRate())->doIt();
+    assert(index < MULTI_EVENTS_NUM);
+    return _tree.doLastOfMul(index);
 }
 #endif // NDEBUG
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 Reaction *TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::mostProbablyEvent(double r)
 {
-#if defined(PRINT) || defined(MC_PRINT)
-    debugPrint([&](IndentStream &os) {
-        os << "MC::mostProbablyEvent()\n";
-        os << "Random number: " << r << "\n";
-    });
-#endif // PRINT || MC_PRINT
-
-    Reaction *event = nullptr;
-    double passRate = 0;
-    for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
-    {
-        BaseEventsContainer *currentEvents = events(i);
-        double cr = currentEvents->commonRate();
-        if (r < cr + passRate)
-        {
-#if defined(PRINT) || defined(MC_PRINT)
-            debugPrint([&](IndentStream &os) {
-                os << "event " << i;
-            });
-#endif // PRINT || MC_PRINT
-
-            event = currentEvents->selectEvent(r - passRate);
-            break;
-        }
-        else
-        {
-            passRate += cr;
-        }
-    }
-
-    return event;
+    return _tree.selectEvent(r);
 }
 
 }

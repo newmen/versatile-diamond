@@ -28,22 +28,21 @@ class DynamicMC : public BaseMC<EVENTS_NUM, MULTI_EVENTS_NUM>
 public:
     DynamicMC();
 
-    void sort();
+    void sort() final;
 
 #ifdef SERIALIZE
     StepsSerializer::Dict counts();
 #endif // SERIALIZE
 
-    double doRandom(CommonMCData *data);
     double totalRate() const { return _totalRate; }
 
-    void add(ushort index, SpecReaction *reaction);
-    void remove(ushort index, SpecReaction *reaction);
+    void add(ushort index, SpecReaction *reaction) final;
+    void remove(ushort index, SpecReaction *reaction) final;
 
-    void add(ushort index, UbiquitousReaction *reaction, ushort n);
-    void remove(ushort index, UbiquitousReaction *templateReaction, ushort n);
-    void removeAll(ushort index, UbiquitousReaction *templateReaction);
-    bool check(ushort index, Atom *target);
+    void add(ushort index, UbiquitousReaction *reaction, ushort n) final;
+    void remove(ushort index, UbiquitousReaction *templateReaction, ushort n) final;
+    void removeAll(ushort index, UbiquitousReaction *templateReaction) final;
+    bool check(ushort index, Atom *target) final;
 
 #ifndef NDEBUG
     void doOneOfOne(ushort rt);
@@ -54,13 +53,14 @@ public:
     void doLastOfMul(ushort rt);
 #endif // NDEBUG
 
+protected:
+    Reaction *mostProbablyEvent(double r) final;
+
 private:
     DynamicMC(const DynamicMC &) = delete;
     DynamicMC(DynamicMC &&) = delete;
     DynamicMC &operator = (const DynamicMC &) = delete;
     DynamicMC &operator = (DynamicMC &&) = delete;
-
-    Reaction *mostProbablyEvent(double r);
 
     void recountTotalRate();
     void updateRate(double r)
@@ -111,57 +111,6 @@ StepsSerializer::Dict DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::counts()
     return result;
 }
 #endif // SERIALIZE
-
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-double DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
-{
-#if defined(PRINT) || defined(MC_PRINT)
-    debugPrint([&](IndentStream &os) {
-        os << "MC::doRandom()\n";
-        os << "Rate: " << totalRate() << " % time: " << totalTime() << "\n";
-        os << "Current sizes: " << std::endl;
-        for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
-        {
-            os << i << "-" << _order[i] << ".. " << events(i)->size() << " -> " << events(i)->commonRate() << "\n";
-        }
-    });
-#endif // PRINT || MC_PRINT
-
-    double r = data->rand(totalRate());
-    Reaction *event = mostProbablyEvent(r);
-    if (event)
-    {
-#if defined(PRINT) || defined(MC_PRINT)
-        debugPrint([&](IndentStream &os) {
-            os << event->name();
-        });
-#endif // PRINT || MC_PRINT
-
-        data->counter()->inc(event);
-        event->doIt();
-        return increaseTime(data);
-    }
-    else
-    {
-#if defined(PRINT) || defined(MC_PRINT)
-        debugPrint([&](IndentStream &os) {
-            os << "Event not found! Recount and sort!";
-        });
-#endif // PRINT || MC_PRINT
-
-        recountTotalRate();
-        sort();
-
-        if (totalRate() == 0)
-        {
-            return -1;
-        }
-        else
-        {
-            return doRandom(data);
-        }
-    }
-}
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::recountTotalRate()
@@ -272,7 +221,7 @@ void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeAll(ushort index, Ubiquitous
     if (n > 0)
     {
 #if defined(PRINT) || defined(MC_PRINT)
-    printReaction(templateReaction, "Remove all", "multi", n);
+        printReaction(templateReaction, "Remove all", "multi", n);
 #endif // PRINT || MC_PRINT
 
         assert(n < templateReaction->target()->valence());
@@ -312,6 +261,7 @@ void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt)
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt, int x, int y, int z)
 {
+    assert(rt < MULTI_EVENTS_NUM);
     auto crd = int3(x, y, z);
     _multiEvents[rt].selectEventByCoords(crd)->doIt();
 }

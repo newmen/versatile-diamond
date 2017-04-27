@@ -19,4 +19,22 @@ Reaction *BaseEventsContainer::selectEvent(double r)
     return _events[index];
 }
 
+double BaseEventsContainer::oneRate() const
+{
+    assert(_events.front());
+    return _events.front()->rate();
+}
+
+double BaseEventsContainer::commonRate() const
+{
+    if (_events.empty())
+    {
+        return 0;
+    }
+    else
+    {
+        return _events.size() * oneRate();
+    }
+}
+
 }

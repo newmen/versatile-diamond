@@ -17,12 +17,6 @@ public:
 
     void add(SpecReaction *event);
     void remove(SpecReaction *event);
-
-private:
-    EventsContainer(const EventsContainer &) = delete;
-    EventsContainer(EventsContainer &&) = delete;
-    EventsContainer &operator = (const EventsContainer &) = delete;
-    EventsContainer &operator = (EventsContainer &&) = delete;
 };
 
 }
