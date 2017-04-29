@@ -105,8 +105,7 @@ def read_slices
 
     curr_time = nil
     curr_slice = nil
-    lines.each do |original_line|
-      line = original_line.strip
+    lines.map(&:strip).each do |line|
       next if line.empty?
       if m = line.match(/\= (\d+(?:\.\d+(?:e-?\d+)?)?)/)
         curr_time = m[1].to_f
@@ -127,10 +126,12 @@ def read_slices
 end
 
 # Makes gnuplot dataset and pass it in block
+# @param [Integer] n number in order
 # @param [Array] data for which dataset will be maked
 # @yield [Gnuplot::DataSet] do something with maked dataset
-def data_set(data, &block)
+def data_set(n, data, &block)
   Gnuplot::DataSet.new(data) do |ds|
+    ds.title = (n == 0) ? 'bottom' : n.to_s
     ds.with = config.linetype
     ds.linewidth = config.linewidth
     block.call(ds) if block_given?
@@ -160,7 +161,8 @@ def make_gnuplot(filename, title, xlabel, ylabel, &block)
         # plot.set("terminal #{config.format} #{config.font_setup}")
       end
 
-      plot.set("key off")
+      plot.set('key on')
+      plot.set('key title "Layers:"')
 
       plot.title(title) unless config.notitles
       unless config.nolabels
@@ -181,8 +183,8 @@ def render_graphics(labels, concs)
   labels.zip(concs) do |label, slices|
     make_gnuplot(label, "#{label}", 'time (s)', 'concentration (%)') do |plot|
       # plot.yrange('[0:1]')
-      plot.data += slices.map do |n, slice|
-        data_set([slice.keys, slice.values])
+      plot.data += slices.sort_by { |x| -x.first }.map do |n, slice|
+        data_set(n, [slice.keys, slice.values.map { |v| v * 100 }])
       end
     end
   end
