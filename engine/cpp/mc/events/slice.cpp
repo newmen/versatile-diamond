@@ -69,6 +69,11 @@ void Slice::sort()
     std::sort(_nodes.begin(), _nodes.end(), [](Node *a, Node *b) {
         return a->commonRate() > b->commonRate();
     });
+
+    for (Node *node : _nodes)
+    {
+        node->sort();
+    }
 }
 
 }

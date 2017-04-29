@@ -141,7 +141,7 @@ Slice *Tree::buildRoot(ushort unoNums, ushort multiNums)
 Slice *Tree::buildSlice(Slice *parent, ushort size, short depth, ushort unoPartNums, ushort mulPartNums)
 {
     Slice *slice = new Slice(parent);
-    if (depth == 0)
+    if (depth <= 0)
     {
         appendEventsTo(slice, unoPartNums, mulPartNums);
     }
@@ -190,13 +190,13 @@ void Tree::appendSlicesTo(Slice *slice, ushort size, short depth, ushort unoPart
 
 void Tree::appendNodesTo(Slice *slice, ushort size, short depth, ushort unoPartNums, ushort mulPartNums)
 {
-    if (unoPartNums + mulPartNums > size)
+    if (unoPartNums + mulPartNums == 1)
     {
-        slice->addNode(buildSlice(slice, size, depth-1, unoPartNums, mulPartNums));
+        appendEventsTo(slice, unoPartNums, mulPartNums);
     }
     else
     {
-        appendEventsTo(slice, unoPartNums, mulPartNums);
+        slice->addNode(buildSlice(slice, size, depth-1, unoPartNums, mulPartNums));
     }
 }
 

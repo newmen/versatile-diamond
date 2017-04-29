@@ -94,7 +94,6 @@ double BaseMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
 #endif // PRINT || MC_PRINT
 
         recountTotalRate();
-        sort();
 
         if (totalRate() == 0)
         {
@@ -102,6 +101,7 @@ double BaseMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
         }
         else
         {
+            sort();
             return doRandom(data);
         }
     }
