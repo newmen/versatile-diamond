@@ -15,14 +15,6 @@ module VersatileDiamond
                 define_method(method_name) { depts[method_name] }
               end
             end
-
-            def instances(*names)
-              names.each do |method_name|
-                define_method(method_name) do |instance_name|
-                  depts[method_name].find { |s| s.name == instance_name }
-                end
-              end
-            end
           end
 
           collections :base_specs, :specific_specs
