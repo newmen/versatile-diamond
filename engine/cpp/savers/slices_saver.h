@@ -146,8 +146,11 @@ void SlicesSaver<HB>::appendAmorphQuantities(SlicesCounter *slicesCounter,
         if (isTargetAtom(amorphAtom))
         {
             SavingAtom *crystalAtom = amorphAtom->firstCrystalNeighbour();
-            uint sliceN = crystalAtom->lattice()->coords().z - NUMBER_OF_SKIPPING_SLICES;
-            appendAtomType(slicesCounter->at(sliceN), amorphAtom);
+            if (crystalAtom->lattice()->coords().z >= NUMBER_OF_SKIPPING_SLICES)
+            {
+                uint sliceN = crystalAtom->lattice()->coords().z - NUMBER_OF_SKIPPING_SLICES;
+                appendAtomType(slicesCounter[sliceN], amorphAtom);
+            }
         }
     });
 }
