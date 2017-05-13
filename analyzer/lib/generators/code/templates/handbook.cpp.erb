@@ -54,10 +54,10 @@ ushort Handbook::activesFor(ushort type)
 <% end %>
 
 #ifdef JSONLOG
-StepsSerializer Handbook::__serializer;
-StepsSerializer &Handbook::serializer()
+JSONStepsLogger Handbook::stepsLogger;
+JSONStepsLogger &Handbook::stepsLogger()
 {
-    return __serializer;
+    return stepsLogger;
 }
 #endif // JSONLOG
 

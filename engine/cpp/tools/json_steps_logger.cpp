@@ -1,12 +1,12 @@
 #ifdef JSONLOG
-#include "steps_serializer.h"
+#include "json_steps_logger.h"
 #include <json.hpp>
 #include <fstream>
 
 namespace vd
 {
 
-void StepsSerializer::appendSpec(const std::string &name, uint n)
+void JSONStepsLogger::appendSpec(const std::string &name, uint n)
 {
     auto it = _specsStep.find(name);
     if (it == _specsStep.end())
@@ -23,14 +23,14 @@ void StepsSerializer::appendSpec(const std::string &name, uint n)
     }
 }
 
-void StepsSerializer::step(double time, const Dict &reactions)
+void JSONStepsLogger::step(double time, const Dict &reactions)
 {
     _times.push_back(time);
     _reactions.push_back(reactions);
     _species.push_back(_specsStep);
 }
 
-void StepsSerializer::save() const
+void JSONStepsLogger::save() const
 {
     nlohmann::json data = {
         { "times", nlohmann::json(_times) },

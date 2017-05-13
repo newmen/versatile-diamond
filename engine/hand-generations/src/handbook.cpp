@@ -93,10 +93,10 @@ const ushort Handbook::__activesOnAtoms[Handbook::__atomsNum] =
 };
 
 #ifdef JSONLOG
-StepsSerializer Handbook::__serializer;
-StepsSerializer &Handbook::serializer()
+JSONStepsLogger Handbook::stepsLogger;
+JSONStepsLogger &Handbook::stepsLogger()
 {
-    return __serializer;
+    return stepsLogger;
 }
 #endif // JSONLOG
 

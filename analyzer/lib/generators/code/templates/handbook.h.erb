@@ -5,7 +5,7 @@
 #include <mc/mc.h>
 #include <tools/common.h>
 #include <tools/scavenger.h>
-#include <tools/steps_serializer.h>
+#include <tools/json_steps_logger.h>
 #include <species/keeper.h>
 <% if lateral_reactions_exists? %>
 #include <species/lateral_spec.h>
@@ -40,9 +40,9 @@ public:
 
 #ifdef JSONLOG
 private:
-    static StepsSerializer __serializer;
+    static JSONStepsLogger stepsLogger;
 public:
-    static StepsSerializer &serializer();
+    static JSONStepsLogger &stepsLogger();
 #endif // JSONLOG
 
 private:

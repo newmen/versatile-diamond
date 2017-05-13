@@ -5,7 +5,7 @@
 #include <mc/mc.h>
 #include <tools/common.h>
 #include <tools/scavenger.h>
-#include <tools/steps_serializer.h>
+#include <tools/json_steps_logger.h>
 #include <species/keeper.h>
 #include <species/lateral_spec.h>
 #include <species/specific_spec.h>
@@ -37,14 +37,14 @@ private:
     static Scavenger __scavenger;
 
 #ifdef JSONLOG
-    static StepsSerializer __serializer;
+    static JSONStepsLogger stepsLogger;
 #endif // JSONLOG
 
 public:
     ~Handbook();
 
 #ifdef JSONLOG
-    static StepsSerializer &serializer();
+    static JSONStepsLogger &stepsLogger();
 #endif // JSONLOG
     static DMC &mc();
 

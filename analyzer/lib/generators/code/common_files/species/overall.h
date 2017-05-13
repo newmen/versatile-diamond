@@ -38,7 +38,7 @@ template <class B, ushort ST>
 void Overall<B, ST>::store()
 {
     ParentType::store();
-    Handbook::serializer().appendSpec(this->name(), 1);
+    Handbook::stepsLogger().appendSpec(this->name(), 1);
 }
 #endif // JSONLOG
 
@@ -49,7 +49,7 @@ void Overall<B, ST>::remove()
     _markedForRemove = true;
 
 #ifdef JSONLOG
-    Handbook::serializer().appendSpec(this->name(), -1);
+    Handbook::stepsLogger().appendSpec(this->name(), -1);
 #endif // JSONLOG
 
     ParentType::remove();

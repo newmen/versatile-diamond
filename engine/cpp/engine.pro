@@ -139,9 +139,9 @@ SOURCES += \
     tools/counters/time_counter.cpp \
     tools/debug_print.cpp \
     tools/indent_stream.cpp \
+    tools/json_steps_logger.cpp \
     tools/process_mem_usage.cpp \
     tools/scavenger.cpp \
-    tools/steps_serializer.cpp \
     tools/worker/frame.cpp \
     tools/worker/parallel_worker.cpp \
     tools/worker/worker_queue.cpp \
@@ -367,13 +367,13 @@ HEADERS += \
     tools/factory.h \
     tools/indent_facet.h \
     tools/indent_stream.h \
+    tools/json_steps_logger.h \
     tools/many_items_result.h \
     tools/preparator.h \
     tools/process_mem_usage.h \
     tools/runner.h \
     tools/scavenger.h \
     tools/short_types.h \
-    tools/steps_serializer.h \
     tools/tracker.h \
     tools/typed.h \
     tools/vector3d.h \

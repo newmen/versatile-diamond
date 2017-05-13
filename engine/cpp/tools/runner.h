@@ -73,7 +73,7 @@ void Runner<HB>::stop()
 template <class HB>
 void Runner<HB>::serializeStep(double time)
 {
-    HB::serializer().step(time, HB::mc().counts());
+    HB::stepsLogger().step(time, HB::mc().counts());
 }
 #endif // JSONLOG
 
@@ -135,7 +135,7 @@ void Runner<HB>::calculate()
 #endif // NOUT
 
 #ifdef JSONLOG
-    HB::serializer().save();
+    HB::stepsLogger().save();
 #endif // JSONLOG
 
     _parallelWorker.stop();

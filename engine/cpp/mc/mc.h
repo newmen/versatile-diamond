@@ -6,7 +6,7 @@
 #include <cmath>
 #include <functional>
 #include <vector>
-#include "../tools/steps_serializer.h"
+#include "../tools/json_steps_logger.h"
 #include "common_mc_data.h"
 #include "events_container.h"
 #include "multi_events_container.h"
@@ -34,7 +34,7 @@ public:
     void sort();
 
 #ifdef JSONLOG
-    StepsSerializer::Dict counts();
+    JSONStepsLogger::Dict counts();
 #endif // JSONLOG
 
     double doRandom(CommonMCData *data);
@@ -111,9 +111,9 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::initCounter(CommonMCData *data) const
 
 #ifdef JSONLOG
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-StepsSerializer::Dict MC<EVENTS_NUM, MULTI_EVENTS_NUM>::counts()
+JSONStepsLogger::Dict MC<EVENTS_NUM, MULTI_EVENTS_NUM>::counts()
 {
-    StepsSerializer::Dict result;
+    JSONStepsLogger::Dict result;
     for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
     {
         auto evs = events(i);
