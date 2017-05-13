@@ -35,22 +35,25 @@ def print_names(names):
   for name, index in tps:
     print("  {}: {}".format(index, name))
 
-def plot_diff(datas, column):
+def plot_diff(datas, column, ylabel):
   fss = [h['freq_stat'] for h in datas]
   dicts = [combine_dict(fs, column) for fs in fss]
   auto_stat, hand_stat = dicts
-  hand_stat = convert(hand_stat)
+
+  # TODO: uncomment next line if you want to compare with hand-generations results
+  # hand_stat = convert(hand_stat)
 
   rename_result = rename(auto_stat, hand_stat)
   auto_stat, hand_stat = rename_result['stats']
 
   df = pd.DataFrame([auto_stat, hand_stat]).fillna(0).astype(float)
-  df.plot.box()
+  box = df.plot.box(title=column)
+  box.set(ylabel=ylabel)
   return rename_result['names']
 
 def compare(*datas):
-  plot_diff(datas, 'freq')
-  names = plot_diff(datas, 'quantity')
+  plot_diff(datas, 'freq', '%')
+  names = plot_diff(datas, 'quantity', 'quantity')
 
   print_names(names)
 
