@@ -6,7 +6,7 @@
 #include <cmath>
 #include <functional>
 #include <vector>
-#include "../tools/steps_serializer.h"
+#include "../tools/json_steps_logger.h"
 #include "events/events_container.h"
 #include "events/multi_events_container.h"
 #include "base_mc.h"
@@ -30,9 +30,9 @@ public:
 
     void sort() final;
 
-#ifdef SERIALIZE
-    StepsSerializer::Dict counts();
-#endif // SERIALIZE
+#ifdef JSONLOG
+    JSONStepsLogger::Dict counts();
+#endif // JSONLOG
 
     double totalRate() const { return _totalRate; }
 
@@ -94,11 +94,11 @@ DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::DynamicMC() : _order(EVENTS_NUM + MULTI
 #endif // PRINT || MC_PRINT
 }
 
-#ifdef SERIALIZE
+#ifdef JSONLOG
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-StepsSerializer::Dict DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::counts()
+JSONStepsLogger::Dict DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::counts()
 {
-    StepsSerializer::Dict result;
+    JSONStepsLogger::Dict result;
     for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
     {
         auto evs = events(i);
@@ -110,7 +110,7 @@ StepsSerializer::Dict DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::counts()
     }
     return result;
 }
-#endif // SERIALIZE
+#endif // JSONLOG
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::recountTotalRate()

@@ -21,7 +21,7 @@ def image_filename(fname, name_maxlength):
     return ('0' * zero_nums) + index_str + '.png'
 
 def save_image(spath, name_maxlength, prefix = ''):
-    fname = spath.split('/')[-1].split('.')[0]
+    fname = os.path.splitext(os.path.basename(spath))[0]
     image_name = prefix + image_filename(fname, name_maxlength)
     if exists(image_name):
         print 'Skip: ' + fname
@@ -62,7 +62,9 @@ number_of_files_length = len(str(number_of_files))
 
 for item in os.listdir(dname):
     filename = join(dname, item)
-    if isfile(filename):
+    if isfile(filename) and filename[-4:] == '.xyz':
         save_image(filename, number_of_files_length, out_prefix)
+    else:
+        print('Skip %s' % filename)
 
 cmd.quit()

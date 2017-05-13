@@ -210,10 +210,10 @@ void Tree::storeRef(ushort index, AtomEvents *events)
     storeRef(&_mulEvents, index, events);
 }
 
-#ifdef SERIALIZE
-StepsSerializer::Dict Tree::counts() const
+#ifdef JSONLOG
+JSONStepsLogger::Dict Tree::counts() const
 {
-    StepsSerializer::Dict result;
+    JSONStepsLogger::Dict result;
     for (const SpecieEvents *events : _oneEvents)
     {
         appendNumsTo(&result, events);
@@ -225,6 +225,6 @@ StepsSerializer::Dict Tree::counts() const
 
     return result;
 }
-#endif // SERIALIZE
+#endif // JSONLOG
 
 }

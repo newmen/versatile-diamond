@@ -1,22 +1,22 @@
 ---
 system:
-  size_x: 25
-  size_y: 25
+  size_x: 20
+  size_y: 20
   size_z: 7
   behavior: plane
-  time: 0.5
+  time: 0.05
 
 progress:
-  step: 0.01
+  step: 0.001
 
 integral:
-  step: 0.05
+  step: 0.005
   atom_types: [0, 2, 4, 5, 20, 21, 24, 28, 32, 25, 15, 26, 7, 23, 33]
 
 # mol:
-#   step: 0.001
+#   step: 0.005
 #   detector: all
 
 xyz:
-  step: 0.05
+  step: 0.005
   detector: all

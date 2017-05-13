@@ -5,13 +5,13 @@
 template <> const ushort MethylOn111CMiu::Base::__indexes[2] = { 1, 0 };
 template <> const ushort MethylOn111CMiu::Base::__roles[2] = { 33, 25 };
 
-#if defined(PRINT) || defined(SPEC_PRINT) || defined(SERIALIZE)
+#if defined(PRINT) || defined(SPEC_PRINT) || defined(JSONLOG)
 const char *MethylOn111CMiu::name() const
 {
     static const char value[] = "methyl_on_111(cm: i, cm: u)";
     return value;
 }
-#endif // PRINT || SPEC_PRINT || SERIALIZE
+#endif // PRINT || SPEC_PRINT || JSONLOG
 
 void MethylOn111CMiu::find(MethylOnBridge *parent)
 {

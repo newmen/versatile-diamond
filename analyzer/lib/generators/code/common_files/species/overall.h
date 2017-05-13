@@ -20,9 +20,9 @@ class Overall : public Typed<B, ST>
     bool _markedForRemove = false;
 
 public:
-#ifdef SERIALIZE
+#ifdef JSONLOG
     void store() override;
-#endif // SERIALIZE
+#endif // JSONLOG
     void remove() override;
 
 protected:
@@ -33,14 +33,14 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-#ifdef SERIALIZE
+#ifdef JSONLOG
 template <class B, ushort ST>
 void Overall<B, ST>::store()
 {
     ParentType::store();
-    Handbook::serializer().appendSpec(this->name(), 1);
+    Handbook::stepsLogger().appendSpec(this->name(), 1);
 }
-#endif // SERIALIZE
+#endif // JSONLOG
 
 template <class B, ushort ST>
 void Overall<B, ST>::remove()
@@ -48,9 +48,9 @@ void Overall<B, ST>::remove()
 //    if (this->isMarked()) return; // in each dependent types
     _markedForRemove = true;
 
-#ifdef SERIALIZE
-    Handbook::serializer().appendSpec(this->name(), -1);
-#endif // SERIALIZE
+#ifdef JSONLOG
+    Handbook::stepsLogger().appendSpec(this->name(), -1);
+#endif // JSONLOG
 
     ParentType::remove();
     Handbook::scavenger().markSpec(this);

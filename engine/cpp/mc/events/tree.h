@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "../../tools/common.h"
-#include "../../tools/steps_serializer.h"
+#include "../../tools/json_steps_logger.h"
 #include "slice.h"
 #include "atom_events.h"
 #include "specie_events.h"
@@ -26,9 +26,9 @@ public:
     Tree(ushort unoNums, ushort multiNums);
     ~Tree();
 
-#ifdef SERIALIZE
-    StepsSerializer::Dict counts() const;
-#endif // SERIALIZE
+#ifdef JSONLOG
+    JSONStepsLogger::Dict counts() const;
+#endif // JSONLOG
 
     void sort();
     void resetRate();
@@ -78,10 +78,10 @@ private:
     void storeRef(ushort index, SpecieEvents *events);
     void storeRef(ushort index, AtomEvents *events);
 
-#ifdef SERIALIZE
+#ifdef JSONLOG
     template <class CN>
-    void appendNumsTo(StepsSerializer::Dict *dict, const CN *events) const;
-#endif // SERIALIZE
+    void appendNumsTo(JSONStepsLogger::Dict *dict, const CN *events) const;
+#endif // JSONLOG
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -124,9 +124,9 @@ void Tree::storeRef(std::vector<CN *> *container, ushort index, CN *events)
     (*container)[index] = events;
 }
 
-#ifdef SERIALIZE
+#ifdef JSONLOG
 template <class CN>
-void Tree::appendNumsTo(StepsSerializer::Dict *dict, const CN *events) const
+void Tree::appendNumsTo(JSONStepsLogger::Dict *dict, const CN *events) const
 {
     uint size = events->size();
     if (size > 0)
@@ -134,7 +134,7 @@ void Tree::appendNumsTo(StepsSerializer::Dict *dict, const CN *events) const
         (*dict)[events->name()] = size;
     }
 }
-#endif // SERIALIZE
+#endif // JSONLOG
 
 }
 

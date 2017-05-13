@@ -44,9 +44,9 @@ private:
     Runner &operator = (const Runner &) = delete;
     Runner &operator = (Runner &&) = delete;
 
-#ifdef SERIALIZE
+#ifdef JSONLOG
     void serializeStep(double time);
-#endif // SERIALIZE
+#endif // JSONLOG
 
     void firstSave();
     void storeIfNeed(double timeDelta, bool forseSave);
@@ -69,13 +69,13 @@ void Runner<HB>::stop()
     __terminate = true;
 }
 
-#ifdef SERIALIZE
+#ifdef JSONLOG
 template <class HB>
 void Runner<HB>::serializeStep(double time)
 {
-    HB::serializer().step(time, HB::mc().counts());
+    HB::stepsLogger().step(time, HB::mc().counts());
 }
-#endif // SERIALIZE
+#endif // JSONLOG
 
 template <class HB>
 void Runner<HB>::calculate()
@@ -88,17 +88,17 @@ void Runner<HB>::calculate()
     double timeDelta = 0;
     double startTime = timestamp();
 
-#ifdef SERIALIZE
+#ifdef JSONLOG
     serializeStep(0);
-#endif // SERIALIZE
+#endif // JSONLOG
 
     while (!__terminate && _reactor->currentTime() <= _config->totalTime())
     {
         timeDelta = _reactor->doEvent();
 
-#ifdef SERIALIZE
+#ifdef JSONLOG
         serializeStep(_reactor->currentTime());
-#endif // SERIALIZE
+#endif // JSONLOG
 
 #if defined(PRINT) || defined(MC_PRINT)
         debugPrint([this, totalSteps](IndentStream &os) {
@@ -134,9 +134,9 @@ void Runner<HB>::calculate()
     storeIfNeed(timeDelta, true);
 #endif // NOUT
 
-#ifdef SERIALIZE
-    HB::serializer().save();
-#endif // SERIALIZE
+#ifdef JSONLOG
+    HB::stepsLogger().save();
+#endif // JSONLOG
 
     _parallelWorker.stop();
     printStat(startTime, stopTime, totalSteps);

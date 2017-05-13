@@ -1,6 +1,6 @@
-#ifdef SERIALIZE
-#ifndef STEPS_SERIALIZER_H
-#define STEPS_SERIALIZER_H
+#ifdef JSONLOG
+#ifndef JSON_STEPS_LOGGER_H
+#define JSON_STEPS_LOGGER_H
 
 #include <string>
 #include <list>
@@ -10,7 +10,7 @@
 namespace vd
 {
 
-class StepsSerializer
+class JSONStepsLogger
 {
 public:
     typedef std::map<std::string, int> Dict;
@@ -24,20 +24,20 @@ private:
     Dict _specsStep;
 
 public:
-    StepsSerializer() = default;
+    JSONStepsLogger() = default;
 
     void appendSpec(const std::string &name, uint n);
     void step(double time, const Dict &reactions);
     void save() const;
 
 private:
-    StepsSerializer(const StepsSerializer &) = delete;
-    StepsSerializer(StepsSerializer &&) = delete;
-    StepsSerializer &operator = (const StepsSerializer &) = delete;
-    StepsSerializer &operator = (StepsSerializer &&) = delete;
+    JSONStepsLogger(const JSONStepsLogger &) = delete;
+    JSONStepsLogger(JSONStepsLogger &&) = delete;
+    JSONStepsLogger &operator = (const JSONStepsLogger &) = delete;
+    JSONStepsLogger &operator = (JSONStepsLogger &&) = delete;
 };
 
 }
 
-#endif // STEPS_SERIALIZER_H
-#endif // SERIALIZE
+#endif // JSON_STEPS_LOGGER_H
+#endif // JSONLOG

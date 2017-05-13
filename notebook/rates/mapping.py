@@ -34,5 +34,6 @@ MIRROR = {
   'two bridges to high bridge': 'reverse high bridge incorporates in crystal lattice near another bridge',
 }
 
+# deprecated
 def convert(freq_stat):
   return dict([(MIRROR[k], v) for k, v in freq_stat.items()])

@@ -92,13 +92,13 @@ const ushort Handbook::__activesOnAtoms[Handbook::__atomsNum] =
     2, 0, 0, 0, 0, 0, 1, 1, 2
 };
 
-#ifdef SERIALIZE
-StepsSerializer Handbook::__serializer;
-StepsSerializer &Handbook::serializer()
+#ifdef JSONLOG
+JSONStepsLogger Handbook::stepsLogger;
+JSONStepsLogger &Handbook::stepsLogger()
 {
-    return __serializer;
+    return stepsLogger;
 }
-#endif // SERIALIZE
+#endif // JSONLOG
 
 Handbook::MC Handbook::__mc;
 Handbook::MC &Handbook::mc()

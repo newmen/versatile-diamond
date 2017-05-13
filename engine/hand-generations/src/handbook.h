@@ -6,7 +6,7 @@
 #include <mc/tree_mc.h>
 #include <tools/common.h>
 #include <tools/scavenger.h>
-#include <tools/steps_serializer.h>
+#include <tools/json_steps_logger.h>
 #include <species/keeper.h>
 #include <species/lateral_spec.h>
 #include <species/specific_spec.h>
@@ -38,16 +38,16 @@ private:
     static SKeeper __specificKeeper;
     static Scavenger __scavenger;
 
-#ifdef SERIALIZE
-    static StepsSerializer __serializer;
-#endif // SERIALIZE
+#ifdef JSONLOG
+    static JSONStepsLogger stepsLogger;
+#endif // JSONLOG
 
 public:
     ~Handbook();
 
-#ifdef SERIALIZE
-    static StepsSerializer &serializer();
-#endif // SERIALIZE
+#ifdef JSONLOG
+    static JSONStepsLogger &stepsLogger();
+#endif // JSONLOG
     static MC &mc();
 
     static SurfaceAmorph &amorph();

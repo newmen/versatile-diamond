@@ -4,32 +4,13 @@ module VersatileDiamond
     # Provides logic for create proxy instances that delegates all method calls to
     # target instance
     class TransparentProxy
+      extend Forwardable
 
       class << self
-        # Available unpublic methods could be defined through it singleton method
+        # Defines methods delegators to original instance
         # @param [Array] methods the list of available methods
-        def avail_unpublic_methods(*methods)
-          @avail_unpublic_methods = methods.to_set
-        end
-
-        # Checks that some method is available
-        # @param [Symbol] method name
-        # @return [Boolean] is available or not
-        def avail_method?(method)
-          @avail_unpublic_methods && @avail_unpublic_methods.include?(method)
-        end
-
-        # Setup the list of binary operations which applies to two proxied entities
-        # @param [Array] methods the list of binary operations
-        def binary_operations(*methods)
-          @binary_operations = methods.to_set
-        end
-
-        # Checks that some operation is binary
-        # @param [Symbol] operation name
-        # @return [Boolean] is binary or not
-        def binary_operation?(operation)
-          @binary_operations && @binary_operations.include?(operation)
+        def delegate(*methods)
+          def_delegators(:original, *methods)
         end
       end
 
@@ -60,18 +41,6 @@ module VersatileDiamond
         original <=> other.original
       end
 
-      # Delegates all available another calls to original instance
-      def method_missing(*args)
-        method_name = args.first
-        if self.class.avail_method?(method_name)
-          original.send(*args)
-        elsif args.size == 2 && binary_op?(method_name) && self.class == args.last.class
-          original.public_send(method_name, args.last.original)
-        else
-          original.public_send(*args)
-        end
-      end
-
       def inspect
         "px_#{i}:#{original.inspect}"
       end
@@ -80,12 +49,6 @@ module VersatileDiamond
 
       attr_reader :i
 
-      # Delegates to static #binary_operation? method
-      # @param [Symbol] operation name
-      # @return [Boolean] is binary or not
-      def binary_op?(method_name)
-        self.class.binary_operation?(method_name)
-      end
     end
 
   end

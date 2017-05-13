@@ -5,7 +5,8 @@ module VersatileDiamond
 
         # Contains source and correspond product reactant nodes
         class SourceNode < ChangeNode
-          extend Forwardable
+
+          delegate :lattice_class
 
           # @param [Organizers::AtomClassifier] classifier
           # @param [ReactantNode] original

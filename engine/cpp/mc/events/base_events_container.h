@@ -18,15 +18,15 @@ public:
 
     Reaction *selectEvent(double r);
 
-#ifdef SERIALIZE
+#ifdef JSONLOG
     std::string name() const { return _events.front()->name(); }
-#endif // SERIALIZE
+#endif // JSONLOG
     double oneRate() const;
     double commonRate() const;
 
-#if defined(PRINT) || defined(MC_PRINT) || defined(SERIALIZE) || !defined(NDEBUG)
+#if defined(PRINT) || defined(MC_PRINT) || defined(JSONLOG) || !defined(NDEBUG)
     uint size() const { return _events.size(); }
-#endif // PRINT || MC_PRINT || SERIALIZE || !NDEBUG
+#endif // PRINT || MC_PRINT || JSONLOG || !NDEBUG
 
 protected:
     BaseEventsContainer() = default;

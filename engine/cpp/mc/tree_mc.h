@@ -18,9 +18,9 @@ public:
 
     void sort() final;
 
-#ifdef SERIALIZE
-    StepsSerializer::Dict counts() const;
-#endif // SERIALIZE
+#ifdef JSONLOG
+    JSONStepsLogger::Dict counts() const;
+#endif // JSONLOG
 
     double totalRate() const final { return _tree.totalRate(); }
 
@@ -60,13 +60,13 @@ TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::TreeMC() : _tree(EVENTS_NUM, MULTI_EVENTS_
 {
 }
 
-#ifdef SERIALIZE
+#ifdef JSONLOG
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-StepsSerializer::Dict TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::counts() const
+JSONStepsLogger::Dict TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::counts() const
 {
     return _tree.counts();
 }
-#endif // SERIALIZE
+#endif // JSONLOG
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 void TreeMC<EVENTS_NUM, MULTI_EVENTS_NUM>::recountTotalRate()

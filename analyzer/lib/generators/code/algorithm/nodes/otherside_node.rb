@@ -5,6 +5,9 @@ module VersatileDiamond
 
         # Replaces internal unique specie
         class OthersideNode < LateralNode
+
+          delegate :sub_properties, :coincide?
+
           # @param [LateralChunks] _
           # @param [ReactantNode] _
           def initialize(*)

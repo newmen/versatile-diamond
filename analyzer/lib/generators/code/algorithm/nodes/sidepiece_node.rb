@@ -6,7 +6,6 @@ module VersatileDiamond
         # Represents node which is wrapped the unique side node but behalves like not
         # unique node
         class SidepieceNode < LateralNode
-
           # @param [LateralChunks] lateral_chunks
           # @param [ReactantNode] uniq_side_node
           # @param [ReactantNode] identity_node

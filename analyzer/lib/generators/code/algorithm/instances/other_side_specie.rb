@@ -5,6 +5,11 @@ module VersatileDiamond
 
         # Garanties uniquality of all similar species
         class OtherSideSpecie < Tools::TransparentProxy
+
+          delegate :atom?, :anchor?
+          delegate :actual_role, :source_role
+          delegate :var_name
+
           # @return [Boolean]
           def proxy?
             true

@@ -423,7 +423,7 @@ module VersatileDiamond
       # @param [SpecificSpec] to which spec will be added
       def clean_result!(from, to)
         if from.links.size != to.links.size
-          no_val_proc = -> f, t { !f || !t }
+          no_val_proc = proc { |f, t| !f || !t }
           if changes.any? { |_, aps| aps.any?(&no_val_proc) }
             raise ArgumentError, "Wrong swapping species #{from} -> #{to}"
           else
