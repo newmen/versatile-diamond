@@ -11,7 +11,7 @@ int BehaviorTor::correctOne(int value, uint max) const
     return value;
 }
 
-Atom *&BehaviorTor::getData(SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const
+Atom *&BehaviorTor::choiseAtom(SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const
 {
     return atomsVector->BaseVector::operator[](correct(atomsVector, coords));
 }

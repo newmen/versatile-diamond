@@ -34,7 +34,6 @@ ushort UbiquitousReaction::prevNum(const Atom *anchor, const ushort *typeToNum)
     {
         return typeToNum[prevType];
     }
-
 }
 
 void UbiquitousReaction::doIt()
@@ -46,7 +45,7 @@ void UbiquitousReaction::doIt()
     target()->changeType(type);
 }
 
-#ifdef PRINT
+#if defined(PRINT) || defined(MC_PRINT)
 void UbiquitousReaction::info(IndentStream &os)
 {
     os << "Reaction " << name() << " [" << this << "] ";
@@ -55,6 +54,6 @@ void UbiquitousReaction::info(IndentStream &os)
     if (target()->lattice()) os << target()->lattice()->coords();
     else os << "amorph";
 }
-#endif // PRINT
+#endif // PRINT || MC_PRINT
 
 }

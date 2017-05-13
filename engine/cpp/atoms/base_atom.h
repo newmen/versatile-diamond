@@ -9,7 +9,7 @@
 namespace vd
 {
 
-const ushort NO_VALUE = (ushort)(-1);
+enum : ushort { NO_VALUE = (ushort)(-1) };
 
 template <class D, class C>
 class BaseAtom
@@ -29,24 +29,24 @@ public:
     void activate()
     {
         assert(_actives < valence());
-#ifdef PRINT
+#if defined(PRINT) || defined(ATOM_PRINT)
         debugPrint([&](IndentStream &os) {
             os << "[" << this << "] activate() "
                << _actives << " -> " << (_actives + 1);
         });
-#endif // PRINT
+#endif // PRINT || ATOM_PRINT
         ++_actives;
     }
 
     void deactivate()
     {
         assert(_actives > 0);
-#ifdef PRINT
+#if defined(PRINT) || defined(ATOM_PRINT)
         debugPrint([&](IndentStream &os) {
             os << "[" << this << "] deactivate() "
                << _actives << " -> " << (_actives - 1);
         });
-#endif // PRINT
+#endif // PRINT || ATOM_PRINT
         --_actives;
     }
 
@@ -54,9 +54,6 @@ public:
     template <class L> void eachNeighbour(const L &lambda) const;
     template <class L> void eachAmorphNeighbour(const L &lambda);
     template <class L> void eachCrystalNeighbour(const L &lambda);
-
-    D *firstCrystalNeighbour() const;
-    ushort crystalNeighboursNum() const;
 
     Lattice<C> *lattice() const { return _lattice; }
 
@@ -66,6 +63,8 @@ public:
     virtual ushort hCount() const;
     virtual ushort actives() const { return _actives; }
     ushort bonds() const { return _relatives.size(); }
+
+    virtual ushort crystalNeighboursNum() const;
 
 protected:
     BaseAtom(ushort type, ushort actives, Lattice<C> *lattice);
@@ -168,34 +167,23 @@ void BaseAtom<D, C>::eachNeighbourBy(const L &lambda, const P &predicate)
 }
 
 template <class D, class C>
-D *BaseAtom<D, C>::firstCrystalNeighbour() const
-{
-    for (D *nbr : _relatives)
-    {
-        if (nbr->lattice()) return nbr;
-    }
-
-    return nullptr;
-}
-
-template <class D, class C>
-ushort BaseAtom<D, C>::crystalNeighboursNum() const
-{
-    ushort result = lattice() ? 1 : 0;
-    for (const D *nbr : _relatives)
-    {
-        if (nbr->lattice()) ++result;
-    }
-
-    return result;
-}
-
-template <class D, class C>
 ushort BaseAtom<D, C>::hCount() const
 {
     int hc = (int)valence() - actives() - bonds();
     assert(hc >= 0);
     return (ushort)hc;
+}
+
+template <class D, class C>
+ushort BaseAtom<D, C>::crystalNeighboursNum() const
+{
+    ushort num = 0;
+    for (D *nbr : _relatives)
+    {
+        if (nbr->lattice()) ++num;
+    }
+
+    return num;
 }
 
 }

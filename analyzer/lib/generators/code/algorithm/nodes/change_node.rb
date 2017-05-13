@@ -7,6 +7,8 @@ module VersatileDiamond
         # @abstract
         class ChangeNode < Tools::TransparentProxy
 
+          delegate :spec_atom, :uniq_specie, :atom, :properties, :lattice
+
           # @param [ReactantNode] original
           # @yield lazy other node
           def initialize(original, &other)

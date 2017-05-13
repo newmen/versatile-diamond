@@ -92,6 +92,14 @@ const ushort Handbook::__activesOnAtoms[Handbook::__atomsNum] =
     2, 0, 0, 0, 0, 0, 1, 1, 2
 };
 
+#ifdef JSONLOG
+JSONStepsLogger Handbook::stepsLogger;
+JSONStepsLogger &Handbook::stepsLogger()
+{
+    return stepsLogger;
+}
+#endif // JSONLOG
+
 Handbook::DMC Handbook::__mc;
 Handbook::DMC &Handbook::mc()
 {
@@ -168,6 +176,13 @@ bool Handbook::atomIs(ushort complexType, ushort typeOf)
 
 ushort Handbook::specificate(ushort type)
 {
-    assert(type < __atomsNum);
-    return __atomsSpecifing[type];
+    if (type == NO_VALUE)
+    {
+        return type;
+    }
+    else
+    {
+        assert(type < __atomsNum);
+        return __atomsSpecifing[type];
+    }
 }

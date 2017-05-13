@@ -52,6 +52,7 @@ surface
     atoms cl: bridge(:ct), cr: vob(:cb), c1: vob(:c1)
     bond :cl, :cr, face: 100, dir: :front
 
+  size x: 100, y: 100, z: 5
   temperature 1000
 
 events

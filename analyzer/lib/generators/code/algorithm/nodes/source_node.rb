@@ -5,7 +5,8 @@ module VersatileDiamond
 
         # Contains source and correspond product reactant nodes
         class SourceNode < ChangeNode
-          extend Forwardable
+
+          delegate :lattice_class
 
           # @param [Organizers::AtomClassifier] classifier
           # @param [ReactantNode] original
@@ -55,7 +56,13 @@ module VersatileDiamond
 
           # @return [Boolean] are product properties maximal or not
           def endpoint?
-            product.properties.maximal?
+            product.properties.maximal? || last_relevant?(product.properties)
+          end
+
+          # @param [Organizers::AtomProperties] props
+          # @return [Boolean]
+          def last_relevant?(props)
+            props.relevant? && props.children.one?
           end
 
           # @return [Hash]

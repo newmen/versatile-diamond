@@ -4,13 +4,13 @@
 template <> const ushort TwoBridgesCTRiCBRs::Base::__indexes[2] = { 0, 3 };
 template <> const ushort TwoBridgesCTRiCBRs::Base::__roles[2] = { 5, 0 };
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SPEC_PRINT) || defined(JSONLOG)
 const char *TwoBridgesCTRiCBRs::name() const
 {
     static const char value[] = "two_bridges(ctr: i, cbr: *)";
     return value;
 }
-#endif // PRINT
+#endif // PRINT || SPEC_PRINT || JSONLOG
 
 void TwoBridgesCTRiCBRs::find(TwoBridges *parent)
 {

@@ -51,7 +51,7 @@ module VersatileDiamond
           return empty_residual(key)
         elsif key <= record
           rest = record - key
-          if rest && rest < record
+          if rest && rest < record && rest.links != record.links
             row = add(rest)
             return min(row)
           end

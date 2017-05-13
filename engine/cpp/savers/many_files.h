@@ -12,13 +12,15 @@ namespace vd
 template <class B>
 class ManyFiles : public B
 {
+    uint n = 0;
+
 public:
     void save(const SavingReactor *reactor) override;
 
 protected:
     template <class... Args> ManyFiles(Args... args) : B(args...) {}
 
-    std::string filename() const override;
+    std::string filename() override;
 
     virtual void writeHeader(std::ostream &os, const SavingReactor *reactor) {}
     virtual void writeBody(std::ostream &os, const SavingReactor *reactor) = 0;
@@ -35,10 +37,8 @@ void ManyFiles<B>::save(const SavingReactor *reactor)
 }
 
 template<class B>
-std::string ManyFiles<B>::filename() const
+std::string ManyFiles<B>::filename()
 {
-    static uint n = 0;
-
     std::stringstream ss;
     ss << this->config()->filename() << "_" << (n++);
     return ss.str();

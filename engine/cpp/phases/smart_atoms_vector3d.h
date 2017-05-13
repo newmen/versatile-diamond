@@ -31,7 +31,7 @@ public:
 
     AtomType *&operator [] (const int3 &coords)
     {
-        return _behavior->getData(this, coords);
+        return _behavior->choiseAtom(this, coords);
     }
 };
 

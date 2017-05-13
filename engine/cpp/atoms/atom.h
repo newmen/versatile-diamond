@@ -49,6 +49,10 @@ public:
     void forget(ushort role, BaseSpec *spec);
     bool hasSpec(ushort role, BaseSpec *spec) const;
 
+    ushort amorphNeighboursNum() const;
+    ushort doubleNeighboursNum() const;
+    ushort tripleNeighboursNum() const;
+
     bool hasRole(ushort sid, ushort role) const;
     bool checkAndFind(ushort sid, ushort role);
     template <class S> S *specByRole(ushort role);
@@ -61,12 +65,12 @@ public:
 
     void prepareToRemove();
 
-#ifdef PRINT
+#if defined(PRINT) || defined(ATOM_PRINT)
     void info(IndentStream &os);
     void printRoles(IndentStream &os);
     void printSpecs(IndentStream &os);
     void pos(IndentStream &os);
-#endif // PRINT
+#endif // PRINT || ATOM_PRINT
 
 protected:
     Atom(ushort type, ushort actives, OriginalLattice *lattice);
@@ -87,6 +91,10 @@ private:
         uint at = first;
         return (at << 16) ^ second;
     }
+
+    typedef std::unordered_map<const Atom *, ushort> Counter;
+    Counter sumNeighbours() const;
+    ushort countBonds(ushort arity) const;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +114,7 @@ void Atom::eachSpecByRole(ushort role, const L &lambda)
     uint num = std::distance(range.first, range.second);
     if (num == 0) return;
 
-#ifdef PRINT
+#if defined(PRINT) || defined(ATOM_PRINT)
     debugPrint([&](IndentStream &os) {
         os << "Atom::eachSpecByRole " << this << " " << std::dec;
         pos(os);
@@ -120,7 +128,7 @@ void Atom::eachSpecByRole(ushort role, const L &lambda)
             os << " <" << spec->type() << ">" << spec->name();
         }
     });
-#endif // PRINT
+#endif // PRINT || ATOM_PRINT
 
     BaseSpec **specsDup = new BaseSpec *[num];
     for (uint i = 0; range.first != range.second; ++range.first, ++i)

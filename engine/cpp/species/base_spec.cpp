@@ -6,21 +6,21 @@ namespace vd
 
 void BaseSpec::store()
 {
-#ifdef PRINT
+#if defined(PRINT) || defined(SPEC_PRINT)
     this->wasFound();
-#endif // PRINT
+#endif // PRINT || SPEC_PRINT
 
     findChildren();
 }
 
 void BaseSpec::remove()
 {
-#ifdef PRINT
+#if defined(PRINT) || defined(SPEC_PRINT)
     wasForgotten();
-#endif // PRINT
+#endif // PRINT || SPEC_PRINT
 }
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SPEC_PRINT)
 void BaseSpec::wasFound()
 {
     debugPrint([&](IndentStream &os) {
@@ -36,6 +36,6 @@ void BaseSpec::wasForgotten()
         os << " was forgotten";
     });
 }
-#endif // PRINT
+#endif // PRINT || SPEC_PRINT
 
 }

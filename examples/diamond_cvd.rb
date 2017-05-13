@@ -108,7 +108,7 @@ surface
     # TODO: не полностью уточнено положение димеров друг относительно друга, для данной структуры
     # полезно использовать not
 
-  size x: 100, y: 100
+  size x: 100, y: 100, z: 5
   composition C%d # TODO: ??
   temperature 1000
 
@@ -165,8 +165,7 @@ events
     forward_rate 3e6 # TODO: maybe value more grater than presented
 
   reaction 'same methyl-dimer hydrogen migration'
-    # TODO: следует предоставить возможость автоматического определения необходимости в атоме водорода, которая потом проявляется в своействе атома при генерации, это же относится к остальным реакциям с участием водорода, описанным ниже
-    equation methyl_on_dimer(cm: *, cl: H) = methyl_on_dimer(cl: *, cm: H)
+    equation methyl_on_dimer(cl: *, cm: H) = methyl_on_dimer(cm: *, cl: H)
       unfixed methyl_on_dimer(:cm)
 
   #  enthalpy -10

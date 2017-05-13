@@ -4,13 +4,13 @@
 template <> const ushort MethylOnDimerCLsCMhiu::Base::__indexes[2] = { 4, 0 };
 template <> const ushort MethylOnDimerCLsCMhiu::Base::__roles[2] = { 21, 35 };
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SPEC_PRINT) || defined(JSONLOG)
 const char *MethylOnDimerCLsCMhiu::name() const
 {
     static const char value[] = "methyl_on_dimer(cl: *, cm: H, cm: i, cm: u)";
     return value;
 }
-#endif // PRINT
+#endif // PRINT || SPEC_PRINT || JSONLOG
 
 void MethylOnDimerCLsCMhiu::find(MethylOnDimerCMiu *parent)
 {

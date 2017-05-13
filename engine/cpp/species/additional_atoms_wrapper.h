@@ -20,10 +20,10 @@ public:
     Atom *atom(ushort index) const override;
     ushort size() const override;
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SPEC_PRINT)
     void info(IndentStream &os) override;
     void eachAtom(const std::function<void (Atom *)> &lambda) override;
-#endif // PRINT
+#endif // PRINT || SPEC_PRINT
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ ushort AdditionalAtomsWrapper<B, ATOMS_NUM>::size() const
     return ATOMS_NUM + B::size();
 }
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SPEC_PRINT)
 template <class B, ushort ATOMS_NUM>
 void AdditionalAtomsWrapper<B, ATOMS_NUM>::info(IndentStream &os)
 {
@@ -83,7 +83,7 @@ void AdditionalAtomsWrapper<B, ATOMS_NUM>::eachAtom(const std::function<void (At
 
     B::eachAtom(lambda);
 }
-#endif // PRINT
+#endif // PRINT || SPEC_PRINT
 
 }
 

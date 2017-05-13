@@ -108,6 +108,16 @@ module VersatileDiamond
         flatten_faces.include?(relation.face)
       end
 
+      # @return [Hash]
+      def surface_crystal_atom
+        relations = bottom_relations.map { |r, n| [r] * n }.reduce(:+)
+        actives_num = crystal_atom[:valence] - relations.size
+        crystal_atom.merge({
+          relations: relations,
+          danglings: [ActiveBond.property] * actives_num
+        })
+      end
+
     private
 
       # Recursively algorighm which finds target by path in links

@@ -19,6 +19,8 @@ module VersatileDiamond
 
           let(:node_aib) { nodes.first }
           let(:node_ab) { nodes.last }
+          it { expect(node_aib).not_to eq(node_ab) }
+
           let(:dept_aib) { dept_activated_incoherent_bridge }
           let(:dept_ab) { dept_activated_bridge }
 

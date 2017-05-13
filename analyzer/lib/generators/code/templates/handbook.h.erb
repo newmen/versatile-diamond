@@ -5,6 +5,7 @@
 #include <mc/mc.h>
 #include <tools/common.h>
 #include <tools/scavenger.h>
+#include <tools/json_steps_logger.h>
 #include <species/keeper.h>
 <% if lateral_reactions_exists? %>
 #include <species/lateral_spec.h>
@@ -36,6 +37,13 @@ private:
     static SKeeper __specificKeeper;
 public:
     static SKeeper &specificKeeper();
+
+#ifdef JSONLOG
+private:
+    static JSONStepsLogger stepsLogger;
+public:
+    static JSONStepsLogger &stepsLogger();
+#endif // JSONLOG
 
 private:
     static DMC __mc;

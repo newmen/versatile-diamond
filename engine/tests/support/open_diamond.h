@@ -15,10 +15,11 @@ public:
     static const dim3 SIZES;
     OpenDiamond(uint height = DEFAULT_HEIGHT) : OpenDiamond(SIZES, height) {}
     OpenDiamond(const dim3 &sizes, uint height = DEFAULT_HEIGHT) : Diamond(sizes, new BehaviorTor, height) {}
+    OpenDiamond(const dim3 &sizes, const Behavior *behavior, uint height = DEFAULT_HEIGHT) : Diamond(sizes, behavior, height) {}
 
     Atom *atom(const int3 &coords) { return atoms()[coords]; }
 
-    FN neighbours110(const Atom *atom)
+    FN neighbours110(const Atom *atom) // for what???
     {
         TN f110 = front_110(atom);
         TN c110 = cross_110(atom);
@@ -26,7 +27,7 @@ public:
         return FN(nbrs);
     }
 
-    FN neighbours100(const Atom *atom)
+    FN neighbours100(const Atom *atom) // for what???
     {
         TN f100 = front_100(atom);
         TN c100 = cross_100(atom);
@@ -37,7 +38,15 @@ public:
     bool isBonded(const int3 &a, const int3 &b)
     {
         Atom *aa = atom(a), *bb = atom(b);
-        return aa->hasBondWith(bb) && bb->hasBondWith(aa);
+        if (aa->hasBondWith(bb))
+        {
+            assert(bb->hasBondWith(aa));  // !!
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 };
 

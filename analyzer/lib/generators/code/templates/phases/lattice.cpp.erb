@@ -14,21 +14,27 @@
 void <%= class_name %>::buildAtoms()
 {
     makeLayer(0, <%= major_atom_index %>, <%= zero_level_atom_actives %>);
-    for (int i = 1; i < _defaultSurfaceHeight - 1; ++i)
+    for (int i = 1; i < _defaultSurfaceHeight; ++i)
     {
-        makeLayer(i, <%= major_atom_index %>, <%= major_atom_actives %>);
+        makeLayer(i, NO_VALUE, <%= major_atom_actives %>);
     }
-    makeLayer(_defaultSurfaceHeight - 1, <%= surface_atom_index %>, <%= surface_atom_actives %>);
 }
 
 void <%= class_name %>::bondAllAtoms()
 {
     eachAtom([this](Atom *atom) {
         assert(atom->lattice());
-        int z = atom->lattice()->coords().z;
-        if (z > 0)
+        bondAround(atom);
+    });
+}
+
+void <%= class_name %>::detectAtomTypes()
+{
+    eachAtom([this](Atom *atom) {
+        if (atom->type() == NO_VALUE)
         {
-            bondAround(atom);
+            ushort type = detectType(atom);
+            atom->changeType(type);
         }
     });
 }
@@ -40,7 +46,17 @@ Atom *<%= class_name %>::makeAtom(ushort type, ushort actives, const int3 &coord
     return atom;
 }
 
+bool <%= class_name %>::hasBottom(const int3 &coords)
+{
+    return <%= has_bottom_condition %>;
+}
+
 void <%= class_name %>::findAll()
 {
     Finder::initFind(atoms().data(), atoms().size());
+}
+
+ushort Diamond::detectType(const Atom *atom)
+{
+<%= define_type_algorithm %>
 }

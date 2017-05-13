@@ -12,9 +12,9 @@ class MultiLateralReaction : public LateralReaction
     SingleLateralReaction *_chunks[LATERAL_REACTIONS_NUM];
 
 public:
-#ifdef PRINT
+#if defined(PRINT) || defined(MC_PRINT)
     void info(IndentStream &os);
-#endif // PRINT
+#endif // PRINT || MC_PRINT
 
 protected:
     MultiLateralReaction(SingleLateralReaction **chunks);
@@ -70,7 +70,7 @@ void MultiLateralReaction<LATERAL_REACTIONS_NUM>::eachChunk(const L &lambda)
     }
 }
 
-#ifdef PRINT
+#if defined(PRINT) || defined(MC_PRINT)
 template <ushort LATERAL_REACTIONS_NUM>
 void MultiLateralReaction<LATERAL_REACTIONS_NUM>::info(IndentStream &os)
 {
@@ -82,7 +82,7 @@ void MultiLateralReaction<LATERAL_REACTIONS_NUM>::info(IndentStream &os)
         _chunks[i]->info(sub);
     }
 }
-#endif // PRINT
+#endif // PRINT || MC_PRINT
 
 }
 

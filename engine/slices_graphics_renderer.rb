@@ -9,10 +9,11 @@ require 'singleton'
 class PlotsConfig
   include Singleton
 
-  attr_reader :coding, :dir, :filename, :format,
+  attr_reader :run,
+              :coding, :dir, :filename, :format,
               :font, :fontsize,
               :linetype, :linewidth, :size,
-              :notitles, :nolabels
+              :notitles, :nolabels, :nofiles
 
   # Accumulates passed options and setup internal variables for each option
   def initialize
@@ -47,6 +48,19 @@ class PlotsConfig
     %Q(font "#{@font},#{@fontsize}")
   end
 
+  # @return [Hash] the keys are atom type indexes and values are labels
+  def labels
+    if @run
+      File.open(@run) do |f|
+        matches = f.readlines.map { |line| line.match(/^# *(\d+): *([^ ]+)$/) }
+        pairs = matches.select(&:itself).map { |m| m[1..2] }
+        pairs.map { |k, v| [k, v.chomp] }.to_h
+      end
+    else
+      {}
+    end
+  end
+
 private
 
   # Contain help text which is used by docopt
@@ -58,6 +72,7 @@ Usage:
 
 Options:
   -h, --help                This help
+  -r, --run=config/run.yml  Path to run config for parse labels of atom types
   -c, --coding=encode       Encoding inscriptions, in the case of format eps (cp1251|uft8) [default: cp1251]
   -d, --dir=directory       Directory with results
   -f, --format=ext          Format of output files (png|eps|svg) [default: png]
@@ -66,8 +81,8 @@ Options:
   -s, --size=width,height   Size of plots when output file has png format
   --font=fontname           Font to be used when output file is not png format [default: Times-New-Roman]
   --fontsize=size           Font size to be used when output file is not png format [default: 32]
-  --notitles                Not include titles in pictures
-  --nolabels                Not include axis labels in pictures
+  --notitles                Do not include titles in pictures
+  --nolabels                Do not include axis labels in pictures
 HEREHELP
   end
 end
@@ -90,8 +105,7 @@ def read_slices
 
     curr_time = nil
     curr_slice = nil
-    lines.each do |original_line|
-      line = original_line.strip
+    lines.map(&:strip).each do |line|
       next if line.empty?
       if m = line.match(/\= (\d+(?:\.\d+(?:e-?\d+)?)?)/)
         curr_time = m[1].to_f
@@ -112,10 +126,12 @@ def read_slices
 end
 
 # Makes gnuplot dataset and pass it in block
+# @param [Integer] n number in order
 # @param [Array] data for which dataset will be maked
 # @yield [Gnuplot::DataSet] do something with maked dataset
-def data_set(data, &block)
+def data_set(n, data, &block)
   Gnuplot::DataSet.new(data) do |ds|
+    ds.title = (n == 0) ? 'bottom' : n.to_s
     ds.with = config.linetype
     ds.linewidth = config.linewidth
     block.call(ds) if block_given?
@@ -132,6 +148,7 @@ def make_gnuplot(filename, title, xlabel, ylabel, &block)
   Gnuplot.open do |gp|
     Gnuplot::Plot.new(gp) do |plot|
       plot.output("#{config.filepath(filename)}")
+
       case config.format
       when 'eps'
         plot.set("enc #{config.coding}")
@@ -144,7 +161,8 @@ def make_gnuplot(filename, title, xlabel, ylabel, &block)
         # plot.set("terminal #{config.format} #{config.font_setup}")
       end
 
-      plot.set("key off")
+      plot.set('key on')
+      plot.set('key title "Layers:"')
 
       plot.title(title) unless config.notitles
       unless config.nolabels
@@ -158,23 +176,32 @@ def make_gnuplot(filename, title, xlabel, ylabel, &block)
 end
 
 # Makes all result plot files
-# @param [Array] types the array of saved atom types
+# @param [Array] labels the array of saved atom labels
 # @param [Array] concs the array of concentration for each atom type, where each item
 #  is hash where keys are time labels and values are concentration values
-def render_graphics(types, concs)
-  types.zip(concs) do |type, slices|
-    make_gnuplot(type, "#{type} atom type", 'time (s)', 'concentration (%)') do |plot|
+def render_graphics(labels, concs)
+  labels.zip(concs) do |label, slices|
+    make_gnuplot(label, "#{label}", 'time (s)', 'concentration (%)') do |plot|
       # plot.yrange('[0:1]')
-      plot.data += slices.map do |n, slice|
-        data_set([slice.keys, slice.values])
+      plot.data += slices.sort_by { |x| -x.first }.map do |n, slice|
+        data_set(n, [slice.keys, slice.values.map { |v| v * 100 }])
       end
     end
   end
 end
 
+# Gets list of labels for plots
+# @param [Array] types of atoms
+# @return [Array]
+def labels(types)
+  labels = config.labels
+  labels.empty? ? types : types.map { |t| "(#{t})  #{labels[t]}  " }
+end
+
 # The entry point
 def main
-  render_graphics(*read_slices)
+  types, concs = read_slices
+  render_graphics(labels(types), concs)
 rescue Docopt::Exit => e
   puts e.message
 end

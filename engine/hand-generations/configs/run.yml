@@ -2,19 +2,20 @@
 system:
   size_x: 15
   size_y: 15
+  size_z: 3
   behavior: tor
-  time: 0.003
+  time: 0.0003
 
 progress:
   step: 0.0001
 
 integral:
   step: 0.0005
-  atom_types: [0, 2, 4, 5, 20, 21, 24, 28, 32]
+  atom_types: [0, 2, 4, 5, 20, 21, 24, 28, 32, 25, 15, 26, 7, 23, 33]
 
-mol:
-  step: 0.001
-  detector: all
+# mol:
+#   step: 0.001
+#   detector: all
 
 xyz:
   step: 0.0007

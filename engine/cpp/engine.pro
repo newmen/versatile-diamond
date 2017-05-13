@@ -7,7 +7,8 @@ QMAKE_LIBDIR += /usr/local/lib
 
 QMAKE_CXXFLAGS_RELEASE += -DNDEBUG
 #QMAKE_CXXFLAGS += -D_GLIBCXX_DEBUG_PEDANTIC
-#QMAKE_CXXFLAGS += -DPRINT
+#QMAKE_CXXFLAGS += -DMC_PRINT
+#QMAKE_CXXFLAGS += -DJSONLOG
 QMAKE_CXXFLAGS += -std=c++11
 #QMAKE_CXXFLAGS += -I../hand-generations/src
 QMAKE_CXXFLAGS += -w
@@ -128,7 +129,6 @@ SOURCES += \
     savers/mol_accumulator.cpp \
     savers/mol_saver.cpp \
     savers/sdf_saver.cpp \
-    savers/slices_saver.cpp \
     savers/xyz_accumulator.cpp \
     savers/xyz_saver.cpp \
     species/base_spec.cpp \
@@ -139,6 +139,7 @@ SOURCES += \
     tools/counters/time_counter.cpp \
     tools/debug_print.cpp \
     tools/indent_stream.cpp \
+    tools/json_steps_logger.cpp \
     tools/process_mem_usage.cpp \
     tools/scavenger.cpp \
     tools/worker/frame.cpp \
@@ -361,10 +362,12 @@ HEADERS += \
     tools/counters/time_counter.h \
     tools/creator.h \
     tools/debug_print.h \
+    tools/define_print.h \
     tools/error.h \
     tools/factory.h \
     tools/indent_facet.h \
     tools/indent_stream.h \
+    tools/json_steps_logger.h \
     tools/many_items_result.h \
     tools/preparator.h \
     tools/process_mem_usage.h \

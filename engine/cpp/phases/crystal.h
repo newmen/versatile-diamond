@@ -20,18 +20,23 @@ public:
     void insert(Atom *atom, const int3 &coords);
     void erase(Atom *atom);
 
-    Atom *atom(const int3 &coords) { return atoms()[coords]; }
+    Atom *atom(const int3 &coords)
+    {
+        return coords.z < 0 ? nullptr : atoms()[coords];
+    }
 
 protected:
     Crystal(const dim3 &sizes, const Behavior *behavior);
 
     virtual void buildAtoms() = 0;
     virtual void bondAllAtoms() = 0;
+    virtual void detectAtomTypes() = 0;
     virtual void findAll() = 0;
 
     virtual Atom *makeAtom(ushort type, ushort actives, const int3 &coords) = 0;
 
     void makeLayer(uint z, ushort type, ushort actives);
+    virtual bool hasBottom(const int3 &coords) = 0;
 };
 
 }

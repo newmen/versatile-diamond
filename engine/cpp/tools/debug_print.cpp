@@ -1,9 +1,26 @@
-#include "debug_print.h"
+#include "define_print.h"
 
-#ifdef PRINT
+#if defined(PRINT) || defined(ANY_PRINT)
+
+#include "debug_print.h"
+#include <streambuf>
 
 namespace vd
 {
+
+bool DebugOutFlag::_needOutToDebug = true;
+
+void DebugOutFlag::switchFlag(bool newValue)
+{
+    _needOutToDebug = newValue;
+}
+
+bool DebugOutFlag::isDebugOut()
+{
+    return _needOutToDebug;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
 
 IndentStream rootStream(std::ostringstream &stream)
 {
@@ -23,4 +40,4 @@ std::ostream &debugStream()
 
 }
 
-#endif // PRINT
+#endif // PRINT || ANY_PRINT

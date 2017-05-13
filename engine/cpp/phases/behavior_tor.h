@@ -11,7 +11,7 @@ class BehaviorTor : public Behavior
 public:
     BehaviorTor() = default;
 
-    Atom *&getData(SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const override;
+    Atom *&choiseAtom(SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const override;
 
 private:
     int3 correct(const SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const;

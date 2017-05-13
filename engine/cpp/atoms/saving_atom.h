@@ -12,6 +12,8 @@ class SavingCrystal;
 
 class SavingAtom : public BaseAtom<SavingAtom, SavingCrystal>
 {
+    typedef BaseAtom<SavingAtom, SavingCrystal> ParentType;
+
     const char *_name;
     ushort _valence;
 
@@ -26,6 +28,9 @@ public:
     ushort valence() const override { return _valence; }
 
     float3 realPosition() const;
+
+    SavingAtom *firstCrystalNeighbour() const;
+    ushort crystalNeighboursNum() const;
 
 private:
     SavingAtom(const SavingAtom &) = delete;

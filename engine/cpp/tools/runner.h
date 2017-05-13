@@ -8,6 +8,11 @@
 #include "config.h"
 #include "tracker.h"
 #include "process_mem_usage.h"
+#include "define_print.h"
+
+#if defined(PRINT) || defined(ANY_PRINT)
+#define DEBUG_EACH_STEP TRACK_EACH_STEP
+#endif // PRINT || ANY_PRINT
 
 namespace vd
 {
@@ -39,6 +44,10 @@ private:
     Runner &operator = (const Runner &) = delete;
     Runner &operator = (Runner &&) = delete;
 
+#ifdef JSONLOG
+    void serializeStep(double time);
+#endif // JSONLOG
+
     void firstSave();
     void storeIfNeed(double timeDelta, bool forseSave);
     void processJob(Job *job);
@@ -60,6 +69,14 @@ void Runner<HB>::stop()
     __terminate = true;
 }
 
+#ifdef JSONLOG
+template <class HB>
+void Runner<HB>::serializeStep(double time)
+{
+    HB::stepsLogger().step(time, HB::mc().counts());
+}
+#endif // JSONLOG
+
 template <class HB>
 void Runner<HB>::calculate()
 {
@@ -71,16 +88,24 @@ void Runner<HB>::calculate()
     double timeDelta = 0;
     double startTime = timestamp();
 
+#ifdef JSONLOG
+    serializeStep(0);
+#endif // JSONLOG
+
     while (!__terminate && _reactor->currentTime() <= _config->totalTime())
     {
         timeDelta = _reactor->doEvent();
 
-#ifdef PRINT
+#ifdef JSONLOG
+        serializeStep(_reactor->currentTime());
+#endif // JSONLOG
+
+#if defined(PRINT) || defined(MC_PRINT)
         debugPrint([this, totalSteps](IndentStream &os) {
             os << "-----------------------------------------------\n"
                << totalSteps << ". " << _reactor->totalRate() << "\n";
         });
-#endif // PRINT
+#endif // PRINT || MC_PRINT
 
         ++totalSteps;
 
@@ -95,13 +120,23 @@ void Runner<HB>::calculate()
             storeIfNeed(timeDelta, false);
         }
 #endif // NOUT
+#if defined(PRINT) || defined(ANY_PRINT)
+        DebugOutFlag::switchFlag((totalSteps % DEBUG_EACH_STEP) == 0);
+#endif // PRINT || ANY_PRINT
     }
 
     double stopTime = timestamp();
+#if defined(PRINT) || defined(ANY_PRINT)
+    DebugOutFlag::switchFlag(true);
+#endif // PRINT || ANY_PRINT
 
 #ifndef NOUT
     storeIfNeed(timeDelta, true);
 #endif // NOUT
+
+#ifdef JSONLOG
+    HB::stepsLogger().save();
+#endif // JSONLOG
 
     _parallelWorker.stop();
     printStat(startTime, stopTime, totalSteps);

@@ -4,7 +4,7 @@ module VersatileDiamond
     # Uses for replasing similar concept instances
     class VeiledInstance < Tools::TransparentProxy
 
-      binary_operations :same?
+      delegate :name, :same?
 
       def inspect
         "veiled_#{i}:#{original.inspect}"

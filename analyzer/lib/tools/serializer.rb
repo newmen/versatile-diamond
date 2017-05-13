@@ -7,7 +7,7 @@ module VersatileDiamond
       VD_CONFIG_EXT = '.rb'.freeze
 
       class << self
-        # Initializes serializer
+        # Initializes stepsLogger
         # @param [String] dump_dir the directory where dump files will be stored
         def init!(dump_dir)
           FileUtils.mkdir_p(dump_dir) unless Dir.exist?(dump_dir)

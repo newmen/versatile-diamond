@@ -9,13 +9,13 @@
 template <> const ushort HighBridge::Base::__indexes[2] = { 1, 0 };
 template <> const ushort HighBridge::Base::__roles[2] = { 19, 18 };
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SPEC_PRINT) || defined(JSONLOG)
 const char *HighBridge::name() const
 {
     static const char value[] = "high bridge";
     return value;
 }
-#endif // PRINT
+#endif // PRINT || SPEC_PRINT || JSONLOG
 
 void HighBridge::find(Bridge *parent)
 {

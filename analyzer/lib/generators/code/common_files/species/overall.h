@@ -20,6 +20,9 @@ class Overall : public Typed<B, ST>
     bool _markedForRemove = false;
 
 public:
+#ifdef JSONLOG
+    void store() override;
+#endif // JSONLOG
     void remove() override;
 
 protected:
@@ -30,11 +33,24 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////////////////
 
+#ifdef JSONLOG
+template <class B, ushort ST>
+void Overall<B, ST>::store()
+{
+    ParentType::store();
+    Handbook::stepsLogger().appendSpec(this->name(), 1);
+}
+#endif // JSONLOG
+
 template <class B, ushort ST>
 void Overall<B, ST>::remove()
 {
 //    if (this->isMarked()) return; // in each dependent types
     _markedForRemove = true;
+
+#ifdef JSONLOG
+    Handbook::stepsLogger().appendSpec(this->name(), -1);
+#endif // JSONLOG
 
     ParentType::remove();
     Handbook::scavenger().markSpec(this);

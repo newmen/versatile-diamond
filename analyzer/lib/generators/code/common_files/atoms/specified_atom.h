@@ -48,38 +48,36 @@ void SpecifiedAtom<VALENCE>::specifyType()
 template <ushort VALENCE>
 ushort SpecifiedAtom<VALENCE>::hCount() const
 {
-#ifdef PRINT
+#if defined(PRINT) || defined(ATOM_PRINT)
     if (type() == NO_VALUE)
     {
         return 0;
     }
     else
     {
-#else // PRINT
+#else // PRINT || ATOM_PRINT
 #ifndef NDEBUG
         Atom::hCount();
 #endif // NDEBUG
-#endif // PRINT
+#endif // PRINT || ATOM_PRINT
         return Handbook::hydrogensFor(type());
-#ifdef PRINT
+#if defined(PRINT) || defined(ATOM_PRINT)
     }
-#endif // PRINT
+#endif // PRINT || ATOM_PRINT
 }
 
 #ifndef NDEBUG
 template <ushort VALENCE>
 ushort SpecifiedAtom<VALENCE>::actives() const
 {
-#ifdef PRINT
     if (type() == NO_VALUE)
     {
-        return 0;
+        return Atom::actives();
     }
     else
     {
-#endif // PRINT
         ushort result = Handbook::activesFor(type());
-#ifdef PRINT
+#if defined(PRINT) || defined(ATOM_PRINT)
         if (Atom::actives() != result)
         {
             debugPrint([&](IndentStream &os) {
@@ -89,13 +87,11 @@ ushort SpecifiedAtom<VALENCE>::actives() const
                    << "\n...";
             });
         }
-#else
+#else // PRINT || ATOM_PRINT
         assert(Atom::actives() == result);
-#endif // PRINT
+#endif // PRINT || ATOM_PRINT
         return result;
-#ifdef PRINT
     }
-#endif // PRINT
 }
 #endif // NDEBUG
 

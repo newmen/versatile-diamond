@@ -10,10 +10,8 @@ module VersatileDiamond
           # @param [Array] sources
           def initialize(dict, sources)
             @dict = dict
-            filter_proc = -> src { src.product.gas? }
-            @sources = sources.reject(&filter_proc)
-            @removing = sources.select(&filter_proc)
-            @atoms = @sources.map(&:atom)
+            @removing = sources.select { |src| src.product.gas? }
+            @atoms = sources.map(&:atom)
           end
 
           # @return [Expressions::Core::Statement]

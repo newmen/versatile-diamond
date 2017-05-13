@@ -4,10 +4,10 @@
 template <> const ushort OriginalBridge::Base::__indexes[3] = { 0, 1, 2 };
 template <> const ushort OriginalBridge::Base::__roles[3] = { 3, 6, 6 };
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SPEC_PRINT) || defined(JSONLOG)
 const char *OriginalBridge::name() const
 {
     static const char value[] = "bridge";
     return value;
 }
-#endif // PRINT
+#endif // PRINT || SPEC_PRINT || JSONLOG

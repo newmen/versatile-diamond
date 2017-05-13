@@ -14,9 +14,9 @@ class ConcreteLateralReaction : public SingleLateralReaction, public Targets<Lat
     typedef Targets<LateralSpec, LATERALS_NUM> TargetsType;
 
 public:
-#ifdef PRINT
+#if defined(PRINT) || defined(MC_PRINT)
     void info(IndentStream &os);
-#endif // PRINT
+#endif // PRINT || MC_PRINT
 
     void insertToLateralTargets(LateralReaction *reaction) final { this->insert(reaction); }
     void eraseFromLateralTargets(LateralReaction *reaction) final { this->erase(reaction); }
@@ -70,7 +70,7 @@ void ConcreteLateralReaction<LATERALS_NUM>::eraseFromTargets(LateralReaction *re
     eraseFromParentTargets();
 }
 
-#ifdef PRINT
+#if defined(PRINT) || defined(MC_PRINT)
 template <ushort LATERALS_NUM>
 void ConcreteLateralReaction<LATERALS_NUM>::info(IndentStream &os)
 {
@@ -78,7 +78,7 @@ void ConcreteLateralReaction<LATERALS_NUM>::info(IndentStream &os)
     IndentStream sub = indentStream(os);
     TargetsType::info(sub);
 }
-#endif // PRINT
+#endif // PRINT || MC_PRINT
 
 }
 

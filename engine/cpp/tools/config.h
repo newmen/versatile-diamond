@@ -13,25 +13,25 @@ namespace vd
 class Config
 {
 public:
+    enum : ushort { MAX_HEIGHT = 100 };
+
     typedef std::vector<ushort> AtomTypes;
 
 private:
-    enum : ushort { MAX_HEIGHT = 100 };
-
     const std::string _name;
-    uint _sizeX, _sizeY;
+    uint _sizeX, _sizeY, _sizeZ;
     const Behavior *_behavior;
     double _totalTime;
     const AtomTypes _atomTypes;
 
 public:
     Config(const std::string name,
-           uint sizeX, uint sizeY,
+           uint sizeX, uint sizeY, uint sizeZ,
            const Behavior *behavior,
            double totalTime,
            const AtomTypes &atomTypes) :
         _name(name),
-        _sizeX(sizeX), _sizeY(sizeY),
+        _sizeX(sizeX), _sizeY(sizeY), _sizeZ(sizeZ),
         _behavior(behavior),
         _totalTime(totalTime),
         _atomTypes(atomTypes) {}
@@ -39,8 +39,8 @@ public:
     const std::string &name() const { return _name; }
     uint sizeX() const { return _sizeX; }
     uint sizeY() const { return _sizeY; }
-    uint sizeZ() const { return MAX_HEIGHT; }
-    dim3 sizes() const { return dim3(sizeX(), sizeY(), sizeZ()); }
+    uint sizeZ() const { return _sizeZ; }
+    dim3 sizes() const { return dim3(sizeX(), sizeY(), MAX_HEIGHT); }
     uint squire() const { return sizeX() * sizeY(); }
     const Behavior *behavior() const { return _behavior; }
     double totalTime() const { return _totalTime; }
@@ -55,10 +55,8 @@ public:
 template <class SurfaceCrystal>
 SurfaceCrystal *Config::getCrystal() const
 {
-    const BehaviorTor *initialBehavior = new BehaviorTor();
-    SurfaceCrystal *crystal = new SurfaceCrystal(sizes(), initialBehavior);
+    SurfaceCrystal *crystal = new SurfaceCrystal(sizes(), behavior(), sizeZ());
     crystal->initialize();
-    crystal->changeBehavior(behavior()); // internal delete initialBehavior
     return crystal;
 }
 

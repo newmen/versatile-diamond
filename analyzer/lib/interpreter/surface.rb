@@ -18,11 +18,12 @@ module VersatileDiamond
       # Interpret size line, checks passed values and store them to Config
       # @option [Integer] :x the size of surface on X axis
       # @option [Integer] :y the size of surface on Y axis
+      # @option [Integer] :z the high of surface
       # @raise [Errors::SyntaxError] if one of dimension is not passed or if
       #   sizes are already defined
-      def size(x: nil, y: nil)
+      def size(x: nil, y: nil, z: nil)
         syntax_error('.wrong_sizes') unless x && y
-        Tools::Config.surface_sizes(x: x, y: y)
+        Tools::Config.surface_sizes(x: x, y: y, z: z)
       rescue Tools::Config::AlreadyDefined
         syntax_error('.sizes_already_set')
       end

@@ -42,6 +42,7 @@ surface
     atoms cl: bridge(:ct), cr: mb(:cb), cm: mb(:cm)
     bond :cl, :cr, face: 100, dir: :front
 
+  size x: 100, y: 100, z: 5
   temperature 1000
 
 events

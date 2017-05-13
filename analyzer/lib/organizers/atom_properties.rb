@@ -115,8 +115,10 @@ module VersatileDiamond
                   order(self, other, :crystal_relatons, :sort) do
                     order(self, other, :danglings, :sort, :reverse) do
                       order(self, other, :actives_num) do
-                        typed_order(self, other, :unfixed?) do
-                          typed_order(self, other, :incoherent?)
+                        order(self, other, :nbr_lattices_num) do
+                          typed_order(self, other, :unfixed?) do
+                            typed_order(self, other, :incoherent?)
+                          end
                         end
                       end
                     end
@@ -317,7 +319,7 @@ module VersatileDiamond
       # Has any relevant state or not
       # @return [Boolean]
       def relevant?
-        incoherent? || unfixed?
+        !relevants.empty?
       end
 
       # Has unfixed state or not
@@ -344,12 +346,6 @@ module VersatileDiamond
         else
           nil
         end
-      end
-
-      # Are properties contain relevant values
-      # @return [Boolean] contain or not
-      def relevant?
-        !relevants.empty?
       end
 
       # Gets property same as current but activated
@@ -420,6 +416,21 @@ module VersatileDiamond
       # @return [Integer] the number of total number of hydrogen atoms
       def total_hydrogens_num
         valence - bonds_num + dangling_hydrogens_num
+      end
+
+      # @return [Integer]
+      def undir_bonds_num
+        undir_bonds_num_in(relations)
+      end
+
+      # @return [Integer]
+      def double_bonds_num
+        relations.count(double_bond)
+      end
+
+      # @return [Integer]
+      def triple_bonds_num
+        relations.count(triple_bond)
       end
 
       # Gets the number of neighbour lattices of current atom properties

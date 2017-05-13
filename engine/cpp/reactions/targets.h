@@ -13,9 +13,9 @@ class Targets
     S *_targets[TARGETS_NUM];
 
 public:
-#ifdef PRINT
+#if defined(PRINT) || defined(MC_PRINT)
     void info(IndentStream &os);
-#endif // PRINT
+#endif // PRINT || MC_PRINT
 
 protected:
     Targets(S **targets);
@@ -64,7 +64,7 @@ void Targets<S, TARGETS_NUM>::erase(R *reaction)
     }
 }
 
-#ifdef PRINT
+#if defined(PRINT) || defined(MC_PRINT)
 template <class S, ushort TARGETS_NUM>
 void Targets<S, TARGETS_NUM>::info(IndentStream &os)
 {
@@ -74,7 +74,7 @@ void Targets<S, TARGETS_NUM>::info(IndentStream &os)
         os << " " << _targets[i];
     }
 }
-#endif // PRINT
+#endif // PRINT || MC_PRINT
 
 }
 

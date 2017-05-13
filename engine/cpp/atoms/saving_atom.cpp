@@ -29,6 +29,21 @@ float3 SavingAtom::realPosition() const
     }
 }
 
+SavingAtom *SavingAtom::firstCrystalNeighbour() const
+{
+    for (SavingAtom *nbr : relatives())
+    {
+        if (nbr->lattice()) return nbr;
+    }
+
+    return nullptr;
+}
+
+ushort SavingAtom::crystalNeighboursNum() const
+{
+    return ParentType::crystalNeighboursNum() + (lattice() ? 0 : 1);
+}
+
 float3 SavingAtom::relativePosition() const
 {
     if (lattice())
@@ -54,7 +69,11 @@ float3 SavingAtom::correctAmorphPos() const
         position += nbr->relativePosition(); // should be used realPosition() if correct behavior of additionHeight() for case when counter == 1;
     }
 
-    if (counter == 1)
+    if (counter == 0)
+    {
+        // TODO: nothing...
+    }
+    else if (counter == 1)
     {
         // TODO: targets to another atoms of...
         position.z += amorphBondLength;
@@ -83,6 +102,7 @@ float3 SavingAtom::correctAmorphPos() const
     }
     else
     {
+        assert(goodRelatives.size() == counter);
         assert(goodRelatives.size() > 2);
 
         const float3 &frl = goodRelatives[0]->relativePosition();

@@ -14,7 +14,7 @@ class Behavior
 {   
 public:
     virtual ~Behavior() {}
-    virtual Atom *&getData(SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const = 0;
+    virtual Atom *&choiseAtom(SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const = 0;
 
 protected:
     Behavior() = default;

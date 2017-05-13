@@ -6,12 +6,14 @@ build-*
 *.d
 *.o
 *.so
+*.pyc
 *~
 
 bin/
 cache/
 obj/
 results/
+total/
 engine/hand-generations/simple-diamond
 
 *.job
@@ -33,5 +35,7 @@ Gemfile.lock
 *.sdf
 *.sls
 *.xyz
+*.log
+*.json
 
 TODO*

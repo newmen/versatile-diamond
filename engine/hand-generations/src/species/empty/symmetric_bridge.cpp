@@ -1,9 +1,9 @@
 #include "symmetric_bridge.h"
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SPEC_PRINT) || defined(JSONLOG)
 const char *SymmetricBridge::name() const
 {
     static const char value[] = "symmetric bridge";
     return value;
 }
-#endif // PRINT
+#endif // PRINT || SPEC_PRINT || JSONLOG

@@ -29,6 +29,25 @@ public:
         return true;
     }
 
+    template <class L>
+    void each(const L &lambda)
+    {
+        for (uint i = 0; i < NUM; ++i)
+        {
+            if (_items[i] != nullptr) lambda(_items[i]);
+        }
+    }
+
+    ushort num() const
+    {
+        ushort result = 0;
+        for (uint i = 0; i < NUM; ++i)
+        {
+            if (_items[i] != nullptr) ++result;
+        }
+        return result;
+    }
+
 protected:
     ManyItemsResult()
     {

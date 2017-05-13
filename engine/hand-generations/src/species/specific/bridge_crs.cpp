@@ -12,13 +12,13 @@
 template <> const ushort BridgeCRs::Base::__indexes[1] = { 1 };
 template <> const ushort BridgeCRs::Base::__roles[1] = { 5 };
 
-#ifdef PRINT
+#if defined(PRINT) || defined(SPEC_PRINT) || defined(JSONLOG)
 const char *BridgeCRs::name() const
 {
     static const char value[] = "bridge(cr: *)";
     return value;
 }
-#endif // PRINT
+#endif // PRINT || SPEC_PRINT || JSONLOG
 
 void BridgeCRs::find(BridgeCRi *parent)
 {

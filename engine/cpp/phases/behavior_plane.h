@@ -10,10 +10,10 @@ class BehaviorPlane : public Behavior
 public:
     BehaviorPlane() = default;
 
-    Atom *&getData(SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const override;
+    Atom *&choiseAtom(SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const override;
 
 private:
-    bool isOut (const SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const;
+    bool isOut(const SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const;
 };
 
 }

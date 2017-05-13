@@ -18,12 +18,15 @@ public:
 
     Reaction *selectEvent(double r);
 
+#ifdef JSONLOG
+    std::string name() const { return _events.front()->name(); }
+#endif // JSONLOG
     double oneRate() const { return _events.front()->rate(); }
     double commonRate() const { return _events.empty() ? 0.0 : oneRate() * _events.size(); }
 
-#if defined(PRINT) || !defined(NDEBUG)
+#if defined(PRINT) || defined(MC_PRINT) || defined(JSONLOG) || !defined(NDEBUG)
     uint size() const { return _events.size(); }
-#endif // PRINT
+#endif // PRINT || MC_PRINT || JSONLOG || !NDEBUG
 
 protected:
     BaseEventsContainer() = default;

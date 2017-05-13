@@ -22,7 +22,7 @@ public:
 protected:
     template <class... Args> OneFile(Args... args) : B(args...) {}
 
-    std::string filename() const override;
+    std::string filename() override;
 
     virtual void writeHeader(std::ostream &os, const SavingReactor *reactor) {}
     virtual void writeBody(std::ostream &os, const SavingReactor *reactor) = 0;
@@ -50,7 +50,7 @@ void OneFile<B>::save(const SavingReactor *reactor)
 }
 
 template <class B>
-std::string OneFile<B>::filename() const
+std::string OneFile<B>::filename()
 {
     return this->config()->filename();
 }

@@ -4,7 +4,7 @@
 namespace vd
 {
 
-Atom *&BehaviorPlane::getData(SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const
+Atom *&BehaviorPlane::choiseAtom(SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const
 {
     static Atom *nullAtom = nullptr;
 
@@ -21,9 +21,10 @@ Atom *&BehaviorPlane::getData(SmartAtomsVector3d<Atom> *atomsVector, const int3 
 bool BehaviorPlane::isOut(const SmartAtomsVector3d<Atom> *atomsVector, const int3 &coords) const
 {
     const int cx = coords.x, cy = coords.y;
-    if (cx < 0 || (uint)cx >= atomsVector->sizes().x || cy < 0 || (uint)cy >= atomsVector->sizes().y)
-        return true;
-    else return false;
+    return cx < 0
+        || cy < 0
+        || (uint)cx >= atomsVector->sizes().x
+        || (uint)cy >= atomsVector->sizes().y;
 }
 
 }
