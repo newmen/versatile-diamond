@@ -17,6 +17,9 @@ module VersatileDiamond
             end
           end
 
+          delegate :expr?, :cond?, :scalar?, :call?
+          delegate :code, :call
+
           attr_reader :instance
 
           # @param [Instances::SpecieInstance] specie

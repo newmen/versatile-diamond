@@ -5,6 +5,9 @@ module VersatileDiamond
     class ProxyParentSpec < Tools::TransparentProxy
       include Modules::OrderProvider
 
+      delegate :name, :spec, :links, :anchors, :specific_atoms, :relations_of
+      delegate :store_child, :parents_with_twins_for
+
       attr_reader :child
 
       # Initializes proxy instance

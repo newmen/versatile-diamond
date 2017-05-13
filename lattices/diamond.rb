@@ -27,6 +27,13 @@ class Diamond < VersatileDiamond::Lattices::Base
     { bond_cross_110 => 2 }
   end
 
+  # Gets the default height of surface in atom layers
+  # For diamond should be at least three layers for bond between each one the all atoms
+  # @return [Integer] the number of atomic layers
+  def default_surface_height
+    3
+  end
+
 private
 
   # Detects opposite relation on same lattice
@@ -81,13 +88,6 @@ private
   # @return [Array] the array of faces that are flatten
   def flatten_faces
     [100]
-  end
-
-  # Gets the default height of surface in atom layers
-  # For diamond should be at least three layers for bond between each one the all atoms
-  # @return [Integer] the number of atomic layers
-  def default_surface_height
-    3
   end
 
   # Setups common crystal atom of diamond lattice. Atom should presents in config file

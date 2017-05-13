@@ -7,6 +7,8 @@ module VersatileDiamond
         # builds
         class UniqueReactant < UniqueSpecie
 
+          delegate :enum_name, :class_name
+
           alias_method :actual, :original
           attr_reader :spec
 
