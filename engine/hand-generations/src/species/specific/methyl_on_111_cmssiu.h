@@ -10,9 +10,9 @@ public:
 
     MethylOn111CMssiu(ParentSpec *parent) : Specific(parent) {}
 
-#if defined(PRINT) || defined(SPEC_PRINT) || defined(SERIALIZE)
+#if defined(PRINT) || defined(SPEC_PRINT) || defined(JSONLOG)
     const char *name() const override;
-#endif // PRINT || SPEC_PRINT || SERIALIZE
+#endif // PRINT || SPEC_PRINT || JSONLOG
 
 protected:
     void findAllTypicalReactions() final;

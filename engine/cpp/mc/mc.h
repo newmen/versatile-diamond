@@ -33,9 +33,9 @@ public:
 
     void sort();
 
-#ifdef SERIALIZE
+#ifdef JSONLOG
     StepsSerializer::Dict counts();
-#endif // SERIALIZE
+#endif // JSONLOG
 
     double doRandom(CommonMCData *data);
     double totalRate() const { return _totalRate; }
@@ -109,7 +109,7 @@ void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::initCounter(CommonMCData *data) const
     data->makeCounter(EVENTS_NUM + MULTI_EVENTS_NUM);
 }
 
-#ifdef SERIALIZE
+#ifdef JSONLOG
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 StepsSerializer::Dict MC<EVENTS_NUM, MULTI_EVENTS_NUM>::counts()
 {
@@ -125,7 +125,7 @@ StepsSerializer::Dict MC<EVENTS_NUM, MULTI_EVENTS_NUM>::counts()
     }
     return result;
 }
-#endif // SERIALIZE
+#endif // JSONLOG
 
 template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 double MC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)

@@ -26,9 +26,9 @@ public:
     virtual void store();
     virtual void remove();
 
-#if defined(PRINT) || defined(SPEC_PRINT) || defined(SERIALIZE)
+#if defined(PRINT) || defined(SPEC_PRINT) || defined(JSONLOG)
     virtual const char *name() const = 0;
-#endif // PRINT || SPEC_PRINT || SERIALIZE
+#endif // PRINT || SPEC_PRINT || JSONLOG
 #if defined(PRINT) || defined(SPEC_PRINT)
     virtual void info(IndentStream &os) = 0;
     virtual void eachAtom(const std::function<void (Atom *)> &lambda) = 0;

@@ -1,4 +1,4 @@
-#ifdef SERIALIZE
+#ifdef JSONLOG
 #include "steps_serializer.h"
 #include <json.hpp>
 #include <fstream>
@@ -45,4 +45,4 @@ void StepsSerializer::save() const
 
 }
 
-#endif // SERIALIZE
+#endif // JSONLOG

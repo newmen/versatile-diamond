@@ -36,16 +36,16 @@ private:
     static SKeeper __specificKeeper;
     static Scavenger __scavenger;
 
-#ifdef SERIALIZE
+#ifdef JSONLOG
     static StepsSerializer __serializer;
-#endif // SERIALIZE
+#endif // JSONLOG
 
 public:
     ~Handbook();
 
-#ifdef SERIALIZE
+#ifdef JSONLOG
     static StepsSerializer &serializer();
-#endif // SERIALIZE
+#endif // JSONLOG
     static DMC &mc();
 
     static SurfaceAmorph &amorph();

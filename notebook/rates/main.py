@@ -10,5 +10,4 @@ if __name__ == '__main__':
     auto_g = read_file(sys.argv[2])
     compare(auto_g, hand_g)
   else:
-    print('Please pass the name of log file of hand generated as first argument ' \
-          'and name of log file of auto generaged cde as last argument')
+    print('Please pass two paths to comparing log files of process simulation')

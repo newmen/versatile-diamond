@@ -1,4 +1,4 @@
-#ifdef SERIALIZE
+#ifdef JSONLOG
 #ifndef STEPS_SERIALIZER_H
 #define STEPS_SERIALIZER_H
 
@@ -40,4 +40,4 @@ private:
 }
 
 #endif // STEPS_SERIALIZER_H
-#endif // SERIALIZE
+#endif // JSONLOG

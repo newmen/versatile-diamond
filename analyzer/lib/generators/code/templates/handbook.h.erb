@@ -38,12 +38,12 @@ private:
 public:
     static SKeeper &specificKeeper();
 
-#ifdef SERIALIZE
+#ifdef JSONLOG
 private:
     static StepsSerializer __serializer;
 public:
     static StepsSerializer &serializer();
-#endif // SERIALIZE
+#endif // JSONLOG
 
 private:
     static DMC __mc;
