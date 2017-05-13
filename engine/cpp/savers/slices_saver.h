@@ -139,17 +139,16 @@ void SlicesSaver<HB>::appendCrystalQuantities(SlicesCounter *slicesCounter,
 }
 
 template <class HB>
-void SlicesSaver<HB>::appendAmorphQuantities(SlicesCounter *slicesCounter,
-                                         const SavingAmorph *amorph) const
+void SlicesSaver<HB>::appendAmorphQuantities(SlicesCounter *slicesCounter, const SavingAmorph *amorph) const
 {
     amorph->eachAtom([this, slicesCounter](SavingAtom *amorphAtom) {
         if (isTargetAtom(amorphAtom))
         {
             SavingAtom *crystalAtom = amorphAtom->firstCrystalNeighbour();
-            if (crystalAtom->lattice()->coords().z >= NUMBER_OF_SKIPPING_SLICES)
+            if (crystalAtom->lattice()->coords().z >= (int)NUMBER_OF_SKIPPING_SLICES)
             {
                 uint sliceN = crystalAtom->lattice()->coords().z - NUMBER_OF_SKIPPING_SLICES;
-                appendAtomType(slicesCounter[sliceN], amorphAtom);
+                appendAtomType((*slicesCounter)[sliceN], amorphAtom);
             }
         }
     });

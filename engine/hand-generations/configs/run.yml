@@ -4,7 +4,7 @@ system:
   size_y: 15
   size_z: 3
   behavior: tor
-  time: 0.003
+  time: 0.0003
 
 progress:
   step: 0.0001
