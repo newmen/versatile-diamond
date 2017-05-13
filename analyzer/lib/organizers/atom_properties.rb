@@ -115,8 +115,10 @@ module VersatileDiamond
                   order(self, other, :crystal_relatons, :sort) do
                     order(self, other, :danglings, :sort, :reverse) do
                       order(self, other, :actives_num) do
-                        typed_order(self, other, :unfixed?) do
-                          typed_order(self, other, :incoherent?)
+                        order(self, other, :nbr_lattices_num) do
+                          typed_order(self, other, :unfixed?) do
+                            typed_order(self, other, :incoherent?)
+                          end
                         end
                       end
                     end

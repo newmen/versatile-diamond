@@ -86,13 +86,13 @@ module VersatileDiamond
     {
         return #{cv_f};
     }
-    else if (actives == 0 && nCross_110 == 0 && nCrystal == 0 && nDouble == 1 && nFree == 2 && nFront_100 == 0 && nFront_110 == 0)
-    {
-        return #{cw_f};
-    }
     else if (actives == 0 && nCross_110 == 0 && nCrystal == 2 && nDouble == 1 && nFree == 2 && nFront_100 == 0 && nFront_110 == 0)
     {
         return #{hm_f};
+    }
+    else if (actives == 0 && nCross_110 == 0 && nCrystal == 0 && nDouble == 1 && nFree == 2 && nFront_100 == 0 && nFront_110 == 0)
+    {
+        return #{cw_f};
     }
     else if (actives == 0 && nCross_110 == 0 && nCrystal == 1 && nDouble == 0 && nFree == 1 && nFront_100 == 0 && nFront_110 == 0)
     {
