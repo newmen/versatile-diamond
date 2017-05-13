@@ -7,8 +7,8 @@ module VersatileDiamond
         # @abstract
         class LateralNode < Tools::TransparentProxy
 
-          delegate :spec_atom, :uniq_specie, :atom, :symmetric_atoms, :properties
-          delegate :lattice_class
+          delegate :spec_atom, :uniq_specie, :atom, :symmetric_atoms, :keyname
+          delegate :properties, :lattice_class
           delegate :anchor?, :symmetric_atoms?
 
           # @param [LateralChunks] lateral_chunks

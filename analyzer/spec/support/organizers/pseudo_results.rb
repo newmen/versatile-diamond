@@ -9,22 +9,33 @@ module VersatileDiamond
 
         # The mock of analysis results
         class ResultsMock
+          class << self
+            def collections(*names)
+              names.each do |method_name|
+                define_method(method_name) { depts[method_name] }
+              end
+            end
+
+            def instances(*names)
+              names.each do |method_name|
+                define_method(method_name) do |instance_name|
+                  depts[method_name].find { |s| s.name == instance_name }
+                end
+              end
+            end
+          end
+
+          collections :base_specs, :specific_specs
+          collections :ubiquitous_reactions, :typical_reactions, :lateral_reactions
+
           def initialize(depts)
             @depts = depts
           end
 
-          def method_missing(*args)
-            if args.size == 1 && @depts.include?(args.first)
-              @depts[args.first]
-            else
-              key = :"#{args.first}s"
-              if args.size == 2 && args.first =~ /_spec/ && @depts.include?(key)
-                @depts[key].find { |s| s.name == args.last }
-              else
-                super
-              end
-            end
-          end
+        private
+
+          attr_reader :depts
+
         end
 
         # Stubs analysis results and allow to call methods with same names as keys of
