@@ -5,7 +5,7 @@ elements
 dimensions
   temperature 'K'
   concentration 'mol/cm3'
-  energy 'kJ/mol'
+  energy 'kcal/mol'
   rate '1/s'
   time 's'
 
