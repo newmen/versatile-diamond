@@ -39,7 +39,7 @@ private:
     static Scavenger __scavenger;
 
 #ifdef JSONLOG
-    static JSONStepsLogger stepsLogger;
+    static JSONStepsLogger __stepsLogger;
 #endif // JSONLOG
 
 public:

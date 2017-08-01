@@ -161,16 +161,16 @@ events
 
       there :end_row
         enthalpy -39
-        forward_activation 0.4
-        reverse_activation 1
+        forward_activation 0.75
+        reverse_activation 0.85
 
       there :mid_row
         enthalpy -43
-        forward_activation 0
-        reverse_activation 1.2
+        forward_activation 0.7
+        reverse_activation 0.9
 
-    forward_rate 8.9e8
-    reverse_rate 2.2e3
+    forward_rate 8.9e11
+    reverse_rate 2.2e6
 
   reaction 'dimer formation near bridge'
     aliases one: bridge, two: bridge
@@ -184,18 +184,18 @@ events
     aliases source: bridge, product: bridge
     equation high_bridge + source(ct: *, ct: i) = product(cr: *, ct: i)
     enthalpy 24
-    # exchange!!
-    forward_activation 36.3
-    forward_rate 6.1e13
-    reverse_activation 12.3
-    reverse_rate 1.1e12
+    # already exchanged!!
+    reverse_activation 36.3
+    reverse_rate 6.1e13
+    forward_activation 12.3
+    forward_rate 1.1e12
 
   reaction 'methyl to high bridge'
     equation methyl_on_dimer(cm: *, cm: u) = bridge(ct: *, ct: i) + high_bridge
     forward_activation 15.3
     reverse_activation 2.9
-    forward_rate 9.8e9
-    reverse_rate 2.7e8
+    forward_rate 9.8e12
+    reverse_rate 2.7e11
 
   reaction 'methyl to high bridge near bridge'
     equation methyl_on_dimer_with_bridge(cm: *, cm: u) = bridge(cr: *) + high_bridge
@@ -230,12 +230,6 @@ events
     activation 0
     forward_rate 1e8
 
-  # reaction 'migration down at activated dimer from 111'
-  #   equation methyl_on_111(cm: *, cm: u) + dimer(cr: *) = dimer_after_down_111
-  #   activation 0
-  #   forward_rate 1e8
-
-  # TODO: fix algorithm of atomic balance checking
   reaction 'migration down at activated dimer from high bridge HH'
     aliases source: dimer, product: dimer
     equation high_bridge(ch: H, ch: H) + source(cr: *) = product(cr: *, cl: H)
@@ -251,11 +245,6 @@ events
     equation methyl_on_bridge(cm: *, cm: *, cm: u, cb: i) + bridge(cr: *) + bridge(cr: *) = dimer_after_gap_b
     activation 0
     forward_rate 1e7
-
-  # reaction 'migration down in gap from 111'
-  #   equation methyl_on_111(cm: *, cm: *, cm: u) + bridge(cr: *) + bridge(cr: *) = dimer_after_gap_111
-  #   activation 0
-  #   forward_rate 1e7
 
   reaction 'migration down in gap from high bridge'
     aliases source: dimer, product: dimer
