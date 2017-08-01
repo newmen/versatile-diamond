@@ -146,6 +146,8 @@ SOURCES += \
     tools/worker/parallel_worker.cpp \
     tools/worker/worker_queue.cpp \
 #    ../tests/units/c_spec.cpp \
+#    ../tests/units/behavior_plane_spec.cpp \
+#    ../tests/units/behavior_tor_spec.cpp \
 #    ../tests/units/diamond_relations_spec.cpp \
 #    ../tests/units/diamond_spec.cpp \
 #    ../tests/units/find_spec.cpp \

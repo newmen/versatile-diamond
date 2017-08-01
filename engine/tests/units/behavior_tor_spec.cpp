@@ -1,6 +1,4 @@
-#include <atoms/c.h>
 #include <phases/behavior_tor.h>
-#include <phases/diamond.h>
 using namespace vd;
 
 #include "../support/open_diamond.h"

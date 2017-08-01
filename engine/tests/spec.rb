@@ -9,10 +9,10 @@ HANDG_DIR = '../hand-generations'
 HANDG_SRC_DIR = "#{HANDG_DIR}/src"
 HANDG_OBJS_DIR = "#{HANDG_DIR}/obj"
 
-GCC_PATH = '/usr/local/Cellar/gcc/6.1.0'
+GCC_PATH = '/usr/local'
 CC_BIN = 'g++-6'
 CXX = "#{GCC_PATH}/bin/#{CC_BIN}"
-FLAGS = "-I#{GCC_PATH}/include/c++/6.1.0 -I#{ENGINE_SRC_DIR} -I#{HANDG_SRC_DIR} -L#{GCC_PATH}/lib -std=c++11 -O2 -pthread -lyaml-cpp"
+FLAGS = "-I#{GCC_PATH}/include -I#{ENGINE_SRC_DIR} -I#{HANDG_SRC_DIR} -L#{GCC_PATH}/lib -std=c++11 -O2 -pthread -lyaml-cpp"
 
 # Provides string by which compilation will do
 # @return [String] the compilation string
