@@ -12,7 +12,7 @@ class YAMLConfigReader
     YAML::Node _root;
 
 public:
-    explicit YAMLConfigReader(const char *filename);
+    explicit YAMLConfigReader(const std::string &filePath);
 
     template <typename T, class... Args>
     T read(const char *key, Args... args) const;

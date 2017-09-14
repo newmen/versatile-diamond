@@ -35,7 +35,7 @@ class Preparator {
     Runner<HB> *_runner = nullptr;
 
 public:
-    Preparator(int argc, char *argv[]);
+    Preparator(const char *runName);
     ~Preparator();
 
     Runner<HB> *runner();
@@ -60,12 +60,9 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////
 
 template<class HB>
-Preparator<HB>::Preparator(int argc, char **argv) : _yamlReader("configs/run.yml")
+Preparator<HB>::Preparator(const char *runName) :
+    _yamlReader(HB::runConfigPath()), _runName(runName)
 {
-    if (argc == 2)
-    {
-        _runName = std::string(argv[1]);
-    }
 }
 
 template<class HB>
@@ -95,7 +92,7 @@ const Config *Preparator<HB>::config()
     {
         if (_runName.empty())
         {
-            throw Error("Run name not passed as run argument");
+            throw Error("Run name has not passed as run argument");
         }
 
         uint sizeX = 0;

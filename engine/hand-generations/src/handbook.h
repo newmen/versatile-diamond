@@ -1,6 +1,8 @@
 #ifndef HANDBOOK_H
 #define HANDBOOK_H
 
+#include <string>
+
 #include <atoms/atom.h>
 #include <mc/common_mc_data.h>
 #include <mc/dynamic_mc.h>
@@ -21,6 +23,15 @@ using namespace vd;
 
 class Handbook
 {
+private:
+    static std::string __configsDir;
+
+public:
+    static void setConfigsDir(const std::string &configsDir);
+    static std::string runConfigPath();
+    static std::string envConfigPath();
+    static std::string ratesConfigPath();
+
 public:
     typedef PhaseBoundary SurfaceAmorph;
     typedef Diamond SurfaceCrystal;

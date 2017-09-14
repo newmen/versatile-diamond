@@ -6,8 +6,6 @@ using namespace vd;
 
 class Env
 {
-    static YAMLConfigReader __config;
-
 public:
     static double R();
 
@@ -16,6 +14,9 @@ public:
 
     static double cH();
     static double cCH3();
+
+private:
+    static YAMLConfigReader &config();
 };
 
 #endif // ENV_H

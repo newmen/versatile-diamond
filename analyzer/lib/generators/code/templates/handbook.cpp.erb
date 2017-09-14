@@ -61,6 +61,27 @@ JSONStepsLogger &Handbook::stepsLogger()
 }
 #endif // JSONLOG
 
+std::string Handbook::__configsDir = "configs";
+void Handbook::setConfigsDir(const std::string &configsDir)
+{
+    __configsDir = configsDir;
+}
+
+std::string Handbook::runConfigPath()
+{
+    return __configsDir + "/run.yml";
+}
+
+std::string Handbook::envConfigPath()
+{
+    return __configsDir + "/env.yml";
+}
+
+std::string Handbook::ratesConfigPath()
+{
+    return __configsDir + "/reactions.yml";
+}
+
 Handbook::MC Handbook::__mc;
 Handbook::MC &Handbook::mc()
 {

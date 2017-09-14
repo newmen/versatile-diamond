@@ -1,18 +1,23 @@
 #include <cmath>
 #include "rates_reader.h"
-
-YAMLConfigReader RatesReader::__config("configs/reactions.yml");
+#include "../handbook.h"
 
 double RatesReader::getRate(const char *rid)
 {
     return arrenius(rid, Env::surfaceT());
 }
 
+YAMLConfigReader &RatesReader::config()
+{
+    static YAMLConfigReader instance(Handbook::ratesConfigPath());
+    return instance;
+}
+
 void RatesReader::readParams(const char *rid, double *k, double *Ea, double *Tp)
 {
-    *k = __config.read<double>(rid, "k");
-    *Ea = __config.read<double>(rid, "Ea");
-    *Tp = __config.read<double>(rid, "Tp");
+    *k = config().read<double>(rid, "k");
+    *Ea = config().read<double>(rid, "Ea");
+    *Tp = config().read<double>(rid, "Tp");
 }
 
 double RatesReader::arrenius(const char *rid, double t)
