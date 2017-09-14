@@ -14,8 +14,8 @@
 namespace vd
 {
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-class DynamicMC : public BaseMC<EVENTS_NUM, MULTI_EVENTS_NUM>
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+class DynamicMC : public BaseMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>
 {
     enum : ushort { MULTI_EVENTS_INDEX_SHIFT = 1000 }; // for #compareContainers()
 
@@ -74,8 +74,8 @@ private:
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::DynamicMC() : _order(EVENTS_NUM + MULTI_EVENTS_NUM)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::DynamicMC() : _order(EVENTS_NUM + MULTI_EVENTS_NUM)
 {
     static_assert(EVENTS_NUM < MULTI_EVENTS_INDEX_SHIFT, "MULTI_EVENTS_INDEX_SHIFT too small, need to increase it value");
 
@@ -95,8 +95,8 @@ DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::DynamicMC() : _order(EVENTS_NUM + MULTI
 }
 
 #ifdef JSONLOG
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-JSONStepsLogger::Dict DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::counts()
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+JSONStepsLogger::Dict DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::counts()
 {
     JSONStepsLogger::Dict result;
     for (int i = 0; i < EVENTS_NUM + MULTI_EVENTS_NUM; ++i)
@@ -112,8 +112,8 @@ JSONStepsLogger::Dict DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::counts()
 }
 #endif // JSONLOG
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::recountTotalRate()
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::recountTotalRate()
 {
     _totalRate = 0;
     for (uint i = 0; i < EVENTS_NUM; ++i)
@@ -126,8 +126,8 @@ void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::recountTotalRate()
     }
 }
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::sort()
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::sort()
 {
     auto compare = [this](uint a, uint b) {
         BaseEventsContainer *ae = correspondEvents(a);
@@ -140,14 +140,14 @@ void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::sort()
 //    __gnu_parallel::sort(_order.begin(), _order.end(), compare);
 }
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-BaseEventsContainer *DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::events(uint index)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+BaseEventsContainer *DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::events(uint index)
 {
     return correspondEvents(_order[index]);
 }
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-BaseEventsContainer *DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::correspondEvents(uint orderValue)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+BaseEventsContainer *DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::correspondEvents(uint orderValue)
 {
     if (orderValue < MULTI_EVENTS_INDEX_SHIFT)
     {
@@ -159,8 +159,8 @@ BaseEventsContainer *DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::correspondEvents(u
     }
 }
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(ushort index, SpecReaction *reaction)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::add(ushort index, SpecReaction *reaction)
 {
 #if defined(PRINT) || defined(MC_PRINT)
     printReaction(reaction, "Add", "one");
@@ -172,8 +172,8 @@ void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(ushort index, SpecReaction *re
     updateRate(reaction->rate());
 }
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(ushort index, SpecReaction *reaction)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::remove(ushort index, SpecReaction *reaction)
 {
 #if defined(PRINT) || defined(MC_PRINT)
     printReaction(reaction, "Remove", "one");
@@ -185,8 +185,8 @@ void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(ushort index, SpecReaction 
     _events[index].remove(reaction);
 }
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(ushort index, UbiquitousReaction *reaction, ushort n)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::add(ushort index, UbiquitousReaction *reaction, ushort n)
 {
 #if defined(PRINT) || defined(MC_PRINT)
     printReaction(reaction, "Add", "multi", n);
@@ -199,8 +199,8 @@ void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::add(ushort index, UbiquitousReacti
     updateRate(reaction->rate() * n);
 }
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(ushort index, UbiquitousReaction *templateReaction, ushort n)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::remove(ushort index, UbiquitousReaction *templateReaction, ushort n)
 {
 #if defined(PRINT) || defined(MC_PRINT)
     printReaction(templateReaction, "Remove", "multi", n);
@@ -213,8 +213,8 @@ void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::remove(ushort index, UbiquitousRea
     _multiEvents[index].remove(templateReaction->target(), n);
 }
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeAll(ushort index, UbiquitousReaction *templateReaction)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::removeAll(ushort index, UbiquitousReaction *templateReaction)
 {
     assert(index < MULTI_EVENTS_NUM);
     uint n = _multiEvents[index].removeAll(templateReaction->target());
@@ -229,53 +229,53 @@ void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::removeAll(ushort index, Ubiquitous
     }
 }
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-bool DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::check(ushort index, Atom *target)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+bool DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::check(ushort index, Atom *target)
 {
     assert(index < MULTI_EVENTS_NUM);
     return _multiEvents[index].check(target);
 }
 
 #ifndef NDEBUG
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfOne(ushort rt)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfOne(ushort rt)
 {
     assert(rt < EVENTS_NUM);
     _events[rt].selectEvent(0)->doIt();
 }
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doLastOfOne(ushort rt)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::doLastOfOne(ushort rt)
 {
     assert(rt < EVENTS_NUM);
     _events[rt].selectEvent((_events[rt].size() - 0.5) * _events[rt].oneRate())->doIt();
 }
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt)
 {
     assert(rt < MULTI_EVENTS_NUM);
     _multiEvents[rt].selectEvent(0.0)->doIt();
 }
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt, int x, int y, int z)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort rt, int x, int y, int z)
 {
     assert(rt < MULTI_EVENTS_NUM);
     auto crd = int3(x, y, z);
     _multiEvents[rt].selectEventByCoords(crd)->doIt();
 }
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doLastOfMul(ushort rt)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::doLastOfMul(ushort rt)
 {
     assert(rt < MULTI_EVENTS_NUM);
     _multiEvents[rt].selectEvent((_multiEvents[rt].size() - 0.5) * _multiEvents[rt].oneRate())->doIt();
 }
 #endif // NDEBUG
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-Reaction *DynamicMC<EVENTS_NUM, MULTI_EVENTS_NUM>::mostProbablyEvent(double r)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+Reaction *DynamicMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::mostProbablyEvent(double r)
 {
 #if defined(PRINT) || defined(MC_PRINT)
     debugPrint([&](IndentStream &os) {

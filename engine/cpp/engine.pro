@@ -22,7 +22,6 @@ SOURCES += \
     ../hand-generations/src/env.cpp \
     ../hand-generations/src/finder.cpp \
     ../hand-generations/src/handbook.cpp \
-    ../hand-generations/src/main.cpp \
     ../hand-generations/src/phases/diamond.cpp \
     ../hand-generations/src/phases/phase_boundary.cpp \
     ../hand-generations/src/reactions/central/dimer_drop.cpp \
@@ -105,7 +104,7 @@ SOURCES += \
     ../hand-generations/src/species/specific/two_bridges_ctri_cbrs.cpp \
     atoms/atom.cpp \
     atoms/saving_atom.cpp \
-    mc/common_mc_data.cpp \
+    mc/base_mc_data.cpp \
     mc/events/atom_events.cpp \
     mc/events/base_events_container.cpp \
     mc/events/events_container.cpp \
@@ -150,15 +149,17 @@ SOURCES += \
     tools/worker/frame.cpp \
     tools/worker/parallel_worker.cpp \
     tools/worker/worker_queue.cpp \
-#    ../tests/units/c_spec.cpp \
+#    ../tests/support/open_diamond.cpp \
 #    ../tests/units/behavior_plane_spec.cpp \
 #    ../tests/units/behavior_tor_spec.cpp \
+#    ../tests/units/c_spec.cpp \
 #    ../tests/units/diamond_relations_spec.cpp \
 #    ../tests/units/diamond_spec.cpp \
 #    ../tests/units/find_spec.cpp \
-#    ../tests/units/lattice_spec. \cpp \
-#    ../tests/units/vector3d_spec \.cpp \
-#    ../tests/support/open_diamond.cpp \
+#    ../tests/units/lattice_spec.cpp \
+#    ../tests/units/static_mc_spec.cpp \
+#    ../tests/units/vector3d_spec.cpp \
+    ../hand-generations/src/main.cpp \
     tools/yaml_config_reader.cpp
 
 HEADERS += \
@@ -284,6 +285,7 @@ HEADERS += \
     atoms/neighbours.h \
     atoms/saving_atom.h \
     mc/base_mc.h \
+    mc/base_mc_data.h \
     mc/common_mc_data.h \
     mc/dynamic_mc.h \
     mc/events/atom_events.h \
@@ -397,6 +399,9 @@ HEADERS += \
     tools/worker/parallel_worker.h \
     tools/worker/soul.h \
     tools/worker/worker_queue.h \
+#    ../tests/support/fake_atom.h \
+#    ../tests/support/fake_events.h \
+#    ../tests/support/fake_mc_data.h \
 #    ../tests/support/open_diamond.h \
     tools/yaml_config_reader.h
 

@@ -11,7 +11,7 @@ class SpecReaction : public Reaction, public Creator
 {
 public:
     virtual void store() { mcRemember(); }
-    virtual void remove() { mcForget(); }
+    void remove() override { mcForget(); }
 
 protected:
     SpecReaction() = default;

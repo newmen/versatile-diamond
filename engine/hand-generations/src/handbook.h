@@ -2,6 +2,7 @@
 #define HANDBOOK_H
 
 #include <atoms/atom.h>
+#include <mc/common_mc_data.h>
 #include <mc/dynamic_mc.h>
 #include <mc/tree_mc.h>
 #include <tools/common.h>
@@ -25,8 +26,8 @@ public:
     typedef Diamond SurfaceCrystal;
 
 private:
-    typedef DynamicMC<ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> MC;
-//    typedef TreeMC<ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> MC;
+    typedef DynamicMC<CommonMCData, ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> MC;
+//    typedef TreeMC<CommonMCData, ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> MC;
 
     typedef Keeper<LateralSpec, &LateralSpec::findLateralReactions> LKeeper;
     typedef Keeper<SpecificSpec, &SpecificSpec::findTypicalReactions> SKeeper;

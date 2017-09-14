@@ -20,6 +20,8 @@ public:
 
     void doIt() override;
 
+    void remove() override;
+
 protected:
     enum DepFindResult : ushort // only if has Local reaction
     {
@@ -126,6 +128,12 @@ void Ubiquitous<RT>::doIt()
 
     Atom *atom = this->target();
     Finder::findAll(&atom, 1);
+}
+
+template <ushort RT>
+void Ubiquitous<RT>::remove()
+{
+    Handbook::scavenger().markReaction(this);
 }
 
 #endif // UBIQUITOUS_H

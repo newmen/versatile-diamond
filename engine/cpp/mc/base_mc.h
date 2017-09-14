@@ -1,14 +1,14 @@
 #ifndef BASE_MC_H
 #define BASE_MC_H
 
+#include <limits>
 #include "../reactions/spec_reaction.h"
 #include "../reactions/ubiquitous_reaction.h"
-#include "common_mc_data.h"
 
 namespace vd
 {
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
 class BaseMC
 {
     double _totalTime = 0.0;
@@ -17,11 +17,11 @@ public:
     virtual ~BaseMC() {}
 
     double totalTime() const { return _totalTime; }
-    void initCounter(CommonMCData *data) const;
+    void initCounter(MCData *data) const;
 
     virtual void sort() = 0;
 
-    virtual double doRandom(CommonMCData *data);
+    virtual double doRandom(MCData *data);
     virtual double totalRate() const  = 0;
 
     virtual void add(ushort index, SpecReaction *reaction) = 0;
@@ -47,7 +47,7 @@ protected:
     virtual Reaction *mostProbablyEvent(double r) = 0;
     virtual void recountTotalRate() = 0;
 
-    double increaseTime(CommonMCData *data);
+    double increaseTime(MCData *data);
 
 #if defined(PRINT) || defined(MC_PRINT)
     void printReaction(Reaction *reaction, std::string action, std::string type, uint n = 1);
@@ -62,14 +62,14 @@ private:
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void BaseMC<EVENTS_NUM, MULTI_EVENTS_NUM>::initCounter(CommonMCData *data) const
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void BaseMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::initCounter(MCData *data) const
 {
     data->makeCounter(EVENTS_NUM + MULTI_EVENTS_NUM);
 }
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-double BaseMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+double BaseMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(MCData *data)
 {
     double r = data->rand(totalRate());
     Reaction *event = mostProbablyEvent(r);
@@ -107,10 +107,11 @@ double BaseMC<EVENTS_NUM, MULTI_EVENTS_NUM>::doRandom(CommonMCData *data)
     }
 }
 
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-double BaseMC<EVENTS_NUM, MULTI_EVENTS_NUM>::increaseTime(CommonMCData *data)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+double BaseMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::increaseTime(MCData *data)
 {
-    double r = data->rand(1.0);
+    static double min = std::numeric_limits<double>::denorm_min();
+    double r = data->rand(1.0) + min;
     double dt = -log(r) / totalRate();
     _totalTime += dt;
 
@@ -118,8 +119,10 @@ double BaseMC<EVENTS_NUM, MULTI_EVENTS_NUM>::increaseTime(CommonMCData *data)
 }
 
 #if defined(PRINT) || defined(MC_PRINT)
-template <ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void MC<EVENTS_NUM, MULTI_EVENTS_NUM>::printReaction(Reaction *reaction, std::string action, std::string type, uint n)
+template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
+void MC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::printReaction(
+        Reaction *reaction, std::string action, std::string type, uint n
+)
 {
     debugPrint([&](IndentStream &os) {
         os << "MC::printReaction() ";

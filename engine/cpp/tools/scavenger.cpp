@@ -21,11 +21,17 @@ void Scavenger::markSpec(BaseSpec *spec)
 
 void Scavenger::markReaction(SpecReaction *reaction)
 {
-    ReactionsCollector::store(reaction);
+    SpecReactionsCollector::store(reaction);
+}
+
+void Scavenger::markReaction(UbiquitousReaction *reaction)
+{
+    UbiquitousReactionsCollector::store(reaction);
 }
 
 void Scavenger::clear()
 {
+    deleteAndClear<UbiquitousReaction>();
     deleteAndClear<SpecReaction>();
     deleteAndClear<BaseSpec>();
     deleteAndClear<Atom>();
