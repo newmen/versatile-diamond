@@ -53,7 +53,7 @@ int firmRun(Preparator<Handbook> *preparator, const std::vector<int> &signalIDs)
     }
 }
 
-int safeRun(int argc, char *argv[])
+int safeRun(int argc, char const *argv[])
 {
     if (argc == 3)
     {
@@ -73,7 +73,7 @@ int safeRun(int argc, char *argv[])
     }
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char const *argv[])
 {
     if (argc == 2 || argc == 3)
     {

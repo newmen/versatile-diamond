@@ -1,6 +1,7 @@
 #include <vector>
 #include <utility>
 
+#include <mc/base_mc.h>
 #include <reactions/ubiquitous_reaction.h>
 #include <reactions/spec_reaction.h>
 using namespace vd;
@@ -24,36 +25,36 @@ enum : ushort {
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <class B, class MC, ushort TYPE, ushort RATE>
+template <class B, ushort TYPE, ushort RATE>
 class BaseEvent : public B
 {
 private:
-    MC *_mc;
+    BaseMC *_mc;
 
 public:
     template <class... Args>
-    BaseEvent(MC *mc, Args... args) : B(args...), _mc(mc) {}
+    BaseEvent(BaseMC *mc, Args... args) : B(args...), _mc(mc) {}
 
     ushort type() const override { return TYPE; }
     double rate() const override { return RATE; }
 
 protected:
-    MC *mc() { return _mc; }
+    BaseMC *mc() { return _mc; }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <class MC, ushort TYPE, ushort RATE, ushort SN, ushort ON>
-class BaseUEvent : public BaseEvent<UbiquitousReaction, MC, TYPE, RATE>
+template <ushort TYPE, ushort RATE, ushort SN, ushort ON>
+class BaseUEvent : public BaseEvent<UbiquitousReaction, TYPE, RATE>
 {
 private:
     uint _counter = 0;
 
 public:
-    BaseUEvent(MC *mc, Atom *atom) :
-        BaseEvent<UbiquitousReaction, MC, TYPE, RATE>(mc, atom) {}
+    BaseUEvent(BaseMC *mc, Atom *atom) :
+        BaseEvent<UbiquitousReaction, TYPE, RATE>(mc, atom) {}
 
     void doIt() override { action(); }
     void remove() override {}
@@ -77,21 +78,19 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <class MC>
-class UEvent1 : public BaseUEvent<MC, 0, 1, 37, 23>
+class UEvent1 : public BaseUEvent<0, 1, 37, 23>
 {
 public:
-    UEvent1(MC *mc, Atom *atom) : BaseUEvent<MC, 0, 1, 37, 23>(mc, atom) {}
+    UEvent1(BaseMC *mc, Atom *atom) : BaseUEvent<0, 1, 37, 23>(mc, atom) {}
     const char *name() const override { return "U1"; }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <class MC>
-class UEvent2 : public BaseUEvent<MC, 1, 2, 31, 29>
+class UEvent2 : public BaseUEvent<1, 2, 31, 29>
 {
 public:
-    UEvent2(MC *mc, Atom *atom) : BaseUEvent<MC, 1, 2, 31, 29>(mc, atom) {}
+    UEvent2(BaseMC *mc, Atom *atom) : BaseUEvent<1, 2, 31, 29>(mc, atom) {}
     const char *name() const override { return "U2"; }
 };
 
@@ -99,14 +98,14 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <class MC, ushort TYPE, ushort RATE>
-class BaseTEvent : public BaseEvent<SpecReaction, MC, TYPE, RATE>
+template <ushort TYPE, ushort RATE>
+class BaseTEvent : public BaseEvent<SpecReaction, TYPE, RATE>
 {
 private:
     bool _isStored = false;
 
 public:
-    BaseTEvent(MC *mc) : BaseEvent<SpecReaction, MC, TYPE, RATE>(mc) {}
+    BaseTEvent(BaseMC *mc) : BaseEvent<SpecReaction, TYPE, RATE>(mc) {}
     void doIt() override
     {
         if (_isStored) this->remove();
@@ -121,70 +120,63 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <class MC>
-class TEvent3 : public BaseTEvent<MC, 0, 3>
+class TEvent3 : public BaseTEvent<0, 3>
 {
 public:
-    TEvent3(MC *mc) : BaseTEvent<MC, 0, 3>(mc) {}
+    TEvent3(BaseMC *mc) : BaseTEvent<0, 3>(mc) {}
     const char *name() const override { return "T3"; }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <class MC>
-class TEvent5 : public BaseTEvent<MC, 1, 5>
+class TEvent5 : public BaseTEvent<1, 5>
 {
 public:
-    TEvent5(MC *mc) : BaseTEvent<MC, 1, 5>(mc) {}
+    TEvent5(BaseMC *mc) : BaseTEvent<1, 5>(mc) {}
     const char *name() const override { return "T5"; }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <class MC>
-class TEvent7 : public BaseTEvent<MC, 2, 7>
+class TEvent7 : public BaseTEvent<2, 7>
 {
 public:
-    TEvent7(MC *mc) : BaseTEvent<MC, 2, 7>(mc) {}
+    TEvent7(BaseMC *mc) : BaseTEvent<2, 7>(mc) {}
     const char *name() const override { return "T7"; }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <class MC>
-class TEvent11 : public BaseTEvent<MC, 3, 11>
+class TEvent11 : public BaseTEvent<3, 11>
 {
 public:
-    TEvent11(MC *mc) : BaseTEvent<MC, 3, 11>(mc) {}
+    TEvent11(BaseMC *mc) : BaseTEvent<3, 11>(mc) {}
     const char *name() const override { return "T11"; }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <class MC>
-class TEvent13 : public BaseTEvent<MC, 4, 13>
+class TEvent13 : public BaseTEvent<4, 13>
 {
 public:
-    TEvent13(MC *mc) : BaseTEvent<MC, 4, 13>(mc) {}
+    TEvent13(BaseMC *mc) : BaseTEvent<4, 13>(mc) {}
     const char *name() const override { return "T13"; }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <class MC>
-class TEvent17 : public BaseTEvent<MC, 5, 17>
+class TEvent17 : public BaseTEvent<5, 17>
 {
 public:
-    TEvent17(MC *mc) : BaseTEvent<MC, 5, 17>(mc) {}
+    TEvent17(BaseMC *mc) : BaseTEvent<5, 17>(mc) {}
     const char *name() const override { return "T17"; }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <class MC>
-class TEvent19 : public BaseTEvent<MC, 6, 19>
+class TEvent19 : public BaseTEvent<6, 19>
 {
 public:
-    TEvent19(MC *mc) : BaseTEvent<MC, 6, 19>(mc) {}
+    TEvent19(BaseMC *mc) : BaseTEvent<6, 19>(mc) {}
     const char *name() const override { return "T19"; }
 };

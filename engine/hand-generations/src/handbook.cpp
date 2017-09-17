@@ -121,7 +121,7 @@ std::string Handbook::ratesConfigPath()
     return __configsDir + "/reactions.yml";
 }
 
-Handbook::MC Handbook::__mc;
+Handbook::MC Handbook::__mc(ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM);
 Handbook::MC &Handbook::mc()
 {
     return __mc;

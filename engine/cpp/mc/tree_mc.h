@@ -1,20 +1,29 @@
 #ifndef TREE_MC_H
 #define TREE_MC_H
 
-#include "events/tree.h"
 #include "base_mc.h"
+#include "../tools/json_steps_logger.h"
+#include "events/slice.h"
+#include "events/atom_events.h"
+#include "events/specie_events.h"
+
+#define MAX_TREE_DEPTH 3
 
 namespace vd
 {
 
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-class TreeMC : public BaseMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>
+class TreeMC : public BaseMC
 {
-    Tree _tree;
-    double _totalTime;
+    Slice *_root = nullptr;
+    std::vector<SpecieEvents *> _events;
+    std::vector<AtomEvents *> _multiEvents;
+
+    static ushort safeRound(double aprox);
+    static ushort sliceSize(ushort num);
 
 public:
-    TreeMC();
+    TreeMC(ushort eventsNum, ushort multiEventsNum);
+    ~TreeMC();
 
     void sort() final;
 
@@ -22,7 +31,7 @@ public:
     JSONStepsLogger::Dict counts() const;
 #endif // JSONLOG
 
-    double totalRate() const final { return _tree.totalRate(); }
+    double totalRate() const final;
 
     void add(ushort index, SpecReaction *reaction) final;
     void remove(ushort index, SpecReaction *reaction) final;
@@ -39,10 +48,18 @@ public:
     void doOneOfMul(ushort index) final;
     void doOneOfMul(ushort index, int x, int y, int z) final;
     void doLastOfMul(ushort index) final;
+
+    template <class CN>
+    void doFirstOf(std::vector<CN *> &events, ushort index);
+
+    template <class CN>
+    void doLastOf(std::vector<CN *> &events, ushort index);
 #endif // NDEBUG
 
 protected:
+    uint totalEventsNum() const final;
     void recountTotalRate() final;
+    Reaction *mostProbablyEvent(double r);
 
 private:
     TreeMC(const TreeMC &) = delete;
@@ -50,120 +67,77 @@ private:
     TreeMC &operator = (const TreeMC &) = delete;
     TreeMC &operator = (TreeMC &&) = delete;
 
-    Reaction *mostProbablyEvent(double r);
+    Slice *buildRoot(ushort unoNums, ushort multiNums);
+    Slice *buildSlice(Slice *parent, ushort size, short depth, ushort unoPartNums, ushort mulPartNums);
+
+    template <class CN>
+    void appendEventsTo(Slice *slice, ushort num);
+    void appendEventsTo(Slice *slice, ushort unoPartNums, ushort mulPartNums);
+    void appendSlicesTo(Slice *slice, ushort size, short depth, ushort unoPartNums, ushort mulPartNums);
+    void appendNodesTo(Slice *slice, ushort size, short depth, ushort unoPartNums, ushort mulPartNums);
+
+    template <class CN>
+    void storeRef(std::vector<CN *> *container, ushort index, CN *events);
+    void storeRef(ushort index, SpecieEvents *events);
+    void storeRef(ushort index, AtomEvents *events);
+
+#ifdef JSONLOG
+    template <class CN>
+    void appendNumsTo(JSONStepsLogger::Dict *dict, const CN *events) const;
+#endif // JSONLOG
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-TreeMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::TreeMC() : _tree(EVENTS_NUM, MULTI_EVENTS_NUM)
-{
-}
-
-#ifdef JSONLOG
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-JSONStepsLogger::Dict TreeMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::counts() const
-{
-    return _tree.counts();
-}
-#endif // JSONLOG
-
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::recountTotalRate()
-{
-    _tree.resetRate();
-}
-
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::sort()
-{
-    _tree.sort();
-}
-
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::add(ushort index, SpecReaction *reaction)
-{
-    assert(index < EVENTS_NUM);
-    _tree.add(index, reaction);
-}
-
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::remove(ushort index, SpecReaction *reaction)
-{
-    assert(index < EVENTS_NUM);
-    _tree.remove(index, reaction);
-}
-
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::add(ushort index, UbiquitousReaction *reaction, ushort n)
-{
-    assert(index < MULTI_EVENTS_NUM);
-    _tree.add(index, reaction, n);
-}
-
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::remove(ushort index, UbiquitousReaction *reaction, ushort n)
-{
-    assert(index < MULTI_EVENTS_NUM);
-    _tree.remove(index, reaction, n);
-}
-
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::removeAll(ushort index, UbiquitousReaction *reaction)
-{
-    assert(index < MULTI_EVENTS_NUM);
-    _tree.removeAll(index, reaction);
-}
-
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-bool TreeMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::check(ushort index, Atom *target)
-{
-    assert(index < MULTI_EVENTS_NUM);
-    return _tree.check(index, target);
-}
-
 #ifndef NDEBUG
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfOne(ushort index)
+template <class CN>
+void TreeMC::doFirstOf(std::vector<CN *> &events, ushort index)
 {
-    assert(index < EVENTS_NUM);
-    _tree.doOneOfOne(index);
+    assert(index < events.size());
+    events[index]->selectEvent(0)->doIt();
 }
 
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::doLastOfOne(ushort index)
+template <class CN>
+void TreeMC::doLastOf(std::vector<CN *> &events, ushort index)
 {
-    assert(index < EVENTS_NUM);
-    _tree.doLastOfOne(index);
-}
-
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort index)
-{
-    assert(index < MULTI_EVENTS_NUM);
-    return _tree.doOneOfMul(index);
-}
-
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::doOneOfMul(ushort index, int x, int y, int z)
-{
-    assert(index < MULTI_EVENTS_NUM);
-    return _tree.doOneOfMul(index, x, y, z);
-}
-
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-void TreeMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::doLastOfMul(ushort index)
-{
-    assert(index < MULTI_EVENTS_NUM);
-    return _tree.doLastOfMul(index);
+    assert(index < events.size());
+    CN *container = events[index];
+    container->selectEvent((container->size() - 0.5) * container->oneRate())->doIt();
 }
 #endif // NDEBUG
 
-template <class MCData, ushort EVENTS_NUM, ushort MULTI_EVENTS_NUM>
-Reaction *TreeMC<MCData, EVENTS_NUM, MULTI_EVENTS_NUM>::mostProbablyEvent(double r)
+template <class CN>
+void TreeMC::appendEventsTo(Slice *slice, ushort num)
 {
-    return _tree.selectEvent(r);
+    static ushort index = 0;
+
+    for (ushort i = 0; i < num; ++i)
+    {
+        CN *events = new CN(slice);
+        slice->addNode(events);
+        storeRef(index++, events);
+    }
 }
+
+template <class CN>
+void TreeMC::storeRef(std::vector<CN *> *container, ushort index, CN *events)
+{
+    assert(index < container->size());
+    assert(!(*container)[index]);
+    (*container)[index] = events;
+}
+
+#ifdef JSONLOG
+template <class CN>
+void TreeMC::appendNumsTo(JSONStepsLogger::Dict *dict, const CN *events) const
+{
+    uint size = events->size();
+    if (size > 0)
+    {
+        (*dict)[events->name()] = size;
+    }
+}
+#endif // JSONLOG
 
 }
 

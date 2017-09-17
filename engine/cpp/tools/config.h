@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include "../phases/behavior.h"
-#include "../phases/behavior_tor.h"
 #include "common.h"
 
 namespace vd

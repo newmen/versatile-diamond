@@ -104,7 +104,9 @@ SOURCES += \
     ../hand-generations/src/species/specific/two_bridges_ctri_cbrs.cpp \
     atoms/atom.cpp \
     atoms/saving_atom.cpp \
+    mc/base_mc.cpp \
     mc/base_mc_data.cpp \
+    mc/dynamic_mc.cpp \
     mc/events/atom_events.cpp \
     mc/events/base_events_container.cpp \
     mc/events/events_container.cpp \
@@ -112,9 +114,9 @@ SOURCES += \
     mc/events/node.cpp \
     mc/events/slice.cpp \
     mc/events/specie_events.cpp \
-    mc/events/tree.cpp \
     mc/events_counter.cpp \
     mc/random_generator.cpp \
+    mc/tree_mc.cpp \
     phases/amorph.cpp \
     phases/behavior_factory.cpp \
     phases/behavior_plane.cpp \
@@ -296,7 +298,6 @@ HEADERS += \
     mc/events/node.h \
     mc/events/slice.h \
     mc/events/specie_events.h \
-    mc/events/tree.h \
     mc/events_counter.h \
     mc/random_generator.h \
     mc/tree_mc.h \

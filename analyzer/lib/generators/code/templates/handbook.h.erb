@@ -35,7 +35,7 @@ public:
     typedef <%= surface_crystal.class_name %> SurfaceCrystal;
 
 private:
-    typedef DynamicMC<CommonMCData, ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> MC;
+    typedef DynamicMC MC;
 
 <% if lateral_reactions_exists? %>
 private:

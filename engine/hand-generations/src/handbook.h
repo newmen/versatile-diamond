@@ -37,8 +37,8 @@ public:
     typedef Diamond SurfaceCrystal;
 
 private:
-    typedef DynamicMC<CommonMCData, ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> MC;
-//    typedef TreeMC<CommonMCData, ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> MC;
+    typedef DynamicMC MC;
+//    typedef TreeMC MC;
 
     typedef Keeper<LateralSpec, &LateralSpec::findLateralReactions> LKeeper;
     typedef Keeper<SpecificSpec, &SpecificSpec::findTypicalReactions> SKeeper;
