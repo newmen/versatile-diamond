@@ -21,6 +21,8 @@ using namespace vd;
 #include "phases/diamond.h"
 #include "phases/phase_boundary.h"
 
+#define MC DynamicMC
+
 class Handbook
 {
 private:
@@ -37,9 +39,6 @@ public:
     typedef Diamond SurfaceCrystal;
 
 private:
-    typedef DynamicMC MC;
-//    typedef TreeMC MC;
-
     typedef Keeper<LateralSpec, &LateralSpec::findLateralReactions> LKeeper;
     typedef Keeper<SpecificSpec, &SpecificSpec::findTypicalReactions> SKeeper;
 

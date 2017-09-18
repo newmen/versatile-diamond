@@ -19,6 +19,8 @@ using namespace vd;
 
 <%= head_includes %>
 
+#define MC DynamicMC
+
 class Handbook
 {
 private:
@@ -35,8 +37,6 @@ public:
     typedef <%= surface_crystal.class_name %> SurfaceCrystal;
 
 private:
-    typedef DynamicMC MC;
-
 <% if lateral_reactions_exists? %>
 private:
     typedef Keeper<LateralSpec, &LateralSpec::findLateralReactions> LKeeper;

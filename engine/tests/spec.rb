@@ -97,12 +97,12 @@ def check(file_name)
     if run_result
       puts " +++ #{file_name} +++".green
       puts
-      return nil
+      return [file_name, true]
     end
   end
   puts " --- #{file_name} ---".red
   puts
-  file_name
+  [file_name, false]
 ensure
   `rm -f #{rn}`
 end
@@ -123,9 +123,14 @@ result =
   end
 
 puts
-if result.any?
+groups = result.group_by(&:last)
+if groups[false]
+  result.sort.each do |file_name, status|
+    puts file_name.send(status ? :green : :red)
+  end
+  puts
   print "Failed".red
-  errors = result.compact.size
+  errors = groups[false].size
   puts " [ #{(result.size - errors).to_s.green} | #{errors.to_s.red} ]"
 else
   print "Success".green

@@ -57,7 +57,7 @@ int safeRun(int argc, char const *argv[])
 {
     if (argc == 3)
     {
-        Handbook::setConfigsDir(argv[2]);
+        Handbook::setConfigsDir(argv[2]); // I'm sorry about it
     }
     try
     {
