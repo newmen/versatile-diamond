@@ -10,7 +10,7 @@
 #include "process_mem_usage.h"
 #include "define_print.h"
 
-#define TRACK_EACH_STEP 1000
+#define TRACK_EACH_STEP 10000
 #define MC_SORT_EACH_STEP (TRACK_EACH_STEP * 50)
 
 #ifdef ANY_PRINT

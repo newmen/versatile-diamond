@@ -14,7 +14,6 @@ public:
     template <class... Args> ProgressSaver(Args... args) : BaseSaver(args...) {}
 
     void save(const SavingReactor *reactor) override;
-    bool needToInit() const override { return true; }
 
 private:
     double activesRatio(const SavingReactor *reactor) const;

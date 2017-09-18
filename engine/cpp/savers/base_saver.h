@@ -15,7 +15,7 @@ public:
     virtual ~BaseSaver() {}
     virtual void save(const SavingReactor *reactor) = 0;
 
-    virtual bool needToInit() const { return false; } // by default
+    virtual bool needToInit() const { return true; } // by default
 
 protected:
     BaseSaver(const Config *config) : _config(config) {}
