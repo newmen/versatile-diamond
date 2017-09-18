@@ -1,6 +1,5 @@
 #include "define_print.h"
-
-#if defined(PRINT) || defined(ANY_PRINT)
+#ifdef ANY_PRINT
 
 #include "debug_print.h"
 #include <streambuf>
@@ -40,4 +39,4 @@ std::ostream &debugStream()
 
 }
 
-#endif // PRINT || ANY_PRINT
+#endif // ANY_PRINT

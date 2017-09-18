@@ -1,6 +1,5 @@
 #include "define_print.h"
-
-#if defined(PRINT) || defined(ANY_PRINT)
+#ifdef ANY_PRINT
 
 #include "indent_stream.h"
 #include "common.h"
@@ -163,4 +162,4 @@ IndentStream &operator << (IndentStream &stream, const int3 &value)
 
 }
 
-#endif // PRINT || ANY_PRINT
+#endif // ANY_PRINT

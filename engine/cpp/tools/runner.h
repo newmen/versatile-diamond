@@ -13,9 +13,9 @@
 #define TRACK_EACH_STEP 1000
 #define MC_SORT_EACH_STEP (TRACK_EACH_STEP * 50)
 
-#if defined(PRINT) || defined(ANY_PRINT)
+#ifdef ANY_PRINT
 #define DEBUG_EACH_STEP TRACK_EACH_STEP
-#endif // PRINT || ANY_PRINT
+#endif // ANY_PRINT
 
 namespace vd
 {
@@ -86,14 +86,13 @@ void Runner<HB>::calculate()
 #ifndef NOUT
     firstSave();
 #endif // NOUT
+#ifdef JSONLOG
+    serializeStep(0);
+#endif // JSONLOG
 
     ullong totalSteps = 0;
     double timeDelta = 0;
     double startTime = timestamp();
-
-#ifdef JSONLOG
-    serializeStep(0);
-#endif // JSONLOG
 
     while (!__terminate && _reactor->currentTime() <= _config->totalTime())
     {
@@ -125,15 +124,15 @@ void Runner<HB>::calculate()
 #ifndef NOUT
         storeIfNeed(timeDelta, false);
 #endif // NOUT
-#if defined(PRINT) || defined(ANY_PRINT)
+#ifdef ANY_PRINT
         DebugOutFlag::switchFlag((totalSteps % DEBUG_EACH_STEP) == 0);
-#endif // PRINT || ANY_PRINT
+#endif // ANY_PRINT
     }
 
     double stopTime = timestamp();
-#if defined(PRINT) || defined(ANY_PRINT)
+#ifdef ANY_PRINT
     DebugOutFlag::switchFlag(true);
-#endif // PRINT || ANY_PRINT
+#endif // ANY_PRINT
 
 #ifndef NOUT
     storeIfNeed(timeDelta, true);

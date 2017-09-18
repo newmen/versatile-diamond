@@ -8,11 +8,11 @@
 #include <assert.h>
 
 #include "short_types.h"
-#include "define_print.h"
 
-#if defined(PRINT) || defined(ANY_PRINT)
+#include "define_print.h"
+#ifdef ANY_PRINT
 #include "debug_print.h"
-#endif // PRINT || ANY_PRINT
+#endif // ANY_PRINT
 
 namespace vd
 {
