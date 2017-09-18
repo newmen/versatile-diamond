@@ -13,6 +13,7 @@ public:
     Reaction *selectEvent(double r) final { return C::selectEvent(r); }
     double commonRate() const final { return C::commonRate(); }
     void sort() final {}
+    void halfSort() final {}
     void resetRate() final {}
 
 protected:

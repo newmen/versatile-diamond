@@ -10,6 +10,9 @@
 #include "process_mem_usage.h"
 #include "define_print.h"
 
+#define TRACK_EACH_STEP 1000
+#define MC_SORT_EACH_STEP (TRACK_EACH_STEP * 50)
+
 #if defined(PRINT) || defined(ANY_PRINT)
 #define DEBUG_EACH_STEP TRACK_EACH_STEP
 #endif // PRINT || ANY_PRINT
@@ -20,8 +23,6 @@ namespace vd
 template <class HB>
 class Runner
 {
-    enum : ushort { TRACK_EACH_STEP = 1000 };
-
     static volatile bool __terminate;
 
     const Config *_config;
@@ -80,6 +81,8 @@ void Runner<HB>::serializeStep(double time)
 template <class HB>
 void Runner<HB>::calculate()
 {
+    HB::mc().sort();
+
 #ifndef NOUT
     firstSave();
 #endif // NOUT
@@ -107,18 +110,20 @@ void Runner<HB>::calculate()
         });
 #endif // PRINT || MC_PRINT
 
-        ++totalSteps;
-
-#ifndef NOUT
         if (timeDelta < 0)
         {
             std::cout << "No more events" << std::endl;
             break;
         }
-        else
+
+        ++totalSteps;
+        if (totalSteps % MC_SORT_EACH_STEP == 0)
         {
-            storeIfNeed(timeDelta, false);
+            HB::mc().halfSort();
         }
+
+#ifndef NOUT
+        storeIfNeed(timeDelta, false);
 #endif // NOUT
 #if defined(PRINT) || defined(ANY_PRINT)
         DebugOutFlag::switchFlag((totalSteps % DEBUG_EACH_STEP) == 0);

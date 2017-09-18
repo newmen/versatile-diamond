@@ -68,6 +68,25 @@ void DynamicMC::sort()
     }
 }
 
+void DynamicMC::halfSort()
+{
+    if (!DISABLE_MC_SORT)
+    {
+        assert(_order.size() > 1);
+        for (uint i = 0; i < _order.size() - 1; ++i)
+        {
+            uint a = _order[i], b = _order[i+1];
+            BaseEventsContainer *ae = correspondEvents(a);
+            BaseEventsContainer *be = correspondEvents(b);
+            if (ae->commonRate() < be->commonRate())
+            {
+                _order[i] = b;
+                _order[i+1] = a;
+            }
+        }
+    }
+}
+
 BaseEventsContainer *DynamicMC::events(uint index)
 {
     return correspondEvents(_order[index]);

@@ -18,6 +18,7 @@ public:
     virtual Reaction *selectEvent(double r) = 0;
     virtual double commonRate() const = 0;
     virtual void sort() = 0;
+    virtual void halfSort() = 0;
     virtual void resetRate() = 0;
 
 protected:

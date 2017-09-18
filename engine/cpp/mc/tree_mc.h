@@ -26,6 +26,7 @@ public:
     ~TreeMC();
 
     void sort() final;
+    void halfSort() final;
 
 #ifdef JSONLOG
     JSONStepsLogger::Dict counts() const;

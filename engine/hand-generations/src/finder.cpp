@@ -26,8 +26,6 @@ void Finder::initFind(Atom **atoms, uint n)
     findAll(dup, index);
 
     delete [] dup;
-
-    Handbook::mc().sort();
 }
 
 void Finder::findAll(Atom **atoms, uint n)

@@ -51,6 +51,15 @@ void TreeMC::sort()
     }
 }
 
+void TreeMC::halfSort()
+{
+    if (!DISABLE_MC_SORT)
+    {
+        assert(_root);
+        _root->halfSort();
+    }
+}
+
 #ifdef JSONLOG
 JSONStepsLogger::Dict TreeMC::counts() const
 {

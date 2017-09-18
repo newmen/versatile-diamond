@@ -22,6 +22,7 @@ public:
     void initCounter(BaseMCData *data) const;
 
     virtual void sort() = 0;
+    virtual void halfSort() = 0;
 
     double doRandom(BaseMCData *data);
     virtual double totalRate() const  = 0;

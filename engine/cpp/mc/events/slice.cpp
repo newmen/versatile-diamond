@@ -76,4 +76,27 @@ void Slice::sort()
     }
 }
 
+void Slice::halfSort()
+{
+    uint size = _nodes.size();
+    if(size > 1)
+    {
+        for (uint i = 0; i < size - 1; ++i)
+        {
+            Node *a = _nodes[i];
+            Node *b = _nodes[i+1];
+            if (a->commonRate() < b->commonRate())
+            {
+                _nodes[i] = b;
+                _nodes[i+1] = a;
+            }
+        }
+
+        for (uint i = 0; i < size / 2; ++i) // just half of child nodes
+        {
+            _nodes[i]->halfSort();
+        }
+    }
+}
+
 }

@@ -28,6 +28,7 @@ public:
     DynamicMC(ushort eventsNum, ushort multiEventsNum);
 
     void sort() final;
+    void halfSort() final;
 
 #ifdef JSONLOG
     JSONStepsLogger::Dict counts();

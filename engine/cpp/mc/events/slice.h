@@ -26,6 +26,7 @@ public:
     Reaction *selectEvent(double r) override;
     double commonRate() const override;
     void sort() override;
+    void halfSort() override;
 };
 
 }
