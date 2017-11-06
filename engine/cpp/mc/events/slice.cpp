@@ -92,9 +92,9 @@ void Slice::halfSort()
             }
         }
 
-        for (uint i = 0; i < size / 2; ++i) // just half of child nodes
+        for (Node *node : _nodes)
         {
-            _nodes[i]->halfSort();
+            node->halfSort();
         }
     }
 }

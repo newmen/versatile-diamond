@@ -11,7 +11,7 @@
 #include "define_print.h"
 
 #define TRACK_EACH_STEP 10000
-#define MC_SORT_EACH_STEP (TRACK_EACH_STEP * 50)
+#define MC_SORT_EACH_STEP (TRACK_EACH_STEP * 5)
 
 #ifdef ANY_PRINT
 #define DEBUG_EACH_STEP TRACK_EACH_STEP
