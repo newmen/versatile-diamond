@@ -10,7 +10,7 @@ module VersatileDiamond
       extend Collector
 
       collector_methods :parent
-      def_delegator :lateral_reaction, :full_rate
+      def_delegators :lateral_reaction, :full_rate, :rate_tuple
       attr_reader :lateral_reaction, :targets, :links, :tail_name
 
       # Initializes the typical chunk

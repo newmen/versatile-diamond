@@ -110,7 +110,8 @@ module VersatileDiamond
         #   calculated
         # @return [Float] the rate of raction
         def rate(reaction)
-          temp = current_temperature(reaction.gases_num)
+          temp = current_temperature(reaction.gases_num) # TODO: in engine always using
+                                                         # the surface temperature
           arrenius = reaction.rate * (temp ** reaction.temp_power) *
             Math.exp(-reaction.activation / (Dimension::R * temp))
 

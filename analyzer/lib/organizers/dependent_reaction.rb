@@ -9,8 +9,8 @@ module VersatileDiamond
 
       collector_methods :child
       attr_reader :reaction, :parent
-      def_delegators :reaction, :name, :full_rate, :swap_on, :use_similar?,
-        :changes_num
+      def_delegators :reaction, :name, :swap_on, :use_similar?, :changes_num,
+        :full_rate, :rate_tuple
 
       # Stores wrappable reaction
       # @param [Concepts::UbiquitousReaction] reaction the wrappable reaction

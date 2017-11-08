@@ -51,8 +51,9 @@ module VersatileDiamond
         return @_lateral_reaction if @_lateral_reaction
 
         full_rate = typical_reaction.full_rate
+        rate_tuple = typical_reaction.rate_tuple
         @_lateral_reaction =
-          CombinedLateralReaction.new(typical_reaction, self, full_rate)
+          CombinedLateralReaction.new(typical_reaction, self, full_rate, rate_tuple)
       end
 
       # The chunk which created by chunk residual is not original

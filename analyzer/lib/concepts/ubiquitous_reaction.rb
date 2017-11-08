@@ -154,6 +154,16 @@ module VersatileDiamond
           lists_are_identical?(products, other.products, &:same?)
       end
 
+      # Gets list of reaction rate properties
+      # @return [Hash]
+      def rate_tuple
+        return {
+          activation: activation,
+          rate: rate,
+          temp_power: temp_power,
+        }
+      end
+
       # Calculate full rate of reaction
       # @return [Float] the full raction rate
       def full_rate
