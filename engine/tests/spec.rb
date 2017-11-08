@@ -10,7 +10,7 @@ HANDG_SRC_DIR = "#{HANDG_DIR}/src"
 HANDG_OBJS_DIR = "#{HANDG_DIR}/obj"
 
 GCC_PATH = '/usr/local'
-CC_BIN = 'g++-7'
+CC_BIN = 'g++-6'
 CXX = "#{GCC_PATH}/bin/#{CC_BIN}"
 FLAGS = "-I#{GCC_PATH}/include -I#{ENGINE_SRC_DIR} -I#{HANDG_SRC_DIR} -L#{GCC_PATH}/lib -std=c++11 -O2 -pthread -lyaml-cpp"
 

@@ -56,13 +56,14 @@ module VersatileDiamond
         end
 
         # Interpret #{dir} rate line
-        # @param [Float] value the value of pre-exponencial factor
+        # @param [Float | String] value the value of pre-exponencial factor
         # @param [String] dimension the dimension of rate
         define_method(:"#{dir}_rate") do |value, dimension = nil|
           begin
             gases_num = send(dir).gases_num
-            send(dir).rate = Tools::Dimension.convert_rate(
-              eval_value_if_string(value, gases_num), gases_num, dimension)
+            rate, tp = rate_and_temperature_power(value)
+            send(dir).rate = Tools::Dimension.convert_rate(rate, gases_num, dimension)
+            send(dir).temp_power = tp if tp != 0
           rescue Concepts::UbiquitousReaction::AlreadySet => e
             already_set_error(e)
           end
@@ -101,15 +102,20 @@ module VersatileDiamond
           spec: e.spec.name, atom: e.keyname)
       end
 
-      # Evaluate value if it passed as formula
-      # @param [Float] value the evaluating value
-      # @param [Integer] gases_num number of gases in evaluating case
-      def eval_value_if_string(value, gases_num)
-        if value.is_a?(String)
-          t_str = "t = #{Tools::Config.current_temperature(gases_num)}"
-          eval("#{t_str}; #{value.gsub('T', 't')}")
+      # Parse value if it passed as formula
+      # @param [Float] value the parsing formula
+      def rate_and_temperature_power(value)
+        if !value.is_a?(String)
+          [value, 0]
         else
-          value
+          nb = '-?\d+(?:\.\d+)?(?:e-?\d+)?'
+          rx = /\A\s*(?<k>#{nb})\s*\*\s*T(?:\s*\*\*\s*(?<pow>#{nb}))?\s*\Z/
+          m = value.match(rx)
+          if m
+            [m[:k].to_f, (m[:pow] ? m[:pow].to_f : 1)]
+          else
+            syntax_error('reaction.wrong_rate_value', value: value)
+          end
         end
       end
 

@@ -81,6 +81,7 @@ en:
     invalid_valence: "In the global reaction can be specified only monovalent atoms"
     need_define_equation: "Necessary to define equation first"
     wrong_balance: "Wrong reaction balance"
+    wrong_rate_value: "Wrong rate value: \"%{value}\""
 
   lateral_reaction:
     amorph_reverse_atom: "The atom %{spec}(%{atom}) of reverse reaction is not belongs to crystal lattice"
