@@ -22,7 +22,6 @@ SOURCES += \
     ../hand-generations/src/env.cpp \
     ../hand-generations/src/finder.cpp \
     ../hand-generations/src/handbook.cpp \
-    ../hand-generations/src/main.cpp \
     ../hand-generations/src/phases/diamond.cpp \
     ../hand-generations/src/phases/phase_boundary.cpp \
     ../hand-generations/src/reactions/central/dimer_drop.cpp \
@@ -105,12 +104,19 @@ SOURCES += \
     ../hand-generations/src/species/specific/two_bridges_ctri_cbrs.cpp \
     atoms/atom.cpp \
     atoms/saving_atom.cpp \
-    mc/base_events_container.cpp \
-    mc/common_mc_data.cpp \
-    mc/events_container.cpp \
+    mc/base_mc.cpp \
+    mc/base_mc_data.cpp \
+    mc/dynamic_mc.cpp \
+    mc/events/atom_events.cpp \
+    mc/events/base_events_container.cpp \
+    mc/events/events_container.cpp \
+    mc/events/multi_events_container.cpp \
+    mc/events/node.cpp \
+    mc/events/slice.cpp \
+    mc/events/specie_events.cpp \
     mc/events_counter.cpp \
-    mc/multi_events_container.cpp \
     mc/random_generator.cpp \
+    mc/tree_mc.cpp \
     phases/amorph.cpp \
     phases/behavior_factory.cpp \
     phases/behavior_plane.cpp \
@@ -145,15 +151,17 @@ SOURCES += \
     tools/worker/frame.cpp \
     tools/worker/parallel_worker.cpp \
     tools/worker/worker_queue.cpp \
-#    ../tests/units/c_spec.cpp \
+#    ../tests/support/open_diamond.cpp \
 #    ../tests/units/behavior_plane_spec.cpp \
 #    ../tests/units/behavior_tor_spec.cpp \
+#    ../tests/units/c_spec.cpp \
 #    ../tests/units/diamond_relations_spec.cpp \
 #    ../tests/units/diamond_spec.cpp \
 #    ../tests/units/find_spec.cpp \
-#    ../tests/units/lattice_spec. \cpp \
-#    ../tests/units/vector3d_spec \.cpp \
-#    ../tests/support/open_diamond.cpp \
+#    ../tests/units/lattice_spec.cpp \
+#    ../tests/units/static_mc_spec.cpp \
+#    ../tests/units/vector3d_spec.cpp \
+    ../hand-generations/src/main.cpp \
     tools/yaml_config_reader.cpp
 
 HEADERS += \
@@ -278,13 +286,21 @@ HEADERS += \
     atoms/lattice.h \
     atoms/neighbours.h \
     atoms/saving_atom.h \
-    mc/base_events_container.h \
+    mc/base_mc.h \
+    mc/base_mc_data.h \
     mc/common_mc_data.h \
-    mc/events_container.h \
+    mc/dynamic_mc.h \
+    mc/events/atom_events.h \
+    mc/events/base_events_container.h \
+    mc/events/events_container.h \
+    mc/events/events_wrapper.h \
+    mc/events/multi_events_container.h \
+    mc/events/node.h \
+    mc/events/slice.h \
+    mc/events/specie_events.h \
     mc/events_counter.h \
-    mc/mc.h \
-    mc/multi_events_container.h \
     mc/random_generator.h \
+    mc/tree_mc.h \
     phases/amorph.h \
     phases/atoms_vector3d.h \
     phases/behavior.h \
@@ -384,6 +400,9 @@ HEADERS += \
     tools/worker/parallel_worker.h \
     tools/worker/soul.h \
     tools/worker/worker_queue.h \
+#    ../tests/support/fake_atom.h \
+#    ../tests/support/fake_events.h \
+#    ../tests/support/fake_mc_data.h \
 #    ../tests/support/open_diamond.h \
     tools/yaml_config_reader.h
 

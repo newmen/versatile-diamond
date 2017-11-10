@@ -1,8 +1,12 @@
 #ifndef HANDBOOK_H
 #define HANDBOOK_H
 
+#include <string>
+
 #include <atoms/atom.h>
-#include <mc/mc.h>
+#include <mc/common_mc_data.h>
+#include <mc/dynamic_mc.h>
+#include <mc/tree_mc.h>
 #include <tools/common.h>
 #include <tools/scavenger.h>
 #include <tools/json_steps_logger.h>
@@ -17,19 +21,29 @@ using namespace vd;
 #include "phases/diamond.h"
 #include "phases/phase_boundary.h"
 
+#define MC DynamicMC
+
 class Handbook
 {
+private:
+    static std::string __configsDir;
+
+public:
+    static void setConfigsDir(const std::string &configsDir);
+    static const std::string &configsDir();
+    static std::string runConfigPath();
+    static std::string envConfigPath();
+    static std::string ratesConfigPath();
+
 public:
     typedef PhaseBoundary SurfaceAmorph;
     typedef Diamond SurfaceCrystal;
 
 private:
-    typedef MC<ALL_SPEC_REACTIONS_NUM, UBIQUITOUS_REACTIONS_NUM> DMC;
-
     typedef Keeper<LateralSpec, &LateralSpec::findLateralReactions> LKeeper;
     typedef Keeper<SpecificSpec, &SpecificSpec::findTypicalReactions> SKeeper;
 
-    static DMC __mc;
+    static MC __mc;
     static SurfaceAmorph __amorph;
 
     static LKeeper __lateralKeeper;
@@ -46,7 +60,7 @@ public:
 #ifdef JSONLOG
     static JSONStepsLogger &stepsLogger();
 #endif // JSONLOG
-    static DMC &mc();
+    static MC &mc();
 
     static SurfaceAmorph &amorph();
 

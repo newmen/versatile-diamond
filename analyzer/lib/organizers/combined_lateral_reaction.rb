@@ -5,11 +5,25 @@ module VersatileDiamond
 
     # Describes lateral reaction which creates by chunks combinations
     class CombinedLateralReaction
+      class PseudoReaction
+        attr_reader :full_rate
+
+        def initialize(full_rate, rate_tuple)
+          @full_rate = full_rate
+          @rate_tuple = rate_tuple
+        end
+
+        def method_missing(name)
+          @rate_tuple.fetch(name)
+        end
+      end
+
       extend Forwardable
 
       def_delegators :parent, :local?, :source
       def_delegator :chunk, :sidepiece_specs
-      attr_reader :chunk, :full_rate
+      def_delegator :reaction, :full_rate
+      attr_reader :chunk, :reaction
 
       # Initializes combined lateral reaction
       # @param [DependentTypicalReaction] typical_reaction to which will be redirected
@@ -17,10 +31,11 @@ module VersatileDiamond
       # @param [MergedChunk] chunk which describes local environment of combined
       #   lateral reaction
       # @param [Float] full_rate of lateral reaction
-      def initialize(typical_reaction, chunk, full_rate)
+      # @param [Hash] rate_tuple of lateral reaction
+      def initialize(typical_reaction, chunk, full_rate, rate_tuple)
         @typical_reaction = typical_reaction
         @chunk = chunk
-        @full_rate = full_rate
+        @reaction = PseudoReaction.new(full_rate, rate_tuple)
 
         @_adopted_source = nil
       end

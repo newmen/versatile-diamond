@@ -22,7 +22,7 @@ public:
 protected:
     template <class... Args> EmptyBase(Args... args) : ParentType(args...) {}
 
-    void findAllChildren() override {}
+    void findAllChildren() final {}
 };
 
 //////////////////////////////////////////////////////////////////////////////////////

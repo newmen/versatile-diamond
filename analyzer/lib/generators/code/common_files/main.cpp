@@ -1,7 +1,10 @@
 #include <signal.h>
 #include <vector>
+#include <yaml-cpp/yaml.h>
 #include <tools/preparator.h>
 #include "handbook.h"
+
+#define ERROR_CODE 1
 
 using namespace vd;
 
@@ -46,25 +49,41 @@ int firmRun(Preparator<Handbook> *preparator, const std::vector<int> &signalIDs)
     }
     else
     {
-        return 1;
+        return ERROR_CODE;
     }
 }
 
-int main(int argc, char *argv[])
+int safeRun(int argc, char const *argv[])
 {
-    std::cout.precision(3);
-
-    if (argc == 2)
+    if (argc == 3)
     {
-        Preparator<Handbook> preparator(argc, argv);
+        Handbook::setConfigsDir(argv[2]); // I'm sorry about it
+    }
+    try
+    {
+        Preparator<Handbook> preparator(argv[1]);
         return firmRun(&preparator, {
             SIGINT, SIGQUIT, SIGKILL, SIGSEGV, SIGTERM, SIGSTOP, SIGTSTP, SIGCHLD
         });
     }
+    catch (YAML::BadFile)
+    {
+        std::cerr << "Wrong config directory: " << Handbook::configsDir() << std::endl;
+        return ERROR_CODE;
+    }
+}
+
+int main(int argc, char const *argv[])
+{
+    if (argc == 2 || argc == 3)
+    {
+        std::cout.precision(3);
+        return safeRun(argc, argv);
+    }
     else
     {
         std::cerr << "Wrong number of run arguments!" << std::endl;
-        std::cout << "Try: " << argv[0] << " run_name" << std::endl;
-        return 1;
+        std::cout << "Try: " << argv[0] << " run_name [path/to/configs/dir]" << std::endl;
+        return ERROR_CODE;
     }
 }

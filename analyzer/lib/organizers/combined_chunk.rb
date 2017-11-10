@@ -21,13 +21,14 @@ module VersatileDiamond
         @variants = variants
 
         @_lateral_reaction, @_internal_chunks, @_tail_name, @_total_links_num = nil
+        @_full_rate_tuple = nil
       end
 
       # Makes the lateral reaction which contain current chunk
       # @return [CombinedLateralReaction] instance of new lateral reaction
       def lateral_reaction
         @_lateral_reaction ||=
-          CombinedLateralReaction.new(typical_reaction, self, full_rate)
+          CombinedLateralReaction.new(typical_reaction, self, *full_rate_tuple)
       end
 
       # Provides full rate of reaction which could be if lateral environment is same
@@ -35,14 +36,12 @@ module VersatileDiamond
       #
       # @return [Float] the rate of reaction which use the current chunk
       def full_rate
-        tf_rate = typical_reaction.full_rate
-        max_prs = maximal_parents
-        if max_prs.empty?
-          tf_rate
-        else
-          # selecs maximal different rate
-          max_prs.map(&:full_rate).max_by { |x| (tf_rate - x).abs }
-        end
+        full_rate_tuple.first
+      end
+
+      # @return [Hash]
+      def rate_tuple
+        full_rate_tuple.last
       end
 
       # The chunk which created by user described lateral reaction is original
@@ -91,6 +90,22 @@ module VersatileDiamond
       def select_maximal(original_parents)
         max_num = original_parents.map(&:total_links_num).max
         original_parents.select { |pr| pr.total_links_num == max_num }
+      end
+
+      # @return [Array]
+      def full_rate_tuple
+        return @_full_rate_tuple if @_full_rate_tuple
+
+        tf_rate = typical_reaction.full_rate
+        max_prs = maximal_parents
+        @_full_rate_tuple =
+          if max_prs.empty?
+            [tf_rate, typical_reaction.rate_tuple]
+          else
+            # selecs maximal different rate
+            maximal = max_prs.max_by { |x| (tf_rate - x.full_rate).abs }
+            [maximal.full_rate, maximal.rate_tuple]
+          end
       end
     end
 

@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <unordered_map>
-#include "../reactions/reaction.h"
+#include "../../reactions/reaction.h"
 
 namespace vd
 {
@@ -21,8 +21,8 @@ public:
 #ifdef JSONLOG
     std::string name() const { return _events.front()->name(); }
 #endif // JSONLOG
-    double oneRate() const { return _events.front()->rate(); }
-    double commonRate() const { return _events.empty() ? 0.0 : oneRate() * _events.size(); }
+    double oneRate() const;
+    double commonRate() const;
 
 #if defined(PRINT) || defined(MC_PRINT) || defined(JSONLOG) || !defined(NDEBUG)
     uint size() const { return _events.size(); }
@@ -32,6 +32,12 @@ protected:
     BaseEventsContainer() = default;
 
     template <class R> R *exchangeToLast(uint index);
+
+private:
+    BaseEventsContainer(const BaseEventsContainer &) = delete;
+    BaseEventsContainer(BaseEventsContainer &&) = delete;
+    BaseEventsContainer &operator = (const BaseEventsContainer &) = delete;
+    BaseEventsContainer &operator = (BaseEventsContainer &&) = delete;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////

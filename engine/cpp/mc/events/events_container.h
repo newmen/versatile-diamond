@@ -2,7 +2,7 @@
 #define EVENTS_CONTAINER_H
 
 #include <unordered_map>
-#include "../reactions/spec_reaction.h"
+#include "../../reactions/spec_reaction.h"
 #include "base_events_container.h"
 
 namespace vd
@@ -17,12 +17,6 @@ public:
 
     void add(SpecReaction *event);
     void remove(SpecReaction *event);
-
-private:
-    EventsContainer(const EventsContainer &) = delete;
-    EventsContainer(EventsContainer &&) = delete;
-    EventsContainer &operator = (const EventsContainer &) = delete;
-    EventsContainer &operator = (EventsContainer &&) = delete;
 };
 
 }

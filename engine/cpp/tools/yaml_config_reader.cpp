@@ -3,7 +3,8 @@
 namespace vd
 {
 
-YAMLConfigReader::YAMLConfigReader(const char *filename) : _root(YAML::LoadFile(filename))
+YAMLConfigReader::YAMLConfigReader(const std::string &filePath) :
+    _root(YAML::LoadFile(filePath.c_str()))
 {
 }
 

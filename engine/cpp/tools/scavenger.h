@@ -4,6 +4,7 @@
 #include "../atoms/atom.h"
 #include "../species/base_spec.h"
 #include "../reactions/spec_reaction.h"
+#include "../reactions/ubiquitous_reaction.h"
 #include "collector.h"
 
 namespace vd
@@ -13,10 +14,12 @@ class Scavenger
         : protected Collector<Atom>
         , protected Collector<BaseSpec>
         , protected Collector<SpecReaction>
+        , protected Collector<UbiquitousReaction>
 {
     typedef Collector<Atom> AtomsCollector;
     typedef Collector<BaseSpec> SpecsCollector;
-    typedef Collector<SpecReaction> ReactionsCollector;
+    typedef Collector<SpecReaction> SpecReactionsCollector;
+    typedef Collector<UbiquitousReaction> UbiquitousReactionsCollector;
 
 public:
     ~Scavenger();
@@ -24,6 +27,7 @@ public:
     void markAtom(Atom *atom);
     void markSpec(BaseSpec *spec);
     void markReaction(SpecReaction *reaction);
+    void markReaction(UbiquitousReaction *reaction);
 
     void clear();
 

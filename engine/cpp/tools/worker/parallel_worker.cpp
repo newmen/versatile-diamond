@@ -1,4 +1,5 @@
 #include "parallel_worker.h"
+#include <functional>
 
 namespace vd
 {

@@ -16,6 +16,8 @@ public:
     virtual double rate() const = 0;
     virtual void doIt() = 0;
 
+    virtual void remove() = 0;
+
 #if defined(PRINT) || defined(MC_PRINT)
     virtual void info(IndentStream &os) = 0;
 #endif // PRINT || MC_PRINT

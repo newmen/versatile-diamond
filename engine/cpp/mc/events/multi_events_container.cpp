@@ -18,7 +18,7 @@ MultiEventsContainer::~MultiEventsContainer()
 
     for (Reaction *event : _events)
     {
-        delete event;
+        delete event; // erase memory here directly (wihtout scavenger mark)
     }
 }
 
@@ -121,7 +121,7 @@ void MultiEventsContainer::unlockedRemove(Atom *target, uint n)
 
         if (!haveSame)
         {
-            delete current;
+            current->remove();
         }
     }
 

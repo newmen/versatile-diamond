@@ -8,14 +8,14 @@ using namespace vd;
 
 class RatesReader
 {
-    static YAMLConfigReader __config;
-
 public:
     template <class... Args>
     static double getRate(const char *rid, Args... multipliers);
     static double getRate(const char *rid);
 
 private:
+    static YAMLConfigReader &config();
+
     static void readParams(const char *rid, double *k, double *Ea, double *Tp);
     static double arrenius(const char *rid, double t);
 

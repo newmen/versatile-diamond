@@ -6,7 +6,7 @@ module VersatileDiamond
       include Modules::GraphDupper
 
       delegate :simple?, :gas?
-      delegate :specific_atoms, :active_bonds_num, :monovalents_num
+      delegate :external_bonds, :specific_atoms, :active_bonds_num, :monovalents_num
 
       # Initializes veiled spec and remember all veiled atoms for real atoms of
       # original spec

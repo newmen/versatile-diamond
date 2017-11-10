@@ -29,7 +29,8 @@ module VersatileDiamond
       def combine_lateral_reaction(lateral_reaction)
         typical_reaction = lateral_reaction.parent
         full_rate = lateral_reaction.full_rate
-        CombinedLateralReaction.new(typical_reaction, self, full_rate)
+        rate_tuple = lateral_reaction.rate_tuple
+        CombinedLateralReaction.new(typical_reaction, self, full_rate, rate_tuple)
       end
     end
 

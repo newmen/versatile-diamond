@@ -49,7 +49,7 @@ module VersatileDiamond
         options = {}
         args = extract_hash_args(args_str) do |key, value|
           syntax_error('common.duplicating_key', name: key) if options[key]
-          options[key] = cast_value(value)
+          options[key] = value
         end
 
         options = Hash[options.to_a.reverse]
@@ -58,7 +58,7 @@ module VersatileDiamond
 
       # Casts value to correspond type
       # @param [String] value the value as string
-      # @return [Object] the casted value
+      # @return [Symbol | String | Integer | Float] the casted value
       def cast_value(value)
         if value[0] == ?:
           value[1...(value.length)].to_sym

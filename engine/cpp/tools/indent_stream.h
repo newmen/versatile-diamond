@@ -2,8 +2,7 @@
 #define INDENT_STREAM_H
 
 #include "define_print.h"
-
-#if defined(PRINT) || defined(ANY_PRINT)
+#ifdef ANY_PRINT
 
 #include <string>
 #include <sstream>
@@ -72,5 +71,5 @@ IndentStream &operator << (IndentStream &stream, const int3 &value);
 
 }
 
-#endif // PRINT || ANY_PRINT
+#endif // ANY_PRINT
 #endif // INDENT_STREAM_H
