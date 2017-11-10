@@ -68,7 +68,7 @@ int safeRun(int argc, char const *argv[])
     }
     catch (YAML::BadFile)
     {
-        std::cerr << "Wrong config directory: " << argv[2] << std::endl;
+        std::cerr << "Wrong config directory: " << Handbook::configsDir() << std::endl;
         return ERROR_CODE;
     }
 }

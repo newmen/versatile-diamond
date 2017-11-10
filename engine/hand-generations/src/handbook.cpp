@@ -106,6 +106,11 @@ void Handbook::setConfigsDir(const std::string &configsDir)
     __configsDir = configsDir;
 }
 
+const std::string &Handbook::configsDir()
+{
+    return __configsDir;
+}
+
 std::string Handbook::runConfigPath()
 {
     return __configsDir + "/run.yml";
