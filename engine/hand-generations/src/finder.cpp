@@ -63,6 +63,12 @@ void Finder::findAll(Atom **atoms, uint n)
         atoms[i]->setSpecsUnvisited();
     }
 
+#ifdef PRINT
+    debugPrint([&](IndentStream &os) {
+        os << "Finder::findAll preparations complete";
+    });
+#endif // PRINT
+
     // ---------------------------------------------------------------------------------------------------------- //
 
     for (uint i = 0; i < n; ++i)

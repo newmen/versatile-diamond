@@ -220,10 +220,29 @@ void Atom::removeUnsupportedSpecies()
 
 void Atom::findUnvisitedChildren()
 {
+    uint num = _specs.size();
+    if (num == 0) return;
+
+#if defined(PRINT) || defined(ATOM_PRINT)
+    debugPrint([&](IndentStream &os) {
+        os << "Atom::findUnvisitedChildren(" << num << ") of " << this << " " << std::dec;
+    });
+#endif // PRINT || ATOM_PRINT
+
+    BaseSpec **specs = new BaseSpec*[num]; // max possible size
+    uint n = 0;
+
     for (auto &pr : _specs)
     {
-        pr.second->findChildren();
+        specs[n++] = pr.second;
     }
+
+    for (uint i = 0; i < n; ++i)
+    {
+        specs[i]->findChildren();
+    }
+
+    delete [] specs;
 }
 
 void Atom::prepareToRemove()
@@ -300,7 +319,7 @@ void Atom::printSpecs(IndentStream &os)
 void Atom::pos(IndentStream &os)
 {
     if (lattice()) os << lattice()->coords();
-    else os << "amorph";
+    else os << " amorph";
 }
 #endif // PRINT || ATOM_PRINT
 

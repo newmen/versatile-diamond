@@ -21,6 +21,12 @@ void ParentSpec::setUnvisited()
     {
         _visited = false;
 
+#if defined(PRINT) || defined(SPEC_PRINT)
+        debugPrint([&](IndentStream &os) {
+            os << "Set " << name() << " unvisited!";
+        });
+#endif // PRINT || SPEC_PRINT
+
         for (BaseSpec *child : _children)
         {
             child->setUnvisited();
@@ -34,13 +40,41 @@ void ParentSpec::findChildren()
     {
         _visited = true;
 
-        for (BaseSpec *child : _children)
+        uint num = _children.size();
+        if (num > 0)
         {
-            child->findChildren();
+#if defined(PRINT) || defined(SPEC_PRINT)
+            debugPrint([&](IndentStream &os) {
+                os << "Find " << num << " children of " << name();
+            });
+#endif // PRINT || SPEC_PRINT
+
+            BaseSpec **specs = new BaseSpec*[num]; // max possible size
+            uint n = 0;
+
+            for (BaseSpec *child : _children)
+            {
+                specs[n++] = child;
+            }
+
+            for (uint i = 0; i < n; ++i)
+            {
+                specs[i]->findChildren();
+            }
+
+            delete [] specs;
         }
 
         findAllChildren();
     }
+#if defined(PRINT) || defined(SPEC_PRINT)
+    else
+    {
+        debugPrint([&](IndentStream &os) {
+            os << "Spec " << name() << " is already visited";
+        });
+    }
+#endif // PRINT || SPEC_PRINT
 }
 
 void ParentSpec::remove()
