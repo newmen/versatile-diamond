@@ -27,7 +27,7 @@ vde-*s.e*
 coverage/
 *.dump
 
-Gemfile.lock
+Gemfile.lock*
 
 *.mp4
 *.png
