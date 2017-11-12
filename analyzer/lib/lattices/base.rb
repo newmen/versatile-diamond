@@ -5,6 +5,7 @@ module VersatileDiamond
     # @abstract
     class Base
       include BasicRelations
+      include BondLengths
 
       # Exception class for case when used bond is incorrect
       class UndefinedRelation < Errors::Base

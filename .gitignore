@@ -11,6 +11,7 @@ build-*
 
 bin/
 cache/
+cache-for-rspecs/
 obj/
 results/
 total/

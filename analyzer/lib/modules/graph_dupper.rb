@@ -12,9 +12,7 @@ module VersatileDiamond
       # @return [Hash] the duplication
       def dup_graph(graph, &block)
         graph.each_with_object({}) do |(v, rels), acc|
-          acc[dup_vertex(v, &block)] = rels.map do |w, r|
-            [dup_vertex(w, &block), r]
-          end
+          acc[dup_vertex(v, &block)] = rels.map { |w, r| [dup_vertex(w, &block), r] }
         end
       end
 

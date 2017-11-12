@@ -7,6 +7,16 @@ class Diamond < VersatileDiamond::Lattices::Base
   # file in common templates directory which located at
   # /analyzer/lib/generators/code/templates/phases
 
+  CRYSTAL_BOND_LENGTHS = {
+    110 => 1.54448e-10,
+    100 => 1.62e-10,
+  }.freeze
+
+  DX = DY = 2 * CRYSTAL_BOND_LENGTHS[110] * Math.sin(SP3_ANGLE / 2)
+  DZ = CRYSTAL_BOND_LENGTHS[110] * Math.cos(SP3_ANGLE / 2)
+
+  SUPPORTED_RELATIONS = [:front_110, :cross_110, :front_100, :cross_100]
+
   # Gets valence of zero level atom
   # @return [Integer] get the number of valence electrons
   def zero_level_crystal_atom_valence
@@ -27,6 +37,15 @@ class Diamond < VersatileDiamond::Lattices::Base
     { bond_cross_110 => 2 }
   end
 
+  # Rules for excess atoms detection and replace it than
+  # @return [Hash]
+  def excess_rules
+    {
+      front_100 => [front_110, front_110],
+      cross_100 => [cross_110, cross_110],
+    }
+  end
+
   # Gets the default height of surface in atom layers
   # For diamond should be at least three layers for bond between each one the all atoms
   # @return [Integer] the number of atomic layers
@@ -34,7 +53,36 @@ class Diamond < VersatileDiamond::Lattices::Base
     3
   end
 
+  # @return [Hash]
+  def possible_steps
+    Hash[SUPPORTED_RELATIONS.map { |rn| [send(rn), method(:"#{rn}_steps")] }]
+  end
+
 private
+
+  # @params [Integer] x, y, z
+  # @return [Array]
+  def front_110_steps(x, y, z)
+    [z.even? ? [x - 1, y, z + 1] : [x, y - 1, z + 1], [x, y, z + 1]]
+  end
+
+  # @params [Integer] x, y, z
+  # @return [Array]
+  def cross_110_steps(x, y, z)
+    [[x, y, z - 1], z.even? ? [x, y + 1, z - 1] : [x + 1, y, z - 1]]
+  end
+
+  # @params [Integer] x, y, z
+  # @return [Array]
+  def front_100_steps(x, y, z)
+    z.even? ? [[x - 1, y, z], [x + 1, y, z]] : [[x, y - 1, z], [x, y + 1, z]]
+  end
+
+  # @params [Integer] x, y, z
+  # @return [Array]
+  def cross_100_steps(x, y, z)
+    z.even? ? [[x, y - 1, z], [x, y + 1, z]] : [[x - 1, y, z], [x + 1, y, z]]
+  end
 
   # Detects opposite relation on same lattice
   # @param [Concepts::Bond] the relation between atoms in lattice
