@@ -7,7 +7,7 @@ module VersatileDiamond
       describe LinksFixer, type: :organizer do
         subject { described_class }
 
-        describe '#fix' do
+        describe '#remove_excess' do
           shared_examples_for :check_excess do
             def verts_in(links)
               links.each_with_object(Set.new) do |(v1, rels), acc|
@@ -22,9 +22,10 @@ module VersatileDiamond
 
             let(:base_spec) { target_spec.spec }
 
-            let(:fixed_links) { subject.fix(target_links) }
-            let(:fixed_atoms) { verts_in(fixed_links) }
+            let(:fixed_links) { subject.remove_excess(target_links) }
             let(:target_links) { target_spec.links }
+
+            let(:fixed_atoms) { verts_in(fixed_links) }
             let(:target_atoms) { verts_in(target_links) }
             let(:removed_atoms) { target_atoms - fixed_atoms }
             let(:diff_atoms) { removed_atoms.select(&base_spec.method(:keyname)) }
@@ -33,9 +34,7 @@ module VersatileDiamond
 
             let(:fixed_rels_num) { rels_num(fixed_links) }
             let(:target_rels_num) { rels_num(target_links) }
-            let(:spec_rels_num) { rels_num(base_spec.links) }
-            let(:out_rels_num) { target_rels_num - spec_rels_num - excess_rels_num }
-            it { expect(fixed_rels_num).to eq(out_rels_num + spec_rels_num / 2) }
+            it { expect(fixed_rels_num).to eq(target_rels_num - excess_rels_num) }
           end
 
           it_behaves_like :check_excess do

@@ -9,6 +9,23 @@ module VersatileDiamond
           @x, @y, @z = x, y, z
           @atom = atom
         end
+
+        # @return [Array]
+        def coords
+          [x, y, z]
+        end
+
+        # @param [Atom] atom
+        # @return [MatrixNode]
+        def place!(atom)
+          @atom = atom
+          self
+        end
+
+        # @return [NilClass]
+        def reset!
+          @atom = nil
+        end
       end
 
     end

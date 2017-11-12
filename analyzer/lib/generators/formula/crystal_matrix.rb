@@ -6,7 +6,7 @@ module VersatileDiamond
         # @param [Atom] start_atom
         def initialize(start_atom)
           @possible_steps = start_atom.lattice.instance.possible_steps
-          @nodes = { 0 => { 0 => { 0 => MatrixNode.new(0, 0, 0, start_atom) } } }
+          @all_nodes = { 0 => { 0 => { 0 => MatrixNode.new(0, 0, 0, start_atom) } } }
           @size_ranges = {
             x: [0, 0],
             y: [0, 0],
@@ -14,31 +14,38 @@ module VersatileDiamond
           }
         end
 
-        # @param [Bond] rel
-        # @param [MatrixNode] node
-        # @return [Array]
-        def steps_by(rel, node)
-          possible_steps[rel.params][node.x, node.y, node.z].map do |x, y, z|
-            node_in(x, y, z)
-          end
+        # @yield [MatrixNode]
+        def each_nonempty(&block)
+          enumerate.select(&:atom).each(&block)
         end
 
         # @param [Atom] atom
         # @return [MatrixNode]
         def node_with(atom)
-          nodes.each do |x, node_x|
-            node_x.each do |y, node_xy|
-              node_xy.each do |x, node_xyz|
-                return node_xyz if node_xyz.atom == atom
-              end
-            end
-          end
-          raise ArgumentError, 'Atom was not added to matrix'
+          each_nonempty.find { |node| node.atom == atom }
+        end
+
+        # @param [Bond] rel
+        # @param [MatrixNode] node
+        # @return [Array]
+        def steps_by(rel, node)
+          possible_steps[rel.params][*node.coords].map { |coords| node_in(*coords) }
         end
 
       private
 
-        attr_reader :possible_steps, :nodes, :size_ranges
+        attr_reader :possible_steps, :all_nodes, :size_ranges
+
+        # @return [Enumerator]
+        def enumerate
+          Enumerator.new do |enum|
+            all_nodes.each do |_, x_nodes|
+              x_nodes.each do |_, xy_nodes|
+                xy_nodes.each { |_, xyz_node| enum << xyz_node }
+              end
+            end
+          end
+        end
 
         # @params [Integer] x, y, z
         # @return [MatrixNode]
@@ -49,14 +56,14 @@ module VersatileDiamond
           extend_y!(1) if y > size_ranges[:y][1]
           extend_z!(-1) if z < size_ranges[:z][0]
           extend_z!(1) if z > size_ranges[:z][1]
-          nodes[x][y][z]
+          all_nodes[x][y][z]
         end
 
         # @param [Symbol] axis
         # @yield [Integer] index
         # @return [Range]
         def each_in(axis, &block)
-          size_ranges[axis][0]..size_ranges[axis][1]
+          (size_ranges[axis][0]..size_ranges[axis][1]).each(&block)
         end
 
         # @param [Symbol] axis
@@ -69,11 +76,11 @@ module VersatileDiamond
         # @param [Integer] dir (-1 or 1)
         def extend_x!(dir)
           new_x = update_range!(:x, dir)
-          nodes[new_x] = {}
+          all_nodes[new_x] = {}
           each_in(:y) do |y|
-            nodes[new_x][y] = {}
+            all_nodes[new_x][y] = {}
             each_in(:z) do |z|
-              nodes[new_x][y][z] = MatrixNode.new(new_x, y, z)
+              all_nodes[new_x][y][z] = MatrixNode.new(new_x, y, z)
             end
           end
         end
@@ -82,9 +89,9 @@ module VersatileDiamond
         def extend_y!(dir)
           new_y = update_range!(:y, dir)
           each_in(:x) do |x|
-            nodes[x][new_y] = {}
+            all_nodes[x][new_y] = {}
             each_in(:z) do |z|
-              nodes[x][new_y][z] = MatrixNode.new(x, new_y, z)
+              all_nodes[x][new_y][z] = MatrixNode.new(x, new_y, z)
             end
           end
         end
@@ -94,7 +101,7 @@ module VersatileDiamond
           new_z = update_range!(:z, dir)
           each_in(:x) do |x|
             each_in(:y) do |y|
-              nodes[x][y][new_z] = MatrixNode.new(x, y, new_z)
+              all_nodes[x][y][new_z] = MatrixNode.new(x, y, new_z)
             end
           end
         end

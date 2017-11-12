@@ -6,28 +6,6 @@ module VersatileDiamond
 
       class LinksFixer
         class << self
-          # Removes excess vertices and reverse relations
-          # @param [Hash] links
-          # @return [Hash]
-          def fix(links)
-            remove_backs(remove_excess(links))
-          end
-
-        private
-
-          # @param [Hash] links
-          # @return [Hash]
-          def remove_backs(links)
-            links.each_with_object({}) do |(v1, rels), total_acc|
-              clean_rels = rels.each_with_object([]) do |(v2, rel), rels_acc|
-                unless total_acc[v2] && total_acc[v2].find { |w1, _| w1 == v1 }
-                  rels_acc << [v2, rel]
-                end
-              end
-              total_acc[v1] = clean_rels unless clean_rels.empty?
-            end
-          end
-
           # Removes excess vertices from passed graph, corresponding with lattice rules
           # @param [Hash] links
           # @return [Hash]
@@ -43,6 +21,8 @@ module VersatileDiamond
               end
             end
           end
+
+        private
 
           # @param [Hash] links
           # @param [Array] full_rels
