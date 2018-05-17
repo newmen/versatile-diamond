@@ -1,5 +1,7 @@
 if ENV['TRAVIS']
+  require 'simplecov'
   require 'coveralls'
+  SimpleCov.root('analyzer')
   Coveralls.wear!
 end
 

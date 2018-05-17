@@ -85,7 +85,7 @@ module VersatileDiamond
       def swap_atom(spec, from, to)
         return if from == to
         @links = dup_graph(@links) do |v|
-          v.is_a?(Symbol) ? v : swap_only_atoms(v, from, to)
+          v.is_a?(Symbol) ? v : swap_only_atoms(v, spec, from, to)
         end
       end
 

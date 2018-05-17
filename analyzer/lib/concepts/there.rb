@@ -111,7 +111,9 @@ module VersatileDiamond
       # @param [Atom] from the used atom
       # @param [Atom] to the new atom
       def swap_target_atom(spec, from, to)
-        new_refs = @target_refs.map { |nm, sa| [nm, swap_only_atoms(sa, from, to)] }
+        new_refs = @target_refs.map do |nm, sa|
+          [nm, swap_only_atoms(sa, spec, from, to)]
+        end
         @target_refs = Hash[new_refs]
       end
 
