@@ -12,6 +12,7 @@ end
 group :ruby, :test do
   gem 'rspec'
   gem 'parallel_tests'
+  gem 'simplecov', require: false
   gem 'coveralls', require: false
 end
 
