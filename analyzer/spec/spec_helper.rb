@@ -1,7 +1,11 @@
 if ENV['TRAVIS']
   require 'simplecov'
   require 'coveralls'
-  SimpleCov.root('analyzer')
+
+  SimpleCov.configure do
+    root '..'
+    add_filter '/spec/'
+  end
   Coveralls.wear!
 end
 
